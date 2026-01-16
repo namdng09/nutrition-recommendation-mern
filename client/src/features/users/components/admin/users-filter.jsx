@@ -1,0 +1,134 @@
+import { Plus, Search } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { useNavigate, useSearchParams } from 'react-router';
+
+import { Button } from '~/components/ui/button';
+import { Form, FormControl, FormField, FormItem } from '~/components/ui/form';
+import { Input } from '~/components/ui/input';
+import {
+  MultiSelect,
+  MultiSelectContent,
+  MultiSelectGroup,
+  MultiSelectItem,
+  MultiSelectTrigger,
+  MultiSelectValue
+} from '~/components/ui/multi-select';
+import { GENDER_OPTIONS } from '~/constants/gender';
+import { ROLE_OPTIONS } from '~/constants/role';
+import { buildQueryParams } from '~/lib/build-query-params';
+
+const UsersFilter = () => {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const form = useForm({
+    values: {
+      name: searchParams.get('name') || '',
+      gender: searchParams.getAll('gender') || [],
+      role: searchParams.getAll('role') || []
+    }
+  });
+
+  const handleSearch = data => {
+    const sort = searchParams.get('sort');
+    const queryParams = buildQueryParams({ ...data, page: 1, sort });
+    setSearchParams(queryParams);
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSearch)} className='space-y-4'>
+        <div className='flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center'>
+          <FormField
+            control={form.control}
+            name='name'
+            render={({ field }) => (
+              <FormItem className='w-full sm:w-64'>
+                <FormControl>
+                  <div className='relative'>
+                    <Search className='absolute left-2 top-2.5 h-4 w-4 text-muted-foreground' />
+                    <Input
+                      placeholder='Search by name...'
+                      className='pl-8'
+                      {...field}
+                    />
+                  </div>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='gender'
+            render={({ field }) => (
+              <FormItem>
+                <MultiSelect
+                  values={field.value}
+                  onValuesChange={field.onChange}
+                >
+                  <MultiSelectTrigger className='w-full sm:w-40'>
+                    <MultiSelectValue placeholder='Gender' />
+                  </MultiSelectTrigger>
+                  <MultiSelectContent>
+                    <MultiSelectGroup>
+                      {GENDER_OPTIONS.map(option => (
+                        <MultiSelectItem
+                          key={option.value}
+                          value={option.value}
+                        >
+                          {option.label}
+                        </MultiSelectItem>
+                      ))}
+                    </MultiSelectGroup>
+                  </MultiSelectContent>
+                </MultiSelect>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='role'
+            render={({ field }) => (
+              <FormItem>
+                <MultiSelect
+                  values={field.value}
+                  onValuesChange={field.onChange}
+                >
+                  <MultiSelectTrigger className='w-full sm:w-40'>
+                    <MultiSelectValue placeholder='Role' />
+                  </MultiSelectTrigger>
+                  <MultiSelectContent>
+                    <MultiSelectGroup>
+                      {ROLE_OPTIONS.map(option => (
+                        <MultiSelectItem
+                          key={option.value}
+                          value={option.value}
+                        >
+                          {option.label}
+                        </MultiSelectItem>
+                      ))}
+                    </MultiSelectGroup>
+                  </MultiSelectContent>
+                </MultiSelect>
+              </FormItem>
+            )}
+          />
+          <Button type='submit'>
+            <Search className='mr-2 h-4 w-4' />
+            Search
+          </Button>
+          <Button
+            type='button'
+            onClick={() => navigate('/admin/manage-users/create-user')}
+            className='sm:ml-auto'
+          >
+            <Plus className='mr-2 h-4 w-4' />
+            Create User
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
+};
+
+export default UsersFilter;

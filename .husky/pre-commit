@@ -1,0 +1,6 @@
+#!/bin/sh
+if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
+  npx.cmd lint-staged
+else
+  npx lint-staged
+fi
