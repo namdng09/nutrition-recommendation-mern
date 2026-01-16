@@ -21,6 +21,8 @@ const userSchema = new Schema(
       default: ROLE.USER
     },
     dob: { type: Date },
+    setting: { type: Map, of: Schema.Types.Mixed, default: {} },
+    aiConfig: { type: Map, of: Schema.Types.Mixed, default: {} },
     isActive: { type: Boolean, default: true }
   },
   {
