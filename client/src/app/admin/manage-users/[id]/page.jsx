@@ -1,6 +1,6 @@
 import { useParams } from 'react-router';
 
-import UserDetail from '~/features/users/components/admin/user-detail';
+import UserDetail from '~/features/users/view-user-detail/components/admin/user-detail';
 
 const Page = () => {
   const { id } = useParams();

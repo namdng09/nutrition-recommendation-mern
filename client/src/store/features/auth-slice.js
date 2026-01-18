@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { jwtDecode } from 'jwt-decode';
 
-import { logout as logoutApi } from '~/features/auth/api/logout';
-import { refreshAccessToken } from '~/features/auth/api/refresh-access-token';
+import { logout as logoutApi } from '~/features/auth/logout/api/logout';
+import { refreshAccessToken } from '~/features/auth/refresh-access-token/api/refresh-access-token';
 import { AUTH_SESSION_EXPIRED_EVENT } from '~/lib/api-client';
 import {
   clearAuthTokens,

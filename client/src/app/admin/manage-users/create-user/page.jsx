@@ -1,4 +1,4 @@
-import CreateUserForm from '~/features/users/components/admin/create-user-form';
+import CreateUserForm from '~/features/users/create-user/components/admin/create-user-form';
 
 const Page = () => {
   return (

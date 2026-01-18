@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 import { isPublicEndpoint } from '~/config/paths';
-import { refreshAccessToken } from '~/features/auth/api/refresh-access-token';
-import { requiresReAuthentication } from '~/features/auth/utils/refresh-token';
+import { refreshAccessToken } from '~/features/auth/refresh-access-token/api/refresh-access-token';
+import { requiresReAuthentication } from '~/features/auth/refresh-access-token/utils/refresh-token';
 import {
   clearAuthTokens,
   getStoredAccessToken,

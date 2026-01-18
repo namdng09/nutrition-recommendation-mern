@@ -1,4 +1,4 @@
-import Profile from '~/features/users/components/profile';
+import Profile from '~/features/users/view-profile/components/profile';
 
 const Page = () => {
   return (
