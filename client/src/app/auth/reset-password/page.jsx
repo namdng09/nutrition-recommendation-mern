@@ -1,4 +1,4 @@
-import ResetPasswordCard from '~/features/auth/components/reset-password-card';
+import ResetPasswordCard from '~/features/auth/reset-password/components/reset-password-card';
 
 const Page = () => {
   return (

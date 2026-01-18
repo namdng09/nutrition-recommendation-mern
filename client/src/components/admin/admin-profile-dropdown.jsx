@@ -9,7 +9,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '~/components/ui/popover';
-import { useProfile } from '~/features/users/api/view-profile';
+import { useProfile } from '~/features/users/view-profile/api/view-profile';
 import { logout } from '~/store/features/auth-slice';
 
 export const AdminProfileDropdown = () => {
