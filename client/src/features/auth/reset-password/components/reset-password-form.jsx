@@ -12,7 +12,7 @@ import {
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
 
-import { resetPasswordSchema } from '../schemas/auth-schemas';
+import { resetPasswordSchema } from '../schemas/reset-password-schema';
 
 const ResetPasswordForm = ({ onSubmit, isLoading }) => {
   const form = useForm({
