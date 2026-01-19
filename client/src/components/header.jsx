@@ -46,7 +46,7 @@ const Header = () => {
       <div className='mx-auto flex h-25 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8'>
         <div className='flex items-center'>
           <Link to='/' className='flex items-center gap-4'>
-            <div className='flex h-18 w-26 items-center justify-center rounded-2xl border bg-[#2E7D32]/5 shadow-sm'>
+            <div className='flex h-18 w-28 items-center justify-center rounded-2xl border bg-[#2E7D32]/2 shadow-2xs'>
               <img
                 src='/logo1.png'
                 alt='Logo'
