@@ -1,5 +1,6 @@
 import { ChevronDown, LogOut, Menu, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { FaUserPlus } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, NavLink, useNavigate } from 'react-router';
 
@@ -13,13 +14,8 @@ import {
 } from '~/components/ui/popover';
 import { useProfile } from '~/features/users/view-profile/api/view-profile';
 import { useIsMobile } from '~/hooks/use-mobile';
-import { cn } from '~/lib/utils';
+import { cn, NAV_LINKS } from '~/lib/utils';
 import { logout } from '~/store/features/auth-slice';
-
-const NAV_LINKS = [
-  { to: '/', label: 'Home' },
-  { to: '/playground', label: 'Playground' }
-];
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -48,7 +44,7 @@ const Header = () => {
       <div className='mx-auto flex h-25 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8'>
         <div className='flex items-center'>
           <Link to='/' className='flex items-center gap-4'>
-            <div className='flex h-18 w-26 items-center justify-center rounded-2xl border bg-muted/20 shadow-sm'>
+            <div className='flex h-18 w-26 items-center justify-center rounded-2xl border bg-[#2E7D32]/5 shadow-sm'>
               <img
                 src='/logo1.png'
                 alt='Logo'
@@ -57,8 +53,8 @@ const Header = () => {
             </div>
 
             <div className='flex flex-col justify-center leading-tight'>
-              <div className='text-xl font-bold'>Eat Dee</div>
-              <div className='text-base text-muted-foreground'>Since 2025</div>
+              <div className='text-xl font-bold text-[#1B5E20]'>Eat Dee</div>
+              <div className='text-base text-[#2E7D32]/70'>Since 2025</div>
             </div>
           </Link>
         </div>
@@ -71,10 +67,10 @@ const Header = () => {
               className={({ isActive }) =>
                 cn(
                   'rounded-full px-4 py-2 text-sm font-medium transition',
-                  'hover:bg-accent hover:text-foreground',
+                  'hover:bg-[#2E7D32]/10 hover:text-[#1B5E20]',
                   isActive
-                    ? 'bg-accent text-foreground'
-                    : 'text-muted-foreground'
+                    ? 'bg-[#2E7D32]/15 text-[#1B5E20] ring-1 ring-[#2E7D32]/25'
+                    : 'text-[#1B5E20]/70'
                 )
               }
             >
@@ -91,7 +87,7 @@ const Header = () => {
               <PopoverTrigger asChild>
                 <Button
                   variant='ghost'
-                  className='group h-10 gap-2 rounded-full px-2 hover:bg-accent'
+                  className='group h-10 gap-2 rounded-full px-2 hover:bg-[#2E7D32]/10'
                 >
                   <Avatar className='h-8 w-8'>
                     <AvatarImage src={avatarSrc} alt={displayName} />
@@ -104,11 +100,11 @@ const Header = () => {
                     </AvatarFallback>
                   </Avatar>
 
-                  <span className='hidden max-w-[140px] truncate text-sm font-medium sm:inline'>
+                  <span className='hidden max-w-[140px] truncate text-sm font-medium text-[#1B5E20] sm:inline'>
                     {displayName}
                   </span>
 
-                  <ChevronDown className='hidden h-4 w-4 text-muted-foreground transition group-hover:text-foreground sm:block' />
+                  <ChevronDown className='hidden h-4 w-4 text-[#1B5E20]/70 transition group-hover:text-[#1B5E20] sm:block' />
                 </Button>
               </PopoverTrigger>
 
@@ -125,11 +121,11 @@ const Header = () => {
                     </AvatarFallback>
                   </Avatar>
                   <div className='min-w-0'>
-                    <div className='truncate text-sm font-semibold'>
+                    <div className='truncate text-sm font-semibold text-[#1B5E20]'>
                       {displayName}
                     </div>
                     {displayEmail ? (
-                      <div className='truncate text-xs text-muted-foreground'>
+                      <div className='truncate text-xs text-[#2E7D32]/70'>
                         {displayEmail}
                       </div>
                     ) : null}
@@ -139,29 +135,40 @@ const Header = () => {
                 <div className='mt-2 flex flex-col gap-1'>
                   <Link
                     to='/profile'
-                    className='flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-accent'
+                    className='flex items-center gap-2 rounded-md px-3 py-2 text-sm text-[#1B5E20] hover:bg-[#2E7D32]/10'
                   >
                     <User className='h-4 w-4' />
-                    View Profile
+                    Hồ Sơ Người Dùng
                   </Link>
 
                   <button
                     onClick={handleLogout}
-                    className='flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-destructive hover:bg-accent'
+                    className='flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-destructive hover:bg-[#2E7D32]/10'
                   >
                     <LogOut className='h-4 w-4' />
-                    Logout
+                    Đăng Xuất
                   </button>
                 </div>
               </PopoverContent>
             </Popover>
           ) : (
             <div className='hidden items-center gap-2 sm:flex'>
-              <Button variant='ghost' asChild className='rounded-full'>
-                <Link to='/auth/login'>Login</Link>
+              <Button
+                variant='ghost'
+                asChild
+                className='rounded-full text-[#1B5E20] hover:bg-[#2E7D32]/10'
+              >
+                <Link to='/auth/login'>Đăng nhập</Link>
               </Button>
-              <Button asChild className='rounded-full'>
-                <Link to='/auth/sign-up'>Sign Up</Link>
+
+              <Button
+                asChild
+                className='rounded-full bg-[#1B5E20] text-white hover:bg-[#145017]'
+              >
+                <Link to='/auth/sign-up' className='flex items-center gap-2'>
+                  Đăng Ký Tài Khoản
+                  <FaUserPlus className='h-4 w-4' />
+                </Link>
               </Button>
             </div>
           )}
@@ -169,7 +176,7 @@ const Header = () => {
           <Button
             variant='ghost'
             size='icon'
-            className='md:hidden'
+            className='md:hidden hover:bg-[#2E7D32]/10'
             onClick={() => setMobileMenuOpen(v => !v)}
           >
             {mobileMenuOpen ? (
@@ -198,10 +205,10 @@ const Header = () => {
                 className={({ isActive }) =>
                   cn(
                     'rounded-xl px-3 py-2 text-sm font-medium transition',
-                    'hover:bg-accent hover:text-foreground',
+                    'hover:bg-[#2E7D32]/10 hover:text-[#1B5E20]',
                     isActive
-                      ? 'bg-accent text-foreground'
-                      : 'text-muted-foreground'
+                      ? 'bg-[#2E7D32]/15 text-[#1B5E20] ring-1 ring-[#2E7D32]/25'
+                      : 'text-[#1B5E20]/70'
                   )
                 }
               >
@@ -211,11 +218,18 @@ const Header = () => {
 
             {!user && (
               <div className='mt-2 grid grid-cols-2 gap-2'>
-                <Button variant='outline' asChild className='rounded-xl'>
-                  <Link to='/auth/login'>Login</Link>
+                <Button
+                  variant='outline'
+                  asChild
+                  className='rounded-xl border-[#2E7D32]/25 text-[#1B5E20] hover:bg-[#2E7D32]/10'
+                >
+                  <Link to='/auth/login'>Đăng Nhập</Link>
                 </Button>
-                <Button asChild className='rounded-xl'>
-                  <Link to='/auth/sign-up'>Sign Up</Link>
+                <Button
+                  asChild
+                  className='rounded-xl bg-[#1B5E20] text-white hover:bg-[#145017]'
+                >
+                  <Link to='/auth/sign-up'>Đăng Ký</Link>
                 </Button>
               </div>
             )}

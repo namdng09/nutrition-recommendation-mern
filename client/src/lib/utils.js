@@ -26,3 +26,8 @@ export const getRoleLabel = value => {
   const option = ROLE_OPTIONS.find(opt => opt.value === value);
   return option?.label || 'Not set';
 };
+
+export const NAV_LINKS = [
+  { to: '/', label: 'Trang Chủ' },
+  { to: '/playground', label: 'Playground' }
+];
