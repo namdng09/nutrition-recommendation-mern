@@ -5,30 +5,30 @@ import { GENDER } from '~/constants/gender';
 export const signUpSchema = yup.object({
   email: yup
     .string()
-    .email('Invalid email format')
-    .required('Email is required'),
-  name: yup.string().min(1, 'Name is required').required('Name is required'),
+    .email('Sai định dạng email')
+    .required('Vui lòng nhập email của bạn để tiếp tục'),
+  name: yup.string().min(1, 'Tên là bắt buộc').required('Tên là bắt buộc'),
   gender: yup
     .string()
-    .oneOf([...Object.values(GENDER), ''], 'Invalid gender')
+    .oneOf([...Object.values(GENDER), ''], 'Giới tính không hợp lệ')
     .optional(),
   dob: yup.string().optional(),
   password: yup
     .string()
-    .min(6, 'Password must be at least 6 characters long')
-    .required('Password is required'),
+    .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
+    .required('Mật khẩu là bắt buộc'),
   confirmPassword: yup
     .string()
-    .min(6, 'Confirm Password must be at least 6 characters long')
-    .oneOf([yup.ref('password')], "Passwords don't match")
-    .required('Confirm Password is required'),
+    .min(6, 'Xác nhận mật khẩu phải có ít nhất 6 ký tự')
+    .oneOf([yup.ref('password')], 'Mật khẩu không khớp')
+    .required('Xác nhận mật khẩu là bắt buộc'),
   avatar: yup
     .mixed()
-    .test('fileSize', 'File size too large (max 5MB)', value => {
+    .test('fileSize', 'Dung lượng file quá lớn (tối đa 5MB)', value => {
       if (!value || !value[0]) return true;
       return value[0].size <= 5 * 1024 * 1024;
     })
-    .test('fileType', 'Only image files are allowed', value => {
+    .test('fileType', 'Chỉ cho phép file hình ảnh', value => {
       if (!value || !value[0]) return true;
       return value[0].type.startsWith('image/');
     })
