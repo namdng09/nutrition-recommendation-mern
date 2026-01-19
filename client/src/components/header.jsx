@@ -17,6 +17,8 @@ import { useIsMobile } from '~/hooks/use-mobile';
 import { cn, NAV_LINKS } from '~/lib/utils';
 import { logout } from '~/store/features/auth-slice';
 
+import HeaderNav from './header-nav';
+
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -59,25 +61,7 @@ const Header = () => {
           </Link>
         </div>
 
-        <nav className='hidden items-center gap-1 md:flex'>
-          {NAV_LINKS.map(link => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              className={({ isActive }) =>
-                cn(
-                  'rounded-full px-4 py-2 text-sm font-medium transition',
-                  'hover:bg-[#2E7D32]/10 hover:text-[#1B5E20]',
-                  isActive
-                    ? 'bg-[#2E7D32]/15 text-[#1B5E20] ring-1 ring-[#2E7D32]/25'
-                    : 'text-[#1B5E20]/70'
-                )
-              }
-            >
-              {link.label}
-            </NavLink>
-          ))}
-        </nav>
+        <HeaderNav links={NAV_LINKS} />
 
         <div className='flex items-center gap-2'>
           <ModeToggle />
