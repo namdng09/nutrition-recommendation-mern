@@ -16,7 +16,7 @@ const updateProfile = async data => {
     }
   });
 
-  const response = await apiClient.patch('/api/users/me', formData, {
+  const response = await apiClient.put('/api/users/me', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
