@@ -1,56 +1,51 @@
 import React from 'react';
-import { FaDiscord } from 'react-icons/fa';
+import { FaUserPlus } from 'react-icons/fa';
 import { Link } from 'react-router';
 
 const Footer = () => {
   return (
-    <footer className='relative z-20 w-full border-t border-[#6B8F71]/50 bg-white/80 backdrop-blur-md shadow-[0_-8px_30px_rgba(0,0,0,0.08)]'>
-      <div className='container mx-auto flex flex-col items-center gap-3 px-4 py-4 sm:flex-row sm:justify-between'>
-        <div className='flex items-center gap-3'>
-          <Link
-            to='/'
-            className='
-          font-pixel
-          rounded-full
-          border border-[#6B8F71]/60
-          bg-white/80 backdrop-blur-md
-          px-4 py-2
-          text-sm uppercase tracking-widest
-          text-black
-          shadow-[0_8px_20px_rgba(0,0,0,0.08)]
-          transition
-          hover:bg-[#9FE870]/25
-        '
-          >
-            Trang chủ
+    <footer className='relative z-20 w-full border-t border-[#2E7D32]/20 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
+      <div className='mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8'>
+        <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3'>
+          <Link to='/' className='flex items-center gap-2'>
+            <img
+              src='/logo2.png'
+              alt='Logo'
+              className='h-18 w-18 object-contain scale-125'
+            />
+
+            <div className='leading-[1.05]'>
+              <div className='text-base font-bold text-[#1B5E20]'>Eat Dee</div>
+              <div className='text-sm text-[#2E7D32]/70'>Since 2025</div>
+            </div>
           </Link>
 
-          <span className='font-pixel text-sm uppercase tracking-widest text-gray-800'>
-            HAZY ROBUX © 2025
+          <span className='hidden h-1.5 w-1.5 rounded-full bg-[#2E7D32]/60 sm:inline-block' />
+
+          <span className='text-sm font-medium text-[#1B5E20]/80'>
+            © 2025 Eat Dee. All rights reserved.
           </span>
         </div>
 
-        <a
-          href='https://discord.com/invite/wavycrew'
-          target='hazy_robux_discord'
-          rel='noopener noreferrer'
-          className='
-        flex items-center gap-2
-        rounded-full
-        border border-[#6B8F71]/60
-        bg-white/80 backdrop-blur-md
-        px-4 py-2
-        font-pixel text-sm uppercase tracking-widest
-        text-black
-        shadow-[0_8px_20px_rgba(0,0,0,0.08)]
-        transition
-        hover:bg-[#9FE870]/25
-      '
-        >
-          <FaDiscord className='h-4 w-4 text-[#2F7D32]' />
-          Discord
-        </a>
+        <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2'>
+          <Link
+            to='/'
+            className='inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-[#1B5E20]/80 transition hover:bg-[#2E7D32]/10 hover:text-[#1B5E20]'
+          >
+            Trang Chủ
+          </Link>
+
+          <Link
+            to='auth/login'
+            className='inline-flex items-center justify-center gap-2 rounded-full border border-[#2E7D32]/25 bg-[#2E7D32]/5 px-4 py-2 text-sm font-medium text-[#1B5E20] shadow-sm transition hover:bg-[#2E7D32]/10'
+          >
+            <FaUserPlus className='h-4 w-4 text-[#1B5E20]' />
+            Đăng Nhập
+          </Link>
+        </div>
       </div>
+
+      <div className='pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#2E7D32]/25 to-transparent' />
     </footer>
   );
 };
