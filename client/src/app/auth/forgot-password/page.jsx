@@ -1,4 +1,4 @@
-import ForgotPasswordCard from '~/features/auth/components/forgot-password-card';
+import ForgotPasswordCard from '~/features/auth/forgot-password/components/forgot-password-card';
 
 const Page = () => {
   return (

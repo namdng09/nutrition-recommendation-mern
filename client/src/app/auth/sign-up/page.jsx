@@ -1,6 +1,6 @@
 import React from 'react';
 
-import SignUpCard from '~/features/auth/components/sign-up-card';
+import SignUpCard from '~/features/auth/sign-up/components/sign-up-card';
 
 const SignUp = () => {
   return (

@@ -11,7 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '~/components/ui/popover';
-import { useProfile } from '~/features/users/api/view-profile';
+import { useProfile } from '~/features/users/view-profile/api/view-profile';
 import { useIsMobile } from '~/hooks/use-mobile';
 import { cn } from '~/lib/utils';
 import { logout } from '~/store/features/auth-slice';
