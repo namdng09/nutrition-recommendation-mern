@@ -2,6 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { FaGoogle } from 'react-icons/fa';
+import { HiOutlineEnvelope, HiOutlineKey } from 'react-icons/hi2';
 
 import { Button } from '~/components/ui/button';
 import { Checkbox } from '~/components/ui/checkbox';
@@ -36,22 +37,22 @@ const LoginForm = ({ onSubmit, isLoading }) => {
     <div className='space-y-4'>
       <Button
         variant='outline'
-        className='w-full'
+        className='w-full rounded-xl border-[#2E7D32]/25 bg-white/60 hover:bg-[#2E7D32]/10 text-[#1B5E20] shadow-sm'
         onClick={() => {
           window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
         }}
       >
-        <FaGoogle className='mr-2' />
-        Continue with Google
+        <FaGoogle className='mr-2 h-4 w-4' />
+        Tiếp tục đăng nhập với Google
       </Button>
 
       <div className='relative'>
         <div className='absolute inset-0 flex items-center'>
-          <span className='w-full border-t' />
+          <span className='w-full border-t border-[#2E7D32]/20' />
         </div>
         <div className='relative flex justify-center text-xs uppercase'>
-          <span className='bg-background px-2 text-muted-foreground'>
-            Or continue with email
+          <span className='bg-background px-3 text-[#2E7D32]/70'>
+            Hoặc đăng nhập bằng email
           </span>
         </div>
       </div>
@@ -63,31 +64,44 @@ const LoginForm = ({ onSubmit, isLoading }) => {
             name='email'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel className='text-[#1B5E20]'>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder='Enter your email' {...field} />
+                  <div className='relative'>
+                    <HiOutlineEnvelope className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#1B5E20]/60' />
+                    <Input
+                      placeholder='Nhập email của bạn'
+                      className='rounded-xl border-[#2E7D32]/25 pl-10 focus-visible:ring-[#2E7D32]/30'
+                      {...field}
+                    />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name='password'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel className='text-[#1B5E20]'>Mật khẩu</FormLabel>
                 <FormControl>
-                  <Input
-                    type='password'
-                    placeholder='Enter your password'
-                    {...field}
-                  />
+                  <div className='relative'>
+                    <HiOutlineKey className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#1B5E20]/60' />
+                    <Input
+                      type='password'
+                      placeholder='Nhập mật khẩu'
+                      className='rounded-xl border-[#2E7D32]/25 pl-10 focus-visible:ring-[#2E7D32]/30'
+                      {...field}
+                    />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name='isRemember'
@@ -97,17 +111,24 @@ const LoginForm = ({ onSubmit, isLoading }) => {
                   <Checkbox
                     checked={Boolean(field.value)}
                     onCheckedChange={field.onChange}
+                    className='border-[#2E7D32]/35 data-[state=checked]:bg-[#1B5E20] data-[state=checked]:border-[#1B5E20]'
                   />
                 </FormControl>
                 <div className='space-y-2 leading-none'>
-                  <FormLabel>Remember me</FormLabel>
+                  <FormLabel className='text-[#1B5E20]/80'>
+                    Ghi nhớ đăng nhập
+                  </FormLabel>
                 </div>
               </FormItem>
             )}
           />
 
-          <Button type='submit' className='w-full' disabled={isLoading}>
-            {isLoading ? 'Signing in...' : 'Sign in'}
+          <Button
+            type='submit'
+            className='w-full rounded-xl bg-[#1B5E20] text-white hover:bg-[#145017] shadow-sm'
+            disabled={isLoading}
+          >
+            {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
           </Button>
         </form>
       </Form>

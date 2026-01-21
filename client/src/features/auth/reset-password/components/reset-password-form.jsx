@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
+import { HiOutlineLockClosed } from 'react-icons/hi';
 
 import { Button } from '~/components/ui/button';
 import {
@@ -12,7 +13,7 @@ import {
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
 
-import { resetPasswordSchema } from '../schemas/auth-schemas';
+import { resetPasswordSchema } from '../schemas/reset-password-schema';
 
 const ResetPasswordForm = ({ onSubmit, isLoading }) => {
   const form = useForm({
@@ -36,37 +37,53 @@ const ResetPasswordForm = ({ onSubmit, isLoading }) => {
           name='password'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>New Password</FormLabel>
+              <FormLabel className='text-[#1B5E20]/80'>Mật khẩu mới</FormLabel>
               <FormControl>
-                <Input
-                  type='password'
-                  placeholder='Enter your new password'
-                  {...field}
-                />
+                <div className='relative'>
+                  <HiOutlineLockClosed className='pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#2E7D32]/60' />
+                  <Input
+                    type='password'
+                    placeholder='Nhập mật khẩu mới'
+                    className='h-11 rounded-xl border-[#2E7D32]/25 pl-10 focus-visible:ring-[#2E7D32]/30'
+                    {...field}
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name='confirmPassword'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Confirm New Password</FormLabel>
+              <FormLabel className='text-[#1B5E20]/80'>
+                Xác nhận mật khẩu mới
+              </FormLabel>
               <FormControl>
-                <Input
-                  type='password'
-                  placeholder='Confirm your new password'
-                  {...field}
-                />
+                <div className='relative'>
+                  <HiOutlineLockClosed className='pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#2E7D32]/60' />
+                  <Input
+                    type='password'
+                    placeholder='Nhập lại mật khẩu mới'
+                    className='h-11 rounded-xl border-[#2E7D32]/25 pl-10 focus-visible:ring-[#2E7D32]/30'
+                    {...field}
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type='submit' className='w-full' disabled={isLoading}>
-          {isLoading ? 'Resetting...' : 'Reset Password'}
+
+        <Button
+          type='submit'
+          className='h-11 w-full rounded-xl bg-[#1B5E20] text-white hover:bg-[#145017]'
+          disabled={isLoading}
+        >
+          {isLoading ? 'Đang đặt lại...' : 'Đặt lại mật khẩu'}
         </Button>
       </form>
     </Form>

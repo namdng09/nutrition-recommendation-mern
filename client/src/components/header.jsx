@@ -1,5 +1,6 @@
 import { ChevronDown, LogOut, Menu, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { FaUserPlus } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, NavLink, useNavigate } from 'react-router';
 
@@ -13,13 +14,10 @@ import {
 } from '~/components/ui/popover';
 import { useProfile } from '~/features/users/view-profile/api/view-profile';
 import { useIsMobile } from '~/hooks/use-mobile';
-import { cn } from '~/lib/utils';
+import { cn, NAV_LINKS } from '~/lib/utils';
 import { logout } from '~/store/features/auth-slice';
 
-const NAV_LINKS = [
-  { to: '/', label: 'Home' },
-  { to: '/playground', label: 'Playground' }
-];
+import HeaderNav from './header-nav';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -27,12 +25,11 @@ const Header = () => {
   const isMobile = useIsMobile();
   const { user } = useSelector(state => state.auth);
   const { data: profile } = useProfile();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (!isMobile) {
-      setMobileMenuOpen(false);
-    }
+    if (!isMobile) setMobileMenuOpen(false);
   }, [isMobile]);
 
   const handleLogout = async () => {
@@ -40,34 +37,31 @@ const Header = () => {
     navigate('/');
   };
 
-  return (
-    <header className='sticky top-0 z-50 w-full border-b bg-background'>
-      <div className='container mx-auto flex h-14 items-center justify-between px-4'>
-        <Link to='/' className='flex items-center gap-2'>
-          <img src='/vite.svg' alt='Logo' className='h-8 w-8' />
-          <span className='hidden font-semibold sm:inline-block'>Vite App</span>
-        </Link>
+  const displayName = profile?.name || user?.name || 'User';
+  const displayEmail = profile?.email || user?.email || '';
+  const avatarSrc = profile?.avatar;
 
-        <nav className='hidden items-center gap-6 md:flex h-full'>
-          {NAV_LINKS.map(link => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              className={({ isActive }) =>
-                cn(
-                  'relative h-full flex items-center text-sm font-medium transition-colors hover:text-foreground',
-                  'after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-foreground',
-                  'after:origin-center after:scale-x-0 after:transition-transform hover:after:scale-x-100',
-                  isActive
-                    ? 'text-foreground after:scale-x-100'
-                    : 'text-muted-foreground'
-                )
-              }
-            >
-              {link.label}
-            </NavLink>
-          ))}
-        </nav>
+  return (
+    <header className='sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
+      <div className='mx-auto flex h-25 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8'>
+        <div className='flex items-center'>
+          <Link to='/' className='flex items-center gap-4'>
+            <div className='flex h-18 w-28 items-center justify-center rounded-2xl border bg-[#2E7D32]/2 shadow-2xs'>
+              <img
+                src='/logo1.png'
+                alt='Logo'
+                className='h-20 w-20 object-contain scale-150'
+              />
+            </div>
+
+            <div className='flex flex-col justify-center leading-tight'>
+              <div className='text-xl font-bold text-[#1B5E20]'>EatDee</div>
+              <div className='text-base text-[#2E7D32]/70'>Since 2025</div>
+            </div>
+          </Link>
+        </div>
+
+        <HeaderNav links={NAV_LINKS} />
 
         <div className='flex items-center gap-2'>
           <ModeToggle />
@@ -77,10 +71,10 @@ const Header = () => {
               <PopoverTrigger asChild>
                 <Button
                   variant='ghost'
-                  className='relative h-10 w-10 rounded-full p-0'
+                  className='group h-10 gap-2 rounded-full px-2 hover:bg-[#2E7D32]/10'
                 >
-                  <Avatar className='h-10 w-10'>
-                    <AvatarImage src={profile?.avatar} alt={profile?.name} />
+                  <Avatar className='h-8 w-8'>
+                    <AvatarImage src={avatarSrc} alt={displayName} />
                     <AvatarFallback>
                       <img
                         src='/default-avatar.jpg'
@@ -89,37 +83,76 @@ const Header = () => {
                       />
                     </AvatarFallback>
                   </Avatar>
-                  <span className='absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-background bg-muted'>
-                    <ChevronDown className='h-3 w-3' />
+
+                  <span className='hidden max-w-[140px] truncate text-sm font-medium text-[#1B5E20] sm:inline'>
+                    {displayName}
                   </span>
+
+                  <ChevronDown className='hidden h-4 w-4 text-[#1B5E20]/70 transition group-hover:text-[#1B5E20] sm:block' />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className='w-48 p-2' align='end'>
-                <div className='flex flex-col gap-1'>
+
+              <PopoverContent className='w-64 p-2' align='end'>
+                <div className='flex items-center gap-3 rounded-lg border bg-card p-3'>
+                  <Avatar className='h-10 w-10'>
+                    <AvatarImage src={avatarSrc} alt={displayName} />
+                    <AvatarFallback>
+                      <img
+                        src='/default-avatar.jpg'
+                        alt='Default avatar'
+                        className='h-full w-full object-cover'
+                      />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className='min-w-0'>
+                    <div className='truncate text-sm font-semibold text-[#1B5E20]'>
+                      {displayName}
+                    </div>
+                    {displayEmail ? (
+                      <div className='truncate text-xs text-[#2E7D32]/70'>
+                        {displayEmail}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className='mt-2 flex flex-col gap-1'>
                   <Link
                     to='/profile'
-                    className='flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-accent'
+                    className='flex items-center gap-2 rounded-md px-3 py-2 text-sm text-[#1B5E20] hover:bg-[#2E7D32]/10'
                   >
                     <User className='h-4 w-4' />
-                    View Profile
+                    Hồ Sơ Người Dùng
                   </Link>
+
                   <button
                     onClick={handleLogout}
-                    className='flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-destructive hover:bg-accent'
+                    className='flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-destructive hover:bg-[#2E7D32]/10'
                   >
                     <LogOut className='h-4 w-4' />
-                    Logout
+                    Đăng Xuất
                   </button>
                 </div>
               </PopoverContent>
             </Popover>
           ) : (
-            <div className='flex items-center gap-2'>
-              <Button variant='ghost' asChild>
-                <Link to='/auth/login'>Login</Link>
+            <div className='hidden items-center gap-2 sm:flex'>
+              <Button
+                variant='ghost'
+                asChild
+                className='rounded-full text-[#1B5E20] hover:bg-[#2E7D32]/10'
+              >
+                <Link to='/auth/login'>Đăng nhập</Link>
               </Button>
-              <Button asChild>
-                <Link to='/auth/sign-up'>Sign Up</Link>
+
+              <Button
+                asChild
+                className='rounded-full bg-[#1B5E20] text-white hover:bg-[#145017]'
+              >
+                <Link to='/auth/sign-up' className='flex items-center gap-2'>
+                  Đăng Ký Tài Khoản
+                  <FaUserPlus className='h-4 w-4' />
+                </Link>
               </Button>
             </div>
           )}
@@ -127,8 +160,8 @@ const Header = () => {
           <Button
             variant='ghost'
             size='icon'
-            className='md:hidden'
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className='md:hidden hover:bg-[#2E7D32]/10'
+            onClick={() => setMobileMenuOpen(v => !v)}
           >
             {mobileMenuOpen ? (
               <X className='h-5 w-5' />
@@ -140,28 +173,53 @@ const Header = () => {
         </div>
       </div>
 
-      {mobileMenuOpen && (
-        <nav className='border-t md:hidden'>
-          <div className='container mx-auto flex flex-col px-4 py-2'>
+      <div
+        className={cn(
+          'md:hidden overflow-hidden border-t bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-[max-height] duration-300',
+          mobileMenuOpen ? 'max-h-96' : 'max-h-0'
+        )}
+      >
+        <div className='mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8'>
+          <div className='flex flex-col gap-1'>
             {NAV_LINKS.map(link => (
               <NavLink
                 key={link.to}
                 to={link.to}
-                className={({ isActive }) =>
-                  `rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-foreground ${
-                    isActive
-                      ? 'bg-accent text-foreground'
-                      : 'text-muted-foreground'
-                  }`
-                }
                 onClick={() => setMobileMenuOpen(false)}
+                className={({ isActive }) =>
+                  cn(
+                    'rounded-xl px-3 py-2 text-sm font-medium transition',
+                    'hover:bg-[#2E7D32]/10 hover:text-[#1B5E20]',
+                    isActive
+                      ? 'bg-[#2E7D32]/15 text-[#1B5E20] ring-1 ring-[#2E7D32]/25'
+                      : 'text-[#1B5E20]/70'
+                  )
+                }
               >
                 {link.label}
               </NavLink>
             ))}
+
+            {!user && (
+              <div className='mt-2 grid grid-cols-2 gap-2'>
+                <Button
+                  variant='outline'
+                  asChild
+                  className='rounded-xl border-[#2E7D32]/25 text-[#1B5E20] hover:bg-[#2E7D32]/10'
+                >
+                  <Link to='/auth/login'>Đăng Nhập</Link>
+                </Button>
+                <Button
+                  asChild
+                  className='rounded-xl bg-[#1B5E20] text-white hover:bg-[#145017]'
+                >
+                  <Link to='/auth/sign-up'>Đăng Ký</Link>
+                </Button>
+              </div>
+            )}
           </div>
-        </nav>
-      )}
+        </div>
+      </div>
     </header>
   );
 };

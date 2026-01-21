@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { HiOutlineUserCircle } from 'react-icons/hi2';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
@@ -54,10 +55,10 @@ const Profile = () => {
   const { data: profile, isLoading } = useProfile();
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile({
     onSuccess: response => {
-      toast.success(response?.message || 'Profile updated successfully');
+      toast.success(response?.message || 'Cập nhật hồ sơ thành công');
     },
     onError: error => {
-      toast.error(error?.response?.data?.message || 'Failed to update profile');
+      toast.error(error?.response?.data?.message || 'Cập nhật hồ sơ thất bại');
     }
   });
 
@@ -105,47 +106,61 @@ const Profile = () => {
   }
 
   return (
-    <div className='max-w-4xl mx-auto'>
-      <div className='flex flex-col items-center gap-4 p-6 bg-card rounded-lg border mb-6 md:flex-row md:items-center'>
-        <div className='relative'>
-          <div
-            className='relative cursor-pointer group'
-            onClick={handleAvatarClick}
-          >
-            <Avatar className='h-24 w-24'>
-              <AvatarImage
-                src={avatarPreview || profile?.avatar}
-                alt={profile?.name}
-              />
-              <AvatarFallback>
-                <img
-                  src='/default-avatar.jpg'
-                  alt='Default avatar'
-                  className='h-full w-full object-cover'
-                />
-              </AvatarFallback>
-            </Avatar>
-            <div className='absolute -bottom-1 -right-1 h-7 w-7 rounded-full bg-muted border-2 border-background flex items-center justify-center'>
-              <Camera className='h-3.5 w-3.5' />
-            </div>
-          </div>
-          <input
-            ref={fileInputRef}
-            type='file'
-            accept='image/*'
-            className='hidden'
-            onChange={handleAvatarChange}
-          />
-          {isUpdating && (
-            <div className='absolute inset-0 flex items-center justify-center bg-black/50 rounded-full'>
-              <Spinner className='text-white' />
-            </div>
-          )}
-        </div>
+    <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-0'>
+      <div className='mb-4 flex items-center gap-2'>
+        <HiOutlineUserCircle className='h-7 w-7 text-[#1B5E20]' />
+        <h1 className='text-2xl font-bold text-[#1B5E20]'>Hồ sơ cá nhân</h1>
+      </div>
 
-        <div className='flex-1 text-center md:text-left'>
-          <h1 className='text-2xl font-bold'>{profile?.name}</h1>
-          <p className='text-muted-foreground'>{profile?.email}</p>
+      <div className='flex flex-col gap-4 rounded-2xl border border-[#2E7D32]/15 bg-background p-5 shadow-sm md:flex-row md:items-center md:justify-between'>
+        <div className='flex items-center gap-4'>
+          <div className='relative'>
+            <div
+              className='relative cursor-pointer group'
+              onClick={handleAvatarClick}
+            >
+              <Avatar className='h-20 w-20 ring-1 ring-[#2E7D32]/20'>
+                <AvatarImage
+                  src={avatarPreview || profile?.avatar}
+                  alt={profile?.name}
+                />
+                <AvatarFallback>
+                  <img
+                    src='/default-avatar.jpg'
+                    alt='Default avatar'
+                    className='h-full w-full object-cover'
+                  />
+                </AvatarFallback>
+              </Avatar>
+
+              <div className='absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-background border border-[#2E7D32]/20 flex items-center justify-center shadow-sm transition group-hover:bg-[#2E7D32]/10'>
+                <Camera className='h-4 w-4 text-[#1B5E20]' />
+              </div>
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type='file'
+              accept='image/*'
+              className='hidden'
+              onChange={handleAvatarChange}
+            />
+
+            {isUpdating && (
+              <div className='absolute inset-0 flex items-center justify-center bg-black/45 rounded-full'>
+                <Spinner className='text-white' />
+              </div>
+            )}
+          </div>
+
+          <div className='min-w-0'>
+            <h2 className='truncate text-xl font-bold text-[#1B5E20]'>
+              {profile?.name}
+            </h2>
+            <p className='truncate text-sm text-[#2E7D32]/70'>
+              {profile?.email}
+            </p>
+          </div>
         </div>
 
         <div className='flex items-center gap-2'>
@@ -153,23 +168,39 @@ const Profile = () => {
             size='sm'
             onClick={form.handleSubmit(handleSave)}
             disabled={isUpdating}
+            className='rounded-xl bg-[#1B5E20] text-white hover:bg-[#145017]'
           >
             {isUpdating ? (
               <Spinner className='h-4 w-4 mr-1' />
             ) : (
               <Save className='h-4 w-4 mr-1' />
             )}
-            Save
+            Lưu
           </Button>
-          <Button variant='destructive' size='sm' onClick={handleLogout}>
+
+          <Button
+            variant='destructive'
+            size='sm'
+            onClick={handleLogout}
+            className='rounded-xl'
+          >
             <LogOut className='h-4 w-4 mr-1' />
-            Logout
+            Đăng xuất
           </Button>
         </div>
       </div>
 
-      <div className='bg-card rounded-lg border p-6'>
-        <h2 className='text-lg font-semibold mb-4'>Personal Information</h2>
+      <div className='mt-6 rounded-2xl border border-[#2E7D32]/15 bg-background p-6 shadow-sm'>
+        <div className='mb-4'>
+          <h2 className='text-lg font-semibold text-[#1B5E20]'>
+            Thông tin cá nhân
+          </h2>
+          <p className='text-sm text-[#2E7D32]/70'>
+            Chỉnh sửa thông tin và bấm{' '}
+            <span className='font-semibold'>Lưu</span> để cập nhật
+          </p>
+        </div>
+
         <Form {...form}>
           <form className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6'>
             <FormField
@@ -177,11 +208,13 @@ const Profile = () => {
               name='name'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-muted-foreground'>
-                    Full Name
-                  </FormLabel>
+                  <FormLabel className='text-[#1B5E20]/75'>Họ và tên</FormLabel>
                   <FormControl>
-                    <Input placeholder='Enter your name' {...field} />
+                    <Input
+                      placeholder='Nhập họ và tên'
+                      className='rounded-xl border-[#2E7D32]/25 focus-visible:ring-[#2E7D32]/30'
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -189,10 +222,10 @@ const Profile = () => {
             />
 
             <div className='space-y-1'>
-              <label className='text-sm font-medium text-muted-foreground'>
+              <label className='text-sm font-medium text-[#1B5E20]/75'>
                 Email
               </label>
-              <p className='text-sm py-2'>{profile?.email}</p>
+              <p className='text-sm py-2 text-[#1B5E20]'>{profile?.email}</p>
             </div>
 
             <FormField
@@ -200,17 +233,15 @@ const Profile = () => {
               name='gender'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-muted-foreground'>
-                    Gender
-                  </FormLabel>
+                  <FormLabel className='text-[#1B5E20]/75'>Giới tính</FormLabel>
                   <Select
                     key={profile?.id + '-gender-' + (field.value ?? '')}
                     value={field.value}
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger className='w-full'>
-                        <SelectValue placeholder='Select gender' />
+                      <SelectTrigger className='w-full rounded-xl border-[#2E7D32]/25 focus:ring-[#2E7D32]/30'>
+                        <SelectValue placeholder='Chọn giới tính' />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -231,23 +262,21 @@ const Profile = () => {
               name='dob'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-muted-foreground'>
-                    Date of Birth
-                  </FormLabel>
+                  <FormLabel className='text-[#1B5E20]/75'>Ngày sinh</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
                           variant='outline'
                           className={cn(
-                            'w-full pl-3 text-left font-normal',
+                            'w-full rounded-xl border-[#2E7D32]/25 pl-3 text-left font-normal',
                             !field.value && 'text-muted-foreground'
                           )}
                         >
                           {field.value ? (
                             format(new Date(field.value), 'PPP')
                           ) : (
-                            <span>Pick a date</span>
+                            <span>Chọn ngày</span>
                           )}
                           <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
                         </Button>

@@ -1,3 +1,4 @@
+import { HiOutlineKey } from 'react-icons/hi';
 import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'sonner';
 
@@ -19,13 +20,13 @@ const ResetPasswordCard = () => {
 
   const resetPasswordMutation = useResetPassword({
     onSuccess: data => {
-      toast.success(data.message || 'Password has been reset successfully!');
+      toast.success(data.message || 'Đặt lại mật khẩu thành công!');
       navigate('/auth/login');
     },
     onError: error => {
       toast.error(
         error.response?.data?.message ||
-          'Password reset failed. Please try again.'
+          'Đặt lại mật khẩu thất bại. Vui lòng thử lại.'
       );
     }
   });
@@ -35,12 +36,24 @@ const ResetPasswordCard = () => {
   };
 
   return (
-    <Card className='w-full max-w-md'>
-      <CardHeader>
-        <CardTitle>Reset password</CardTitle>
-        <CardDescription>
-          Enter new password to reset your password
-        </CardDescription>
+    <Card className='w-full max-w-md overflow-hidden rounded-2xl border border-[#2E7D32]/15 bg-background/85 shadow-[0_18px_60px_rgba(0,0,0,0.08)] backdrop-blur supports-[backdrop-filter]:bg-background/60'>
+      <div className='h-1 w-full bg-gradient-to-r from-transparent via-[#2E7D32]/45 to-transparent' />
+
+      <CardHeader className='space-y-2'>
+        <div className='flex items-center gap-3'>
+          <div className='flex h-10 w-10 items-center justify-center rounded-xl border border-[#2E7D32]/20 bg-[#2E7D32]/5'>
+            <HiOutlineKey className='h-6 w-6 text-[#1B5E20]' />
+          </div>
+
+          <div className='flex flex-col'>
+            <CardTitle className='text-2xl font-bold text-[#1B5E20]'>
+              Đặt lại mật khẩu
+            </CardTitle>
+            <CardDescription className='text-sm text-[#2E7D32]/70'>
+              Nhập mật khẩu mới để đặt lại mật khẩu của bạn
+            </CardDescription>
+          </div>
+        </div>
       </CardHeader>
 
       <CardContent>
