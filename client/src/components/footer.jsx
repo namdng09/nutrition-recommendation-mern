@@ -15,7 +15,7 @@ const Footer = () => {
             />
 
             <div className='leading-[1.05]'>
-              <div className='text-base font-bold text-[#1B5E20]'>Eat Dee</div>
+              <div className='text-base font-bold text-[#1B5E20]'>EatDee</div>
               <div className='text-sm text-[#2E7D32]/70'>Since 2025</div>
             </div>
           </Link>
@@ -23,7 +23,7 @@ const Footer = () => {
           <span className='hidden h-1.5 w-1.5 rounded-full bg-[#2E7D32]/60 sm:inline-block' />
 
           <span className='text-sm font-medium text-[#1B5E20]/80'>
-            © 2025 Eat Dee. All rights reserved.
+            © 2025 EatDee. All rights reserved.
           </span>
         </div>
 

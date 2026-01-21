@@ -55,7 +55,7 @@ const Header = () => {
             </div>
 
             <div className='flex flex-col justify-center leading-tight'>
-              <div className='text-xl font-bold text-[#1B5E20]'>Eat Dee</div>
+              <div className='text-xl font-bold text-[#1B5E20]'>EatDee</div>
               <div className='text-base text-[#2E7D32]/70'>Since 2025</div>
             </div>
           </Link>
