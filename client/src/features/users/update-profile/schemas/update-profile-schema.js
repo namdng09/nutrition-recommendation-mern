@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-import { GENDER } from '~/constants/gender';
+import { GENDER_OPTIONS } from '~/constants/gender';
 
 export const updateProfileSchema = yup.object({
   name: yup
@@ -9,7 +9,10 @@ export const updateProfileSchema = yup.object({
     .optional(),
   gender: yup
     .string()
-    .oneOf([...Object.values(GENDER), ''], 'Invalid gender')
+    .oneOf(
+      GENDER_OPTIONS.map(option => option.value),
+      'Invalid gender'
+    )
     .optional(),
   dob: yup.string().optional(),
   avatar: yup

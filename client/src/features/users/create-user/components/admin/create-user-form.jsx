@@ -31,7 +31,7 @@ import {
 import { GENDER_OPTIONS } from '~/constants/gender';
 import { ROLE_OPTIONS } from '~/constants/role';
 import { useCreateUser } from '~/features/users/create-user/api/create-user';
-import { createUserSchema } from '~/features/users/schemas/user-schemas';
+import { createUserSchema } from '~/features/users/create-user/schemas/create-user-schema';
 import { cn } from '~/lib/utils';
 
 const CreateUserForm = () => {
