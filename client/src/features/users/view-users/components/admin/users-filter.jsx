@@ -54,7 +54,7 @@ const UsersFilter = () => {
                   <div className='relative'>
                     <Search className='absolute left-2 top-2.5 h-4 w-4 text-muted-foreground' />
                     <Input
-                      placeholder='Search by name...'
+                      placeholder='Tìm kiếm theo tên...'
                       className='pl-8'
                       {...field}
                     />
@@ -73,7 +73,7 @@ const UsersFilter = () => {
                   onValuesChange={field.onChange}
                 >
                   <MultiSelectTrigger className='w-full sm:w-40'>
-                    <MultiSelectValue placeholder='Gender' />
+                    <MultiSelectValue placeholder='Giới tính' />
                   </MultiSelectTrigger>
                   <MultiSelectContent>
                     <MultiSelectGroup>
@@ -101,7 +101,7 @@ const UsersFilter = () => {
                   onValuesChange={field.onChange}
                 >
                   <MultiSelectTrigger className='w-full sm:w-40'>
-                    <MultiSelectValue placeholder='Role' />
+                    <MultiSelectValue placeholder='Vai trò' />
                   </MultiSelectTrigger>
                   <MultiSelectContent>
                     <MultiSelectGroup>
@@ -121,7 +121,7 @@ const UsersFilter = () => {
           />
           <Button type='submit' disabled={isPending}>
             <Search className='mr-2 h-4 w-4' />
-            {isPending ? 'Searching...' : 'Search'}
+            {isPending ? 'Đang tìm...' : 'Tìm kiếm'}
           </Button>
           <Button
             type='button'
@@ -129,7 +129,7 @@ const UsersFilter = () => {
             className='sm:ml-auto'
           >
             <Plus className='mr-2 h-4 w-4' />
-            Create User
+            Tạo người dùng
           </Button>
         </div>
       </form>

@@ -1,11 +1,11 @@
 export const GENDER = Object.freeze({
-  MALE: 'male',
-  FEMALE: 'female',
-  OTHER: 'other'
+  MALE: 'nam',
+  FEMALE: 'nữ',
+  OTHER: 'khác'
 });
 
 export const GENDER_OPTIONS = [
-  { value: GENDER.MALE, label: 'Male' },
-  { value: GENDER.FEMALE, label: 'Female' },
-  { value: GENDER.OTHER, label: 'Other' }
+  { value: GENDER.MALE, label: 'Nam' },
+  { value: GENDER.FEMALE, label: 'Nữ' },
+  { value: GENDER.OTHER, label: 'Khác' }
 ];

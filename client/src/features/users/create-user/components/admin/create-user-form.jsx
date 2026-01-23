@@ -50,11 +50,11 @@ const CreateUserForm = () => {
   const { mutate: createUser, isPending } = useCreateUser({
     onSuccess: data => {
       form.reset();
-      toast.success(data.message || 'User created successfully');
+      toast.success(data.message || 'Tạo người dùng thành công');
     },
     onError: error => {
       toast.error(
-        error.response?.data?.message || 'Sign up failed. Please try again.'
+        error.response?.data?.message || 'Đăng ký thất bại. Vui lòng thử lại.'
       );
     }
   });
@@ -72,11 +72,11 @@ const CreateUserForm = () => {
         className='mb-4'
       >
         <ArrowLeft className='h-4 w-4 mr-1' />
-        Back to Users
+        Quay lại danh sách
       </Button>
 
       <div className='bg-card rounded-lg border p-6'>
-        <h2 className='text-lg font-semibold mb-4'>Create New User</h2>
+        <h2 className='text-lg font-semibold mb-4'>Tạo người dùng mới</h2>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
             <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6'>
@@ -86,10 +86,10 @@ const CreateUserForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Name <span className='text-destructive'>*</span>
+                      Họ và tên <span className='text-destructive'>*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder='Enter name' {...field} />
+                      <Input placeholder='Nhập tên' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -105,11 +105,7 @@ const CreateUserForm = () => {
                       Email <span className='text-destructive'>*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input
-                        type='email'
-                        placeholder='Enter email'
-                        {...field}
-                      />
+                      <Input type='email' placeholder='Nhập email' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -122,12 +118,12 @@ const CreateUserForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Gender <span className='text-destructive'>*</span>
+                      Giới tính <span className='text-destructive'>*</span>
                     </FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className='w-full'>
-                          <SelectValue placeholder='Select gender' />
+                          <SelectValue placeholder='Chọn giới tính' />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -149,12 +145,12 @@ const CreateUserForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Role <span className='text-destructive'>*</span>
+                      Vai trò <span className='text-destructive'>*</span>
                     </FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className='w-full'>
-                          <SelectValue placeholder='Select role' />
+                          <SelectValue placeholder='Chọn vai trò' />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -175,7 +171,7 @@ const CreateUserForm = () => {
                 name='dob'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Date of Birth</FormLabel>
+                    <FormLabel>Ngày sinh</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -189,7 +185,7 @@ const CreateUserForm = () => {
                             {field.value ? (
                               format(new Date(field.value), 'PPP')
                             ) : (
-                              <span>Pick a date</span>
+                              <span>Chọn ngày</span>
                             )}
                             <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
                           </Button>
@@ -233,10 +229,10 @@ const CreateUserForm = () => {
                 variant='outline'
                 onClick={() => navigate('/admin/manage-users')}
               >
-                Cancel
+                Hủy
               </Button>
               <Button type='submit' disabled={isPending}>
-                {isPending ? 'Creating...' : 'Create User'}
+                {isPending ? 'Đang tạo...' : 'Tạo người dùng'}
               </Button>
             </div>
           </form>
