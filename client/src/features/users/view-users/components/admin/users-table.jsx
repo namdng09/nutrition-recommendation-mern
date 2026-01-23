@@ -31,7 +31,7 @@ const UsersTable = () => {
       : undefined
   };
 
-  const { data, isLoading } = useUsers(params);
+  const { data } = useUsers(params);
 
   const handleDelete = user => {
     setUserToDelete(user);
@@ -128,7 +128,6 @@ const UsersTable = () => {
       <CommonTable
         columns={columns}
         data={data}
-        isLoading={isLoading}
         enableRowSelection={true}
         enableBulkActions={true}
         onBulkAction={handleBulkAction}

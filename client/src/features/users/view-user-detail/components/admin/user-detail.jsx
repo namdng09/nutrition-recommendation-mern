@@ -41,8 +41,8 @@ import { GENDER_OPTIONS } from '~/constants/gender';
 import { ROLE_OPTIONS } from '~/constants/role';
 import { STATUS_OPTIONS } from '~/constants/status';
 import DeleteUserDialog from '~/features/users/delete-user/components/admin/delete-user-dialog';
-import { updateUserSchema } from '~/features/users/schemas/user-schemas';
 import { useUpdateUser } from '~/features/users/update-user/api/update-user';
+import { updateUserSchema } from '~/features/users/update-user/schemas/update-user-schema';
 import { useUserDetail } from '~/features/users/view-user-detail/api/view-user-detail';
 import { getRoleLabel } from '~/lib/utils';
 import { cn } from '~/lib/utils';
@@ -50,7 +50,7 @@ import { cn } from '~/lib/utils';
 const UserDetail = ({ id }) => {
   const navigate = useNavigate();
 
-  const { data: user, isLoading } = useUserDetail(id);
+  const { data: user } = useUserDetail(id);
   const { mutate: updateUser, isPending: isUpdating } = useUpdateUser({
     onSuccess: response => {
       toast.success(response.message || 'User updated successfully');
@@ -91,14 +91,6 @@ const UserDetail = ({ id }) => {
   const handleDeleteSuccess = () => {
     navigate('/admin/manage-users');
   };
-
-  if (isLoading) {
-    return (
-      <div className='flex items-center justify-center min-h-[400px]'>
-        <Spinner size='lg' />
-      </div>
-    );
-  }
 
   if (!user) {
     return (

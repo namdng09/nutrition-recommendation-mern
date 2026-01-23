@@ -22,15 +22,13 @@ import {
 const CommonTable = ({
   columns: baseColumns,
   data,
-  isLoading,
   enableRowSelection = false,
   enableBulkActions = false,
   onBulkAction,
   bulkActionLabel = 'Delete Selected',
   bulkActionIcon: BulkActionIcon = Trash2,
   bulkActionVariant = 'destructive',
-  emptyMessage = 'No results found.',
-  loadingMessage = 'Loading...'
+  emptyMessage = 'No results found.'
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [rowSelection, setRowSelection] = useState({});
@@ -180,16 +178,7 @@ const CommonTable = ({
             ))}
           </TableHeader>
           <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className='h-24 text-center'
-                >
-                  {loadingMessage}
-                </TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows?.length ? (
+            {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map(row => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map(cell => (
@@ -216,7 +205,7 @@ const CommonTable = ({
         </Table>
       </div>
 
-      <DataTablePagination table={table} loading={isLoading} />
+      <DataTablePagination table={table} />
     </>
   );
 };

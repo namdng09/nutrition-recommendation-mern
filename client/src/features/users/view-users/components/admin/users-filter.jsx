@@ -1,4 +1,5 @@
 import { Plus, Search } from 'lucide-react';
+import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router';
 
@@ -20,6 +21,7 @@ import { buildQueryParams } from '~/lib/build-query-params';
 const UsersFilter = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm({
     values: {
@@ -32,7 +34,11 @@ const UsersFilter = () => {
   const handleSearch = data => {
     const sort = searchParams.get('sort');
     const queryParams = buildQueryParams({ ...data, page: 1, sort });
-    setSearchParams(queryParams);
+
+    // Wrap in startTransition for smoother UX
+    startTransition(() => {
+      setSearchParams(queryParams);
+    });
   };
 
   return (
@@ -113,9 +119,9 @@ const UsersFilter = () => {
               </FormItem>
             )}
           />
-          <Button type='submit'>
+          <Button type='submit' disabled={isPending}>
             <Search className='mr-2 h-4 w-4' />
-            Search
+            {isPending ? 'Searching...' : 'Search'}
           </Button>
           <Button
             type='button'

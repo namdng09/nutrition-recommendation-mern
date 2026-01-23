@@ -1,14 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { format } from 'date-fns';
-import {
-  Calendar as CalendarIcon,
-  Camera,
-  LogOut,
-  Pencil,
-  Save,
-  X
-} from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { Calendar as CalendarIcon, Camera, LogOut, Save } from 'lucide-react';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { HiOutlineUserCircle } from 'react-icons/hi2';
 import { useDispatch } from 'react-redux';
@@ -43,7 +36,7 @@ import { Spinner } from '~/components/ui/spinner';
 import { GENDER_OPTIONS } from '~/constants/gender';
 import { useUpdateProfile } from '~/features/users/update-profile/api/update-profile';
 import { updateProfileSchema } from '~/features/users/update-profile/schemas/update-profile-schema';
-import { useProfile } from '~/features/users/view-profile/api/view-profile';
+import { useProfileForPage } from '~/features/users/view-profile/api/view-profile';
 import { cn } from '~/lib/utils';
 import { logout } from '~/store/features/auth-slice';
 
@@ -52,7 +45,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
-  const { data: profile, isLoading } = useProfile();
+  const { data: profile } = useProfileForPage(); // ✅ Suspense hook!
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile({
     onSuccess: response => {
       toast.success(response?.message || 'Cập nhật hồ sơ thành công');
@@ -96,14 +89,6 @@ const Profile = () => {
     await dispatch(logout());
     navigate('/');
   };
-
-  if (isLoading) {
-    return (
-      <div className='flex items-center justify-center min-h-[400px]'>
-        <Spinner size='lg' />
-      </div>
-    );
-  }
 
   return (
     <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-0'>
