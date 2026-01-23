@@ -29,7 +29,7 @@ export const AuthService = {
     });
 
     if (!auth || !auth.localPassword) {
-      throw createHttpError(401, 'Invalid email or password');
+      throw createHttpError(401, 'Invalid credentials');
     }
 
     const isValidPassword = await comparePassword(
