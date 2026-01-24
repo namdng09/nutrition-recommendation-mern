@@ -31,7 +31,7 @@ const UsersTable = () => {
       : undefined
   };
 
-  const { data, isLoading } = useUsers(params);
+  const { data } = useUsers(params);
 
   const handleDelete = user => {
     setUserToDelete(user);
@@ -46,7 +46,7 @@ const UsersTable = () => {
   const columns = [
     {
       accessorKey: 'avatar',
-      header: 'Avatar',
+      header: 'Ảnh đại diện',
       cell: ({ row }) => (
         <Avatar className='h-10 w-10'>
           <AvatarImage src={row.original.avatar} alt={row.original.name} />
@@ -64,7 +64,7 @@ const UsersTable = () => {
     {
       accessorKey: 'name',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Name' />
+        <DataTableColumnHeader column={column} title='Tên' />
       )
     },
     {
@@ -76,7 +76,7 @@ const UsersTable = () => {
     {
       accessorKey: 'gender',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Gender' />
+        <DataTableColumnHeader column={column} title='Giới tính' />
       ),
       cell: ({ row }) => (
         <span className='capitalize'>{row.original.gender}</span>
@@ -85,14 +85,14 @@ const UsersTable = () => {
     {
       accessorKey: 'role',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Role' />
+        <DataTableColumnHeader column={column} title='Vai trò' />
       ),
       cell: ({ row }) => <span className='capitalize'>{row.original.role}</span>
     },
     {
       accessorKey: 'isActive',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Status' />
+        <DataTableColumnHeader column={column} title='Trạng thái' />
       ),
       cell: ({ row }) => (
         <span>{row.original.isActive ? 'Active' : 'Inactive'}</span>
@@ -100,7 +100,7 @@ const UsersTable = () => {
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: 'Hành động',
       cell: ({ row }) => (
         <div className='flex items-center gap-2'>
           <Button
@@ -128,14 +128,13 @@ const UsersTable = () => {
       <CommonTable
         columns={columns}
         data={data}
-        isLoading={isLoading}
         enableRowSelection={true}
         enableBulkActions={true}
         onBulkAction={handleBulkAction}
-        bulkActionLabel='Delete Selected'
+        bulkActionLabel='Xóa đã chọn'
         bulkActionIcon={Trash2}
         bulkActionVariant='destructive'
-        emptyMessage='No users found.'
+        emptyMessage='Không tìm thấy người dùng.'
       />
 
       <DeleteUserDialog

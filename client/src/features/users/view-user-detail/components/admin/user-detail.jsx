@@ -41,8 +41,8 @@ import { GENDER_OPTIONS } from '~/constants/gender';
 import { ROLE_OPTIONS } from '~/constants/role';
 import { STATUS_OPTIONS } from '~/constants/status';
 import DeleteUserDialog from '~/features/users/delete-user/components/admin/delete-user-dialog';
-import { updateUserSchema } from '~/features/users/schemas/user-schemas';
 import { useUpdateUser } from '~/features/users/update-user/api/update-user';
+import { updateUserSchema } from '~/features/users/update-user/schemas/update-user-schema';
 import { useUserDetail } from '~/features/users/view-user-detail/api/view-user-detail';
 import { getRoleLabel } from '~/lib/utils';
 import { cn } from '~/lib/utils';
@@ -50,13 +50,15 @@ import { cn } from '~/lib/utils';
 const UserDetail = ({ id }) => {
   const navigate = useNavigate();
 
-  const { data: user, isLoading } = useUserDetail(id);
+  const { data: user } = useUserDetail(id);
   const { mutate: updateUser, isPending: isUpdating } = useUpdateUser({
     onSuccess: response => {
-      toast.success(response.message || 'User updated successfully');
+      toast.success(response.message || 'Cập nhật người dùng thành công');
     },
     onError: error => {
-      toast.error(error.response?.data?.message || 'Failed to update user');
+      toast.error(
+        error.response?.data?.message || 'Cập nhật người dùng thất bại'
+      );
     }
   });
 
@@ -92,21 +94,13 @@ const UserDetail = ({ id }) => {
     navigate('/admin/manage-users');
   };
 
-  if (isLoading) {
-    return (
-      <div className='flex items-center justify-center min-h-[400px]'>
-        <Spinner size='lg' />
-      </div>
-    );
-  }
-
   if (!user) {
     return (
       <div className='flex flex-col items-center justify-center min-h-[400px] gap-4'>
-        <p className='text-muted-foreground'>User not found</p>
+        <p className='text-muted-foreground'>Không tìm thấy người dùng</p>
         <Button variant='outline' onClick={handleBack}>
           <ArrowLeft className='h-4 w-4 mr-2' />
-          Back to Users
+          Quay lại danh sách
         </Button>
       </div>
     );
@@ -116,7 +110,7 @@ const UserDetail = ({ id }) => {
     <div className='max-w-4xl mx-auto'>
       <Button variant='ghost' size='sm' onClick={handleBack} className='mb-4'>
         <ArrowLeft className='h-4 w-4 mr-1' />
-        Back to Users
+        Quay lại danh sách
       </Button>
 
       <div className='flex flex-col items-center gap-4 p-6 bg-card rounded-lg border mb-6 md:flex-row md:items-center'>
@@ -151,7 +145,7 @@ const UserDetail = ({ id }) => {
             onClick={handleToggleActive}
             disabled={isUpdating}
           >
-            {user?.isActive ? 'Deactivate' : 'Activate'}
+            {user?.isActive ? 'Vô hiệu hóa' : 'Kích hoạt'}
           </Button>
           <Button
             size='sm'
@@ -163,13 +157,13 @@ const UserDetail = ({ id }) => {
             ) : (
               <Save className='h-4 w-4 mr-1' />
             )}
-            Save
+            Lưu
           </Button>
         </div>
       </div>
 
       <div className='bg-card rounded-lg border p-6'>
-        <h2 className='text-lg font-semibold mb-4'>User Information</h2>
+        <h2 className='text-lg font-semibold mb-4'>Thông tin người dùng</h2>
         <Form {...form}>
           <form className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6'>
             <FormField
@@ -179,7 +173,7 @@ const UserDetail = ({ id }) => {
                 <FormItem>
                   <FormLabel className='text-muted-foreground'>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder='Enter email' {...field} />
+                    <Input placeholder='Nhập email' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -192,10 +186,10 @@ const UserDetail = ({ id }) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className='text-muted-foreground'>
-                    Full Name
+                    Họ và tên
                   </FormLabel>
                   <FormControl>
-                    <Input placeholder='Enter name' {...field} />
+                    <Input placeholder='Nhập tên' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -208,7 +202,7 @@ const UserDetail = ({ id }) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className='text-muted-foreground'>
-                    Gender
+                    Giới tính
                   </FormLabel>
                   <Select
                     key={user?.id + '-gender-' + (field.value ?? '')}
@@ -217,7 +211,7 @@ const UserDetail = ({ id }) => {
                   >
                     <FormControl>
                       <SelectTrigger className='w-full'>
-                        <SelectValue placeholder='Select gender' />
+                        <SelectValue placeholder='Chọn giới tính' />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -238,7 +232,9 @@ const UserDetail = ({ id }) => {
               name='role'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-muted-foreground'>Role</FormLabel>
+                  <FormLabel className='text-muted-foreground'>
+                    Vai trò
+                  </FormLabel>
                   <Select
                     key={user?.id + '-role-' + (field.value ?? '')}
                     value={field.value}
@@ -246,7 +242,7 @@ const UserDetail = ({ id }) => {
                   >
                     <FormControl>
                       <SelectTrigger className='w-full'>
-                        <SelectValue placeholder='Select role' />
+                        <SelectValue placeholder='Chọn vai trò' />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -268,7 +264,7 @@ const UserDetail = ({ id }) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className='text-muted-foreground'>
-                    Date of Birth
+                    Ngày sinh
                   </FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -283,7 +279,7 @@ const UserDetail = ({ id }) => {
                           {field.value ? (
                             format(new Date(field.value), 'PPP')
                           ) : (
-                            <span>Pick a date</span>
+                            <span>Chọn ngày</span>
                           )}
                           <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
                         </Button>
@@ -326,7 +322,7 @@ const UserDetail = ({ id }) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className='text-muted-foreground'>
-                    Status
+                    Trạng thái
                   </FormLabel>
                   <Select
                     key={user?.id + '-isActive-' + (field.value ?? '')}
@@ -335,7 +331,7 @@ const UserDetail = ({ id }) => {
                   >
                     <FormControl>
                       <SelectTrigger className='w-full'>
-                        <SelectValue placeholder='Select status' />
+                        <SelectValue placeholder='Chọn trạng thái' />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -360,7 +356,7 @@ const UserDetail = ({ id }) => {
             onClick={() => setDeleteDialogOpen(true)}
           >
             <Trash2 className='h-4 w-4 mr-1' />
-            Delete User
+            Xóa người dùng
           </Button>
         </div>
       </div>

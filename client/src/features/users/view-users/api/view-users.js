@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 import apiClient from '~/lib/api-client';
 import { buildQueryParams } from '~/lib/build-query-params';
@@ -11,7 +11,7 @@ const fetchUsers = async params => {
 };
 
 export const useUsers = (params = {}) => {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: [...QUERY_KEYS.USERS, params],
     queryFn: () => fetchUsers(params)
   });

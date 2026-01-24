@@ -16,7 +16,7 @@ const updateUser = async ({ id, data }) => {
     }
   });
 
-  const response = await apiClient.patch(`/api/users/${id}`, formData, {
+  const response = await apiClient.put(`/api/users/${id}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }

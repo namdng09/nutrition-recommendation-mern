@@ -1,5 +1,8 @@
 import * as yup from 'yup';
 
+import { GENDER_OPTIONS } from '~/constants/gender';
+import { ROLE_OPTIONS } from '~/constants/role';
+
 export const createUserSchema = yup.object({
   email: yup
     .string()
@@ -11,11 +14,17 @@ export const createUserSchema = yup.object({
     .required('Name is required'),
   gender: yup
     .string()
-    .oneOf(['male', 'female', 'other'], 'Invalid gender')
+    .oneOf(
+      GENDER_OPTIONS.map(option => option.value),
+      'Invalid gender'
+    )
     .required('Gender is required'),
   role: yup
     .string()
-    .oneOf(['user', 'admin'], 'Invalid role')
+    .oneOf(
+      ROLE_OPTIONS.map(option => option.value),
+      'Invalid role'
+    )
     .required('Role is required'),
   dob: yup.string().optional()
 });

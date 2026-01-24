@@ -14,11 +14,11 @@ import { useDeleteBulkUsers } from '~/features/users/delete-user/api/delete-user
 const DeleteBulkUsersDialog = ({ userIds, open, onOpenChange }) => {
   const { mutate: deleteBulkUsers, isPending } = useDeleteBulkUsers({
     onSuccess: response => {
-      toast.success(response?.message || 'Users deleted successfully');
+      toast.success(response?.message || 'Xóa người dùng thành công');
       onOpenChange(false);
     },
     onError: error => {
-      toast.error(error.response?.data?.message || 'Failed to delete users');
+      toast.error(error.response?.data?.message || 'Xóa người dùng thất bại');
     }
   });
 
@@ -30,11 +30,11 @@ const DeleteBulkUsersDialog = ({ userIds, open, onOpenChange }) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Are you absolutely sure?</DialogTitle>
+          <DialogTitle>Bạn có chắc chắn không?</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete{' '}
-            <span className='font-semibold'>{userIds?.length || 0}</span>{' '}
-            {userIds?.length === 1 ? 'user' : 'users'} from the system.
+            Hành động này không thể hoàn tác. Việc này sẽ xóa vĩnh viễn{' '}
+            <span className='font-semibold'>{userIds?.length || 0}</span> người
+            dùng khỏi hệ thống.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -43,14 +43,14 @@ const DeleteBulkUsersDialog = ({ userIds, open, onOpenChange }) => {
             onClick={() => onOpenChange(false)}
             disabled={isPending}
           >
-            Cancel
+            Hủy
           </Button>
           <Button
             variant='destructive'
             onClick={handleDelete}
             disabled={isPending}
           >
-            {isPending ? 'Deleting...' : 'Delete'}
+            {isPending ? 'Đang xóa...' : 'Xóa'}
           </Button>
         </DialogFooter>
       </DialogContent>

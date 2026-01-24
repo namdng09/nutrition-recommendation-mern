@@ -14,11 +14,11 @@ import { useDeleteUser } from '~/features/users/delete-user/api/delete-user';
 const DeleteUserDialog = ({ user, open, onOpenChange, onSuccess }) => {
   const { mutate: deleteUser, isPending: isDeleting } = useDeleteUser({
     onSuccess: response => {
-      toast.success(response?.message || 'User deleted successfully');
+      toast.success(response?.message || 'Xóa người dùng thành công');
       onOpenChange(false);
     },
     onError: error => {
-      toast.error(error.response?.data?.message || 'Failed to delete user');
+      toast.error(error.response?.data?.message || 'Xóa người dùng thất bại');
     }
   });
 
@@ -32,22 +32,22 @@ const DeleteUserDialog = ({ user, open, onOpenChange, onSuccess }) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete User</DialogTitle>
+          <DialogTitle>Xóa người dùng</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete "{user?.name}"? This action cannot
-            be undone.
+            Bạn có chắc chắn muốn xóa "{user?.name}"? Hành động này không thể
+            hoàn tác.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button variant='outline' onClick={() => onOpenChange(false)}>
-            Cancel
+            Hủy
           </Button>
           <Button
             variant='destructive'
             onClick={handleDelete}
             disabled={isDeleting}
           >
-            {isDeleting ? 'Deleting...' : 'Delete'}
+            {isDeleting ? 'Đang xóa...' : 'Xóa'}
           </Button>
         </DialogFooter>
       </DialogContent>
