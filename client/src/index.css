@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -78,6 +78,20 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  /* Brand (EatDee green) */
+  --brand-700: #1b5e20; /* main text / strong */
+  --brand-700-hover: #145017; /* hover for strong button */
+  --brand-600: #2e7d32; /* accent */
+
+  /* Brand alpha (replace /2 /10 /15 /25 /70) */
+  --brand-600-02: color-mix(in srgb, var(--brand-600) 2%, transparent);
+  --brand-600-10: color-mix(in srgb, var(--brand-600) 10%, transparent);
+  --brand-600-15: color-mix(in srgb, var(--brand-600) 15%, transparent);
+  --brand-600-25: color-mix(in srgb, var(--brand-600) 25%, transparent);
+  --brand-600-70: color-mix(in srgb, var(--brand-600) 70%, transparent);
+
+  --brand-text: var(--brand-700);
+  --brand-muted: var(--brand-600-70);
 }
 
 .dark {
@@ -114,6 +128,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  --brand-text: oklch(1 0 0); /* white when dark mode */
+  --brand-muted: color-mix(in srgb, white 70%, transparent);
 }
 
 @layer base {
