@@ -46,7 +46,7 @@ const Header = () => {
       <div className='mx-auto flex h-25 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8'>
         <div className='flex items-center'>
           <Link to='/' className='flex items-center gap-4'>
-            <div className='flex h-18 w-28 items-center justify-center rounded-2xl border bg-(--brand-600-02) shadow-2xs'>
+            <div className='flex h-18 w-28 items-center justify-center rounded-2xl border shadow-2xs'>
               <img
                 src='/logo1.png'
                 alt='Logo'
@@ -55,10 +55,8 @@ const Header = () => {
             </div>
 
             <div className='flex flex-col justify-center leading-tight'>
-              <div className='text-xl font-bold text-(--brand-text)'>
-                EatDee
-              </div>
-              <div className='text-base text-(--brand-muted)'>Since 2025</div>
+              <div className='text-xl font-bold text-primary'>EatDee</div>
+              <div className='text-base text-muted-foreground'>Since 2025</div>
             </div>
           </Link>
         </div>
@@ -73,7 +71,7 @@ const Header = () => {
               <PopoverTrigger asChild>
                 <Button
                   variant='ghost'
-                  className='group h-10 gap-2 rounded-full px-2 hover:bg-(--brand-600-10)'
+                  className='group h-10 gap-2 rounded-full px-2 hover:bg-accent'
                 >
                   <Avatar className='h-8 w-8'>
                     <AvatarImage src={avatarSrc} alt={displayName} />
@@ -86,11 +84,11 @@ const Header = () => {
                     </AvatarFallback>
                   </Avatar>
 
-                  <span className='hidden max-w-[140px] truncate text-sm font-medium text-[color:var(--brand-text)] sm:inline'>
+                  <span className='hidden max-w-[140px] truncate text-sm font-medium text-primary sm:inline'>
                     {displayName}
                   </span>
 
-                  <ChevronDown className='hidden h-4 w-4 text-(--brand-muted) transition group-hover:text-(--brand-text) sm:block' />
+                  <ChevronDown className='hidden h-4 w-4 text-muted-foreground transition group-hover:text-primary sm:block' />
                 </Button>
               </PopoverTrigger>
 
@@ -106,12 +104,13 @@ const Header = () => {
                       />
                     </AvatarFallback>
                   </Avatar>
+
                   <div className='min-w-0'>
-                    <div className='truncate text-sm font-semibold text-(--brand-text)'>
+                    <div className='truncate text-sm font-semibold text-primary'>
                       {displayName}
                     </div>
                     {displayEmail ? (
-                      <div className='truncate text-xs text-(--brand-muted)'>
+                      <div className='truncate text-xs text-muted-foreground'>
                         {displayEmail}
                       </div>
                     ) : null}
@@ -121,7 +120,7 @@ const Header = () => {
                 <div className='mt-2 flex flex-col gap-1'>
                   <Link
                     to='/profile'
-                    className='flex items-center gap-2 rounded-md px-3 py-2 text-sm text-(--brand-text) hover:bg-(--brand-600-10)'
+                    className='flex items-center gap-2 rounded-md px-3 py-2 text-sm text-primary hover:bg-accent'
                   >
                     <User className='h-4 w-4' />
                     Hồ Sơ Người Dùng
@@ -129,7 +128,7 @@ const Header = () => {
 
                   <button
                     onClick={handleLogout}
-                    className='flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-destructive hover:bg-(--brand-600-10)'
+                    className='flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-destructive hover:bg-accent'
                   >
                     <LogOut className='h-4 w-4' />
                     Đăng Xuất
@@ -142,14 +141,14 @@ const Header = () => {
               <Button
                 variant='ghost'
                 asChild
-                className='rounded-full text-(--brand-text) hover:bg-(--brand-600-10)'
+                className='rounded-full text-primary hover:bg-accent'
               >
                 <Link to='/auth/login'>Đăng nhập</Link>
               </Button>
 
               <Button
                 asChild
-                className='rounded-full bg-(--brand-700) text-white hover:bg-(--brand-700-hover)'
+                className='rounded-full bg-primary text-primary-foreground hover:bg-primary/90'
               >
                 <Link to='/auth/sign-up' className='flex items-center gap-2'>
                   Đăng Ký Tài Khoản
@@ -162,13 +161,13 @@ const Header = () => {
           <Button
             variant='ghost'
             size='icon'
-            className='md:hidden hover:bg-(--brand-600-10)'
+            className='md:hidden hover:bg-accent'
             onClick={() => setMobileMenuOpen(v => !v)}
           >
             {mobileMenuOpen ? (
-              <X className='h-5 w-5' />
+              <X className='h-5 w-5 text-primary' />
             ) : (
-              <Menu className='h-5 w-5' />
+              <Menu className='h-5 w-5 text-primary' />
             )}
             <span className='sr-only'>Toggle menu</span>
           </Button>
@@ -191,10 +190,10 @@ const Header = () => {
                 className={({ isActive }) =>
                   cn(
                     'rounded-xl px-3 py-2 text-sm font-medium transition',
-                    'hover:bg-(--brand-600-10) hover:text-(--brand-text)',
+                    'hover:bg-accent hover:text-primary',
                     isActive
-                      ? 'bg-(--brand-600-15) text-(--brand-text) ring-1 ring-(--brand-600-25)'
-                      : 'text-(--brand-muted)'
+                      ? 'bg-accent text-primary ring-1 ring-border'
+                      : 'text-muted-foreground'
                   )
                 }
               >
@@ -207,14 +206,14 @@ const Header = () => {
                 <Button
                   variant='outline'
                   asChild
-                  className='rounded-xl border-(--brand-600-25) text-(--brand-text) hover:bg-(--brand-600-10)'
+                  className='rounded-xl border-border text-primary hover:bg-accent'
                 >
                   <Link to='/auth/login'>Đăng Nhập</Link>
                 </Button>
 
                 <Button
                   asChild
-                  className='rounded-xl bg-(--brand-700) text-white hover:bg-(--brand-700-hover)'
+                  className='rounded-xl bg-primary text-primary-foreground hover:bg-primary/90'
                 >
                   <Link to='/auth/sign-up'>Đăng Ký</Link>
                 </Button>

@@ -12,10 +12,10 @@ const HeaderNav = ({ links }) => {
           className={({ isActive }) =>
             cn(
               'rounded-full px-4 py-2 text-sm font-medium transition',
-              'hover:bg-(--brand-600-10) hover:text-(--brand-text)',
+              'hover:bg-accent hover:text-primary',
               isActive
-                ? 'bg-(--brand-600-15) text-(--brand-text) ring-1 ring-(--brand-600-25)'
-                : 'text-(--brand-muted)'
+                ? 'bg-accent text-primary ring-1 ring-border'
+                : 'text-muted-foreground'
             )
           }
         >
