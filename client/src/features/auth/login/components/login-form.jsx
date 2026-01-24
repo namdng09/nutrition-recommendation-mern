@@ -37,7 +37,7 @@ const LoginForm = ({ onSubmit, isLoading }) => {
     <div className='space-y-4'>
       <Button
         variant='outline'
-        className='w-full rounded-xl border-[#2E7D32]/25 bg-white/60 hover:bg-[#2E7D32]/10 text-[#1B5E20] shadow-sm'
+        className='w-full rounded-xl border border-border bg-background/60 hover:bg-accent text-primary shadow-sm'
         onClick={() => {
           window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
         }}
@@ -48,10 +48,10 @@ const LoginForm = ({ onSubmit, isLoading }) => {
 
       <div className='relative'>
         <div className='absolute inset-0 flex items-center'>
-          <span className='w-full border-t border-[#2E7D32]/20' />
+          <span className='w-full border-t border-border' />
         </div>
         <div className='relative flex justify-center text-xs uppercase'>
-          <span className='bg-background px-3 text-[#2E7D32]/70'>
+          <span className='bg-background px-3 text-muted-foreground'>
             Hoặc đăng nhập bằng email
           </span>
         </div>
@@ -64,13 +64,13 @@ const LoginForm = ({ onSubmit, isLoading }) => {
             name='email'
             render={({ field }) => (
               <FormItem>
-                <FormLabel className='text-[#1B5E20]'>Email</FormLabel>
+                <FormLabel className='text-primary'>Email</FormLabel>
                 <FormControl>
                   <div className='relative'>
-                    <HiOutlineEnvelope className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#1B5E20]/60' />
+                    <HiOutlineEnvelope className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
                     <Input
                       placeholder='Nhập email của bạn'
-                      className='rounded-xl border-[#2E7D32]/25 pl-10 focus-visible:ring-[#2E7D32]/30'
+                      className='rounded-xl border-border pl-10 focus-visible:ring-ring/30'
                       {...field}
                     />
                   </div>
@@ -85,14 +85,14 @@ const LoginForm = ({ onSubmit, isLoading }) => {
             name='password'
             render={({ field }) => (
               <FormItem>
-                <FormLabel className='text-[#1B5E20]'>Mật khẩu</FormLabel>
+                <FormLabel className='text-primary'>Mật khẩu</FormLabel>
                 <FormControl>
                   <div className='relative'>
-                    <HiOutlineKey className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#1B5E20]/60' />
+                    <HiOutlineKey className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
                     <Input
                       type='password'
                       placeholder='Nhập mật khẩu'
-                      className='rounded-xl border-[#2E7D32]/25 pl-10 focus-visible:ring-[#2E7D32]/30'
+                      className='rounded-xl border-border pl-10 focus-visible:ring-ring/30'
                       {...field}
                     />
                   </div>
@@ -111,11 +111,11 @@ const LoginForm = ({ onSubmit, isLoading }) => {
                   <Checkbox
                     checked={Boolean(field.value)}
                     onCheckedChange={field.onChange}
-                    className='border-[#2E7D32]/35 data-[state=checked]:bg-[#1B5E20] data-[state=checked]:border-[#1B5E20]'
+                    className='border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary'
                   />
                 </FormControl>
                 <div className='space-y-2 leading-none'>
-                  <FormLabel className='text-[#1B5E20]/80'>
+                  <FormLabel className='text-muted-foreground'>
                     Ghi nhớ đăng nhập
                   </FormLabel>
                 </div>
@@ -125,7 +125,7 @@ const LoginForm = ({ onSubmit, isLoading }) => {
 
           <Button
             type='submit'
-            className='w-full rounded-xl bg-[#1B5E20] text-white hover:bg-[#145017] shadow-sm'
+            className='w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
             disabled={isLoading}
           >
             {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}

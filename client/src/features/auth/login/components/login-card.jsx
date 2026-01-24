@@ -40,18 +40,18 @@ const LoginCard = () => {
   };
 
   return (
-    <Card className='w-full max-w-md rounded-2xl border-[#2E7D32]/15 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-[0_18px_60px_rgba(0,0,0,0.10)]'>
+    <Card className='w-full max-w-md rounded-2xl border border-border bg-card/80 backdrop-blur supports-[backdrop-filter]:bg-card/60 shadow-[0_18px_60px_rgba(0,0,0,0.10)]'>
       <CardHeader className='space-y-2'>
         <div className='flex items-center gap-3'>
-          <div className='flex h-11 w-11 items-center justify-center rounded-2xl border border-[#2E7D32]/20 bg-[#2E7D32]/5 shadow-sm'>
-            <HiOutlineLockClosed className='h-6 w-6 text-[#1B5E20]' />
+          <div className='flex h-11 w-11 items-center justify-center rounded-2xl border border-border bg-accent shadow-sm'>
+            <HiOutlineLockClosed className='h-6 w-6 text-primary' />
           </div>
 
           <div className='leading-[1.05]'>
-            <CardTitle className='text-2xl font-bold text-[#1B5E20]'>
+            <CardTitle className='text-2xl font-bold text-primary'>
               Đăng nhập
             </CardTitle>
-            <CardDescription className='text-[#2E7D32]/70'>
+            <CardDescription className='text-muted-foreground'>
               Vui lòng đăng nhập để tiếp tục
             </CardDescription>
           </div>
@@ -67,11 +67,11 @@ const LoginCard = () => {
 
       <CardFooter className='pt-6'>
         <p className='text-sm flex flex-col gap-2'>
-          <span className='text-[#1B5E20]/75'>
+          <span className='text-muted-foreground'>
             Chưa có tài khoản?{' '}
             <Link
               to='/auth/sign-up'
-              className='font-semibold text-[#1B5E20] hover:underline underline-offset-4'
+              className='font-semibold text-primary hover:underline underline-offset-4'
             >
               Đăng ký
             </Link>
@@ -79,7 +79,7 @@ const LoginCard = () => {
           <span>
             <Link
               to='/auth/forgot-password'
-              className='font-semibold text-[#1B5E20] hover:underline underline-offset-4'
+              className='font-semibold text-primary hover:underline underline-offset-4'
             >
               Quên mật khẩu?
             </Link>
