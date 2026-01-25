@@ -5,11 +5,7 @@ import mongoose, {
 } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
-export const GROCERY_STATUS = {
-  ACTIVE: 'active',
-  COMPLETED: 'completed',
-  ARCHIVED: 'archived'
-} as const;
+import { GROCERY_STATUS } from '~/shared/constants/grocery-status';
 
 const grocerySchema = new Schema(
   {
@@ -29,14 +25,12 @@ const grocerySchema = new Schema(
         ingredientId: { type: Schema.Types.ObjectId, ref: 'Ingredient' },
         name: { type: String, required: true },
         category: { type: String },
-        unit: { type: String, required: true },
+        unit: { type: Schema.Types.ObjectId, ref: 'Unit', required: true },
         quantity: { type: Number, required: true },
         isPurchased: { type: Boolean, default: false },
-        notes: { type: String },
-        estimatedCost: { type: Number }
+        notes: { type: String }
       }
     ],
-    totalEstimatedCost: { type: Number },
     notes: { type: String }
   },
   {

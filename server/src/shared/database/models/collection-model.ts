@@ -19,8 +19,6 @@ const collectionSchema = new Schema(
       {
         dishId: { type: Schema.Types.ObjectId, ref: 'Dish' },
         name: { type: String, required: true },
-        category: { type: String },
-        price: { type: Number },
         calories: { type: Number },
         image: { type: String },
         addedAt: { type: Date, default: Date.now }
