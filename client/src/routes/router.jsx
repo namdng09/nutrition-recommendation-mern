@@ -34,6 +34,10 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/ingredients/page'))
           },
           {
+            path: 'ingredients/:id',
+            Component: lazy(() => import('~/app/ingredients/[id]/page'))
+          },
+          {
             path: 'profile',
             Component: () => (
               <PrivateRoute allowedRoles={['user', 'admin']}>
