@@ -9,8 +9,8 @@ const ingredientSchema = new Schema(
   {
     name: { type: String, required: true },
     category: { type: String, required: true },
-    unit: { type: String, required: true },
-    caloriesPer100g: { type: Number, required: true },
+    unit: { type: Schema.Types.ObjectId, ref: 'Unit', required: true },
+    calories: { type: Number, required: true },
     protein: { type: Number, required: true },
     carbs: { type: Number },
     fat: { type: Number },

@@ -5,12 +5,7 @@ import mongoose, {
 } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
-export const POST_CATEGORY = {
-  RECIPE: 'recipe',
-  NUTRITION: 'nutrition',
-  LIFESTYLE: 'lifestyle',
-  TIPS: 'tips'
-} as const;
+import { POST_CATEGORY } from '~/shared/constants/post-category';
 
 const postSchema = new Schema(
   {

@@ -13,15 +13,21 @@ const dishSchema = new Schema(
     },
     name: { type: String, required: true },
     description: { type: String },
-    category: { type: String, required: true },
-    price: { type: Number },
+    category: [{ type: String, required: true }],
     calories: { type: Number },
     ingredients: [
       {
         ingredientId: { type: Schema.Types.ObjectId, ref: 'Ingredient' },
         name: { type: String, required: true },
         quantity: { type: Number, required: true },
-        unit: { type: String }
+        unit: { type: Schema.Types.ObjectId, ref: 'Unit' }
+      }
+    ],
+    instructions: [
+      {
+        step: { type: Number, required: true },
+        description: { type: String, required: true },
+        image: { type: String }
       }
     ],
     image: { type: String },

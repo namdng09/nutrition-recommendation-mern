@@ -5,7 +5,7 @@ import mongoose, {
 } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
-import { MEAL_TYPE } from './meal-model';
+import { MEAL_TYPE } from '~/shared/constants/meal-type';
 
 const scheduleSchema = new Schema(
   {
@@ -27,8 +27,6 @@ const scheduleSchema = new Schema(
           {
             dishId: { type: Schema.Types.ObjectId, ref: 'Dish' },
             name: { type: String, required: true },
-            category: { type: String },
-            price: { type: Number },
             calories: { type: Number },
             image: { type: String }
           }
@@ -36,7 +34,6 @@ const scheduleSchema = new Schema(
       }
     ],
     totalCalories: { type: Number },
-    totalPrice: { type: Number },
     notes: { type: String }
   },
   {
