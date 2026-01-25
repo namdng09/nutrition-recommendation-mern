@@ -5,6 +5,8 @@ import mongoose, {
 } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
+import { DISH_CATEGORY } from '~/shared/constants/dish-category';
+
 const dishSchema = new Schema(
   {
     user: {
@@ -13,7 +15,9 @@ const dishSchema = new Schema(
     },
     name: { type: String, required: true },
     description: { type: String },
-    category: [{ type: String, required: true }],
+    category: [
+      { type: String, enum: Object.values(DISH_CATEGORY), required: true }
+    ],
     calories: { type: Number },
     ingredients: [
       {
