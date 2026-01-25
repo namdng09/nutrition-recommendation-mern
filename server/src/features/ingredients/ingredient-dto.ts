@@ -43,7 +43,7 @@ export const updateIngredientRequestSchema = z.object({
       if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;
-      throw new Error('isActive must be true or false');
+      throw new Error('isActive must be "true" or "false"');
     })
     .optional()
 });
