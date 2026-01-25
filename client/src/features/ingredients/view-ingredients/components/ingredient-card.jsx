@@ -31,32 +31,32 @@ export default function IngredientCard({ item }) {
                   : 'bg-muted text-muted-foreground'
               }`}
             >
-              {item.isActive ? 'Active' : 'Inactive'}
+              {item.isActive ? 'Đang hoạt động' : 'Ngừng hoạt động'}
             </span>
           </div>
 
           <div className='mt-3 grid grid-cols-2 gap-2 text-sm'>
             <div className='rounded-xl border border-border p-2'>
-              <div className='text-muted-foreground'>Calories / 100g</div>
+              <div className='text-muted-foreground'>Calo / 100g</div>
               <div className='font-semibold text-foreground'>
                 {item.caloriesPer100g}
               </div>
             </div>
 
             <div className='rounded-xl border border-border p-2'>
-              <div className='text-muted-foreground'>Protein</div>
+              <div className='text-muted-foreground'>Chất đạm</div>
               <div className='font-semibold text-foreground'>
                 {item.protein}g
               </div>
             </div>
 
             <div className='rounded-xl border border-border p-2'>
-              <div className='text-muted-foreground'>Carbs</div>
+              <div className='text-muted-foreground'>Tinh bột</div>
               <div className='font-semibold text-foreground'>{item.carbs}g</div>
             </div>
 
             <div className='rounded-xl border border-border p-2'>
-              <div className='text-muted-foreground'>Fat</div>
+              <div className='text-muted-foreground'>Chất béo</div>
               <div className='font-semibold text-foreground'>{item.fat}g</div>
             </div>
           </div>
