@@ -1,15 +1,15 @@
 import { z } from 'zod';
 
 export const createIngredientRequestSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters long'),
-  category: z.string().min(2, 'Category must be at least 2 characters long'),
-  unit: z.string().min(1, 'Unit is required'),
+  name: z.string().trim().min(2, 'Name must be at least 2 characters long'),
+  category: z.string().trim().min(2, 'Category must be at least 2 characters long'),
+  unit: z.string().trim().min(1, 'Unit is required'),
   caloriesPer100g: z.coerce.number().min(0, 'Calories must be non-negative'),
   protein: z.coerce.number().min(0, 'Protein must be non-negative'),
   carbs: z.coerce.number().min(0, 'Carbs must be non-negative').optional(),
   fat: z.coerce.number().min(0, 'Fat must be non-negative').optional(),
   fiber: z.coerce.number().min(0, 'Fiber must be non-negative').optional(),
-  allergens: z.array(z.string()).optional(),
+  allergens: z.array(z.string().trim()).optional(),
   image: z.file().optional(),
   isActive: z
     .union([z.boolean(), z.string()])
@@ -27,18 +27,15 @@ export type CreateIngredientRequest = z.infer<
 >;
 
 export const updateIngredientRequestSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters long').optional(),
-  category: z
-    .string()
-    .min(2, 'Category must be at least 2 characters long')
-    .optional(),
-  unit: z.string().min(1, 'Unit is required').optional(),
+  name: z.string().trim().min(2, 'Name must be at least 2 characters long').optional(),
+  category: z.string().trim().min(2, 'Category must be at least 2 characters long').optional(),
+  unit: z.string().trim().min(1, 'Unit is required').optional(),
   caloriesPer100g: z.coerce.number().min(0, 'Calories must be non-negative').optional(),
   protein: z.coerce.number().min(0, 'Protein must be non-negative').optional(),
   carbs: z.coerce.number().min(0, 'Carbs must be non-negative').optional(),
   fat: z.coerce.number().min(0, 'Fat must be non-negative').optional(),
   fiber: z.coerce.number().min(0, 'Fiber must be non-negative').optional(),
-  allergens: z.array(z.string()).optional(),
+  allergens: z.array(z.string().trim()).optional(),
   image: z.file().optional(),
   isActive: z
     .union([z.boolean(), z.string()])
