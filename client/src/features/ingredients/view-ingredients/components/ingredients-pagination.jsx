@@ -13,16 +13,16 @@ export default function IngredientsPagination({
   return (
     <div className='flex items-center justify-between'>
       <Button variant='outline' onClick={onPrev} disabled={!hasPrevPage}>
-        Prev
+        Trước
       </Button>
 
       <div className='text-sm text-muted-foreground'>
-        Page <span className='font-semibold text-foreground'>{page}</span> of{' '}
+        Trang <span className='font-semibold text-foreground'>{page}</span> of{' '}
         <span className='font-semibold text-foreground'>{totalPages}</span>
       </div>
 
       <Button variant='outline' onClick={onNext} disabled={!hasNextPage}>
-        Next
+        Sau
       </Button>
     </div>
   );
