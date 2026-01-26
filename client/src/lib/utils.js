@@ -31,3 +31,37 @@ export const NAV_LINKS = [
   { to: '/', label: 'Trang Chủ' },
   { to: '/playground', label: 'Playground' }
 ];
+
+// ingredients pie chart
+export const INGREDIENT_CHART_COLORS = [
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)'
+];
+
+export const formatGram = n =>
+  Number(n ?? 0)
+    .toFixed(1)
+    .replace(/\.0$/, '');
+
+export const getOtherNutrition = item => {
+  const carbs = Number(item?.carbs ?? 0);
+  const fiber = Number(item?.fiber ?? 0);
+  return Math.max(0, carbs + fiber);
+};
+
+export const buildNutritionPieData = item => {
+  const protein = Number(item?.protein ?? 0);
+  const fat = Number(item?.fat ?? 0);
+  const other = getOtherNutrition(item);
+
+  return [
+    { name: 'Chất đạm', value: protein, fill: INGREDIENT_CHART_COLORS[0] },
+    { name: 'Chất béo', value: fat, fill: INGREDIENT_CHART_COLORS[1] },
+    { name: 'Khác', value: other, fill: INGREDIENT_CHART_COLORS[2] }
+  ].filter(d => d.value > 0);
+};
+
+export const EMPTY_PIE_DATA = [
+  { name: 'Trống', value: 1, fill: 'hsl(var(--muted))' }
+];
