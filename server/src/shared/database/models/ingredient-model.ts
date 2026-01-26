@@ -17,6 +17,7 @@ const ingredientSchema = new Schema(
     fiber: { type: Number },
     allergens: [{ type: String }],
     image: { type: String },
+    description: { type: String },
     isActive: { type: Boolean, default: true }
   },
   {
