@@ -120,7 +120,16 @@ const dishSchema = new Schema(
         image: { type: String, required: true },
         description: { type: String },
         quantity: { type: Number, required: true },
-        unit: { type: Schema.Types.ObjectId, ref: 'Unit' }
+        baseWeight: {
+          value: { type: Number, required: true },
+          unit: { type: String, default: 'g' }
+        },
+        units: [
+          {
+            unit: { type: Number, required: true },
+            quantity: { type: Number, required: true }
+          }
+        ]
       }
     ],
     instructions: [

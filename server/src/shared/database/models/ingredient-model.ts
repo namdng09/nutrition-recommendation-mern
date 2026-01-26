@@ -8,16 +8,24 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 const ingredientSchema = new Schema(
   {
     name: { type: String, required: true },
+    image: { type: String, required: true },
+    description: { type: String },
     category: { type: String, required: true },
-    unit: { type: Schema.Types.ObjectId, ref: 'Unit', required: true },
+    baseWeight: {
+      value: { type: Number, required: true },
+      unit: { type: String, default: 'g' }
+    },
+    units: [
+      {
+        unit: { type: Number, required: true },
+        quantity: { type: Number, required: true }
+      }
+    ],
     calories: { type: Number, required: true },
     protein: { type: Number, required: true },
     carbs: { type: Number },
     fat: { type: Number },
     fiber: { type: Number },
-    allergens: [{ type: String }],
-    image: { type: String },
-    description: { type: String },
     isActive: { type: Boolean, default: true }
   },
   {
