@@ -5,11 +5,74 @@ import mongoose, {
 } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
+import { AVAILABLE_TIME } from '~/shared/constants/available-time';
 import { BODYFAT } from '~/shared/constants/bodyfat';
+import { COOKING_PREFERENCE } from '~/shared/constants/cooking-preference';
 import { DIET } from '~/shared/constants/diet';
+import { MEAL_TYPE } from '~/shared/constants/food-type';
 import { GENDER } from '~/shared/constants/gender';
+import { MEAL_COMPLEXITY } from '~/shared/constants/meal-complexity';
+import { MEAL_SIZE } from '~/shared/constants/meal-size';
 import { ROLE } from '~/shared/constants/role';
-import { TARGET } from '~/shared/constants/target';
+import { USER_TARGET } from '~/shared/constants/user-target';
+
+const macroRangeSchema = new Schema(
+  {
+    min: { type: Number, required: true, min: 0 },
+    max: { type: Number, required: true, min: 0 }
+  },
+  {
+    _id: false,
+    validate: {
+      validator(value: { min: number; max: number }) {
+        return value.max >= value.min;
+      },
+      message: 'max must be greater than or equal to min'
+    }
+  }
+);
+
+const nutritionTargetSchema = new Schema(
+  {
+    caloriesTarget: { type: Number, required: true, min: 0 },
+    macros: {
+      carbs: { type: macroRangeSchema, required: true },
+      protein: { type: macroRangeSchema, required: true },
+      fat: { type: macroRangeSchema, required: true }
+    },
+    algorithm: { type: String, default: 'calorie-based-v1' },
+    recommendationMeta: { type: Map, of: Schema.Types.Mixed, default: {} }
+  },
+  { _id: false }
+);
+
+const mealSettingSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    mealSize: { type: String, enum: Object.values(MEAL_SIZE), required: true },
+    preferredFoodTypes: [
+      { type: String, enum: Object.values(MEAL_TYPE), required: true }
+    ],
+    cookingPreference: {
+      type: String,
+      enum: Object.values(COOKING_PREFERENCE),
+      required: true
+    },
+    availableTime: {
+      type: String,
+      enum: Object.values(AVAILABLE_TIME),
+      required: true
+    },
+    complexity: {
+      type: String,
+      enum: Object.values(MEAL_COMPLEXITY),
+      required: true
+    },
+    foodCategories: [{ type: String, required: true }],
+    ruleOverrides: { type: Map, of: Schema.Types.Mixed, default: {} }
+  },
+  { _id: false }
+);
 
 const userSchema = new Schema(
   {
@@ -27,12 +90,22 @@ const userSchema = new Schema(
     height: { type: Number },
     bodyfat: { type: String, enum: Object.values(BODYFAT) },
     diet: { type: String, enum: Object.values(DIET) },
+    nutritionTarget: { type: nutritionTargetSchema },
+    mealSettings: { type: [mealSettingSchema], default: [] },
     favouriteDishes: [{ type: Schema.Types.ObjectId, ref: 'Dish' }],
     favouriteIngredients: [{ type: Schema.Types.ObjectId, ref: 'Ingredient' }],
-    blockFoods: [
+    blockDishes: [
+      {
+        dishId: { type: Schema.Types.ObjectId, ref: 'Dish' },
+        name: { type: String },
+        image: { type: String }
+      }
+    ],
+    blockIngredients: [
       {
         ingredientId: { type: Schema.Types.ObjectId, ref: 'Ingredient' },
-        name: { type: String }
+        name: { type: String },
+        image: { type: String }
       }
     ],
     weightRecord: [
@@ -42,7 +115,7 @@ const userSchema = new Schema(
       }
     ],
     goal: {
-      target: { type: String, enum: Object.values(TARGET) },
+      target: { type: String, enum: Object.values(USER_TARGET) },
       weightGoal: { type: Number },
       targetWeightChange: { type: Number }
     },
