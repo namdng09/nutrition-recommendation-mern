@@ -38,7 +38,6 @@ collectionSchema.plugin(mongoosePaginate);
 collectionSchema.index({ 'user._id': 1, isPublic: 1 });
 collectionSchema.index({ isPublic: 1, followers: -1 });
 collectionSchema.index({ tags: 1 });
-collectionSchema.index({ slug: 1 });
 
 // Virtual for dish count
 collectionSchema.virtual('dishCount').get(function () {
