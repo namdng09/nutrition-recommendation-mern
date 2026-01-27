@@ -57,26 +57,5 @@ export const IngredientController = {
     res
       .status(200)
       .json(ApiResponse.success('Ingredient deleted successfully'));
-  },
-
-  deleteBulk: async (req: Request, res: Response) => {
-    const { ids } = req.body;
-
-    if (!Array.isArray(ids) || ids.length === 0) {
-      return res
-        .status(400)
-        .json(ApiResponse.failed('Invalid ingredient IDs provided'));
-    }
-
-    const result = await IngredientService.deleteBulk(ids);
-
-    res
-      .status(200)
-      .json(
-        ApiResponse.success(
-          `${result.deletedCount} ingredient(s) deleted successfully`,
-          result
-        )
-      );
   }
 };

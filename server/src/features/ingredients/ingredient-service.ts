@@ -119,21 +119,5 @@ export const IngredientService = {
     await deleteImage(deletedIngredient._id.toString());
 
     return deletedIngredient;
-  },
-
-  deleteBulk: async (ids: string[]) => {
-    ids.forEach(id => {
-      if (!validateObjectId(id)) {
-        throw createHttpError(400, 'Invalid ingredient ID format');
-      }
-    });
-
-    const result = await IngredientModel.deleteMany({ _id: { $in: ids } });
-
-    await Promise.all(
-      ids.map(id => deleteImage(id))
-    );
-
-    return result;
   }
 };
