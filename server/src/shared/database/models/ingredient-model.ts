@@ -4,7 +4,6 @@ import mongoose, {
   Schema
 } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
-import { required } from 'zod/v4/core/util.cjs';
 
 import { ALLERGEN } from '~/shared/constants/allergen';
 import { NUTRITION_AMINO_ACID } from '~/shared/constants/nutrition-amino-acid';
@@ -15,7 +14,7 @@ import { NUTRITION_SUGAR } from '~/shared/constants/nutrition-sugar';
 import { NUTRITION_VITAMIN } from '~/shared/constants/nutrition-vitamin';
 import { UNIT } from '~/shared/constants/unit';
 
-const nutritionSchema = new Schema(
+export const nutrientSchema = new Schema(
   {
     calories: {
       value: { type: Number, required: true },
@@ -56,7 +55,7 @@ const nutritionSchema = new Schema(
 
 export const detailNutritionSchema = new Schema(
   {
-    macronutrients: { type: nutritionSchema },
+    nutrients: { type: nutrientSchema },
     minerals: [
       {
         label: { type: String, enum: Object.values(NUTRITION_MINERAL) },
