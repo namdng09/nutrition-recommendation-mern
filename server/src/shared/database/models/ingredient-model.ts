@@ -4,6 +4,7 @@ import mongoose, {
   Schema
 } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
+import { ALLERGEN } from '~/shared/constants/allergen';
 
 import { UNIT } from '~/shared/constants/unit';
 
@@ -106,7 +107,7 @@ const ingredientSchema = new Schema(
     description: { type: String },
     category: { type: String, required: true },
     baseUnit: {
-      value: { type: Number, required: true },
+      amount: { type: Number, required: true },
       unit: { type: String, default: UNIT.GRAM, required: true }
     },
     units: [
@@ -115,6 +116,7 @@ const ingredientSchema = new Schema(
         unit: { type: String, required: true }
       }
     ],
+    allergens: [{ type: String, enum: Object.values(ALLERGEN) }],
     nutrition: { type: nutritionSchema },
     isActive: { type: Boolean, default: true }
   },

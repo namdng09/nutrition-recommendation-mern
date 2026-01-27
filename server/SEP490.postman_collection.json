@@ -1,0 +1,469 @@
+{
+	"info": {
+		"_postman_id": "b29426b5-45dc-4ed5-ac96-6ddf9a9554cd",
+		"name": "SEP490",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48985284",
+		"_collection_link": "https://fhd-cinema.postman.co/workspace/My-Workspace~4a613ff1-cddc-4861-8d11-60a8c0f79a9b/collection/48985284-b29426b5-45dc-4ed5-ac96-6ddf9a9554cd?action=share&source=collection_link&creator=48985284"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"if (jsonData.data && jsonData.data.accessToken) {\r",
+									"    pm.collectionVariables.set(\"accessToken\", jsonData.data.accessToken);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"anhduck0212@gmail.com\",\r\n    \"password\": \"anhduc\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign Up",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"if (jsonData.data && jsonData.data.accessToken) {\r",
+									"    pm.collectionVariables.set(\"accessToken\", jsonData.data.accessToken);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"anhduck0212@gmail.com\",\r\n    \"name\": \"anhduck0212\",\r\n    \"password\": \"anhduc\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/auth/sign-up",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"auth",
+								"sign-up"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Ingredients",
+			"item": [
+				{
+					"name": "Get All Ingredients",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/ingredients",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"ingredients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Ingredient By Id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/ingredients/69738577d6d2d165d5c2d9fd",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"ingredients",
+								"69738577d6d2d165d5c2d9fd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Ingredient",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Atlantic salmon",
+									"type": "text"
+								},
+								{
+									"key": "category",
+									"value": "Seafood",
+									"type": "text"
+								},
+								{
+									"key": "unit",
+									"value": "g",
+									"type": "text"
+								},
+								{
+									"key": "caloriesPer100g",
+									"value": "142",
+									"type": "text"
+								},
+								{
+									"key": "protein",
+									"value": "19.8",
+									"type": "text"
+								},
+								{
+									"key": "carbs",
+									"value": "0",
+									"type": "text"
+								},
+								{
+									"key": "fat",
+									"value": "6.3",
+									"type": "text"
+								},
+								{
+									"key": "fiber",
+									"value": "0",
+									"type": "text"
+								},
+								{
+									"key": "allergens[0]",
+									"value": "peanut",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "allergens[1]",
+									"value": "milk",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/C:/Users/os/Downloads/Atlantic salmon.jpg"
+								},
+								{
+									"key": "isActive",
+									"value": "true",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/ingredients",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"ingredients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Ingredient By Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "peanut butter cookies",
+									"type": "text"
+								},
+								{
+									"key": "category",
+									"value": "cookies",
+									"type": "text"
+								},
+								{
+									"key": "unit",
+									"value": "gram",
+									"type": "text"
+								},
+								{
+									"key": "caloriesPer100g",
+									"value": "200",
+									"type": "text"
+								},
+								{
+									"key": "protein",
+									"value": "100",
+									"type": "text"
+								},
+								{
+									"key": "carbs",
+									"value": "100",
+									"type": "text"
+								},
+								{
+									"key": "fat",
+									"value": "100",
+									"type": "text"
+								},
+								{
+									"key": "fiber",
+									"value": "100",
+									"type": "text"
+								},
+								{
+									"key": "allergens[0]",
+									"value": "peanut",
+									"type": "text"
+								},
+								{
+									"key": "allergens[1]",
+									"value": "milk",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/C:/Users/os/Downloads/download.png"
+								},
+								{
+									"key": "isActive",
+									"value": "true",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/ingredients/69739a091c615dda104f5e7b",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"ingredients",
+								"69739a091c615dda104f5e7b"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Ingredient By Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/ingredients/69739a091c615dda104f5e7b",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"ingredients",
+								"69739a091c615dda104f5e7b"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Multiple Ingredients By Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ids\": [\"69738a5942c05fde7d4acf05\", \"69738a5642c05fde7d4acf01\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/ingredients",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"ingredients"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "accessToken",
+			"value": ""
+		}
+	]
+}

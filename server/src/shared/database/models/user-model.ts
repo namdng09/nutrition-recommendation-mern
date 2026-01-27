@@ -5,6 +5,7 @@ import mongoose, {
 } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
+import { ALLERGEN } from '~/shared/constants/allergen';
 import { AVAILABLE_TIME } from '~/shared/constants/available-time';
 import { BODYFAT } from '~/shared/constants/bodyfat';
 import { COOKING_PREFERENCE } from '~/shared/constants/cooking-preference';
@@ -119,6 +120,7 @@ const userSchema = new Schema(
       weightGoal: { type: Number },
       targetWeightChange: { type: Number }
     },
+    allergens: [{ type: String, enum: Object.values(ALLERGEN) }],
     setting: { type: Map, of: Schema.Types.Mixed, default: {} },
     aiConfig: { type: Map, of: Schema.Types.Mixed, default: {} },
     isActive: { type: Boolean, default: true }

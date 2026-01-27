@@ -9,6 +9,7 @@ import { DISH_CATEGORY } from '~/shared/constants/dish-category';
 import { UNIT } from '~/shared/constants/unit';
 
 import { nutritionSchema } from './ingredient-model';
+import { ALLERGEN } from '~/shared/constants/allergen';
 
 const dishSchema = new Schema(
   {
@@ -21,22 +22,30 @@ const dishSchema = new Schema(
     category: [
       { type: String, enum: Object.values(DISH_CATEGORY), required: true }
     ],
-    calories: { type: Number },
-    nutrition: { type: nutritionSchema },
     ingredients: [
       {
         ingredientId: { type: Schema.Types.ObjectId, ref: 'Ingredient' },
         name: { type: String, required: true },
         image: { type: String, required: true },
         description: { type: String },
-        quantity: { type: Number, required: true },
+        nutrition: {
+          calories: { type: Number },
+          fat: { type: Number },
+          protein: { type: Number },
+          carbs: { type: Number },
+          fiber: { type: Number },
+          sodium: { type: Number },
+          cholesterol: { type: Number },
+        },
+        allergens: [{ type: String, enum: Object.values(ALLERGEN) }],
         baseUnit: {
-          value: { type: Number, required: true },
+          amount: { type: Number, required: true },
           unit: { type: String, default: UNIT.GRAM, required: true }
         },
         units: [
           {
             value: { type: Number, required: true },
+            quantity: { type: Number, required: true },
             unit: { type: String, required: true }
           }
         ]
@@ -49,7 +58,6 @@ const dishSchema = new Schema(
       }
     ],
     image: { type: String },
-    allergens: [{ type: String }],
     isActive: { type: Boolean, default: true },
     preparationTime: { type: Number },
     cookTime: { type: Number },
