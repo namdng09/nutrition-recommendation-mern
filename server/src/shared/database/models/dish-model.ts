@@ -35,7 +35,7 @@ const dishSchema = new Schema(
         },
         units: [
           {
-            unit: { type: Number, required: true },
+            unit: { type: String, required: true },
             quantity: { type: Number, required: true }
           }
         ]
