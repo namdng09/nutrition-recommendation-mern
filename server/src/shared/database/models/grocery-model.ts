@@ -6,6 +6,7 @@ import mongoose, {
 import mongoosePaginate from 'mongoose-paginate-v2';
 
 import { GROCERY_STATUS } from '~/shared/constants/grocery-status';
+import { UNIT } from '~/shared/constants/unit';
 
 const grocerySchema = new Schema(
   {
@@ -24,8 +25,16 @@ const grocerySchema = new Schema(
       {
         ingredientId: { type: Schema.Types.ObjectId, ref: 'Ingredient' },
         name: { type: String, required: true },
-        category: { type: String },
-        unit: { type: Schema.Types.ObjectId, ref: 'Unit', required: true },
+        baseUnit: {
+          value: { type: Number, required: true },
+          unit: { type: String, default: UNIT.GRAM, required: true }
+        },
+        units: [
+          {
+            value: { type: Number, required: true },
+            unit: { type: String, required: true }
+          }
+        ],
         quantity: { type: Number, required: true },
         isPurchased: { type: Boolean, default: false },
         notes: { type: String }

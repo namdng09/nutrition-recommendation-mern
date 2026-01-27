@@ -6,6 +6,7 @@ import mongoose, {
 import mongoosePaginate from 'mongoose-paginate-v2';
 
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
+import { UNIT } from '~/shared/constants/unit';
 
 import { nutritionSchema } from './ingredient-model';
 
@@ -29,14 +30,14 @@ const dishSchema = new Schema(
         image: { type: String, required: true },
         description: { type: String },
         quantity: { type: Number, required: true },
-        baseWeight: {
+        baseUnit: {
           value: { type: Number, required: true },
-          unit: { type: String, default: 'g' }
+          unit: { type: String, default: UNIT.GRAM, required: true }
         },
         units: [
           {
-            unit: { type: Number, required: true },
-            quantity: { type: Number, required: true }
+            value: { type: Number, required: true },
+            unit: { type: String, required: true }
           }
         ]
       }

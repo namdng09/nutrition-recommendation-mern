@@ -105,14 +105,14 @@ const ingredientSchema = new Schema(
     image: { type: String, required: true },
     description: { type: String },
     category: { type: String, required: true },
-    baseWeight: {
+    baseUnit: {
       value: { type: Number, required: true },
-      unit: { type: String, default: 'g' }
+      unit: { type: String, default: UNIT.GRAM, required: true }
     },
     units: [
       {
-        unit: { type: Number, required: true },
-        quantity: { type: Number, required: true }
+        value: { type: Number, required: true },
+        unit: { type: String, required: true }
       }
     ],
     nutrition: { type: nutritionSchema },
