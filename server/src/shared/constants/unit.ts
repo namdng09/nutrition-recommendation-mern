@@ -1,6 +1,8 @@
 export const UNIT = {
   GRAM: 'g',
   KILOGRAM: 'kg',
+  MILLIGRAM: 'mg',
+  MICROGRAM: 'mcg',
   MILLILITER: 'ml',
   LITER: 'l',
   TEASPOON: 'tsp',
@@ -9,7 +11,8 @@ export const UNIT = {
   PIECE: 'piece',
   SLICE: 'slice',
   OUNCE: 'oz',
-  POUND: 'lb'
+  POUND: 'lb',
+  KILOCALORIE: 'kcal'
 } as const;
 
 export type Unit = (typeof UNIT)[keyof typeof UNIT];

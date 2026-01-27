@@ -6,6 +6,9 @@ import mongoose, {
 import mongoosePaginate from 'mongoose-paginate-v2';
 
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
+import { UNIT } from '~/shared/constants/unit';
+
+import { nutritionSchema } from './ingredient-model';
 
 const dishSchema = new Schema(
   {
@@ -19,25 +22,37 @@ const dishSchema = new Schema(
       { type: String, enum: Object.values(DISH_CATEGORY), required: true }
     ],
     calories: { type: Number },
+    nutrition: { type: nutritionSchema },
     ingredients: [
       {
         ingredientId: { type: Schema.Types.ObjectId, ref: 'Ingredient' },
         name: { type: String, required: true },
+        image: { type: String, required: true },
+        description: { type: String },
         quantity: { type: Number, required: true },
-        unit: { type: Schema.Types.ObjectId, ref: 'Unit' }
+        baseUnit: {
+          value: { type: Number, required: true },
+          unit: { type: String, default: UNIT.GRAM, required: true }
+        },
+        units: [
+          {
+            value: { type: Number, required: true },
+            unit: { type: String, required: true }
+          }
+        ]
       }
     ],
     instructions: [
       {
         step: { type: Number, required: true },
-        description: { type: String, required: true },
-        image: { type: String }
+        description: { type: String, required: true }
       }
     ],
     image: { type: String },
     allergens: [{ type: String }],
     isActive: { type: Boolean, default: true },
     preparationTime: { type: Number },
+    cookTime: { type: Number },
     servings: { type: Number, default: 1 },
     tags: [{ type: String }]
   },
