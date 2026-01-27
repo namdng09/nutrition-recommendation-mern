@@ -1,4 +1,5 @@
 import { Plus, Search } from 'lucide-react';
+import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router';
 
@@ -20,6 +21,7 @@ import { buildQueryParams } from '~/lib/build-query-params';
 const UsersFilter = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm({
     values: {
@@ -32,7 +34,11 @@ const UsersFilter = () => {
   const handleSearch = data => {
     const sort = searchParams.get('sort');
     const queryParams = buildQueryParams({ ...data, page: 1, sort });
-    setSearchParams(queryParams);
+
+    // Wrap in startTransition for smoother UX
+    startTransition(() => {
+      setSearchParams(queryParams);
+    });
   };
 
   return (
@@ -48,7 +54,7 @@ const UsersFilter = () => {
                   <div className='relative'>
                     <Search className='absolute left-2 top-2.5 h-4 w-4 text-muted-foreground' />
                     <Input
-                      placeholder='Search by name...'
+                      placeholder='Tìm kiếm theo tên...'
                       className='pl-8'
                       {...field}
                     />
@@ -67,7 +73,7 @@ const UsersFilter = () => {
                   onValuesChange={field.onChange}
                 >
                   <MultiSelectTrigger className='w-full sm:w-40'>
-                    <MultiSelectValue placeholder='Gender' />
+                    <MultiSelectValue placeholder='Giới tính' />
                   </MultiSelectTrigger>
                   <MultiSelectContent>
                     <MultiSelectGroup>
@@ -95,7 +101,7 @@ const UsersFilter = () => {
                   onValuesChange={field.onChange}
                 >
                   <MultiSelectTrigger className='w-full sm:w-40'>
-                    <MultiSelectValue placeholder='Role' />
+                    <MultiSelectValue placeholder='Vai trò' />
                   </MultiSelectTrigger>
                   <MultiSelectContent>
                     <MultiSelectGroup>
@@ -113,9 +119,9 @@ const UsersFilter = () => {
               </FormItem>
             )}
           />
-          <Button type='submit'>
+          <Button type='submit' disabled={isPending}>
             <Search className='mr-2 h-4 w-4' />
-            Search
+            {isPending ? 'Đang tìm...' : 'Tìm kiếm'}
           </Button>
           <Button
             type='button'
@@ -123,7 +129,7 @@ const UsersFilter = () => {
             className='sm:ml-auto'
           >
             <Plus className='mr-2 h-4 w-4' />
-            Create User
+            Tạo người dùng
           </Button>
         </div>
       </form>

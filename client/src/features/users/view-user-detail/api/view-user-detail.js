@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 import apiClient from '~/lib/api-client';
 import { QUERY_KEYS } from '~/lib/query-keys';
@@ -9,9 +9,8 @@ const fetchUserDetail = async id => {
 };
 
 export const useUserDetail = id => {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: QUERY_KEYS.USER(id),
-    queryFn: () => fetchUserDetail(id),
-    enabled: !!id
+    queryFn: () => fetchUserDetail(id)
   });
 };
