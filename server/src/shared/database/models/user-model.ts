@@ -121,8 +121,10 @@ const userSchema = new Schema(
       targetWeightChange: { type: Number }
     },
     allergens: [{ type: String, enum: Object.values(ALLERGEN) }],
+    medicalHistory: { type: [String], default: [] },
     setting: { type: Map, of: Schema.Types.Mixed, default: {} },
     aiConfig: { type: Map, of: Schema.Types.Mixed, default: {} },
+    hasOnboarded: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true }
   },
   {
