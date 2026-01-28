@@ -4,7 +4,10 @@ import { useNavigate, useSearchParams } from 'react-router';
 
 import { DataTableColumnHeader } from '~/components/admin/data-table-column-header';
 import CommonTable from '~/components/common-table';
+import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
+import DeleteBulkIngredientsDialog from '~/features/ingredients/delete-ingredient/components/nutritionist/delete-bulk-ingredients-dialog';
+import DeleteIngredientDialog from '~/features/ingredients/delete-ingredient/components/nutritionist/delete-ingredient-dialog';
 import { useIngredients } from '~/features/ingredients/view-ingredients/api/view-ingredient';
 
 const IngredientsTable = () => {
@@ -40,7 +43,7 @@ const IngredientsTable = () => {
       header: 'Hình ảnh',
       cell: ({ row }) => (
         <img
-          src={row.original.image}
+          src={row.original.image || 'https://via.placeholder.com/40'}
           alt={row.original.name}
           className='h-10 w-10 object-cover rounded'
         />
@@ -54,38 +57,58 @@ const IngredientsTable = () => {
       )
     },
     {
-      accessorKey: 'category',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Danh mục' />
-      )
+      accessorKey: 'categories',
+      header: 'Danh mục',
+      cell: ({ row }) => (
+        <div className='flex gap-1 flex-wrap'>
+          {row.original.categories?.map((cat, idx) => (
+            <Badge key={idx} variant='outline' className='text-xs'>
+              {cat}
+            </Badge>
+          )) || '-'}
+        </div>
+      ),
+      enableSorting: false
     },
     {
-      accessorKey: 'calories',
+      accessorKey: 'nutrition.nutrients.calories',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Calories' />
       ),
-      cell: ({ row }) => `${row.original.calories} kcal`
+      cell: ({ row }) => {
+        const calories = row.original.nutrition?.nutrients?.calories;
+        return calories ? `${calories.value} ${calories.unit}` : '-';
+      }
     },
     {
-      accessorKey: 'protein',
+      accessorKey: 'nutrition.nutrients.protein',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Protein' />
       ),
-      cell: ({ row }) => `${row.original.protein}g`
+      cell: ({ row }) => {
+        const protein = row.original.nutrition?.nutrients?.protein;
+        return protein ? `${protein.value} ${protein.unit}` : '-';
+      }
     },
     {
-      accessorKey: 'carbs',
+      accessorKey: 'nutrition.nutrients.carbs',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Carbs' />
       ),
-      cell: ({ row }) => `${row.original.carbs}g`
+      cell: ({ row }) => {
+        const carbs = row.original.nutrition?.nutrients?.carbs;
+        return carbs ? `${carbs.value} ${carbs.unit}` : '-';
+      }
     },
     {
-      accessorKey: 'fat',
+      accessorKey: 'nutrition.nutrients.fat',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Fat' />
       ),
-      cell: ({ row }) => `${row.original.fat}g`
+      cell: ({ row }) => {
+        const fat = row.original.nutrition?.nutrients?.fat;
+        return fat ? `${fat.value} ${fat.unit}` : '-';
+      }
     },
     {
       id: 'actions',
@@ -128,7 +151,18 @@ const IngredientsTable = () => {
         emptyMessage='Không tìm thấy nguyên liệu.'
       />
 
-      {/* TODO: Add DeleteIngredientDialog and DeleteBulkIngredientsDialog */}
+      <DeleteIngredientDialog
+        ingredient={ingredientToDelete}
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onSuccess={() => setIngredientToDelete(null)}
+      />
+
+      <DeleteBulkIngredientsDialog
+        ingredientIds={selectedIngredientIds}
+        open={bulkDeleteDialogOpen}
+        onOpenChange={setBulkDeleteDialogOpen}
+      />
     </>
   );
 };
