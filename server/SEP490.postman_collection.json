@@ -210,7 +210,7 @@
               "formdata": [
                 {
                   "key": "name",
-                  "value": "Ingredient Test 2",
+                  "value": "Ingredient Test 3",
                   "type": "text",
                   "uuid": "6d06d1f0-a7cd-4e82-8c20-4dd4148cfaff"
                 },
@@ -240,7 +240,7 @@
                 },
                 {
                   "key": "units",
-                  "value": "[\n  {\"value\": 1, \"unit\": \"cup\"},\n  {\"value\": 1, \"unit\": \"tablespoon\"}\n]",
+                  "value": "[\n  {\"value\": 1, \"unit\": \"cup\", \"isDefault\": true},\n  {\"value\": 1, \"unit\": \"tablespoon\", \"isDefault\": false}\n]",
                   "type": "text",
                   "uuid": "f05baa18-5a62-4c22-b101-f365136e600b"
                 },
@@ -469,7 +469,7 @@
               "formdata": []
             },
             "url": {
-              "raw": "http://localhost:3000/api/dishes/asd",
+              "raw": "http://localhost:3000/api/dishes/697a3e4fb558bce36d9bc07f",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -478,7 +478,7 @@
               "path": [
                 "api",
                 "dishes",
-                "asd"
+                "697a3e4fb558bce36d9bc07f"
               ]
             }
           },
@@ -522,7 +522,7 @@
                 },
                 {
                   "key": "ingredients",
-                  "value": "[\n  {\n    \"ingredientId\": \"6979d6cc3fec4ed783fb3892\",\n    \"quantity\": 200,\n    \"unit\": \"g\"\n  },\n  {\n    \"ingredientId\": \"6979ee30826a8c054e98b6ef\",\n    \"quantity\": 100,\n    \"unit\": \"g\"\n  }\n]",
+                  "value": "[{\"ingredientId\":\"697a3926d79c71b7017bac66\",\"units\":[{\"value\":200,\"quantity\":200,\"unit\":\"gram\",\"isDefault\":\"true\"},{\"value\":200,\"quantity\":1,\"unit\":\"bát\",\"isDefault\":\"false\"},{\"value\":200,\"quantity\":0.2,\"unit\":\"kg\",\"isDefault\":\"false\"}]},{\"ingredientId\":\"697a3920d79c71b7017bac61\",\"units\":[{\"value\":150,\"quantity\":150,\"unit\":\"gram\",\"isDefault\":\"true\"},{\"value\":150,\"quantity\":5,\"unit\":\"lát\",\"isDefault\":\"false\"}]}]",
                   "type": "text",
                   "uuid": "0bca27fb-2a09-4b1a-8269-d254fb7c1b9e"
                 },
