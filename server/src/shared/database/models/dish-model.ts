@@ -5,11 +5,11 @@ import mongoose, {
 } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
+import { ALLERGEN } from '~/shared/constants/allergen';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
 import { UNIT } from '~/shared/constants/unit';
 
-import { nutritionSchema } from './ingredient-model';
-import { ALLERGEN } from '~/shared/constants/allergen';
+import { nutrientSchema } from './ingredient-model';
 
 const dishSchema = new Schema(
   {
@@ -28,15 +28,7 @@ const dishSchema = new Schema(
         name: { type: String, required: true },
         image: { type: String, required: true },
         description: { type: String },
-        nutrition: {
-          calories: { type: Number },
-          fat: { type: Number },
-          protein: { type: Number },
-          carbs: { type: Number },
-          fiber: { type: Number },
-          sodium: { type: Number },
-          cholesterol: { type: Number },
-        },
+        nutrients: { type: nutrientSchema },
         allergens: [{ type: String, enum: Object.values(ALLERGEN) }],
         baseUnit: {
           amount: { type: Number, required: true },
