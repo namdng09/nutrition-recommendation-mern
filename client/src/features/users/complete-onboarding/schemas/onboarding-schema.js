@@ -48,6 +48,60 @@ const mealSettingSchema = yup.object({
     .required('Danh mục bữa ăn là bắt buộc')
 });
 
+export const stepOneSchema = yup.object({
+  diet: yup
+    .string()
+    .oneOf(getEnumValues(DIET), 'Chế độ ăn không hợp lệ')
+    .required('Chế độ ăn là bắt buộc'),
+  allergens: yup
+    .array()
+    .of(yup.string().oneOf(getEnumValues(ALLERGEN), 'Dị ứng không hợp lệ'))
+    .optional(),
+  medicalHistory: yup.array().of(yup.string().trim()).optional()
+});
+
+export const stepTwoSchema = yup.object({
+  gender: yup
+    .string()
+    .oneOf(getEnumValues(GENDER), 'Giới tính không hợp lệ')
+    .required('Giới tính là bắt buộc'),
+  dob: yup
+    .string()
+    .required('Ngày sinh là bắt buộc')
+    .test('is-valid-date', 'Ngày sinh không hợp lệ', value => {
+      if (!value) return false;
+      const date = new Date(value);
+      return !isNaN(date.getTime());
+    }),
+  height: yup
+    .number()
+    .positive('Chiều cao phải là số dương')
+    .required('Chiều cao là bắt buộc'),
+  weight: yup
+    .number()
+    .positive('Cân nặng phải là số dương')
+    .required('Cân nặng là bắt buộc'),
+  bodyfat: yup
+    .string()
+    .oneOf(getEnumValues(BODYFAT), 'Mức độ mỡ cơ thể không hợp lệ')
+    .required('Mức độ mỡ cơ thể là bắt buộc')
+});
+
+export const stepThreeSchema = yup.object({
+  goal: yup
+    .object({
+      target: yup
+        .string()
+        .oneOf(getEnumValues(USER_TARGET), 'Mục tiêu không hợp lệ')
+        .required('Mục tiêu là bắt buộc'),
+      weightGoal: yup.number().optional(),
+      targetWeightChange: yup.number().optional()
+    })
+    .optional(),
+  nutritionTarget: nutritionTargetSchema.optional(),
+  mealSetting: yup.array().of(mealSettingSchema).optional()
+});
+
 export const onboardingSchema = yup.object({
   diet: yup
     .string()

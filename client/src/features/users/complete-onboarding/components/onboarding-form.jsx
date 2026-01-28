@@ -9,7 +9,12 @@ import { Button } from '~/components/ui/button';
 import { Form } from '~/components/ui/form';
 
 import { useCompleteOnboarding } from '../api/use-complete-onboarding';
-import { onboardingSchema } from '../schemas/onboarding-schema';
+import {
+  onboardingSchema,
+  stepOneSchema,
+  stepThreeSchema,
+  stepTwoSchema
+} from '../schemas/onboarding-schema';
 import { ProgressIndicator } from './progress-indicator';
 import { StepOneDiet } from './step-one-diet';
 import { StepThreeGoals } from './step-three-goals';
@@ -47,8 +52,37 @@ export function OnboardingForm() {
     }
   });
 
-  const handleNext = () => {
-    setCurrentStep(prev => Math.min(prev + 1, 3));
+  const getStepSchema = step => {
+    switch (step) {
+      case 1:
+        return stepOneSchema;
+      case 2:
+        return stepTwoSchema;
+      case 3:
+        return stepThreeSchema;
+      default:
+        return null;
+    }
+  };
+
+  const handleNext = async () => {
+    const stepSchema = getStepSchema(currentStep);
+    const currentValues = form.getValues();
+
+    try {
+      await stepSchema.validate(currentValues, { abortEarly: false });
+      setCurrentStep(prev => Math.min(prev + 1, 3));
+    } catch (error) {
+      if (error.inner) {
+        error.inner.forEach(err => {
+          form.setError(err.path, {
+            type: 'manual',
+            message: err.message
+          });
+        });
+      }
+      toast.error('Vui lòng điền đầy đủ thông tin bắt buộc');
+    }
   };
 
   const handlePrevious = () => {
