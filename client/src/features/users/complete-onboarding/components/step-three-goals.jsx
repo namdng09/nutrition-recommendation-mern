@@ -335,79 +335,78 @@ export function StepThreeGoals({ control, watch }) {
                   </Button>
                 )}
 
-                <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-                  <Controller
-                    control={control}
-                    name={`mealSetting.${index}.name`}
-                    render={({ field, fieldState }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Loại bữa ăn{' '}
-                          <span className='text-destructive'>*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className='w-full'>
-                              <SelectValue placeholder='Chọn loại bữa ăn' />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {MEAL_TYPE_OPTIONS.map(option => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        {fieldState.error && (
-                          <p className='text-destructive text-sm'>
-                            {fieldState.error.message}
-                          </p>
-                        )}
-                      </FormItem>
-                    )}
-                  />
+                <div className='grid grid-cols-2 gap-4'>
+                  {/* Meal Type Dropdown */}
+                  <div className='space-y-2'>
+                    <label className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
+                      Loại bữa ăn <span className='text-destructive'>*</span>
+                    </label>
+                    <FormField
+                      control={control}
+                      name={`mealSetting.${index}.name`}
+                      render={({ field }) => (
+                        <>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger className='w-full'>
+                                <SelectValue placeholder='Chọn loại bữa ăn' />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {MEAL_TYPE_OPTIONS.map(option => (
+                                <SelectItem
+                                  key={option.value}
+                                  value={option.value}
+                                >
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </>
+                      )}
+                    />
+                  </div>
 
-                  <Controller
-                    control={control}
-                    name={`mealSetting.${index}.categories`}
-                    render={({ field, fieldState }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Danh mục món ăn{' '}
-                          <span className='text-destructive'>*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className='w-full'
-                            placeholder={
-                              selectedMeal
-                                ? `Ví dụ: ${selectedMeal.label}, Món phụ...`
-                                : 'Ví dụ: Món chính, Món phụ...'
-                            }
-                            value={field.value?.join(', ') || ''}
-                            onChange={e => {
-                              const value = e.target.value;
-                              field.onChange(
-                                value ? value.split(',').map(v => v.trim()) : []
-                              );
-                            }}
-                          />
-                        </FormControl>
-                        {fieldState.error && (
-                          <p className='text-destructive text-sm'>
-                            {fieldState.error.message}
-                          </p>
-                        )}
-                      </FormItem>
-                    )}
-                  />
+                  {/* Categories Input */}
+                  <div className='space-y-2'>
+                    <label className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
+                      Danh mục món ăn{' '}
+                      <span className='text-destructive'>*</span>
+                    </label>
+                    <FormField
+                      control={control}
+                      name={`mealSetting.${index}.categories`}
+                      render={({ field }) => (
+                        <>
+                          <FormControl>
+                            <Input
+                              className='w-full'
+                              placeholder={
+                                selectedMeal
+                                  ? `Ví dụ: ${selectedMeal.label}, Món phụ...`
+                                  : 'Ví dụ: Món chính, Món phụ...'
+                              }
+                              value={field.value?.join(', ') || ''}
+                              onChange={e => {
+                                const value = e.target.value;
+                                field.onChange(
+                                  value
+                                    ? value.split(',').map(v => v.trim())
+                                    : []
+                                );
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </>
+                      )}
+                    />
+                  </div>
                 </div>
               </div>
             );
