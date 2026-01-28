@@ -74,12 +74,40 @@ const router = createBrowserRouter([
         ]
       },
       {
+        path: '/nutritionist/',
+        Component: () => (
+          <PrivateRoute allowedRoles={['nutritionist']}>
+            <AdminLayout />
+          </PrivateRoute>
+        ),
+        // Component: AdminLayout,
+        children: [
+          {
+            path: '',
+            Component: lazy(() => import('~/app/nutritionist/page'))
+          },
+          {
+            path: 'manage-ingredients/',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-ingredients/page')
+            )
+          },
+          {
+            path: 'manage-ingredients/:id',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-ingredients/[id]/page')
+            )
+          }
+        ]
+      },
+      {
         path: '/admin/',
         Component: () => (
           <PrivateRoute allowedRoles={['admin']}>
             <AdminLayout />
           </PrivateRoute>
         ),
+        // Component: AdminLayout,
         children: [
           {
             path: '',
