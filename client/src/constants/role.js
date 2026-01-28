@@ -1,7 +1,7 @@
 export const ROLE = Object.freeze({
-  USER: 'user',
-  NUTRITIONIST: 'nutritionist',
-  ADMIN: 'admin'
+  USER: 'Người dùng',
+  NUTRITIONIST: 'Chuyên gia dinh dưỡng',
+  ADMIN: 'Quản trị viên'
 });
 
 export const ROLE_OPTIONS = [
