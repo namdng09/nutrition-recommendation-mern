@@ -5,5 +5,6 @@ export const QUERY_KEYS = {
   INGREDIENTS: ['ingredients'],
   INGREDIENT: id => ['ingredient', id],
   COLLECTIONS: ['collections'],
-  COLLECTION: id => ['collection', id]
+  COLLECTION: id => ['collection', id],
+  DISHES: ['dishes']
 };
