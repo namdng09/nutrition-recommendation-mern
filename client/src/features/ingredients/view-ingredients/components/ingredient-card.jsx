@@ -1,5 +1,4 @@
 import React from 'react';
-import { FaAppleAlt, FaBox, FaLeaf } from 'react-icons/fa';
 
 export default function IngredientCard({ item }) {
   const nutrients = item?.nutrition?.nutrients || {};
