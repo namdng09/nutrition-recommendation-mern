@@ -32,7 +32,7 @@ export default function DishDetail() {
   const totalTime = (dish.preparationTime ?? 0) + (dish.cookTime ?? 0);
 
   return (
-    <div className='mx-auto w-full max-w-5xl space-y-20 px-4 py-14 animate-in fade-in slide-in-from-bottom-4 duration-700'>
+    <div className='mx-auto w-full max-w-7xl space-y-20 px-4 py-14 animate-in fade-in slide-in-from-bottom-4 duration-700'>
       <button
         onClick={() => navigate(-1)}
         className='group inline-flex items-center gap-3 text-xs font-extrabold tracking-widest text-muted-foreground transition hover:text-primary'
