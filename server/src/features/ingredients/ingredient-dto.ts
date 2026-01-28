@@ -40,7 +40,8 @@ const baseUnitSchema = z.object({
 
 const unitSchema = z.object({
   value: z.coerce.number().min(0),
-  unit: z.string().trim().min(1)
+  unit: z.string().trim().min(1),
+  isDefault: z.boolean()
 });
 
 const parseJSON = (val: any) => {
@@ -68,7 +69,7 @@ export const createIngredientRequestSchema = z.object({
   image: z.file().optional(),
   isActive: z
     .union([z.boolean(), z.string()])
-    .transform((val) => {
+    .transform(val => {
       if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;
@@ -84,10 +85,9 @@ export type CreateIngredientRequest = z.infer<
 export const updateIngredientRequestSchema = z.object({
   name: z.string().trim().min(2, 'Tên phải có ít nhất 2 ký tự').optional(),
   description: z.string().trim().optional(),
-  categories: z.preprocess(
-    parseJSON,
-    z.array(z.enum(Object.values(INGREDIENT_CATEGORY)))
-  ).optional(),
+  categories: z
+    .preprocess(parseJSON, z.array(z.enum(Object.values(INGREDIENT_CATEGORY))))
+    .optional(),
   baseUnit: z.preprocess(parseJSON, baseUnitSchema).optional(),
   units: z.preprocess(parseJSON, z.array(unitSchema)).optional(),
   allergens: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
@@ -95,7 +95,7 @@ export const updateIngredientRequestSchema = z.object({
   image: z.file().optional(),
   isActive: z
     .union([z.boolean(), z.string()])
-    .transform((val) => {
+    .transform(val => {
       if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;

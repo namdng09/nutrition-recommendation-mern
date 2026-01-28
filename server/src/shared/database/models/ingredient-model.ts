@@ -116,7 +116,8 @@ const ingredientSchema = new Schema(
     units: [
       {
         value: { type: Number, required: true },
-        unit: { type: String, required: true }
+        unit: { type: String, required: true },
+        isDefault: { type: Boolean, required: true }
       }
     ],
     allergens: [{ type: String, enum: Object.values(ALLERGEN) }],
