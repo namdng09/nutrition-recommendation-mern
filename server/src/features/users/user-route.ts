@@ -9,7 +9,12 @@ import {
 import { asyncHandler, handleSingleImageUpload } from '~/shared/utils';
 
 import { UserController } from './user-controller';
-import { createUserRequestSchema, updateUserRequestSchema } from './user-dto';
+import {
+  createUserRequestSchema,
+  nutritionTargetRequestSchema,
+  onboardingRequestSchema,
+  updateUserRequestSchema
+} from './user-dto';
 
 const router = Router();
 
@@ -37,6 +42,22 @@ router.delete(
 );
 
 router.get('/me', authenticate(), asyncHandler(UserController.viewProfile));
+
+router.post(
+  '/me/onboarding',
+  authenticate(),
+  parseFormData,
+  validate(onboardingRequestSchema.shape),
+  asyncHandler(UserController.onboardUser)
+);
+
+router.post(
+  '/me/nutrition-target',
+  authenticate(),
+  parseFormData,
+  validate(nutritionTargetRequestSchema.shape),
+  asyncHandler(UserController.calculateNutritionTarget)
+);
 
 router.put(
   '/me',
