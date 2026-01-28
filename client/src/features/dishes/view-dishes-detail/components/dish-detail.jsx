@@ -2,11 +2,9 @@ import React from 'react';
 import {
   FaArrowLeft,
   FaCarrot,
-  FaChevronRight,
   FaClock,
   FaFireAlt,
   FaListOl,
-  FaTag,
   FaUser,
   FaUtensils
 } from 'react-icons/fa';
@@ -44,13 +42,12 @@ export default function DishDetail() {
       </button>
 
       <div className='grid gap-10 lg:grid-cols-2 lg:items-center'>
-        <div className='relative group'>
-          <div className='absolute -inset-6 rounded-[3rem] bg-gradient-to-tr from-orange-200/30 to-sky-200/30 blur-3xl opacity-60 group-hover:opacity-90 transition' />
-          <div className='relative aspect-[3/4] overflow-hidden rounded-[2.5rem] border border-white/20 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.25)]'>
+        <div className='relative group mx-auto w-[72%]'>
+          <div className='relative aspect-[3/4] overflow-hidden rounded-[2rem] border border-white/20 shadow-[0_16px_48px_-28px_rgba(0,0,0,0.25)]'>
             <img
               src={dish.image || '/placeholder.png'}
               alt={dish.name}
-              className='h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-110'
+              className='h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-[1.02]'
             />
           </div>
         </div>
