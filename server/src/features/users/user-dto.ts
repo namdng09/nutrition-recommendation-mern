@@ -1,8 +1,10 @@
 import { z } from 'zod';
 
+import { ACTIVITY_LEVEL } from '~/shared/constants/activity-level';
 import { ALLERGEN } from '~/shared/constants/allergen';
 import { BODYFAT } from '~/shared/constants/bodyfat';
 import { DIET } from '~/shared/constants/diet';
+import { DISH_CATEGORY } from '~/shared/constants/dish-category';
 import { GENDER } from '~/shared/constants/gender';
 import { MEAL_TYPE } from '~/shared/constants/meal-type';
 import { ROLE } from '~/shared/constants/role';
@@ -28,10 +30,39 @@ const nutritionTargetSchema = z.object({
 
 const mealSettingSchema = z.object({
   name: z.enum(Object.values(MEAL_TYPE), { message: 'Invalid meal type' }),
-  categories: z
-    .array(z.string().trim())
-    .min(1, 'Meal categories cannot be empty')
+  dishCategories: z.array(
+    z.enum(Object.values(DISH_CATEGORY), {
+      message: 'Invalid dish category'
+    })
+  )
 });
+
+export const nutritionTargetRequestSchema = z.object({
+  diet: z.enum(Object.values(DIET), { message: 'Invalid diet' }),
+  allergens: z
+    .array(z.enum(Object.values(ALLERGEN), { message: 'Invalid allergen' }))
+    .optional(),
+  gender: z.enum(Object.values(GENDER), { message: 'Invalid gender' }),
+  height: z.number().positive(),
+  weight: z.number().positive(),
+  dob: z.string().optional(),
+  age: z.number().positive().optional(),
+  bodyfat: z.enum(Object.values(BODYFAT), { message: 'Invalid bodyfat' }),
+  activityLevel: z.enum(Object.values(ACTIVITY_LEVEL), {
+    message: 'Invalid activity level'
+  }),
+  goal: z
+    .object({
+      target: z.enum(Object.values(USER_TARGET), { message: 'Invalid target' }),
+      weightGoal: z.number().optional(),
+      targetWeightChange: z.number().optional()
+    })
+    .optional()
+});
+
+export type NutritionTargetRequest = z.infer<
+  typeof nutritionTargetRequestSchema
+>;
 
 export const createUserRequestSchema = z.object({
   email: z.email('Invalid email address'),
@@ -68,6 +99,9 @@ export const onboardingRequestSchema = z.object({
   medicalHistory: z.array(z.string().trim()).optional(),
   nutritionTarget: nutritionTargetSchema.optional(),
   mealSetting: z.array(mealSettingSchema).optional(),
+  activityLevel: z.enum(Object.values(ACTIVITY_LEVEL), {
+    message: 'Invalid Activity Level'
+  }),
   goal: z
     .object({
       target: z.enum(Object.values(USER_TARGET), { message: 'Invalid target' }),
