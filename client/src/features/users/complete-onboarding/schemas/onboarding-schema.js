@@ -8,10 +8,8 @@ import { GENDER } from '~/constants/gender';
 import { MEAL_TYPE } from '~/constants/meal-type';
 import { USER_TARGET } from '~/constants/user-target';
 
-// Helper to get enum values
 const getEnumValues = obj => Object.values(obj);
 
-// Macro range schema
 const macroRangeSchema = yup
   .object({
     min: yup.number().min(0).required('Giá trị tối thiểu là bắt buộc'),
@@ -26,7 +24,6 @@ const macroRangeSchema = yup
     }
   );
 
-// Nutrition target schema
 const nutritionTargetSchema = yup.object({
   caloriesTarget: yup
     .number()
@@ -39,7 +36,6 @@ const nutritionTargetSchema = yup.object({
   })
 });
 
-// Meal setting schema
 const mealSettingSchema = yup.object({
   name: yup
     .string()
@@ -52,9 +48,7 @@ const mealSettingSchema = yup.object({
     .required('Danh mục bữa ăn là bắt buộc')
 });
 
-// Complete onboarding schema (all steps combined)
 export const onboardingSchema = yup.object({
-  // Step 1: Diet preferences
   diet: yup
     .string()
     .oneOf(getEnumValues(DIET), 'Chế độ ăn không hợp lệ')
@@ -65,7 +59,6 @@ export const onboardingSchema = yup.object({
     .optional(),
   medicalHistory: yup.array().of(yup.string().trim()).optional(),
 
-  // Step 2: Personal information
   gender: yup
     .string()
     .oneOf(getEnumValues(GENDER), 'Giới tính không hợp lệ')
@@ -96,7 +89,6 @@ export const onboardingSchema = yup.object({
   //   .oneOf(getEnumValues(ACTIVITY_LEVEL), 'Mức độ hoạt động không hợp lệ')
   //   .required('Mức độ hoạt động là bắt buộc'),
 
-  // Step 3: Goals and meals
   goal: yup
     .object({
       target: yup

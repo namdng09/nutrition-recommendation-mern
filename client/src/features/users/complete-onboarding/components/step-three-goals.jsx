@@ -29,12 +29,11 @@ export function StepThreeGoals({ control, watch }) {
     name: 'mealSetting'
   });
 
-  // Initialize with default meals from MEAL_TYPE_OPTIONS
   useEffect(() => {
     if (fields.length === 0) {
       const defaultMeals = MEAL_TYPE_OPTIONS.map(option => ({
         name: option.value,
-        categories: [option.label] // Use label as default category
+        categories: [option.label]
       }));
       replace(defaultMeals);
     }
@@ -49,7 +48,6 @@ export function StepThreeGoals({ control, watch }) {
         </p>
       </div>
 
-      {/* Goal Selection */}
       <div className='space-y-4'>
         <h4 className='text-sm font-medium'>Mục tiêu của bạn</h4>
 
@@ -288,7 +286,6 @@ export function StepThreeGoals({ control, watch }) {
         )}
       </div>
 
-      {/* Meal Settings - Pre-populated with defaults */}
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
           <h4 className='text-sm font-medium'>
@@ -322,7 +319,6 @@ export function StepThreeGoals({ control, watch }) {
                 key={field.id}
                 className='border-input relative rounded-md border p-4'
               >
-                {/* Only show remove button for non-default meals */}
                 {index >= MEAL_TYPE_OPTIONS.length && (
                   <Button
                     type='button'
@@ -336,7 +332,6 @@ export function StepThreeGoals({ control, watch }) {
                 )}
 
                 <div className='grid grid-cols-2 gap-4'>
-                  {/* Meal Type Dropdown */}
                   <div className='space-y-2'>
                     <label className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
                       Loại bữa ăn <span className='text-destructive'>*</span>
@@ -372,7 +367,6 @@ export function StepThreeGoals({ control, watch }) {
                     />
                   </div>
 
-                  {/* Categories Input */}
                   <div className='space-y-2'>
                     <label className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
                       Danh mục món ăn{' '}

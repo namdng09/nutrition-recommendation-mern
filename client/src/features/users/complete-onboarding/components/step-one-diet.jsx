@@ -37,7 +37,6 @@ export function StepOneDiet({ control }) {
         </p>
       </div>
 
-      {/* Diet Selection */}
       <FormField
         control={control}
         name='diet'
@@ -65,7 +64,6 @@ export function StepOneDiet({ control }) {
         )}
       />
 
-      {/* Allergen Selection */}
       <Controller
         control={control}
         name='allergens'
@@ -101,7 +99,6 @@ export function StepOneDiet({ control }) {
         )}
       />
 
-      {/* Medical History */}
       <Controller
         control={control}
         name='medicalHistory'

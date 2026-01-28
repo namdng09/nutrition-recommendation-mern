@@ -39,7 +39,6 @@ export function StepTwoAboutYou({ control }) {
       </div>
 
       <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-        {/* Gender */}
         <FormField
           control={control}
           name='gender'
@@ -67,7 +66,6 @@ export function StepTwoAboutYou({ control }) {
           )}
         />
 
-        {/* Date of Birth - Using Calendar Popover like Sign Up */}
         <FormField
           control={control}
           name='dob'
@@ -120,7 +118,6 @@ export function StepTwoAboutYou({ control }) {
           )}
         />
 
-        {/* Height */}
         <FormField
           control={control}
           name='height'
@@ -143,7 +140,6 @@ export function StepTwoAboutYou({ control }) {
           )}
         />
 
-        {/* Weight */}
         <FormField
           control={control}
           name='weight'
@@ -166,7 +162,6 @@ export function StepTwoAboutYou({ control }) {
           )}
         />
 
-        {/* Body Fat */}
         <FormField
           control={control}
           name='bodyfat'

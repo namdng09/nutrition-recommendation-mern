@@ -1,5 +1,3 @@
-// Activity level constant - for future use
-// TODO: Backend team to add activityLevel field to onboarding schema
 export const ACTIVITY_LEVEL = Object.freeze({
   DESK_JOB_LIGHT_EXERCISE: 'Công việc bàn giấy, vận động nhẹ',
   LIGHTLY_ACTIVE_3_4X_WEEK: 'Hoạt động nhẹ, tập luyện 3-4 lần/tuần',
