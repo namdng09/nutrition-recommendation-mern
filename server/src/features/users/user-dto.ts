@@ -2,10 +2,14 @@ import { z } from 'zod';
 
 import { ACTIVITY_LEVEL } from '~/shared/constants/activity-level';
 import { ALLERGEN } from '~/shared/constants/allergen';
+import { AVAILABLE_TIME } from '~/shared/constants/available-time';
 import { BODYFAT } from '~/shared/constants/bodyfat';
+import { COOKING_PREFERENCE } from '~/shared/constants/cooking-preference';
 import { DIET } from '~/shared/constants/diet';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
 import { GENDER } from '~/shared/constants/gender';
+import { MEAL_COMPLEXITY } from '~/shared/constants/meal-complexity';
+import { MEAL_SIZE } from '~/shared/constants/meal-size';
 import { MEAL_TYPE } from '~/shared/constants/meal-type';
 import { ROLE } from '~/shared/constants/role';
 import { USER_TARGET } from '~/shared/constants/user-target';
@@ -34,7 +38,17 @@ const mealSettingSchema = z.object({
     z.enum(Object.values(DISH_CATEGORY), {
       message: 'Invalid dish category'
     })
-  )
+  ),
+  cookingPreference: z.enum(Object.values(COOKING_PREFERENCE), {
+    message: 'Invalid cooking preference'
+  }),
+  mealSize: z.enum(Object.values(MEAL_SIZE), { message: 'Invalid meal size' }),
+  availableTime: z.enum(Object.values(AVAILABLE_TIME), {
+    message: 'Invalid available time'
+  }),
+  complexity: z.enum(Object.values(MEAL_COMPLEXITY), {
+    message: 'Invalid meal complexity'
+  })
 });
 
 export const nutritionTargetRequestSchema = z.object({
@@ -98,7 +112,7 @@ export const onboardingRequestSchema = z.object({
     .optional(),
   medicalHistory: z.array(z.string().trim()).optional(),
   nutritionTarget: nutritionTargetSchema.optional(),
-  mealSetting: z.array(mealSettingSchema).optional(),
+  mealSettings: z.array(mealSettingSchema).optional(),
   activityLevel: z.enum(Object.values(ACTIVITY_LEVEL), {
     message: 'Invalid Activity Level'
   }),

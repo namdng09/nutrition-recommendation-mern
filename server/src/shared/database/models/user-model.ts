@@ -51,7 +51,7 @@ const nutritionTargetSchema = new Schema(
 
 const mealSettingSchema = new Schema(
   {
-    title: { type: String, required: true },
+    name: { type: String, required: true },
     mealSize: { type: String, enum: Object.values(MEAL_SIZE), required: true },
     preferredTypes: [
       { type: String, enum: Object.values(MEAL_TYPE), required: true }
