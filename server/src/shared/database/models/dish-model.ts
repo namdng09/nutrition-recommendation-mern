@@ -26,7 +26,7 @@ const dishSchema = new Schema(
       {
         ingredientId: { type: Schema.Types.ObjectId, ref: 'Ingredient' },
         name: { type: String, required: true },
-        image: { type: String, required: true },
+        image: { type: String },
         description: { type: String },
         nutrients: { type: nutrientSchema },
         allergens: [{ type: String, enum: Object.values(ALLERGEN) }],
@@ -38,7 +38,8 @@ const dishSchema = new Schema(
           {
             value: { type: Number, required: true },
             quantity: { type: Number, required: true },
-            unit: { type: String, required: true }
+            unit: { type: String, required: true },
+            isDefault: { type: Boolean, required: true }
           }
         ]
       }
@@ -51,6 +52,7 @@ const dishSchema = new Schema(
     ],
     image: { type: String },
     isActive: { type: Boolean, default: true },
+    isPublic: { type: Boolean, default: false },
     preparationTime: { type: Number },
     cookTime: { type: Number },
     servings: { type: Number, default: 1 },
