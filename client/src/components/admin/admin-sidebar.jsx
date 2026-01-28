@@ -1,4 +1,4 @@
-import { Home, Users } from 'lucide-react';
+import { Apple, Home, Users } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router';
 
 import {
@@ -13,14 +13,19 @@ import {
   SidebarMenuItem,
   SidebarRail
 } from '~/components/ui/sidebar';
+import { ROLE } from '~/constants/role';
+import { useProfile } from '~/features/users/view-profile/api/view-profile';
 
 export function AdminSidebar({ ...props }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { data: profile } = useProfile();
 
-  const navSections = [
+  const userRole = profile?.role;
+
+  const adminNavSections = [
     {
-      title: 'Overview',
+      title: 'Tổng quan',
       items: [
         {
           title: 'Dashboard',
@@ -30,16 +35,42 @@ export function AdminSidebar({ ...props }) {
       ]
     },
     {
-      title: 'User Management',
+      title: 'Quản lý người dùng',
       items: [
         {
-          title: 'Users',
+          title: 'Người dùng',
           url: '/admin/manage-users',
           icon: Users
         }
       ]
     }
   ];
+
+  const nutritionistNavSections = [
+    {
+      title: 'Tổng quan',
+      items: [
+        {
+          title: 'Dashboard',
+          url: '/nutritionist',
+          icon: Home
+        }
+      ]
+    },
+    {
+      title: 'Quản lý',
+      items: [
+        {
+          title: 'Nguyên liệu',
+          url: '/nutritionist/manage-ingredients',
+          icon: Apple
+        }
+      ]
+    }
+  ];
+
+  const navSections =
+    userRole === ROLE.NUTRITIONIST ? nutritionistNavSections : adminNavSections;
 
   const handleNavigation = url => {
     navigate(url);
