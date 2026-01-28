@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ArrowLeft, Save, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, Upload, X } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
@@ -27,18 +27,12 @@ import { Spinner } from '~/components/ui/spinner';
 import { Textarea } from '~/components/ui/text-area';
 import DeleteIngredientDialog from '~/features/ingredients/delete-ingredient/components/nutritionist/delete-ingredient-dialog';
 import { useUpdateIngredient } from '~/features/ingredients/update-ingredient/api/update-ingredient';
-import { updateIngredientSchema } from '~/features/ingredients/update-ingredient/schemas/update-ingredient-schema';
+import {
+  INGREDIENT_CATEGORY_OPTIONS,
+  UNIT_OPTIONS,
+  updateIngredientSchema
+} from '~/features/ingredients/update-ingredient/schemas/update-ingredient-schema';
 import { useIngredientDetail } from '~/features/ingredients/view-ingredients-detail/api/view-ingredient-detail';
-
-const CATEGORY_OPTIONS = [
-  { value: 'Meat', label: 'Thịt' },
-  { value: 'Vegetable', label: 'Rau' },
-  { value: 'Fruit', label: 'Trái cây' },
-  { value: 'Grain', label: 'Ngũ cốc' },
-  { value: 'Dairy', label: 'Sữa' },
-  { value: 'Seafood', label: 'Hải sản' },
-  { value: 'Other', label: 'Khác' }
-];
 
 const STATUS_OPTIONS = [
   { value: 'true', label: 'Active' },
@@ -62,31 +56,66 @@ const IngredientDetail = ({ id }) => {
     });
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   const form = useForm({
     resolver: yupResolver(updateIngredientSchema),
     values: ingredient
       ? {
           name: ingredient.name || '',
-          category: ingredient.category || '',
-          unit: ingredient.unit || '',
-          calories: ingredient.calories?.toString() || '0',
-          protein: ingredient.protein?.toString() || '0',
-          carbs: ingredient.carbs?.toString() || '0',
-          fat: ingredient.fat?.toString() || '0',
-          fiber: ingredient.fiber?.toString() || '0',
+          description: ingredient.description || '',
+          categories: ingredient.categories || [],
+          baseUnit: ingredient.baseUnit || { amount: 100, unit: 'g' },
+          units: ingredient.units || [],
+          allergens: ingredient.allergens || [],
+          nutrition: ingredient.nutrition || {
+            nutrients: {
+              calories: { value: 0, unit: 'kcal' },
+              carbs: { value: 0, unit: 'g' },
+              fat: { value: 0, unit: 'g' },
+              protein: { value: 0, unit: 'g' },
+              fiber: { value: 0, unit: 'g' },
+              sodium: { value: 0, unit: 'mg' },
+              cholesterol: { value: 0, unit: 'mg' }
+            }
+          },
           image: ingredient.image || '',
           isActive: ingredient.isActive?.toString() || 'true'
         }
       : undefined
   });
 
+  const handleImageChange = e => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSave = data => {
-    updateIngredient({ id, data });
+    console.log('Form data being submitted:', data);
+    console.log('Form errors:', form.formState.errors);
+
+    const processedData = {
+      ...data,
+      isActive: data.isActive === 'true' || data.isActive === true
+    };
+
+    updateIngredient({ id, data: processedData, image: selectedImage });
   };
 
   const handleToggleActive = () => {
-    updateIngredient({ id, data: { isActive: !ingredient.isActive } });
+    updateIngredient({
+      id,
+      data: { isActive: !ingredient.isActive },
+      image: null
+    });
   };
 
   const handleBack = () => {
@@ -95,6 +124,26 @@ const IngredientDetail = ({ id }) => {
 
   const handleDeleteSuccess = () => {
     navigate('/nutritionist/manage-ingredients');
+  };
+
+  const handleAddCategory = category => {
+    const currentCategories = form.getValues('categories') || [];
+    if (!currentCategories.includes(category)) {
+      form.setValue('categories', [...currentCategories, category]);
+    }
+  };
+
+  const handleRemoveCategory = categoryToRemove => {
+    const currentCategories = form.getValues('categories') || [];
+    const updatedCategories = currentCategories.filter(
+      cat => cat !== categoryToRemove
+    );
+    console.log('Removing category:', categoryToRemove);
+    console.log('Updated categories:', updatedCategories);
+    form.setValue('categories', updatedCategories, {
+      shouldValidate: true,
+      shouldDirty: true
+    });
   };
 
   if (!ingredient) {
@@ -109,6 +158,14 @@ const IngredientDetail = ({ id }) => {
     );
   }
 
+  const nutrients = ingredient?.nutrition?.nutrients;
+  const displayImage =
+    previewUrl || ingredient?.image || 'https://via.placeholder.com/128';
+  const selectedCategories = form.watch('categories') || [];
+  const availableCategories = INGREDIENT_CATEGORY_OPTIONS.filter(
+    cat => !selectedCategories.includes(cat.value)
+  );
+
   return (
     <div className='max-w-4xl mx-auto'>
       <Button variant='ghost' size='sm' onClick={handleBack} className='mb-4'>
@@ -117,11 +174,22 @@ const IngredientDetail = ({ id }) => {
       </Button>
 
       <div className='flex flex-col items-center gap-4 p-6 bg-card rounded-lg border mb-6 md:flex-row md:items-start'>
-        <img
-          src={ingredient?.image}
-          alt={ingredient?.name}
-          className='h-32 w-32 object-cover rounded'
-        />
+        <div className='relative'>
+          <img
+            src={displayImage}
+            alt={ingredient?.name}
+            className='h-32 w-32 object-cover rounded'
+          />
+          <label className='absolute bottom-0 right-0 p-1 bg-primary rounded-full cursor-pointer hover:bg-primary/90'>
+            <Upload className='h-4 w-4 text-primary-foreground' />
+            <input
+              type='file'
+              accept='image/*'
+              className='hidden'
+              onChange={handleImageChange}
+            />
+          </label>
+        </div>
 
         <div className='flex-1 text-center md:text-left'>
           <div className='flex items-center justify-center md:justify-start gap-2'>
@@ -130,12 +198,34 @@ const IngredientDetail = ({ id }) => {
               {ingredient?.isActive ? 'Active' : 'Inactive'}
             </Badge>
           </div>
-          <p className='text-muted-foreground'>{ingredient?.category}</p>
+          <div className='flex gap-1 mt-2 flex-wrap justify-center md:justify-start'>
+            {selectedCategories?.map((cat, idx) => (
+              <Badge key={idx} variant='outline'>
+                {cat}
+              </Badge>
+            ))}
+          </div>
           <div className='flex gap-2 mt-2 flex-wrap justify-center md:justify-start'>
-            <Badge variant='outline'>{ingredient?.calories} kcal</Badge>
-            <Badge variant='outline'>Protein: {ingredient?.protein}g</Badge>
-            <Badge variant='outline'>Carbs: {ingredient?.carbs}g</Badge>
-            <Badge variant='outline'>Fat: {ingredient?.fat}g</Badge>
+            {nutrients?.calories && (
+              <Badge variant='outline'>
+                {nutrients.calories.value} {nutrients.calories.unit}
+              </Badge>
+            )}
+            {nutrients?.protein && (
+              <Badge variant='outline'>
+                Protein: {nutrients.protein.value} {nutrients.protein.unit}
+              </Badge>
+            )}
+            {nutrients?.carbs && (
+              <Badge variant='outline'>
+                Carbs: {nutrients.carbs.value} {nutrients.carbs.unit}
+              </Badge>
+            )}
+            {nutrients?.fat && (
+              <Badge variant='outline'>
+                Fat: {nutrients.fat.value} {nutrients.fat.unit}
+              </Badge>
+            )}
           </div>
         </div>
 
@@ -150,6 +240,7 @@ const IngredientDetail = ({ id }) => {
           </Button>
           <Button
             size='sm'
+            type='button'
             onClick={form.handleSubmit(handleSave)}
             disabled={isUpdating}
           >
@@ -166,49 +257,95 @@ const IngredientDetail = ({ id }) => {
       <div className='bg-card rounded-lg border p-6'>
         <h2 className='text-lg font-semibold mb-4'>Thông tin nguyên liệu</h2>
         <Form {...form}>
-          <form className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6'>
-            <FormField
-              control={form.control}
-              name='name'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-muted-foreground'>
-                    Tên nguyên liệu
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder='Nhập tên nguyên liệu' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='category'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-muted-foreground'>
-                    Danh mục
-                  </FormLabel>
-                  <Select
-                    key={ingredient?.id + '-category-' + (field.value ?? '')}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
+          <form onSubmit={form.handleSubmit(handleSave)} className='space-y-6'>
+            {/* Basic Info */}
+            <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6'>
+              <FormField
+                control={form.control}
+                name='name'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tên nguyên liệu</FormLabel>
                     <FormControl>
-                      <SelectTrigger className='w-full'>
-                        <SelectValue placeholder='Chọn danh mục' />
-                      </SelectTrigger>
+                      <Input placeholder='Nhập tên nguyên liệu' {...field} />
                     </FormControl>
-                    <SelectContent>
-                      {CATEGORY_OPTIONS.map(option => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='isActive'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Trạng thái</FormLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {STATUS_OPTIONS.map(option => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormField
+              control={form.control}
+              name='categories'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Danh mục</FormLabel>
+                  <div className='space-y-3'>
+                    <Select onValueChange={handleAddCategory}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Chọn danh mục' />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {availableCategories.map(option => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    {selectedCategories.length > 0 && (
+                      <div className='flex flex-wrap gap-2'>
+                        {selectedCategories.map((cat, idx) => (
+                          <Badge
+                            key={idx}
+                            variant='secondary'
+                            className='gap-1 pr-1'
+                          >
+                            {cat}
+                            <button
+                              type='button'
+                              className='ml-1 hover:bg-secondary-foreground/20 rounded-sm p-0.5'
+                              onClick={e => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleRemoveCategory(cat);
+                              }}
+                            >
+                              <X className='h-3 w-3' />
+                            </button>
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -216,154 +353,170 @@ const IngredientDetail = ({ id }) => {
 
             <FormField
               control={form.control}
-              name='unit'
+              name='description'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-muted-foreground'>
-                    Đơn vị
-                  </FormLabel>
+                  <FormLabel>Mô tả</FormLabel>
                   <FormControl>
-                    <Input placeholder='Nhập đơn vị (g, ml, ...)' {...field} />
+                    <Textarea placeholder='Nhập mô tả nguyên liệu' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <FormField
-              control={form.control}
-              name='calories'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-muted-foreground'>
-                    Calories (kcal)
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type='number'
-                      placeholder='Nhập calories'
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Nutrition Info */}
+            <div className='space-y-4'>
+              <h3 className='text-md font-semibold'>Thông tin dinh dưỡng</h3>
+              <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6'>
+                <FormField
+                  control={form.control}
+                  name='nutrition.nutrients.calories.value'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Calories (kcal)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='number'
+                          placeholder='0'
+                          {...field}
+                          onChange={e =>
+                            field.onChange(parseFloat(e.target.value) || 0)
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name='protein'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-muted-foreground'>
-                    Protein (g)
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type='number'
-                      placeholder='Nhập protein'
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name='nutrition.nutrients.protein.value'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Protein (g)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='number'
+                          placeholder='0'
+                          {...field}
+                          onChange={e =>
+                            field.onChange(parseFloat(e.target.value) || 0)
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name='carbs'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-muted-foreground'>
-                    Carbs (g)
-                  </FormLabel>
-                  <FormControl>
-                    <Input type='number' placeholder='Nhập carbs' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name='nutrition.nutrients.carbs.value'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Carbs (g)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='number'
+                          placeholder='0'
+                          {...field}
+                          onChange={e =>
+                            field.onChange(parseFloat(e.target.value) || 0)
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name='fat'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-muted-foreground'>
-                    Fat (g)
-                  </FormLabel>
-                  <FormControl>
-                    <Input type='number' placeholder='Nhập fat' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name='nutrition.nutrients.fat.value'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Fat (g)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='number'
+                          placeholder='0'
+                          {...field}
+                          onChange={e =>
+                            field.onChange(parseFloat(e.target.value) || 0)
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name='fiber'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-muted-foreground'>
-                    Fiber (g)
-                  </FormLabel>
-                  <FormControl>
-                    <Input type='number' placeholder='Nhập fiber' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name='nutrition.nutrients.fiber.value'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Fiber (g)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='number'
+                          placeholder='0'
+                          {...field}
+                          onChange={e =>
+                            field.onChange(parseFloat(e.target.value) || 0)
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name='image'
-              render={({ field }) => (
-                <FormItem className='md:col-span-2'>
-                  <FormLabel className='text-muted-foreground'>
-                    URL Hình ảnh
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder='Nhập URL hình ảnh' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name='nutrition.nutrients.sodium.value'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Sodium (mg)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='number'
+                          placeholder='0'
+                          {...field}
+                          onChange={e =>
+                            field.onChange(parseFloat(e.target.value) || 0)
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name='isActive'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-muted-foreground'>
-                    Trạng thái
-                  </FormLabel>
-                  <Select
-                    key={ingredient?.id + '-isActive-' + (field.value ?? '')}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <FormControl>
-                      <SelectTrigger className='w-full'>
-                        <SelectValue placeholder='Chọn trạng thái' />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {STATUS_OPTIONS.map(option => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name='nutrition.nutrients.cholesterol.value'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cholesterol (mg)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='number'
+                          placeholder='0'
+                          {...field}
+                          onChange={e =>
+                            field.onChange(parseFloat(e.target.value) || 0)
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
           </form>
         </Form>
 
