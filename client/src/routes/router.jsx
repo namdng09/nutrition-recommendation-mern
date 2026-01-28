@@ -26,8 +26,12 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/page'))
           },
           {
-            path: 'playground',
-            Component: lazy(() => import('~/app/playground/page'))
+            path: 'collections',
+            Component: lazy(() => import('~/app/collections/page'))
+          },
+          {
+            path: 'collections/:id',
+            Component: lazy(() => import('~/app/collections/[id]/page'))
           },
           {
             path: 'ingredients',
@@ -36,6 +40,10 @@ const router = createBrowserRouter([
           {
             path: 'ingredients/:id',
             Component: lazy(() => import('~/app/ingredients/[id]/page'))
+          },
+          {
+            path: 'dishes',
+            Component: lazy(() => import('~/app/dishes/page'))
           },
           {
             path: 'profile',
