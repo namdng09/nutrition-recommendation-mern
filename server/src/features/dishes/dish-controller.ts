@@ -19,8 +19,10 @@ export const DishController = {
 
   viewDishes: async (req: Request, res: Response) => {
     const parsed = parseQuery(req.query);
+    const userId = req.user?._id?.toString();
+    const userRole = req.user?.role;
 
-    const result = await DishService.viewDishes(parsed);
+    const result = await DishService.viewDishes(parsed, userId, userRole);
 
     res
       .status(200)
@@ -29,8 +31,10 @@ export const DishController = {
 
   viewDishDetail: async (req: Request, res: Response) => {
     const id = req.params.id;
+    const userId = req.user?._id?.toString();
+    const userRole = req.user?.role;
 
-    const result = await DishService.viewDishDetail(id);
+    const result = await DishService.viewDishDetail(id, userId, userRole);
 
     res
       .status(200)
@@ -53,8 +57,9 @@ export const DishController = {
   deleteDish: async (req: Request, res: Response) => {
     const id = req.params.id;
     const userId = req.user!._id.toString();
+    const userRole = req.user?.role;
 
-    await DishService.deleteDish(id, userId);
+    await DishService.deleteDish(id, userId, userRole);
 
     res.status(200).json(ApiResponse.success('Xóa món ăn thành công'));
   }

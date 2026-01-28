@@ -16,10 +16,26 @@ const parseJSON = (val: any) => {
   return val;
 };
 
+const unitSchema = z.object({
+  value: z.coerce.number().min(0, 'Giá trị phải lớn hơn hoặc bằng 0'),
+  quantity: z.coerce.number().min(0, 'Số lượng phải lớn hơn hoặc bằng 0'),
+  unit: z.string().trim().min(1, 'Đơn vị không được để trống'),
+  isDefault: z
+    .union([z.boolean(), z.string()])
+    .transform((val) => {
+      if (typeof val === 'boolean') return val;
+      if (val === 'true') return true;
+      if (val === 'false') return false;
+      throw new Error('isDefault phải là "true" hoặc "false"');
+    })
+});
+
 const dishIngredientSchema = z.object({
   ingredientId: z.string().trim().min(1, 'ID nguyên liệu không được để trống'),
-  quantity: z.coerce.number().min(0, 'Số lượng phải lớn hơn hoặc bằng 0'),
-  unit: z.string().trim().min(1, 'Đơn vị không được để trống')
+  units: z.preprocess(
+    parseJSON,
+    z.array(unitSchema).min(1, 'Phải có ít nhất 1 đơn vị')
+  )
 });
 
 const instructionSchema = z.object({
@@ -55,6 +71,15 @@ export const createDishRequestSchema = z.object({
       if (val === 'false') return false;
       throw new Error('isActive phải là "true" hoặc "false"');
     })
+    .optional(),
+  isPublic: z
+    .union([z.boolean(), z.string()])
+    .transform((val) => {
+      if (typeof val === 'boolean') return val;
+      if (val === 'true') return true;
+      if (val === 'false') return false;
+      throw new Error('isPublic phải là "true" hoặc "false"');
+    })
     .optional()
 });
 
@@ -87,6 +112,15 @@ export const updateDishRequestSchema = z.object({
       if (val === 'true') return true;
       if (val === 'false') return false;
       throw new Error('isActive phải là "true" hoặc "false"');
+    })
+    .optional(),
+  isPublic: z
+    .union([z.boolean(), z.string()])
+    .transform((val) => {
+      if (typeof val === 'boolean') return val;
+      if (val === 'true') return true;
+      if (val === 'false') return false;
+      throw new Error('isPublic phải là "true" hoặc "false"');
     })
     .optional()
 });

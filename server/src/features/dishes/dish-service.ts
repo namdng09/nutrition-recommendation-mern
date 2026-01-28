@@ -3,6 +3,7 @@ import createHttpError from 'http-errors';
 
 import { DishModel, IngredientModel } from '~/shared/database/models';
 import type { Dish } from '~/shared/database/models/dish-model';
+import { ROLE } from '~/shared/constants/role';
 import {
   buildPaginateOptions,
   deleteImage,
@@ -40,13 +41,7 @@ export const DishService = {
           nutrients: ingredient.nutrition?.nutrients,
           allergens: ingredient.allergens,
           baseUnit: ingredient.baseUnit,
-          units: [
-            {
-              value: ing.quantity,
-              quantity: ing.quantity,
-              unit: ing.unit
-            }
-          ]
+          units: ing.units
         };
       })
     );
@@ -65,7 +60,8 @@ export const DishService = {
       cookTime: data.cookTime,
       servings: data.servings || 1,
       tags: data.tags,
-      isActive: data.isActive ?? true
+      isActive: data.isActive ?? true,
+      isPublic: data.isPublic ?? false
     });
 
     if (!newDish) {
@@ -151,13 +147,7 @@ export const DishService = {
             nutrients: ingredient.nutrition?.nutrients,
             allergens: ingredient.allergens,
             baseUnit: ingredient.baseUnit,
-            units: [
-              {
-                value: ing.quantity,
-                quantity: ing.quantity,
-                unit: ing.unit
-              }
-            ]
+            units: ing.units
           };
         })
       );
@@ -187,7 +177,7 @@ export const DishService = {
     return updatedDish;
   },
 
-  deleteDish: async (id: string, userId: string) => {
+  deleteDish: async (id: string) => {
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
     }
@@ -195,11 +185,6 @@ export const DishService = {
     const dish = await DishModel.findById(id);
     if (!dish) {
       throw createHttpError(404, 'Không tìm thấy món ăn');
-    }
-
-    // Check ownership
-    if (dish.user?._id.toString() !== userId) {
-      throw createHttpError(403, 'Bạn không có quyền xóa món ăn này');
     }
 
     const deletedDish = await DishModel.findByIdAndDelete(id);
