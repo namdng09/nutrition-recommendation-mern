@@ -44,21 +44,33 @@ export const formatGram = n =>
     .toFixed(1)
     .replace(/\.0$/, '');
 
-export const getOtherNutrition = item => {
-  const carbs = Number(item?.carbs ?? 0);
-  const fiber = Number(item?.fiber ?? 0);
+export const getOtherNutrition = nutrients => {
+  const carbs = Number(nutrients?.carbs?.value ?? 0);
+  const fiber = Number(nutrients?.fiber?.value ?? 0);
   return Math.max(0, carbs + fiber);
 };
 
-export const buildNutritionPieData = item => {
-  const protein = Number(item?.protein ?? 0);
-  const fat = Number(item?.fat ?? 0);
-  const other = getOtherNutrition(item);
+export const buildNutritionPieData = nutrients => {
+  const protein = Number(nutrients?.protein?.value ?? 0);
+  const fat = Number(nutrients?.fat?.value ?? 0);
+  const other = getOtherNutrition(nutrients);
 
   return [
-    { name: 'Chất đạm', value: protein, fill: INGREDIENT_CHART_COLORS[0] },
-    { name: 'Chất béo', value: fat, fill: INGREDIENT_CHART_COLORS[1] },
-    { name: 'Khác', value: other, fill: INGREDIENT_CHART_COLORS[2] }
+    {
+      name: 'Chất đạm',
+      value: protein,
+      fill: INGREDIENT_CHART_COLORS[0]
+    },
+    {
+      name: 'Chất béo',
+      value: fat,
+      fill: INGREDIENT_CHART_COLORS[1]
+    },
+    {
+      name: 'Khác',
+      value: other,
+      fill: INGREDIENT_CHART_COLORS[2]
+    }
   ].filter(d => d.value > 0);
 };
 
