@@ -1,10 +1,11 @@
 import { z } from 'zod';
 
 import { INGREDIENT_CATEGORY } from '~/shared/constants/ingredient-category';
+import { UNIT } from '~/shared/constants/unit';
 
 const nutrientValueSchema = z.object({
   value: z.coerce.number().min(0),
-  unit: z.string().trim().min(1)
+  unit: z.enum(Object.values(UNIT))
 });
 
 const nutrientsSchema = z.object({
@@ -20,7 +21,7 @@ const nutrientsSchema = z.object({
 const nutritionItemSchema = z.object({
   label: z.string().trim(),
   value: z.coerce.number().min(0),
-  unit: z.string().trim().min(1)
+  unit: z.enum(Object.values(UNIT))
 });
 
 const detailNutritionSchema = z.object({
@@ -38,10 +39,18 @@ const baseUnitSchema = z.object({
   unit: z.string().trim().min(1)
 });
 
+const parseBoolean = (val: any) => {
+  if (typeof val === 'string') {
+    if (val === 'true') return true;
+    if (val === 'false') return false;
+  }
+  return val;
+};
+
 const unitSchema = z.object({
   value: z.coerce.number().min(0),
   unit: z.string().trim().min(1),
-  isDefault: z.boolean()
+  isDefault: z.preprocess(parseBoolean, z.coerce.boolean())
 });
 
 const parseJSON = (val: any) => {
@@ -67,15 +76,7 @@ export const createIngredientRequestSchema = z.object({
   allergens: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
   nutrition: z.preprocess(parseJSON, detailNutritionSchema).optional(),
   image: z.file().optional(),
-  isActive: z
-    .union([z.boolean(), z.string()])
-    .transform(val => {
-      if (typeof val === 'boolean') return val;
-      if (val === 'true') return true;
-      if (val === 'false') return false;
-      throw new Error('isActive phải là "true" hoặc "false"');
-    })
-    .optional()
+  isActive: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
 });
 
 export type CreateIngredientRequest = z.infer<
@@ -93,15 +94,7 @@ export const updateIngredientRequestSchema = z.object({
   allergens: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
   nutrition: z.preprocess(parseJSON, detailNutritionSchema).optional(),
   image: z.file().optional(),
-  isActive: z
-    .union([z.boolean(), z.string()])
-    .transform(val => {
-      if (typeof val === 'boolean') return val;
-      if (val === 'true') return true;
-      if (val === 'false') return false;
-      throw new Error('isActive phải là "true" hoặc "false"');
-    })
-    .optional()
+  isActive: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
 });
 
 export type UpdateIngredientRequest = z.infer<
