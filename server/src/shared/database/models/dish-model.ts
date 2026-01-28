@@ -19,7 +19,7 @@ const dishSchema = new Schema(
     },
     name: { type: String, required: true },
     description: { type: String },
-    category: [
+    categories: [
       { type: String, enum: Object.values(DISH_CATEGORY), required: true }
     ],
     ingredients: [
@@ -64,7 +64,7 @@ const dishSchema = new Schema(
 dishSchema.plugin(mongoosePaginate);
 
 dishSchema.index({ 'user._id': 1, isActive: 1 });
-dishSchema.index({ category: 1 });
+dishSchema.index({ categories: 1 });
 dishSchema.index({ allergens: 1 });
 dishSchema.index({ tags: 1 });
 
