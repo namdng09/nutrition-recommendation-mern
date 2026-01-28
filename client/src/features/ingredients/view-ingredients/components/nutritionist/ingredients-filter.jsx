@@ -56,7 +56,9 @@ const IngredientsFilter = () => {
           </Button>
           <Button
             type='button'
-            onClick={() => navigate('/nutritionist/manage-ingredients/create')}
+            onClick={() =>
+              navigate('/nutritionist/manage-ingredients/create-ingredient')
+            }
             className='sm:ml-auto'
           >
             <Plus className='mr-2 h-4 w-4' />
