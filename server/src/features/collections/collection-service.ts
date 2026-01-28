@@ -35,7 +35,7 @@ export const CollectionService = {
     });
 
     if (!newCollection) {
-      throw createHttpError(500, 'Failed to create collection');
+      throw createHttpError(500, 'Tạo bộ sưu tập thất bại');
     }
 
     if (image) {
@@ -47,7 +47,7 @@ export const CollectionService = {
         newCollection.image = uploadResult.data.secure_url;
         await newCollection.save();
       } else {
-        throw createHttpError(500, 'Failed to upload image');
+        throw createHttpError(500, 'Tải ảnh lên thất bại');
       }
     }
 
@@ -67,13 +67,13 @@ export const CollectionService = {
 
   viewCollectionDetail: async (id: string) => {
     if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Invalid collection ID format');
+      throw createHttpError(400, 'Định dạng ID bộ sưu tập không hợp lệ');
     }
 
     const collection = await CollectionModel.findById(id);
 
     if (!collection) {
-      throw createHttpError(404, 'Collection not found');
+      throw createHttpError(404, 'Không tìm thấy bộ sưu tập');
     }
 
     return collection;
@@ -86,17 +86,17 @@ export const CollectionService = {
     image?: Express.Multer.File
   ) => {
     if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Invalid collection ID format');
+      throw createHttpError(400, 'Định dạng ID bộ sưu tập không hợp lệ');
     }
 
     const collection = await CollectionModel.findById(id);
 
     if (!collection) {
-      throw createHttpError(404, 'Collection not found');
+      throw createHttpError(404, 'Không tìm thấy bộ sưu tập');
     }
 
     if (collection.user?._id.toString() !== userId) {
-      throw createHttpError(403, 'You do not have permission to update this collection');
+      throw createHttpError(403, 'Bạn không có quyền cập nhật bộ sưu tập này');
     }
 
     const updatedCollection = await CollectionModel.findByIdAndUpdate(
@@ -106,7 +106,7 @@ export const CollectionService = {
     );
 
     if (!updatedCollection) {
-      throw createHttpError(404, 'Collection not found');
+      throw createHttpError(404, 'Không tìm thấy bộ sưu tập');
     }
 
     if (image) {
@@ -120,7 +120,7 @@ export const CollectionService = {
         updatedCollection.image = uploadResult.data.secure_url;
         await updatedCollection.save();
       } else {
-        throw createHttpError(500, 'Failed to upload image');
+        throw createHttpError(500, 'Tải ảnh lên thất bại');
       }
     }
 
@@ -129,17 +129,17 @@ export const CollectionService = {
 
   deleteCollection: async (id: string, userId: string) => {
     if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Invalid collection ID format');
+      throw createHttpError(400, 'Định dạng ID bộ sưu tập không hợp lệ');
     }
 
     const collection = await CollectionModel.findById(id);
 
     if (!collection) {
-      throw createHttpError(404, 'Collection not found');
+      throw createHttpError(404, 'Không tìm thấy bộ sưu tập');
     }
 
     if (collection.user?._id.toString() !== userId) {
-      throw createHttpError(403, 'You do not have permission to delete this collection');
+      throw createHttpError(403, 'Bạn không có quyền xóa bộ sưu tập này');
     }
 
     if (collection.image) {
@@ -155,17 +155,17 @@ export const CollectionService = {
     data: AddDishToCollectionRequest
   ) => {
     if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Invalid collection ID format');
+      throw createHttpError(400, 'Định dạng ID bộ sưu tập không hợp lệ');
     }
 
     const collection = await CollectionModel.findById(id);
 
     if (!collection) {
-      throw createHttpError(404, 'Collection not found');
+      throw createHttpError(404, 'Không tìm thấy bộ sưu tập');
     }
 
     if (collection.user?._id.toString() !== userId) {
-      throw createHttpError(403, 'You do not have permission to modify this collection');
+      throw createHttpError(403, 'Bạn không có quyền sửa bộ sưu tập này');
     }
 
     const dishExists = collection.dishes.some(
@@ -173,7 +173,7 @@ export const CollectionService = {
     );
 
     if (dishExists) {
-      throw createHttpError(400, 'Dish already exists in the collection');
+      throw createHttpError(400, 'Món ăn đã tồn tại trong bộ sưu tập');
     }
 
     collection.dishes.push({
@@ -195,17 +195,17 @@ export const CollectionService = {
     data: RemoveDishFromCollectionRequest
   ) => {
     if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Invalid collection ID format');
+      throw createHttpError(400, 'Định dạng ID bộ sưu tập không hợp lệ');
     }
 
     const collection = await CollectionModel.findById(id);
 
     if (!collection) {
-      throw createHttpError(404, 'Collection not found');
+      throw createHttpError(404, 'Không tìm thấy bộ sưu tập');
     }
 
     if (collection.user?._id.toString() !== userId) {
-      throw createHttpError(403, 'You do not have permission to modify this collection');
+      throw createHttpError(403, 'Bạn không có quyền sửa bộ sưu tập này');
     }
 
     const dishIndex = collection.dishes.findIndex(
@@ -213,7 +213,7 @@ export const CollectionService = {
     );
 
     if (dishIndex === -1) {
-      throw createHttpError(404, 'Dish not found in the collection');
+      throw createHttpError(404, 'Không tìm thấy món ăn trong bộ sưu tập');
     }
 
     collection.dishes.splice(dishIndex, 1);
@@ -225,17 +225,17 @@ export const CollectionService = {
 
   followCollection: async (id: string) => {
     if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Invalid collection ID format');
+      throw createHttpError(400, 'Định dạng ID bộ sưu tập không hợp lệ');
     }
 
     const collection = await CollectionModel.findById(id);
 
     if (!collection) {
-      throw createHttpError(404, 'Collection not found');
+      throw createHttpError(404, 'Không tìm thấy bộ sưu tập');
     }
 
     if (!collection.isPublic) {
-      throw createHttpError(403, 'Cannot follow a private collection');
+      throw createHttpError(403, 'Không thể theo dõi bộ sưu tập riêng tư');
     }
 
     collection.followers = (collection.followers || 0) + 1;
@@ -246,13 +246,13 @@ export const CollectionService = {
 
   unfollowCollection: async (id: string) => {
     if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Invalid collection ID format');
+      throw createHttpError(400, 'Định dạng ID bộ sưu tập không hợp lệ');
     }
 
     const collection = await CollectionModel.findById(id);
 
     if (!collection) {
-      throw createHttpError(404, 'Collection not found');
+      throw createHttpError(404, 'Không tìm thấy bộ sưu tập');
     }
 
     if (collection.followers && collection.followers > 0) {

@@ -1,7 +1,21 @@
 import { z } from 'zod';
 
+const parseJSON = (val: any) => {
+  if (val === undefined || val === null) {
+    return undefined;
+  }
+  if (typeof val === 'string') {
+    try {
+      return JSON.parse(val);
+    } catch {
+      return val;
+    }
+  }
+  return val;
+};
+
 export const createCollectionRequestSchema = z.object({
-  name: z.string().trim().min(2, 'Name must be at least 2 characters long'),
+  name: z.string().trim().min(2, 'Tên phải có ít nhất 2 ký tự'),
   description: z.string().trim().optional(),
   image: z.file().optional(),
   isPublic: z
@@ -10,20 +24,22 @@ export const createCollectionRequestSchema = z.object({
       if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;
-      throw new Error('isPublic must be "true" or "false"');
+      throw new Error('isPublic phải là "true" hoặc "false"');
     })
     .optional(),
-  tags: z.array(z.string().trim()).optional(),
-  dishes: z
-    .array(
-      z.object({
-        dishId: z.string().trim(),
-        name: z.string().trim(),
-        calories: z.number().optional(),
-        image: z.string().trim().optional()
-      })
-    )
-    .optional()
+  tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
+  dishes: z.preprocess(
+    parseJSON,
+    z
+      .array(
+        z.object({
+          dishId: z.string().trim(),
+          name: z.string().trim(),
+          calories: z.number().optional(),
+          image: z.string().trim().optional()
+        })
+      )
+  ).optional()
 });
 
 export type CreateCollectionRequest = z.infer<
@@ -34,7 +50,7 @@ export const updateCollectionRequestSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(2, 'Name must be at least 2 characters long')
+    .min(2, 'Tên phải có ít nhất 2 ký tự')
     .optional(),
   description: z.string().trim().optional(),
   image: z.file().optional(),
@@ -44,10 +60,10 @@ export const updateCollectionRequestSchema = z.object({
       if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;
-      throw new Error('isPublic must be "true" or "false"');
+      throw new Error('isPublic phải là "true" hoặc "false"');
     })
     .optional(),
-  tags: z.array(z.string().trim()).optional()
+  tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional()
 });
 
 export type UpdateCollectionRequest = z.infer<
@@ -55,8 +71,8 @@ export type UpdateCollectionRequest = z.infer<
 >;
 
 export const addDishToCollectionRequestSchema = z.object({
-  dishId: z.string().trim().min(1, 'Dish ID is required'),
-  name: z.string().trim().min(1, 'Dish name is required'),
+  dishId: z.string().trim().min(1, 'ID món ăn là bắt buộc'),
+  name: z.string().trim().min(1, 'Tên món ăn là bắt buộc'),
   calories: z.number().optional(),
   image: z.string().trim().optional()
 });
@@ -66,7 +82,7 @@ export type AddDishToCollectionRequest = z.infer<
 >;
 
 export const removeDishFromCollectionRequestSchema = z.object({
-  dishId: z.string().trim().min(1, 'Dish ID is required')
+  dishId: z.string().trim().min(1, 'ID món ăn là bắt buộc')
 });
 
 export type RemoveDishFromCollectionRequest = z.infer<

@@ -13,7 +13,7 @@ export const CollectionController = {
     const userName = req.user?.name;
 
     if (!userId || !userName) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
+      return res.status(401).json(ApiResponse.failed('Chưa đăng nhập'));
     }
 
     const result = await CollectionService.createCollection(
@@ -25,7 +25,7 @@ export const CollectionController = {
 
     res
       .status(201)
-      .json(ApiResponse.success('Collection created successfully', result));
+      .json(ApiResponse.success('Tạo bộ sưu tập thành công', result));
   },
 
   viewCollections: async (req: Request, res: Response) => {
@@ -35,7 +35,7 @@ export const CollectionController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Collections retrieved successfully', result));
+      .json(ApiResponse.success('Lấy danh sách bộ sưu tập thành công', result));
   },
 
   viewCollectionDetail: async (req: Request, res: Response) => {
@@ -45,7 +45,7 @@ export const CollectionController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Collection retrieved successfully', result));
+      .json(ApiResponse.success('Lấy thông tin bộ sưu tập thành công', result));
   },
 
   updateCollection: async (req: Request, res: Response) => {
@@ -67,7 +67,7 @@ export const CollectionController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Collection updated successfully', result));
+      .json(ApiResponse.success('Cập nhật bộ sưu tập thành công', result));
   },
 
   deleteCollection: async (req: Request, res: Response) => {
@@ -82,7 +82,7 @@ export const CollectionController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Collection deleted successfully'));
+      .json(ApiResponse.success('Xóa bộ sưu tập thành công'));
   },
 
   addDishToCollection: async (req: Request, res: Response) => {
@@ -103,7 +103,7 @@ export const CollectionController = {
     res
       .status(200)
       .json(
-        ApiResponse.success('Dish added to collection successfully', result)
+        ApiResponse.success('Thêm món ăn vào bộ sưu tập thành công', result)
       );
   },
 
@@ -126,7 +126,7 @@ export const CollectionController = {
       .status(200)
       .json(
         ApiResponse.success(
-          'Dish removed from collection successfully',
+          'Xóa món ăn khỏi bộ sưu tập thành công',
           result
         )
       );
@@ -139,7 +139,7 @@ export const CollectionController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Collection followed successfully', result));
+      .json(ApiResponse.success('Theo dõi bộ sưu tập thành công', result));
   },
 
   unfollowCollection: async (req: Request, res: Response) => {
@@ -149,6 +149,6 @@ export const CollectionController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Collection unfollowed successfully', result));
+      .json(ApiResponse.success('Bỏ theo dõi bộ sưu tập thành công', result));
   }
 };
