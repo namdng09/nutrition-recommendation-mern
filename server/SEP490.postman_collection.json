@@ -1,469 +1,992 @@
 {
-	"info": {
-		"_postman_id": "b29426b5-45dc-4ed5-ac96-6ddf9a9554cd",
-		"name": "SEP490",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "48985284",
-		"_collection_link": "https://fhd-cinema.postman.co/workspace/My-Workspace~4a613ff1-cddc-4861-8d11-60a8c0f79a9b/collection/48985284-b29426b5-45dc-4ed5-ac96-6ddf9a9554cd?action=share&source=collection_link&creator=48985284"
-	},
-	"item": [
-		{
-			"name": "Auth",
-			"item": [
-				{
-					"name": "Login",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"var jsonData = pm.response.json();\r",
-									"\r",
-									"if (jsonData.data && jsonData.data.accessToken) {\r",
-									"    pm.collectionVariables.set(\"accessToken\", jsonData.data.accessToken);\r",
-									"}"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"anhduck0212@gmail.com\",\r\n    \"password\": \"anhduc\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/auth/login",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"auth",
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Sign Up",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"var jsonData = pm.response.json();\r",
-									"\r",
-									"if (jsonData.data && jsonData.data.accessToken) {\r",
-									"    pm.collectionVariables.set(\"accessToken\", jsonData.data.accessToken);\r",
-									"}"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"anhduck0212@gmail.com\",\r\n    \"name\": \"anhduck0212\",\r\n    \"password\": \"anhduc\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/auth/sign-up",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"auth",
-								"sign-up"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Ingredients",
-			"item": [
-				{
-					"name": "Get All Ingredients",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/ingredients",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"ingredients"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Ingredient By Id",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": []
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/ingredients/69738577d6d2d165d5c2d9fd",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"ingredients",
-								"69738577d6d2d165d5c2d9fd"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Ingredient",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "name",
-									"value": "Atlantic salmon",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "Seafood",
-									"type": "text"
-								},
-								{
-									"key": "unit",
-									"value": "g",
-									"type": "text"
-								},
-								{
-									"key": "caloriesPer100g",
-									"value": "142",
-									"type": "text"
-								},
-								{
-									"key": "protein",
-									"value": "19.8",
-									"type": "text"
-								},
-								{
-									"key": "carbs",
-									"value": "0",
-									"type": "text"
-								},
-								{
-									"key": "fat",
-									"value": "6.3",
-									"type": "text"
-								},
-								{
-									"key": "fiber",
-									"value": "0",
-									"type": "text"
-								},
-								{
-									"key": "allergens[0]",
-									"value": "peanut",
-									"type": "text",
-									"disabled": true
-								},
-								{
-									"key": "allergens[1]",
-									"value": "milk",
-									"type": "text",
-									"disabled": true
-								},
-								{
-									"key": "image",
-									"type": "file",
-									"src": "/C:/Users/os/Downloads/Atlantic salmon.jpg"
-								},
-								{
-									"key": "isActive",
-									"value": "true",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/ingredients",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"ingredients"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Ingredient By Id",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "name",
-									"value": "peanut butter cookies",
-									"type": "text"
-								},
-								{
-									"key": "category",
-									"value": "cookies",
-									"type": "text"
-								},
-								{
-									"key": "unit",
-									"value": "gram",
-									"type": "text"
-								},
-								{
-									"key": "caloriesPer100g",
-									"value": "200",
-									"type": "text"
-								},
-								{
-									"key": "protein",
-									"value": "100",
-									"type": "text"
-								},
-								{
-									"key": "carbs",
-									"value": "100",
-									"type": "text"
-								},
-								{
-									"key": "fat",
-									"value": "100",
-									"type": "text"
-								},
-								{
-									"key": "fiber",
-									"value": "100",
-									"type": "text"
-								},
-								{
-									"key": "allergens[0]",
-									"value": "peanut",
-									"type": "text"
-								},
-								{
-									"key": "allergens[1]",
-									"value": "milk",
-									"type": "text"
-								},
-								{
-									"key": "image",
-									"type": "file",
-									"src": "/C:/Users/os/Downloads/download.png"
-								},
-								{
-									"key": "isActive",
-									"value": "true",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/ingredients/69739a091c615dda104f5e7b",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"ingredients",
-								"69739a091c615dda104f5e7b"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Ingredient By Id",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": []
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/ingredients/69739a091c615dda104f5e7b",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"ingredients",
-								"69739a091c615dda104f5e7b"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Multiple Ingredients By Id",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"ids\": [\"69738a5942c05fde7d4acf05\", \"69738a5642c05fde7d4acf01\"]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/ingredients",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"ingredients"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		}
-	],
-	"variable": [
-		{
-			"key": "accessToken",
-			"value": ""
-		}
-	]
+  "info": {
+    "_postman_id": "b29426b5-45dc-4ed5-ac96-6ddf9a9554cd",
+    "name": "SEP490",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "48985284",
+    "_collection_link": "https://go.postman.co/collection/48985284-b29426b5-45dc-4ed5-ac96-6ddf9a9554cd?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();\r",
+                  "\r",
+                  "if (jsonData.data && jsonData.data.accessToken) {\r",
+                  "    pm.collectionVariables.set(\"accessToken\", jsonData.data.accessToken);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"anhduck0212@gmail.com\",\r\n    \"password\": \"anhduc\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Sign Up",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();\r",
+                  "\r",
+                  "if (jsonData.data && jsonData.data.accessToken) {\r",
+                  "    pm.collectionVariables.set(\"accessToken\", jsonData.data.accessToken);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"anhduck0212@gmail.com\",\r\n    \"name\": \"anhduck0212\",\r\n    \"password\": \"anhduc\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/auth/sign-up",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "auth",
+                "sign-up"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Ingredients",
+      "item": [
+        {
+          "name": "Get All Ingredients",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/ingredients",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "ingredients"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Ingredient By Id",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/ingredients/697a3926d79c71b7017bac66",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "ingredients",
+                "697a3926d79c71b7017bac66"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Ingredient",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Ingredient Test 3",
+                  "type": "text",
+                  "uuid": "6d06d1f0-a7cd-4e82-8c20-4dd4148cfaff"
+                },
+                {
+                  "key": "categories",
+                  "value": "[\"Thịt\"]",
+                  "type": "text",
+                  "uuid": "13f2e588-8d53-48ad-88b0-22c81c15b8b8"
+                },
+                {
+                  "key": "description",
+                  "value": "Description Test",
+                  "type": "text",
+                  "uuid": "43725428-f2ad-43ac-ac34-c80ba2400101"
+                },
+                {
+                  "key": "baseUnit",
+                  "value": "{\"amount\": 14, \"unit\": \"g\"}",
+                  "type": "text",
+                  "uuid": "26dedfac-882b-442a-afe3-7381ec80d851"
+                },
+                {
+                  "key": "allergens",
+                  "value": "[\"Lactose\", \"Đậu nành\"]",
+                  "type": "text",
+                  "uuid": "5a12cf6d-2598-4b02-9032-5b6a49296a6a"
+                },
+                {
+                  "key": "units",
+                  "value": "[\n  {\"value\": 1, \"unit\": \"cup\", \"isDefault\": true},\n  {\"value\": 1, \"unit\": \"tablespoon\", \"isDefault\": false}\n]",
+                  "type": "text",
+                  "uuid": "f05baa18-5a62-4c22-b101-f365136e600b"
+                },
+                {
+                  "key": "nutrition",
+                  "value": "{\n  \"nutrients\": {\n    \"calories\": {\"value\": 52, \"unit\": \"kcal\"},\n    \"carbs\": {\"value\": 14, \"unit\": \"g\"},\n    \"fat\": {\"value\": 0.2, \"unit\": \"g\"},\n    \"protein\": {\"value\": 0.3, \"unit\": \"g\"},\n    \"fiber\": {\"value\": 2.4, \"unit\": \"g\"},\n    \"sodium\": {\"value\": 1, \"unit\": \"mg\"},\n    \"cholesterol\": {\"value\": 0, \"unit\": \"mg\"}\n  },\n  \"minerals\": [\n    {\"label\": \"Magnesium\", \"value\": 107, \"unit\": \"mg\"},\n    {\"label\": \"Copper\", \"value\": 6, \"unit\": \"mg\"}\n  ],\n  \"vitamins\": [\n    {\"label\": \"Vitamin C\", \"value\": 8.4, \"unit\": \"mg\"},\n    {\"label\": \"Vitamin A\", \"value\": 3, \"unit\": \"μg\"}\n  ],\n  \"sugars\": [\n    {\"label\": \"Sugar\", \"value\": 10, \"unit\": \"g\"},\n    {\"label\": \"Fructose\", \"value\": 5.9, \"unit\": \"g\"},\n    {\"label\": \"Glucose\", \"value\": 4.1, \"unit\": \"g\"}\n  ],\n  \"fats\": [\n    {\"label\": \"Saturated fats\", \"value\": 0.03, \"unit\": \"g\"},\n    {\"label\": \"Monounsaturated fats\", \"value\": 0.03, \"unit\": \"g\"},\n    {\"label\": \"Polyunsaturated fats\", \"value\": 0.09, \"unit\": \"g\"}\n  ],\n  \"fattyAcids\": [\n    {\"label\": \"Total omega 3\", \"value\": 0.05, \"unit\": \"g\"},\n    {\"label\": \"Total omega 6\", \"value\": 0.04, \"unit\": \"g\"}\n  ],\n  \"aminoAcids\": [\n    {\"label\": \"Leucine\", \"value\": 0.02, \"unit\": \"g\"},\n    {\"label\": \"Lysine\", \"value\": 0.02, \"unit\": \"g\"},\n    {\"label\": \"Valine\", \"value\": 0.02, \"unit\": \"g\"}\n  ]\n}",
+                  "type": "text",
+                  "uuid": "426a732e-f363-439b-9117-0fb96550767b"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "5b371525-8284-4eaf-8457-f624136bef2d",
+                  "src": "/C:/Users/os/Downloads/image.png"
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "type": "text",
+                  "uuid": "543e82f8-3a4d-4f97-97e7-c4c1347f3984"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/ingredients",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "ingredients"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Ingredient By Id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Ingredient Test",
+                  "type": "text",
+                  "uuid": "6d06d1f0-a7cd-4e82-8c20-4dd4148cfaff"
+                },
+                {
+                  "key": "categories",
+                  "value": "[\"Thịt\"]",
+                  "type": "text",
+                  "uuid": "13f2e588-8d53-48ad-88b0-22c81c15b8b8"
+                },
+                {
+                  "key": "baseUnit",
+                  "value": "{\"amount\": 14, \"unit\": \"g\"}",
+                  "type": "text",
+                  "uuid": "26dedfac-882b-442a-afe3-7381ec80d851"
+                },
+                {
+                  "key": "allergens",
+                  "value": "[\"lactose\", \"soybeans\"]",
+                  "type": "text",
+                  "uuid": "5a12cf6d-2598-4b02-9032-5b6a49296a6a"
+                },
+                {
+                  "key": "description",
+                  "value": "Description Test",
+                  "type": "text",
+                  "uuid": "43725428-f2ad-43ac-ac34-c80ba2400101"
+                },
+                {
+                  "key": "nutrition",
+                  "value": "{\n  \"nutrients\": {\n    \"calories\": {\"value\": 52, \"unit\": \"kcal\"},\n    \"carbs\": {\"value\": 14, \"unit\": \"g\"},\n    \"fat\": {\"value\": 0.2, \"unit\": \"g\"},\n    \"protein\": {\"value\": 0.3, \"unit\": \"g\"},\n    \"fiber\": {\"value\": 2.4, \"unit\": \"g\"},\n    \"sodium\": {\"value\": 1, \"unit\": \"mg\"},\n    \"cholesterol\": {\"value\": 0, \"unit\": \"mg\"}\n  },\n  \"minerals\": [\n    {\"label\": \"Magnesium\", \"value\": 107, \"unit\": \"mg\"},\n    {\"label\": \"Copper\", \"value\": 6, \"unit\": \"mg\"}\n  ],\n  \"vitamins\": [\n    {\"label\": \"Vitamin C\", \"value\": 8.4, \"unit\": \"mg\"},\n    {\"label\": \"Vitamin A\", \"value\": 3, \"unit\": \"μg\"}\n  ],\n  \"sugars\": [\n    {\"label\": \"Sugar\", \"value\": 10, \"unit\": \"g\"},\n    {\"label\": \"Fructose\", \"value\": 5.9, \"unit\": \"g\"},\n    {\"label\": \"Glucose\", \"value\": 4.1, \"unit\": \"g\"}\n  ],\n  \"fats\": [\n    {\"label\": \"Saturated fats\", \"value\": 0.03, \"unit\": \"g\"},\n    {\"label\": \"Monounsaturated fats\", \"value\": 0.03, \"unit\": \"g\"},\n    {\"label\": \"Polyunsaturated fats\", \"value\": 0.09, \"unit\": \"g\"}\n  ],\n  \"fattyAcids\": [\n    {\"label\": \"Total omega 3\", \"value\": 0.05, \"unit\": \"g\"},\n    {\"label\": \"Total omega 6\", \"value\": 0.04, \"unit\": \"g\"}\n  ],\n  \"aminoAcids\": [\n    {\"label\": \"Leucine\", \"value\": 0.02, \"unit\": \"g\"},\n    {\"label\": \"Lysine\", \"value\": 0.02, \"unit\": \"g\"},\n    {\"label\": \"Valine\", \"value\": 0.02, \"unit\": \"g\"}\n  ]\n}",
+                  "type": "text",
+                  "uuid": "426a732e-f363-439b-9117-0fb96550767b"
+                },
+                {
+                  "key": "units",
+                  "value": "[\n  {\"value\": 1, \"unit\": \"cup\", \"isDefault\": true},\n  {\"value\": 1, \"unit\": \"tablespoon\", \"isDefault\": false}\n]",
+                  "type": "text",
+                  "uuid": "f05baa18-5a62-4c22-b101-f365136e600b"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "5b371525-8284-4eaf-8457-f624136bef2d",
+                  "src": "/C:/Users/os/Downloads/image.png"
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "type": "text",
+                  "uuid": "543e82f8-3a4d-4f97-97e7-c4c1347f3984"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/ingredients/697a3926d79c71b7017bac66",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "ingredients",
+                "697a3926d79c71b7017bac66"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Ingredient By Id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/ingredients/697a3926d79c71b7017bac66",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "ingredients",
+                "697a3926d79c71b7017bac66"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dishes",
+      "item": [
+        {
+          "name": "Get All Dishes",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/dishes",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "dishes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Dish Detail",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/dishes/697a3e4fb558bce36d9bc07f",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "dishes",
+                "697a3e4fb558bce36d9bc07f"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Dish",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Phở Bò Hà Nội",
+                  "type": "text",
+                  "uuid": "5d6398e5-3150-4c1e-acbe-6e820738f87f"
+                },
+                {
+                  "key": "description",
+                  "value": "Món phở bò truyền thống Hà Nội với nước dùng thơm ngon",
+                  "type": "text",
+                  "uuid": "73b5f94e-b730-48a6-87f0-d5dff1b625c3"
+                },
+                {
+                  "key": "categories",
+                  "value": "[\"Món chính\", \"Súp\"]",
+                  "type": "text",
+                  "uuid": "e62242b0-f1e1-471b-bfb0-a4dd5e99d8b5"
+                },
+                {
+                  "key": "ingredients",
+                  "value": "[{\"ingredientId\":\"697a41d6872387d42885a56c\",\"units\":[{\"value\":200,\"quantity\":200,\"unit\":\"gram\",\"isDefault\":\"true\"},{\"value\":200,\"quantity\":1,\"unit\":\"bát\",\"isDefault\":\"false\"},{\"value\":200,\"quantity\":0.2,\"unit\":\"kg\",\"isDefault\":\"false\"}]},{\"ingredientId\":\"697a3920d79c71b7017bac61\",\"units\":[{\"value\":150,\"quantity\":150,\"unit\":\"gram\",\"isDefault\":\"true\"},{\"value\":150,\"quantity\":5,\"unit\":\"lát\",\"isDefault\":\"false\"}]}]",
+                  "type": "text",
+                  "uuid": "0bca27fb-2a09-4b1a-8269-d254fb7c1b9e"
+                },
+                {
+                  "key": "instructions",
+                  "value": "[\n  {\n    \"step\": 1,\n    \"description\": \"Luộc xương bò để lấy nước dùng trong 3-4 giờ\"\n  },\n  {\n    \"step\": 2,\n    \"description\": \"Thái thịt bò mỏng, ngâm hành tây vào nước lạnh\"\n  },\n  {\n    \"step\": 3,\n    \"description\": \"Trưng bánh phở, cho vào tô và thêm thịt bò\"\n  },\n  {\n    \"step\": 4,\n    \"description\": \"Chan nước dùng sôi, thêm hành lá và ngò\"\n  }\n]\n",
+                  "type": "text",
+                  "uuid": "8124f607-1777-414d-93b7-41e3cf054025"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "56388c30-1b74-48c0-b883-f354aebd2e21",
+                  "src": "/C:/Users/os/Downloads/image.png"
+                },
+                {
+                  "key": "preparationTime",
+                  "value": "30",
+                  "type": "text",
+                  "uuid": "39d259c7-1a85-4784-91d0-dddfffcd5a51"
+                },
+                {
+                  "key": "cookTime",
+                  "value": "240",
+                  "type": "text",
+                  "uuid": "5b75092e-be49-46e7-af59-f18bc7f28cac"
+                },
+                {
+                  "key": "servings",
+                  "value": "4",
+                  "type": "text",
+                  "uuid": "b54d368d-4946-4b9b-811f-802fae6dedfc"
+                },
+                {
+                  "key": "tags",
+                  "value": "[\"Món Việt\", \"Món nóng\", \"Bữa sáng\"]",
+                  "type": "text",
+                  "uuid": "4fe435a1-89cb-468f-8604-5d099bef3fe5"
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "type": "text",
+                  "uuid": "796923d3-92c3-4949-8c9b-191a078d4de0"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/dishes",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "dishes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Dish By Id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Phở Bò Hà Nội 1",
+                  "type": "text",
+                  "uuid": "5d6398e5-3150-4c1e-acbe-6e820738f87f"
+                },
+                {
+                  "key": "description",
+                  "value": "Món phở bò truyền thống Hà Nội với nước dùng thơm ngon",
+                  "type": "text",
+                  "uuid": "73b5f94e-b730-48a6-87f0-d5dff1b625c3"
+                },
+                {
+                  "key": "categories",
+                  "value": "[\"Món chính\", \"Súp\"]",
+                  "type": "text",
+                  "uuid": "e62242b0-f1e1-471b-bfb0-a4dd5e99d8b5"
+                },
+                {
+                  "key": "ingredients",
+                  "value": "[{\"ingredientId\":\"697a41d6872387d42885a56c\",\"units\":[{\"value\":200,\"quantity\":200,\"unit\":\"gram\",\"isDefault\":\"true\"},{\"value\":200,\"quantity\":1,\"unit\":\"bát\",\"isDefault\":\"false\"},{\"value\":200,\"quantity\":0.2,\"unit\":\"kg\",\"isDefault\":\"false\"}]},{\"ingredientId\":\"697a3920d79c71b7017bac61\",\"units\":[{\"value\":150,\"quantity\":150,\"unit\":\"gram\",\"isDefault\":\"true\"},{\"value\":150,\"quantity\":5,\"unit\":\"lát\",\"isDefault\":\"false\"}]}]",
+                  "type": "text",
+                  "uuid": "0bca27fb-2a09-4b1a-8269-d254fb7c1b9e"
+                },
+                {
+                  "key": "instructions",
+                  "value": "[\n  {\n    \"step\": 1,\n    \"description\": \"Luộc xương bò để lấy nước dùng trong 3-4 giờ\"\n  },\n  {\n    \"step\": 2,\n    \"description\": \"Thái thịt bò mỏng, ngâm hành tây vào nước lạnh\"\n  },\n  {\n    \"step\": 3,\n    \"description\": \"Trưng bánh phở, cho vào tô và thêm thịt bò\"\n  },\n  {\n    \"step\": 4,\n    \"description\": \"Chan nước dùng sôi, thêm hành lá và ngò\"\n  }\n]\n",
+                  "type": "text",
+                  "uuid": "8124f607-1777-414d-93b7-41e3cf054025"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "56388c30-1b74-48c0-b883-f354aebd2e21",
+                  "src": "/C:/Users/os/Downloads/image.png"
+                },
+                {
+                  "key": "preparationTime",
+                  "value": "30",
+                  "type": "text",
+                  "uuid": "39d259c7-1a85-4784-91d0-dddfffcd5a51"
+                },
+                {
+                  "key": "cookTime",
+                  "value": "240",
+                  "type": "text",
+                  "uuid": "5b75092e-be49-46e7-af59-f18bc7f28cac"
+                },
+                {
+                  "key": "servings",
+                  "value": "4",
+                  "type": "text",
+                  "uuid": "b54d368d-4946-4b9b-811f-802fae6dedfc"
+                },
+                {
+                  "key": "tags",
+                  "value": "[\"Món Việt\", \"Món nóng\", \"Bữa sáng\"]",
+                  "type": "text",
+                  "uuid": "4fe435a1-89cb-468f-8604-5d099bef3fe5"
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "type": "text",
+                  "uuid": "796923d3-92c3-4949-8c9b-191a078d4de0"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/dishes/697a4262872387d42885a5cb",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "dishes",
+                "697a4262872387d42885a5cb"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Dish By Id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/dishes/697a4262872387d42885a5cb",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "dishes",
+                "697a4262872387d42885a5cb"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Collections",
+      "item": [
+        {
+          "name": "Get All Collections",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/collections",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "collections"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Collection By Id",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/collections/6978e194f36f309dbadb9553",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "collections",
+                "6978e194f36f309dbadb9553"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Collection",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Món ăn Việt truyền thống",
+                  "type": "text",
+                  "uuid": "859ca51e-221d-4a63-8c3a-b063e0cff01c"
+                },
+                {
+                  "key": "description",
+                  "value": "Bộ sưu tập các món ăn truyền thống đặc trưng của Việt Nam",
+                  "type": "text",
+                  "uuid": "82bc8144-afb2-444a-a386-c55f7e932b3b"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "d1e481a6-1e50-446b-85c1-efc4089b48ac",
+                  "src": "/C:/Users/os/Downloads/download.png"
+                },
+                {
+                  "key": "isPublic",
+                  "value": "false",
+                  "type": "text",
+                  "uuid": "1b4c28fc-63db-4367-a777-fbb6f2b6340d"
+                },
+                {
+                  "key": "tags",
+                  "value": "[\"Truyền thống\", \"Việt Nam\", \"Đặc sản\"]",
+                  "type": "text",
+                  "uuid": "9a0d3d4f-ae18-45c7-983e-28c858585fbf"
+                },
+                {
+                  "key": "dishes",
+                  "value": "[\n  {\n    \"dishId\": \"6979f3a75fb91008dcd74d92\",\n    \"name\": \"Phở bò 1\",\n    \"calories\": 350,\n    \"image\": \"https://example.com/pho.jpg\"\n  },\n  {\n    \"dishId\": \"6979f0bef0e7b9f63e398e7e\",\n    \"name\": \"Phở bò 2\",\n    \"calories\": 350,\n    \"image\": \"https://example.com/pho.jpg\"\n  }\n]\n",
+                  "type": "text",
+                  "uuid": "54c7f8da-f874-4b5e-9aa1-ee61b5ac1883"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/collections",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "collections"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Collection By Id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Test Collection",
+                  "type": "text",
+                  "uuid": "859ca51e-221d-4a63-8c3a-b063e0cff01c"
+                },
+                {
+                  "key": "description",
+                  "value": "Test Description",
+                  "type": "text",
+                  "uuid": "82bc8144-afb2-444a-a386-c55f7e932b3b"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "d1e481a6-1e50-446b-85c1-efc4089b48ac",
+                  "src": "/C:/Users/os/Downloads/download.png"
+                },
+                {
+                  "key": "isPublic",
+                  "value": "false",
+                  "type": "text",
+                  "uuid": "1b4c28fc-63db-4367-a777-fbb6f2b6340d"
+                },
+                {
+                  "key": "tags[0]",
+                  "value": "Test",
+                  "type": "text",
+                  "uuid": "d83cdb08-3b9d-462a-aed7-ee4434c94cfa"
+                },
+                {
+                  "key": "tags[1]",
+                  "value": "Collection",
+                  "type": "text",
+                  "uuid": "096db4d9-bb5a-4a66-974e-de10e4a49e86"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/collections/6978e194f36f309dbadb9553",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "collections",
+                "6978e194f36f309dbadb9553"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Collection By Id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/collections/6978e194f36f309dbadb9553",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "collections",
+                "6978e194f36f309dbadb9553"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "accessToken",
+      "value": ""
+    }
+  ]
 }

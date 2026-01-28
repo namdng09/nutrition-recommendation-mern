@@ -5,5 +5,4 @@ export * from './grocery-model';
 export * from './ingredient-model';
 export * from './post-model';
 export * from './schedule-model';
-export * from './unit-model';
 export * from './user-model';

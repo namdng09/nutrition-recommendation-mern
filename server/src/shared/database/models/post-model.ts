@@ -51,7 +51,6 @@ postSchema.index({ 'author._id': 1, isPublished: 1 });
 postSchema.index({ isPublished: 1, publishedAt: -1 });
 postSchema.index({ category: 1, isPublished: 1 });
 postSchema.index({ tags: 1 });
-postSchema.index({ slug: 1 });
 
 export type Post = InferSchemaType<typeof postSchema>;
 
