@@ -2,6 +2,7 @@ import { lazy } from 'react';
 import { createBrowserRouter } from 'react-router';
 
 import PrivateRoute from '~/components/private-route';
+import { ROLE } from '~/constants/role';
 
 const AppLayout = lazy(() => import('~/components/layouts/app-layout'));
 const RootLayout = lazy(() => import('~/components/layouts/root-layout'));
@@ -40,7 +41,7 @@ const router = createBrowserRouter([
           {
             path: 'profile',
             Component: () => (
-              <PrivateRoute allowedRoles={['user', 'admin']}>
+              <PrivateRoute allowedRoles={[ROLE.USER, ROLE.ADMIN]}>
                 <ProfilePage />
               </PrivateRoute>
             )
@@ -75,12 +76,12 @@ const router = createBrowserRouter([
       },
       {
         path: '/nutritionist/',
-        Component: () => (
-          <PrivateRoute allowedRoles={['nutritionist']}>
-            <AdminLayout />
-          </PrivateRoute>
-        ),
-        // Component: AdminLayout,
+        // Component: () => (
+        //   <PrivateRoute allowedRoles={[ROLE.NUTRITIONIST]}>
+        //     <AdminLayout />
+        //   </PrivateRoute>
+        // ),
+        Component: AdminLayout,
         children: [
           {
             path: '',
@@ -97,17 +98,25 @@ const router = createBrowserRouter([
             Component: lazy(
               () => import('~/app/nutritionist/manage-ingredients/[id]/page')
             )
+          },
+          {
+            path: 'manage-ingredients/create-ingredient',
+            Component: lazy(
+              () =>
+                import(
+                  '~/app/nutritionist/manage-ingredients/create-ingredient/page'
+                )
+            )
           }
         ]
       },
       {
         path: '/admin/',
         Component: () => (
-          <PrivateRoute allowedRoles={['admin']}>
+          <PrivateRoute allowedRoles={[ROLE.ADMIN]}>
             <AdminLayout />
           </PrivateRoute>
         ),
-        // Component: AdminLayout,
         children: [
           {
             path: '',
