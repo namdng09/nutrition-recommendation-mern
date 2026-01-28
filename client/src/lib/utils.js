@@ -29,7 +29,8 @@ export const getRoleLabel = value => {
 
 export const NAV_LINKS = [
   { to: '/', label: 'Trang Chủ' },
-  { to: '/playground', label: 'Playground' }
+  { to: '/collections', label: 'Gợi ý bữa ăn' },
+  { to: '/dishes', label: 'Danh sách món ăn' }
 ];
 
 // ingredients pie chart
