@@ -46,7 +46,7 @@ export default function DishDetail() {
       <div className='grid gap-10 lg:grid-cols-2 lg:items-center'>
         <div className='relative group'>
           <div className='absolute -inset-6 rounded-[3rem] bg-gradient-to-tr from-orange-200/30 to-sky-200/30 blur-3xl opacity-60 group-hover:opacity-90 transition' />
-          <div className='relative aspect-[4/5] overflow-hidden rounded-[2.75rem] border border-white/20 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.25)]'>
+          <div className='relative aspect-[3/4] overflow-hidden rounded-[2.5rem] border border-white/20 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.25)]'>
             <img
               src={dish.image || '/placeholder.png'}
               alt={dish.name}
@@ -62,7 +62,7 @@ export default function DishDetail() {
                 {dish.tags.map(tag => (
                   <span
                     key={tag}
-                    className='text-[10px] font-black uppercase tracking-[0.25em] text-orange-600/70'
+                    className='text-xl font-black uppercase tracking-[0.25em] text-orange-600/70'
                   >
                     #{tag}
                   </span>
