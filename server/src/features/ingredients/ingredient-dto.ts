@@ -1,23 +1,79 @@
 import { z } from 'zod';
 
+import { INGREDIENT_CATEGORY } from '~/shared/constants/ingredient-category';
+
+const nutrientValueSchema = z.object({
+  value: z.coerce.number().min(0),
+  unit: z.string().trim().min(1)
+});
+
+const nutrientsSchema = z.object({
+  calories: nutrientValueSchema,
+  carbs: nutrientValueSchema,
+  fat: nutrientValueSchema,
+  protein: nutrientValueSchema,
+  fiber: nutrientValueSchema,
+  sodium: nutrientValueSchema,
+  cholesterol: nutrientValueSchema
+});
+
+const nutritionItemSchema = z.object({
+  label: z.string().trim(),
+  value: z.coerce.number().min(0),
+  unit: z.string().trim().min(1)
+});
+
+const detailNutritionSchema = z.object({
+  nutrients: nutrientsSchema.optional(),
+  minerals: z.array(nutritionItemSchema).optional(),
+  vitamins: z.array(nutritionItemSchema).optional(),
+  sugars: z.array(nutritionItemSchema).optional(),
+  fats: z.array(nutritionItemSchema).optional(),
+  fattyAcids: z.array(nutritionItemSchema).optional(),
+  aminoAcids: z.array(nutritionItemSchema).optional()
+});
+
+const baseUnitSchema = z.object({
+  amount: z.coerce.number().min(0),
+  unit: z.string().trim().min(1)
+});
+
+const unitSchema = z.object({
+  value: z.coerce.number().min(0),
+  unit: z.string().trim().min(1),
+  isDefault: z.boolean()
+});
+
+const parseJSON = (val: any) => {
+  if (typeof val === 'string') {
+    try {
+      return JSON.parse(val);
+    } catch {
+      return val;
+    }
+  }
+  return val;
+};
+
 export const createIngredientRequestSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters long'),
-  category: z.string().min(2, 'Category must be at least 2 characters long'),
-  unit: z.string().min(1, 'Unit is required'),
-  caloriesPer100g: z.coerce.number().min(0, 'Calories must be non-negative'),
-  protein: z.coerce.number().min(0, 'Protein must be non-negative'),
-  carbs: z.coerce.number().min(0, 'Carbs must be non-negative').optional(),
-  fat: z.coerce.number().min(0, 'Fat must be non-negative').optional(),
-  fiber: z.coerce.number().min(0, 'Fiber must be non-negative').optional(),
-  allergens: z.array(z.string()).optional(),
+  name: z.string().trim().min(2, 'Tên phải có ít nhất 2 ký tự'),
+  description: z.string().trim().optional(),
+  categories: z.preprocess(
+    parseJSON,
+    z.array(z.enum(Object.values(INGREDIENT_CATEGORY)))
+  ),
+  baseUnit: z.preprocess(parseJSON, baseUnitSchema),
+  units: z.preprocess(parseJSON, z.array(unitSchema)).optional(),
+  allergens: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
+  nutrition: z.preprocess(parseJSON, detailNutritionSchema).optional(),
   image: z.file().optional(),
   isActive: z
     .union([z.boolean(), z.string()])
-    .transform((val) => {
+    .transform(val => {
       if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;
-      throw new Error('isActive must be "true" or "false"');
+      throw new Error('isActive phải là "true" hoặc "false"');
     })
     .optional()
 });
@@ -27,26 +83,23 @@ export type CreateIngredientRequest = z.infer<
 >;
 
 export const updateIngredientRequestSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters long').optional(),
-  category: z
-    .string()
-    .min(2, 'Category must be at least 2 characters long')
+  name: z.string().trim().min(2, 'Tên phải có ít nhất 2 ký tự').optional(),
+  description: z.string().trim().optional(),
+  categories: z
+    .preprocess(parseJSON, z.array(z.enum(Object.values(INGREDIENT_CATEGORY))))
     .optional(),
-  unit: z.string().min(1, 'Unit is required').optional(),
-  caloriesPer100g: z.coerce.number().min(0, 'Calories must be non-negative').optional(),
-  protein: z.coerce.number().min(0, 'Protein must be non-negative').optional(),
-  carbs: z.coerce.number().min(0, 'Carbs must be non-negative').optional(),
-  fat: z.coerce.number().min(0, 'Fat must be non-negative').optional(),
-  fiber: z.coerce.number().min(0, 'Fiber must be non-negative').optional(),
-  allergens: z.array(z.string()).optional(),
+  baseUnit: z.preprocess(parseJSON, baseUnitSchema).optional(),
+  units: z.preprocess(parseJSON, z.array(unitSchema)).optional(),
+  allergens: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
+  nutrition: z.preprocess(parseJSON, detailNutritionSchema).optional(),
   image: z.file().optional(),
   isActive: z
     .union([z.boolean(), z.string()])
-    .transform((val) => {
+    .transform(val => {
       if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;
-      throw new Error('isActive must be true or false');
+      throw new Error('isActive phải là "true" hoặc "false"');
     })
     .optional()
 });
