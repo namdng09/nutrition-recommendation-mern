@@ -6,6 +6,7 @@ import mongoose, {
 import mongoosePaginate from 'mongoose-paginate-v2';
 
 import { ALLERGEN } from '~/shared/constants/allergen';
+import { INGREDIENT_CATEGORY } from '~/shared/constants/ingredient-category';
 import { NUTRITION_AMINO_ACID } from '~/shared/constants/nutrition-amino-acid';
 import { NUTRITION_FAT } from '~/shared/constants/nutrition-fat';
 import { NUTRITION_FATTY_ACID } from '~/shared/constants/nutrition-fatty-acid';
@@ -105,9 +106,9 @@ export const detailNutritionSchema = new Schema(
 const ingredientSchema = new Schema(
   {
     name: { type: String, required: true },
-    image: { type: String, required: true },
+    image: { type: String },
     description: { type: String },
-    category: { type: String, required: true },
+    categories: [{ type: String, enum: Object.values(INGREDIENT_CATEGORY) }],
     baseUnit: {
       amount: { type: Number, required: true },
       unit: { type: String, default: UNIT.GRAM, required: true }
@@ -129,7 +130,7 @@ const ingredientSchema = new Schema(
 
 ingredientSchema.plugin(mongoosePaginate);
 
-ingredientSchema.index({ name: 1, category: 1 });
+ingredientSchema.index({ name: 1, categories: 1 });
 ingredientSchema.index({ allergens: 1 });
 
 export type Ingredient = InferSchemaType<typeof ingredientSchema>;

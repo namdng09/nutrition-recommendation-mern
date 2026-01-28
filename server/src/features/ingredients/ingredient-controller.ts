@@ -14,7 +14,7 @@ export const IngredientController = {
 
     res
       .status(201)
-      .json(ApiResponse.success('Ingredient created successfully', result));
+      .json(ApiResponse.success('Tạo nguyên liệu thành công', result));
   },
 
   viewIngredients: async (req: Request, res: Response) => {
@@ -24,7 +24,7 @@ export const IngredientController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Ingredients retrieved successfully', result));
+      .json(ApiResponse.success('Lấy danh sách nguyên liệu thành công', result));
   },
 
   viewIngredientDetail: async (req: Request, res: Response) => {
@@ -34,7 +34,7 @@ export const IngredientController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Ingredient retrieved successfully', result));
+      .json(ApiResponse.success('Lấy thông tin nguyên liệu thành công', result));
   },
 
   updateIngredient: async (req: Request, res: Response) => {
@@ -46,7 +46,7 @@ export const IngredientController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Ingredient updated successfully', result));
+      .json(ApiResponse.success('Cập nhật nguyên liệu thành công', result));
   },
 
   deleteIngredient: async (req: Request, res: Response) => {
@@ -56,6 +56,6 @@ export const IngredientController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Ingredient deleted successfully'));
+      .json(ApiResponse.success('Xóa nguyên liệu thành công'));
   }
 };
