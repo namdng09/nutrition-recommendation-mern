@@ -24,8 +24,8 @@ export default function CollectionsList() {
   const collections = data?.docs ?? [];
 
   return (
-    <div className='mx-auto w-full max-w-7xl space-y-12 px-4 py-10 animate-in fade-in duration-700'>
-      <div className='flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-8'>
+    <div className='mx-auto w-full max-w-7xl space-y-3 px-4 py-10 animate-in fade-in duration-700'>
+      <div className='flex flex-col md:flex-row md:items-end justify-between gap-6 border-border pb-8'>
         <div className='space-y-2'>
           <div className='flex items-center gap-3'>
             <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-sky-600 text-white shadow-lg shadow-sky-100'>
@@ -142,7 +142,7 @@ export default function CollectionsList() {
         ))}
       </div>
 
-      <div className='pt-10 border-t border-border/50'>
+      <div>
         <CollectionPagination
           page={data?.page}
           totalPages={data?.totalPages}
