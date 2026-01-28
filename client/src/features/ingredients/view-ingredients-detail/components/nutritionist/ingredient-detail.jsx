@@ -70,7 +70,7 @@ const IngredientDetail = ({ id }) => {
           name: ingredient.name || '',
           category: ingredient.category || '',
           unit: ingredient.unit || '',
-          caloriesPer100g: ingredient.caloriesPer100g?.toString() || '0',
+          calories: ingredient.calories?.toString() || '0',
           protein: ingredient.protein?.toString() || '0',
           carbs: ingredient.carbs?.toString() || '0',
           fat: ingredient.fat?.toString() || '0',
@@ -132,7 +132,7 @@ const IngredientDetail = ({ id }) => {
           </div>
           <p className='text-muted-foreground'>{ingredient?.category}</p>
           <div className='flex gap-2 mt-2 flex-wrap justify-center md:justify-start'>
-            <Badge variant='outline'>{ingredient?.caloriesPer100g} kcal</Badge>
+            <Badge variant='outline'>{ingredient?.calories} kcal</Badge>
             <Badge variant='outline'>Protein: {ingredient?.protein}g</Badge>
             <Badge variant='outline'>Carbs: {ingredient?.carbs}g</Badge>
             <Badge variant='outline'>Fat: {ingredient?.fat}g</Badge>
@@ -232,7 +232,7 @@ const IngredientDetail = ({ id }) => {
 
             <FormField
               control={form.control}
-              name='caloriesPer100g'
+              name='calories'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className='text-muted-foreground'>
@@ -241,7 +241,7 @@ const IngredientDetail = ({ id }) => {
                   <FormControl>
                     <Input
                       type='number'
-                      placeholder='Nhập caloriesPer100g'
+                      placeholder='Nhập calories'
                       {...field}
                     />
                   </FormControl>
