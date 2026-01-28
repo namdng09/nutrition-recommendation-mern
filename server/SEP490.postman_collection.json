@@ -175,7 +175,7 @@
               "formdata": []
             },
             "url": {
-              "raw": "http://localhost:3000/api/ingredients/69738577d6d2d165d5c2d9fd",
+              "raw": "http://localhost:3000/api/ingredients/697a3926d79c71b7017bac66",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -184,7 +184,7 @@
               "path": [
                 "api",
                 "ingredients",
-                "69738577d6d2d165d5c2d9fd"
+                "697a3926d79c71b7017bac66"
               ]
             }
           },
@@ -335,7 +335,7 @@
                 },
                 {
                   "key": "units",
-                  "value": "[\n  {\"value\": 1, \"unit\": \"cup\"},\n  {\"value\": 1, \"unit\": \"tablespoon\"}\n]",
+                  "value": "[\n  {\"value\": 1, \"unit\": \"cup\", \"isDefault\": true},\n  {\"value\": 1, \"unit\": \"tablespoon\", \"isDefault\": false}\n]",
                   "type": "text",
                   "uuid": "f05baa18-5a62-4c22-b101-f365136e600b"
                 },
@@ -354,7 +354,7 @@
               ]
             },
             "url": {
-              "raw": "http://localhost:3000/api/ingredients/6979c9005ea7e9f5d2a6b2e4",
+              "raw": "http://localhost:3000/api/ingredients/697a3926d79c71b7017bac66",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -363,7 +363,7 @@
               "path": [
                 "api",
                 "ingredients",
-                "6979c9005ea7e9f5d2a6b2e4"
+                "697a3926d79c71b7017bac66"
               ]
             }
           },
@@ -389,7 +389,7 @@
               "formdata": []
             },
             "url": {
-              "raw": "http://localhost:3000/api/ingredients/6979c81e5ea7e9f5d2a6b2d6",
+              "raw": "http://localhost:3000/api/ingredients/697a3926d79c71b7017bac66",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -398,7 +398,7 @@
               "path": [
                 "api",
                 "ingredients",
-                "6979c81e5ea7e9f5d2a6b2d6"
+                "697a3926d79c71b7017bac66"
               ]
             }
           },
@@ -522,7 +522,7 @@
                 },
                 {
                   "key": "ingredients",
-                  "value": "[{\"ingredientId\":\"697a3926d79c71b7017bac66\",\"units\":[{\"value\":200,\"quantity\":200,\"unit\":\"gram\",\"isDefault\":\"true\"},{\"value\":200,\"quantity\":1,\"unit\":\"bát\",\"isDefault\":\"false\"},{\"value\":200,\"quantity\":0.2,\"unit\":\"kg\",\"isDefault\":\"false\"}]},{\"ingredientId\":\"697a3920d79c71b7017bac61\",\"units\":[{\"value\":150,\"quantity\":150,\"unit\":\"gram\",\"isDefault\":\"true\"},{\"value\":150,\"quantity\":5,\"unit\":\"lát\",\"isDefault\":\"false\"}]}]",
+                  "value": "[{\"ingredientId\":\"697a41d6872387d42885a56c\",\"units\":[{\"value\":200,\"quantity\":200,\"unit\":\"gram\",\"isDefault\":\"true\"},{\"value\":200,\"quantity\":1,\"unit\":\"bát\",\"isDefault\":\"false\"},{\"value\":200,\"quantity\":0.2,\"unit\":\"kg\",\"isDefault\":\"false\"}]},{\"ingredientId\":\"697a3920d79c71b7017bac61\",\"units\":[{\"value\":150,\"quantity\":150,\"unit\":\"gram\",\"isDefault\":\"true\"},{\"value\":150,\"quantity\":5,\"unit\":\"lát\",\"isDefault\":\"false\"}]}]",
                   "type": "text",
                   "uuid": "0bca27fb-2a09-4b1a-8269-d254fb7c1b9e"
                 },
@@ -623,7 +623,7 @@
                 },
                 {
                   "key": "ingredients",
-                  "value": "[\n  {\n    \"ingredientId\": \"6979d6cc3fec4ed783fb3892\",\n    \"quantity\": 200,\n    \"unit\": \"g\"\n  },\n  {\n    \"ingredientId\": \"6979ee30826a8c054e98b6ef\",\n    \"quantity\": 100,\n    \"unit\": \"g\"\n  }\n]",
+                  "value": "[{\"ingredientId\":\"697a41d6872387d42885a56c\",\"units\":[{\"value\":200,\"quantity\":200,\"unit\":\"gram\",\"isDefault\":\"true\"},{\"value\":200,\"quantity\":1,\"unit\":\"bát\",\"isDefault\":\"false\"},{\"value\":200,\"quantity\":0.2,\"unit\":\"kg\",\"isDefault\":\"false\"}]},{\"ingredientId\":\"697a3920d79c71b7017bac61\",\"units\":[{\"value\":150,\"quantity\":150,\"unit\":\"gram\",\"isDefault\":\"true\"},{\"value\":150,\"quantity\":5,\"unit\":\"lát\",\"isDefault\":\"false\"}]}]",
                   "type": "text",
                   "uuid": "0bca27fb-2a09-4b1a-8269-d254fb7c1b9e"
                 },
@@ -672,7 +672,7 @@
               ]
             },
             "url": {
-              "raw": "http://localhost:3000/api/dishes/6979ee45826a8c054e98b6fb",
+              "raw": "http://localhost:3000/api/dishes/697a4262872387d42885a5cb",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -681,7 +681,7 @@
               "path": [
                 "api",
                 "dishes",
-                "6979ee45826a8c054e98b6fb"
+                "697a4262872387d42885a5cb"
               ]
             }
           },
@@ -707,7 +707,7 @@
               "formdata": []
             },
             "url": {
-              "raw": "http://localhost:3000/api/dishes/6979ee45826a8c054e98b6fb",
+              "raw": "http://localhost:3000/api/dishes/697a4262872387d42885a5cb",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -716,7 +716,7 @@
               "path": [
                 "api",
                 "dishes",
-                "6979ee45826a8c054e98b6fb"
+                "697a4262872387d42885a5cb"
               ]
             }
           },
