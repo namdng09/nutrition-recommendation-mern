@@ -1,4 +1,12 @@
-import { ChevronDown, LogOut, Menu, User, X } from 'lucide-react';
+import {
+  ChevronDown,
+  LogOut,
+  Menu,
+  Settings,
+  Sparkles,
+  User,
+  X
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { FaUserPlus } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
@@ -42,115 +50,134 @@ const Header = () => {
   const avatarSrc = profile?.avatar;
 
   return (
-    <header className='sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
-      <div className='mx-auto flex h-25 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8'>
+    <header className='sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
+      <div className='mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8'>
         <div className='flex items-center'>
-          <Link to='/' className='flex items-center gap-4'>
-            <div className='flex h-18 w-28 items-center justify-center rounded-2xl border bg-[#2E7D32]/2 shadow-2xs'>
+          <Link
+            to='/'
+            className='group flex items-center gap-3 transition-all hover:opacity-90'
+          >
+            <div className='relative flex h-20 w-20 items-center justify-center bg-transparent transition-transform duration-500 group-hover:scale-110'>
               <img
-                src='/logo1.png'
+                src='/logo2.png'
                 alt='Logo'
-                className='h-20 w-20 object-contain scale-150'
+                className='h-full w-full object-contain scale-[1.8]'
               />
             </div>
 
-            <div className='flex flex-col justify-center leading-tight'>
-              <div className='text-xl font-bold text-[#1B5E20]'>EatDee</div>
-              <div className='text-base text-[#2E7D32]/70'>Since 2025</div>
+            <div className='flex flex-col leading-none'>
+              <span className='text-2xl font-black tracking-tight text-primary'>
+                Eat<span className='text-foreground'>Dee</span>
+              </span>
+              <span className='text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60 mt-0.5'>
+                Healthy Life
+              </span>
             </div>
           </Link>
         </div>
 
-        <HeaderNav links={NAV_LINKS} />
+        <div className='hidden md:block'>
+          <HeaderNav links={NAV_LINKS} />
+        </div>
 
-        <div className='flex items-center gap-2'>
-          <ModeToggle />
+        <div className='flex items-center gap-3'>
+          <div className='hidden sm:block border-r border-border h-6 pr-3'>
+            <ModeToggle />
+          </div>
+          <div className='sm:hidden'>
+            <ModeToggle />
+          </div>
 
           {user ? (
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant='ghost'
-                  className='group h-10 gap-2 rounded-full px-2 hover:bg-[#2E7D32]/10'
+                  className='group relative h-11 gap-3 rounded-full pl-1.5 pr-4 transition-all hover:bg-primary/5 border border-transparent hover:border-primary/10'
                 >
-                  <Avatar className='h-8 w-8'>
+                  <Avatar className='h-8 w-8 border border-border transition-transform group-hover:scale-105 shadow-sm'>
                     <AvatarImage src={avatarSrc} alt={displayName} />
-                    <AvatarFallback>
-                      <img
-                        src='/default-avatar.jpg'
-                        alt='Default avatar'
-                        className='h-full w-full object-cover'
-                      />
+                    <AvatarFallback className='bg-primary/10 text-[10px] font-bold'>
+                      {displayName.substring(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
 
-                  <span className='hidden max-w-[140px] truncate text-sm font-medium text-[#1B5E20] sm:inline'>
-                    {displayName}
-                  </span>
+                  <div className='hidden flex-col items-start leading-none sm:flex'>
+                    <span className='max-w-[100px] truncate text-sm font-bold text-foreground'>
+                      {displayName}
+                    </span>
+                    <span className='text-[10px] text-muted-foreground font-medium'>
+                      Thành viên
+                    </span>
+                  </div>
 
-                  <ChevronDown className='hidden h-4 w-4 text-[#1B5E20]/70 transition group-hover:text-[#1B5E20] sm:block' />
+                  <ChevronDown className='hidden h-3.5 w-3.5 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 sm:block' />
                 </Button>
               </PopoverTrigger>
 
-              <PopoverContent className='w-64 p-2' align='end'>
-                <div className='flex items-center gap-3 rounded-lg border bg-card p-3'>
-                  <Avatar className='h-10 w-10'>
+              <PopoverContent
+                className='w-72 p-1.5 mt-2 rounded-2xl shadow-2xl border-border/50 backdrop-blur-xl'
+                align='end'
+              >
+                <div className='flex items-center gap-3 rounded-xl bg-primary/[0.03] p-4 border border-primary/5 mb-1'>
+                  <Avatar className='h-11 w-11 border-2 border-background shadow-md'>
                     <AvatarImage src={avatarSrc} alt={displayName} />
-                    <AvatarFallback>
-                      <img
-                        src='/default-avatar.jpg'
-                        alt='Default avatar'
-                        className='h-full w-full object-cover'
-                      />
+                    <AvatarFallback className='bg-primary/10'>
+                      ED
                     </AvatarFallback>
                   </Avatar>
+
                   <div className='min-w-0'>
-                    <div className='truncate text-sm font-semibold text-[#1B5E20]'>
+                    <div className='truncate text-[15px] font-bold text-foreground flex items-center gap-1'>
                       {displayName}
+                      <Sparkles className='h-3 w-3 text-primary' />
                     </div>
-                    {displayEmail ? (
-                      <div className='truncate text-xs text-[#2E7D32]/70'>
-                        {displayEmail}
-                      </div>
-                    ) : null}
+                    <div className='truncate text-xs text-muted-foreground font-medium'>
+                      {displayEmail || 'Basic Member'}
+                    </div>
                   </div>
                 </div>
 
-                <div className='mt-2 flex flex-col gap-1'>
+                <div className='grid gap-0.5'>
                   <Link
                     to='/profile'
-                    className='flex items-center gap-2 rounded-md px-3 py-2 text-sm text-[#1B5E20] hover:bg-[#2E7D32]/10'
+                    className='group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-primary/5 hover:text-primary'
                   >
-                    <User className='h-4 w-4' />
+                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-secondary group-hover:bg-primary/10'>
+                      <User className='h-4 w-4' />
+                    </div>
                     Hồ Sơ Người Dùng
                   </Link>
+                  <div className='my-1 border-t border-border/50' />
 
                   <button
                     onClick={handleLogout}
-                    className='flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-destructive hover:bg-[#2E7D32]/10'
+                    className='group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-bold text-destructive transition-colors hover:bg-destructive/5'
                   >
-                    <LogOut className='h-4 w-4' />
+                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-destructive/5 group-hover:bg-destructive/10'>
+                      <LogOut className='h-4 w-4' />
+                    </div>
                     Đăng Xuất
                   </button>
                 </div>
               </PopoverContent>
             </Popover>
           ) : (
-            <div className='hidden items-center gap-2 sm:flex'>
+            <div className='hidden items-center gap-3 sm:flex'>
               <Button
                 variant='ghost'
                 asChild
-                className='rounded-full text-[#1B5E20] hover:bg-[#2E7D32]/10'
+                className='rounded-full px-6 font-bold text-foreground/80 transition-all hover:bg-accent'
               >
                 <Link to='/auth/login'>Đăng nhập</Link>
               </Button>
 
               <Button
                 asChild
-                className='rounded-full bg-[#1B5E20] text-white hover:bg-[#145017]'
+                className='rounded-full bg-primary px-6 font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95'
               >
                 <Link to='/auth/sign-up' className='flex items-center gap-2'>
-                  Đăng Ký Tài Khoản
+                  Đăng Ký
                   <FaUserPlus className='h-4 w-4' />
                 </Link>
               </Button>
@@ -160,13 +187,13 @@ const Header = () => {
           <Button
             variant='ghost'
             size='icon'
-            className='md:hidden hover:bg-[#2E7D32]/10'
+            className='md:hidden rounded-xl bg-secondary/50 hover:bg-primary/10 transition-colors'
             onClick={() => setMobileMenuOpen(v => !v)}
           >
             {mobileMenuOpen ? (
-              <X className='h-5 w-5' />
+              <X className='h-5 w-5 text-primary animate-in spin-in-90 duration-300' />
             ) : (
-              <Menu className='h-5 w-5' />
+              <Menu className='h-5 w-5 text-primary animate-in fade-in duration-300' />
             )}
             <span className='sr-only'>Toggle menu</span>
           </Button>
@@ -175,12 +202,12 @@ const Header = () => {
 
       <div
         className={cn(
-          'md:hidden overflow-hidden border-t bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-[max-height] duration-300',
-          mobileMenuOpen ? 'max-h-96' : 'max-h-0'
+          'md:hidden overflow-hidden bg-background/95 backdrop-blur-xl transition-all duration-300 ease-in-out border-b border-border',
+          mobileMenuOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'
         )}
       >
-        <div className='mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8'>
-          <div className='flex flex-col gap-1'>
+        <div className='px-4 pb-6 pt-2 space-y-4'>
+          <div className='grid gap-1'>
             {NAV_LINKS.map(link => (
               <NavLink
                 key={link.to}
@@ -188,36 +215,36 @@ const Header = () => {
                 onClick={() => setMobileMenuOpen(false)}
                 className={({ isActive }) =>
                   cn(
-                    'rounded-xl px-3 py-2 text-sm font-medium transition',
-                    'hover:bg-[#2E7D32]/10 hover:text-[#1B5E20]',
+                    'flex items-center rounded-xl px-4 py-3 text-base font-bold transition-all',
                     isActive
-                      ? 'bg-[#2E7D32]/15 text-[#1B5E20] ring-1 ring-[#2E7D32]/25'
-                      : 'text-[#1B5E20]/70'
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'text-muted-foreground hover:bg-primary/5 hover:text-primary'
                   )
                 }
               >
                 {link.label}
               </NavLink>
             ))}
-
-            {!user && (
-              <div className='mt-2 grid grid-cols-2 gap-2'>
-                <Button
-                  variant='outline'
-                  asChild
-                  className='rounded-xl border-[#2E7D32]/25 text-[#1B5E20] hover:bg-[#2E7D32]/10'
-                >
-                  <Link to='/auth/login'>Đăng Nhập</Link>
-                </Button>
-                <Button
-                  asChild
-                  className='rounded-xl bg-[#1B5E20] text-white hover:bg-[#145017]'
-                >
-                  <Link to='/auth/sign-up'>Đăng Ký</Link>
-                </Button>
-              </div>
-            )}
           </div>
+
+          {!user && (
+            <div className='grid grid-cols-2 gap-3 pt-2'>
+              <Button
+                variant='outline'
+                asChild
+                className='rounded-xl border-border h-12 font-bold'
+              >
+                <Link to='/auth/login'>Đăng Nhập</Link>
+              </Button>
+
+              <Button
+                asChild
+                className='rounded-xl bg-primary h-12 font-bold shadow-lg shadow-primary/10'
+              >
+                <Link to='/auth/sign-up'>Đăng Ký</Link>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </header>

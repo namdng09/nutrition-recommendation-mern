@@ -1,7 +1,37 @@
 import { z } from 'zod';
 
+import { ALLERGEN } from '~/shared/constants/allergen';
+import { BODYFAT } from '~/shared/constants/bodyfat';
+import { DIET } from '~/shared/constants/diet';
 import { GENDER } from '~/shared/constants/gender';
+import { MEAL_TYPE } from '~/shared/constants/meal-type';
 import { ROLE } from '~/shared/constants/role';
+import { USER_TARGET } from '~/shared/constants/user-target';
+
+const macroRangeSchema = z
+  .object({
+    min: z.number().min(0),
+    max: z.number().min(0)
+  })
+  .refine(value => value.max >= value.min, {
+    message: 'max must be greater than or equal to min'
+  });
+
+const nutritionTargetSchema = z.object({
+  caloriesTarget: z.number().min(0),
+  macros: z.object({
+    carbs: macroRangeSchema,
+    protein: macroRangeSchema,
+    fat: macroRangeSchema
+  })
+});
+
+const mealSettingSchema = z.object({
+  name: z.enum(Object.values(MEAL_TYPE), { message: 'Invalid meal type' }),
+  categories: z
+    .array(z.string().trim())
+    .min(1, 'Meal categories cannot be empty')
+});
 
 export const createUserRequestSchema = z.object({
   email: z.email('Invalid email address'),
@@ -24,6 +54,30 @@ export const updateProfileRequestSchema = z.object({
 });
 
 export type UpdateProfileRequest = z.infer<typeof updateProfileRequestSchema>;
+
+export const onboardingRequestSchema = z.object({
+  gender: z.enum(Object.values(GENDER), { message: 'Invalid gender' }),
+  dob: z.string(),
+  height: z.number().positive(),
+  weight: z.number().positive(),
+  bodyfat: z.enum(Object.values(BODYFAT), { message: 'Invalid bodyfat' }),
+  diet: z.enum(Object.values(DIET), { message: 'Invalid diet' }),
+  allergens: z
+    .array(z.enum(Object.values(ALLERGEN), { message: 'Invalid allergen' }))
+    .optional(),
+  medicalHistory: z.array(z.string().trim()).optional(),
+  nutritionTarget: nutritionTargetSchema.optional(),
+  mealSetting: z.array(mealSettingSchema).optional(),
+  goal: z
+    .object({
+      target: z.enum(Object.values(USER_TARGET), { message: 'Invalid target' }),
+      weightGoal: z.number().optional(),
+      targetWeightChange: z.number().optional()
+    })
+    .optional()
+});
+
+export type OnboardingRequest = z.infer<typeof onboardingRequestSchema>;
 
 export const updateUserRequestSchema = z.object({
   email: z.email('Invalid email address').optional(),
