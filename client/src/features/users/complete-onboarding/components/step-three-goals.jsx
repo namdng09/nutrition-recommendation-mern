@@ -11,7 +11,13 @@ import {
   FormMessage
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
-import { MultiSelect } from '~/components/ui/multi-select';
+import {
+  MultiSelect,
+  MultiSelectContent,
+  MultiSelectItem,
+  MultiSelectTrigger,
+  MultiSelectValue
+} from '~/components/ui/multi-select';
 import {
   Select,
   SelectContent,
@@ -48,7 +54,7 @@ export function StepThreeGoals({ control, watch }) {
     if (fields.length === 0) {
       const defaultMeals = MEAL_TYPE_OPTIONS.map(option => ({
         name: option.value,
-        dishCategories: [option.label],
+        dishCategories: [],
         cookingPreference: COOKING_PREFERENCE.CAN_COOK,
         mealSize: MEAL_SIZE.NORMAL,
         availableTime: AVAILABLE_TIME.SOME_TIME,
@@ -398,15 +404,26 @@ export function StepThreeGoals({ control, watch }) {
                           Danh mục món ăn{' '}
                           <span className='text-destructive'>*</span>
                         </FormLabel>
-                        <FormControl>
-                          <MultiSelect
-                            options={DISH_CATEGORY_OPTIONS}
-                            selected={field.value || []}
-                            onChange={field.onChange}
-                            placeholder='Chọn danh mục món ăn'
-                            className='w-full'
-                          />
-                        </FormControl>
+                        <MultiSelect
+                          values={field.value || []}
+                          onValuesChange={field.onChange}
+                        >
+                          <FormControl>
+                            <MultiSelectTrigger className='w-full'>
+                              <MultiSelectValue placeholder='Chọn danh mục món ăn' />
+                            </MultiSelectTrigger>
+                          </FormControl>
+                          <MultiSelectContent>
+                            {DISH_CATEGORY_OPTIONS.map(option => (
+                              <MultiSelectItem
+                                key={option.value}
+                                value={option.value}
+                              >
+                                {option.label}
+                              </MultiSelectItem>
+                            ))}
+                          </MultiSelectContent>
+                        </MultiSelect>
                         {fieldState.error && (
                           <p className='text-destructive text-sm'>
                             {fieldState.error.message}
