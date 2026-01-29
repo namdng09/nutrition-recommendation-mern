@@ -76,17 +76,19 @@ const router = createBrowserRouter([
       },
       {
         path: '/nutritionist/',
-        // Component: () => (
-        //   <PrivateRoute allowedRoles={[ROLE.NUTRITIONIST]}>
-        //     <AdminLayout />
-        //   </PrivateRoute>
-        // ),
-        Component: AdminLayout,
+        Component: () => (
+          <PrivateRoute allowedRoles={[ROLE.NUTRITIONIST]}>
+            <AdminLayout />
+          </PrivateRoute>
+        ),
+        // Component: AdminLayout,
         children: [
           {
             path: '',
             Component: lazy(() => import('~/app/nutritionist/page'))
           },
+
+          //Manage ingredients
           {
             path: 'manage-ingredients/',
             Component: lazy(
@@ -106,6 +108,14 @@ const router = createBrowserRouter([
                 import(
                   '~/app/nutritionist/manage-ingredients/create-ingredient/page'
                 )
+            )
+          },
+
+          // Manage dishes
+          {
+            path: 'manage-dishes/',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-dishes/page')
             )
           }
         ]
