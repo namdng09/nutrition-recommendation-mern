@@ -1,7 +1,7 @@
 export const GROCERY_STATUS = {
-  ACTIVE: 'active',
-  COMPLETED: 'completed',
-  ARCHIVED: 'archived'
+  ACTIVE: 'Đang hoạt động',
+  COMPLETED: 'Đã hoàn thành',
+  ARCHIVED: 'Đã lưu trữ'
 } as const;
 
 export type GroceryStatus =

@@ -9,7 +9,11 @@ import {
 import { asyncHandler, handleSingleImageUpload } from '~/shared/utils';
 
 import { UserController } from './user-controller';
-import { createUserRequestSchema, updateUserRequestSchema } from './user-dto';
+import {
+  createUserRequestSchema,
+  onboardingRequestSchema,
+  updateUserRequestSchema
+} from './user-dto';
 
 const router = Router();
 
@@ -37,6 +41,13 @@ router.delete(
 );
 
 router.get('/me', authenticate(), asyncHandler(UserController.viewProfile));
+
+router.post(
+  '/me/onboarding',
+  authenticate(),
+  validate(onboardingRequestSchema.shape),
+  asyncHandler(UserController.onboardUser)
+);
 
 router.put(
   '/me',

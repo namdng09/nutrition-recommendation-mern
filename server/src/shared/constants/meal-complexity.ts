@@ -1,8 +1,8 @@
 export const MEAL_COMPLEXITY = {
-  SUPER_SIMPLE: 'SUPER_SIMPLE',
-  SIMPLE: 'SIMPLE',
-  MODERATE: 'MODERATE',
-  COMPLEX: 'COMPLEX'
+  SUPER_SIMPLE: 'Rất đơn giản',
+  SIMPLE: 'Đơn giản',
+  MODERATE: 'Trung bình',
+  COMPLEX: 'Phức tạp'
 } as const;
 
 export type MealComplexity =
