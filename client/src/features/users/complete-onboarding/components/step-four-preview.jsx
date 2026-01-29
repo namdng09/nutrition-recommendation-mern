@@ -1,10 +1,68 @@
+import { Beef, ClipboardList, Droplet, Target, Wheat } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
+import { cn } from '~/lib/utils';
 
 import { useCalculateNutritionTarget } from '../api/use-calculate-nutrition-target';
+
+const MACRO_CONFIG = {
+  carbs: {
+    label: 'Carbs',
+    icon: Wheat,
+    colorClass: 'text-chart-1',
+    bgClass: 'bg-chart-1'
+  },
+  protein: {
+    label: 'Protein',
+    icon: Beef,
+    colorClass: 'text-chart-2',
+    bgClass: 'bg-chart-2'
+  },
+  fat: {
+    label: 'Chất béo',
+    icon: Droplet,
+    colorClass: 'text-chart-4',
+    bgClass: 'bg-chart-4'
+  }
+};
+
+function MacroDisplay({ type, min, max, percentage }) {
+  const config = MACRO_CONFIG[type];
+  const Icon = config.icon;
+
+  return (
+    <div className='space-y-1'>
+      <div className='flex justify-between text-sm'>
+        <span className='flex items-center gap-1.5 font-medium'>
+          <Icon className={cn('size-4', config.colorClass)} />
+          {config.label}
+        </span>
+        <span>
+          {min}g - {max}g
+        </span>
+      </div>
+      <div className='bg-muted h-2 w-full overflow-hidden rounded-full'>
+        <div
+          className={cn('h-full', config.bgClass)}
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// Reusable InfoItem component
+function InfoItem({ label, value }) {
+  return (
+    <div>
+      <span className='text-muted-foreground'>{label}:</span>
+      <span className='ml-2 font-medium'>{value}</span>
+    </div>
+  );
+}
 
 export function StepFourPreview({ formData, onBack }) {
   const [calculatedTarget, setCalculatedTarget] = useState(null);
@@ -54,6 +112,10 @@ export function StepFourPreview({ formData, onBack }) {
     return age;
   };
 
+  const calculateMacroPercentage = (macroMax, totalMax) => {
+    return ((macroMax / totalMax) * 100).toFixed(1);
+  };
+
   return (
     <div className='space-y-6'>
       <div className='space-y-4'>
@@ -72,8 +134,9 @@ export function StepFourPreview({ formData, onBack }) {
         <>
           {/* Nutrition Target Summary */}
           <div className='border-input rounded-lg border bg-muted/50 p-6'>
-            <h4 className='mb-4 text-lg font-semibold'>
-              🎯 Mục tiêu dinh dưỡng hàng ngày
+            <h4 className='mb-4 flex items-center gap-2 text-lg font-semibold'>
+              <Target className='size-5 text-primary' />
+              Mục tiêu dinh dưỡng hàng ngày
             </h4>
             {calculatedTarget && (
               <div className='space-y-4'>
@@ -87,62 +150,45 @@ export function StepFourPreview({ formData, onBack }) {
                 <div className='space-y-3'>
                   <h5 className='text-sm font-medium'>Phân bổ Macros:</h5>
 
-                  {/* Carbs */}
-                  <div className='space-y-1'>
-                    <div className='flex justify-between text-sm'>
-                      <span className='font-medium'>🍚 Carbs</span>
-                      <span>
-                        {calculatedTarget.macros.carbs.min}g -{' '}
-                        {calculatedTarget.macros.carbs.max}g
-                      </span>
-                    </div>
-                    <div className='bg-muted h-2 w-full overflow-hidden rounded-full'>
-                      <div
-                        className='h-full bg-blue-500'
-                        style={{
-                          width: `${(calculatedTarget.macros.carbs.max / (calculatedTarget.macros.carbs.max + calculatedTarget.macros.protein.max + calculatedTarget.macros.fat.max)) * 100}%`
-                        }}
-                      />
-                    </div>
-                  </div>
+                  {/* Calculate total max for percentages */}
+                  {(() => {
+                    const totalMax =
+                      calculatedTarget.macros.carbs.max +
+                      calculatedTarget.macros.protein.max +
+                      calculatedTarget.macros.fat.max;
 
-                  {/* Protein */}
-                  <div className='space-y-1'>
-                    <div className='flex justify-between text-sm'>
-                      <span className='font-medium'>🥩 Protein</span>
-                      <span>
-                        {calculatedTarget.macros.protein.min}g -{' '}
-                        {calculatedTarget.macros.protein.max}g
-                      </span>
-                    </div>
-                    <div className='bg-muted h-2 w-full overflow-hidden rounded-full'>
-                      <div
-                        className='h-full bg-green-500'
-                        style={{
-                          width: `${(calculatedTarget.macros.protein.max / (calculatedTarget.macros.carbs.max + calculatedTarget.macros.protein.max + calculatedTarget.macros.fat.max)) * 100}%`
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Fat */}
-                  <div className='space-y-1'>
-                    <div className='flex justify-between text-sm'>
-                      <span className='font-medium'>🥑 Chất béo</span>
-                      <span>
-                        {calculatedTarget.macros.fat.min}g -{' '}
-                        {calculatedTarget.macros.fat.max}g
-                      </span>
-                    </div>
-                    <div className='bg-muted h-2 w-full overflow-hidden rounded-full'>
-                      <div
-                        className='h-full bg-yellow-500'
-                        style={{
-                          width: `${(calculatedTarget.macros.fat.max / (calculatedTarget.macros.carbs.max + calculatedTarget.macros.protein.max + calculatedTarget.macros.fat.max)) * 100}%`
-                        }}
-                      />
-                    </div>
-                  </div>
+                    return (
+                      <>
+                        <MacroDisplay
+                          type='carbs'
+                          min={calculatedTarget.macros.carbs.min}
+                          max={calculatedTarget.macros.carbs.max}
+                          percentage={calculateMacroPercentage(
+                            calculatedTarget.macros.carbs.max,
+                            totalMax
+                          )}
+                        />
+                        <MacroDisplay
+                          type='protein'
+                          min={calculatedTarget.macros.protein.min}
+                          max={calculatedTarget.macros.protein.max}
+                          percentage={calculateMacroPercentage(
+                            calculatedTarget.macros.protein.max,
+                            totalMax
+                          )}
+                        />
+                        <MacroDisplay
+                          type='fat'
+                          min={calculatedTarget.macros.fat.min}
+                          max={calculatedTarget.macros.fat.max}
+                          percentage={calculateMacroPercentage(
+                            calculatedTarget.macros.fat.max,
+                            totalMax
+                          )}
+                        />
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
             )}
@@ -150,29 +196,20 @@ export function StepFourPreview({ formData, onBack }) {
 
           {/* User Info Summary */}
           <div className='border-input rounded-lg border p-6'>
-            <h4 className='mb-4 text-lg font-semibold'>📋 Thông tin của bạn</h4>
+            <h4 className='mb-4 flex items-center gap-2 text-lg font-semibold'>
+              <ClipboardList className='size-5' />
+              Thông tin của bạn
+            </h4>
             <div className='grid grid-cols-2 gap-4 text-sm'>
-              <div>
-                <span className='text-muted-foreground'>Tuổi:</span>
-                <span className='ml-2 font-medium'>{calculateAge()} tuổi</span>
-              </div>
-              <div>
-                <span className='text-muted-foreground'>Chiều cao:</span>
-                <span className='ml-2 font-medium'>{formData.height} cm</span>
-              </div>
-              <div>
-                <span className='text-muted-foreground'>Cân nặng:</span>
-                <span className='ml-2 font-medium'>{formData.weight} kg</span>
-              </div>
-              <div>
-                <span className='text-muted-foreground'>BMI:</span>
-                <span className='ml-2 font-medium'>{calculateBMI()}</span>
-              </div>
+              <InfoItem label='Tuổi' value={`${calculateAge()} tuổi`} />
+              <InfoItem label='Chiều cao' value={`${formData.height} cm`} />
+              <InfoItem label='Cân nặng' value={`${formData.weight} kg`} />
+              <InfoItem label='BMI' value={calculateBMI()} />
               <div className='col-span-2'>
-                <span className='text-muted-foreground'>Số bữa ăn:</span>
-                <span className='ml-2 font-medium'>
-                  {formData.mealSettings?.length || 0} bữa/ngày
-                </span>
+                <InfoItem
+                  label='Số bữa ăn'
+                  value={`${formData.mealSettings?.length || 0} bữa/ngày`}
+                />
               </div>
             </div>
           </div>

@@ -117,16 +117,14 @@ export const stepTwoSchema = yup.object({
 });
 
 export const stepThreeSchema = yup.object({
-  goal: yup
-    .object({
-      target: yup
-        .string()
-        .oneOf(getEnumValues(USER_TARGET), 'Mục tiêu không hợp lệ')
-        .required('Mục tiêu là bắt buộc'),
-      weightGoal: yup.number().optional(),
-      targetWeightChange: yup.number().optional()
-    })
-    .optional(),
+  goal: yup.object({
+    target: yup
+      .string()
+      .oneOf(getEnumValues(USER_TARGET), 'Mục tiêu không hợp lệ')
+      .required('Mục tiêu là bắt buộc'),
+    weightGoal: yup.number().optional(),
+    targetWeightChange: yup.number().optional()
+  }),
   nutritionTarget: nutritionTargetSchema.optional(),
   mealSettings: yup.array().of(mealSettingSchema).optional()
 });
