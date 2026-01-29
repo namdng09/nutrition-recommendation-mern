@@ -1,9 +1,9 @@
 export const MEAL_SIZE = {
-  TINY: 'TINY',
-  SMALL: 'SMALL',
-  NORMAL: 'NORMAL',
-  BIG: 'BIG',
-  HUGE: 'HUGE'
+  TINY: 'Nhỏ',
+  SMALL: 'Vừa',
+  NORMAL: 'Bình thường',
+  BIG: 'Lớn',
+  HUGE: 'Rất lớn'
 } as const;
 
 export type MealSize = (typeof MEAL_SIZE)[keyof typeof MEAL_SIZE];
