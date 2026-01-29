@@ -19,8 +19,6 @@ export const DishController = {
 
   viewDishes: async (req: Request, res: Response) => {
     const parsed = parseQuery(req.query);
-    const userId = req.user?._id?.toString();
-    const userRole = req.user?.role;
 
     const result = await DishService.viewDishes(parsed);
 
@@ -31,8 +29,6 @@ export const DishController = {
 
   viewDishDetail: async (req: Request, res: Response) => {
     const id = req.params.id;
-    const userId = req.user?._id?.toString();
-    const userRole = req.user?.role;
 
     const result = await DishService.viewDishDetail(id);
 
@@ -56,8 +52,6 @@ export const DishController = {
 
   deleteDish: async (req: Request, res: Response) => {
     const id = req.params.id;
-    const userId = req.user!._id.toString();
-    const userRole = req.user?.role;
 
     await DishService.deleteDish(id);
 
