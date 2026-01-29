@@ -33,7 +33,10 @@ const AdminLayout = () => {
       'create-user': 'Tạo người dùng',
       'update-user': 'Cập nhật người dùng',
       nutritionist: 'Dashboard',
-      'manage-ingredients': 'Quản lý nguyên liệu'
+      'manage-ingredients': 'Quản lý nguyên liệu',
+      'create-ingredient': 'Tạo nguyên liệu',
+      'update-ingredient': 'Cập nhật nguyên liệu',
+      'manage-dishes': 'Quản lý món ăn'
     };
 
     const items = [];
