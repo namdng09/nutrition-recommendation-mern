@@ -98,7 +98,7 @@ export function OnboardingForm() {
     setCurrentStep(step);
   };
 
-  const onSubmit = async data => {
+  const onFinalSubmit = async data => {
     completeOnboarding(data, {
       onSuccess: response => {
         const successMessage =
@@ -140,7 +140,7 @@ export function OnboardingForm() {
       <ProgressIndicator currentStep={currentStep} />
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+        <div className='space-y-8'>
           <div className='bg-card min-h-[400px] rounded-lg border p-6 shadow-sm'>
             {renderStep()}
           </div>
@@ -162,7 +162,11 @@ export function OnboardingForm() {
                 <ArrowRightIcon />
               </Button>
             ) : (
-              <Button type='submit' disabled={isPending}>
+              <Button
+                type='button'
+                onClick={form.handleSubmit(onFinalSubmit)}
+                disabled={isPending}
+              >
                 {isPending ? (
                   <>
                     <LoaderIcon className='animate-spin' />
@@ -174,7 +178,7 @@ export function OnboardingForm() {
               </Button>
             )}
           </div>
-        </form>
+        </div>
       </Form>
     </div>
   );
