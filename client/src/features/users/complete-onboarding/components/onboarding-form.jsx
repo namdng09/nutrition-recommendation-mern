@@ -11,11 +11,13 @@ import { Form } from '~/components/ui/form';
 import { useCompleteOnboarding } from '../api/use-complete-onboarding';
 import {
   onboardingSchema,
+  stepFourSchema,
   stepOneSchema,
   stepThreeSchema,
   stepTwoSchema
 } from '../schemas/onboarding-schema';
 import { ProgressIndicator } from './progress-indicator';
+import { StepFourPreview } from './step-four-preview';
 import { StepOneDiet } from './step-one-diet';
 import { StepThreeGoals } from './step-three-goals';
 import { StepTwoAboutYou } from './step-two-about-you';
@@ -37,6 +39,7 @@ export function OnboardingForm() {
       height: 0,
       weight: 0,
       bodyfat: '',
+      activityLevel: '',
       goal: {
         target: ''
       },
@@ -48,7 +51,7 @@ export function OnboardingForm() {
           fat: { min: 0, max: 0 }
         }
       },
-      mealSetting: []
+      mealSettings: []
     }
   });
 
@@ -60,6 +63,8 @@ export function OnboardingForm() {
         return stepTwoSchema;
       case 3:
         return stepThreeSchema;
+      case 4:
+        return stepFourSchema;
       default:
         return null;
     }
@@ -71,7 +76,7 @@ export function OnboardingForm() {
 
     try {
       await stepSchema.validate(currentValues, { abortEarly: false });
-      setCurrentStep(prev => Math.min(prev + 1, 3));
+      setCurrentStep(prev => Math.min(prev + 1, 4));
     } catch (error) {
       if (error.inner) {
         error.inner.forEach(err => {
@@ -87,6 +92,10 @@ export function OnboardingForm() {
 
   const handlePrevious = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleGoToStep = step => {
+    setCurrentStep(step);
   };
 
   const onSubmit = async data => {
@@ -114,6 +123,13 @@ export function OnboardingForm() {
         return <StepTwoAboutYou control={form.control} />;
       case 3:
         return <StepThreeGoals control={form.control} watch={form.watch} />;
+      case 4:
+        return (
+          <StepFourPreview
+            formData={form.getValues()}
+            onBack={handleGoToStep}
+          />
+        );
       default:
         return null;
     }
@@ -140,7 +156,7 @@ export function OnboardingForm() {
               Quay lại
             </Button>
 
-            {currentStep < 3 ? (
+            {currentStep < 4 ? (
               <Button type='button' onClick={handleNext} disabled={isPending}>
                 Tiếp theo
                 <ArrowRightIcon />

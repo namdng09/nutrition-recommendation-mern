@@ -4,9 +4,10 @@ import React from 'react';
 import { cn } from '~/lib/utils';
 
 const STEPS = [
-  { id: 1, label: 'Chế độ ăn', description: 'Diet preferences' },
-  { id: 2, label: 'Về bạn', description: 'About you' },
-  { id: 3, label: 'Mục tiêu', description: 'Goals & Meals' }
+  { id: 1, label: 'Chế độ ăn', description: 'Sở thích ăn uống' },
+  { id: 2, label: 'Về bạn', description: 'Thông tin cá nhân' },
+  { id: 3, label: 'Mục tiêu', description: 'Mục tiêu & Bữa ăn' },
+  { id: 4, label: 'Xem trước', description: 'Xem lại & Hoàn tất' }
 ];
 
 export function ProgressIndicator({ currentStep }) {
