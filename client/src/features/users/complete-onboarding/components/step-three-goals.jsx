@@ -33,14 +33,225 @@ import {
   COOKING_PREFERENCE,
   COOKING_PREFERENCE_OPTIONS
 } from '~/constants/cooking-preference';
-import { DISH_CATEGORY_OPTIONS } from '~/constants/dish-category';
+import {
+  DISH_CATEGORY,
+  DISH_CATEGORY_OPTIONS
+} from '~/constants/dish-category';
 import {
   MEAL_COMPLEXITY,
   MEAL_COMPLEXITY_OPTIONS
 } from '~/constants/meal-complexity';
 import { MEAL_SIZE, MEAL_SIZE_OPTIONS } from '~/constants/meal-size';
-import { MEAL_TYPE_OPTIONS } from '~/constants/meal-type';
+import { MEAL_TYPE, MEAL_TYPE_OPTIONS } from '~/constants/meal-type';
 import { USER_TARGET_OPTIONS } from '~/constants/user-target';
+
+function MealSettingFields({ control, index }) {
+  return (
+    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+      <FormField
+        control={control}
+        name={`mealSettings.${index}.name`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>
+              Loại bữa ăn <span className='text-destructive'>*</span>
+            </FormLabel>
+            <Select onValueChange={field.onChange} value={field.value}>
+              <FormControl>
+                <SelectTrigger className='w-full'>
+                  <SelectValue placeholder='Chọn loại bữa ăn' />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {MEAL_TYPE_OPTIONS.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <Controller
+        control={control}
+        name={`mealSettings.${index}.dishCategories`}
+        render={({ field, fieldState }) => (
+          <FormItem>
+            <FormLabel>
+              Danh mục món ăn <span className='text-destructive'>*</span>
+            </FormLabel>
+            <MultiSelect
+              values={field.value || []}
+              onValuesChange={field.onChange}
+            >
+              <FormControl>
+                <MultiSelectTrigger className='w-full'>
+                  <MultiSelectValue placeholder='Chọn danh mục món ăn' />
+                </MultiSelectTrigger>
+              </FormControl>
+              <MultiSelectContent>
+                {DISH_CATEGORY_OPTIONS.map(option => (
+                  <MultiSelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MultiSelectItem>
+                ))}
+              </MultiSelectContent>
+            </MultiSelect>
+            {fieldState.error && (
+              <p className='text-destructive text-sm'>
+                {fieldState.error.message}
+              </p>
+            )}
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name={`mealSettings.${index}.cookingPreference`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>
+              Sở thích nấu ăn <span className='text-destructive'>*</span>
+            </FormLabel>
+            <Select onValueChange={field.onChange} value={field.value}>
+              <FormControl>
+                <SelectTrigger className='w-full'>
+                  <SelectValue placeholder='Chọn sở thích nấu ăn' />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {COOKING_PREFERENCE_OPTIONS.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name={`mealSettings.${index}.mealSize`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>
+              Kích thước bữa ăn <span className='text-destructive'>*</span>
+            </FormLabel>
+            <Select onValueChange={field.onChange} value={field.value}>
+              <FormControl>
+                <SelectTrigger className='w-full'>
+                  <SelectValue placeholder='Chọn kích thước' />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {MEAL_SIZE_OPTIONS.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name={`mealSettings.${index}.availableTime`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>
+              Thời gian sẵn có <span className='text-destructive'>*</span>
+            </FormLabel>
+            <Select onValueChange={field.onChange} value={field.value}>
+              <FormControl>
+                <SelectTrigger className='w-full'>
+                  <SelectValue placeholder='Chọn thời gian' />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {AVAILABLE_TIME_OPTIONS.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name={`mealSettings.${index}.complexity`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>
+              Độ phức tạp <span className='text-destructive'>*</span>
+            </FormLabel>
+            <Select onValueChange={field.onChange} value={field.value}>
+              <FormControl>
+                <SelectTrigger className='w-full'>
+                  <SelectValue placeholder='Chọn độ phức tạp' />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {MEAL_COMPLEXITY_OPTIONS.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
+  );
+}
+
+// Helper function to get default values for each meal type
+function getMealDefaults(mealType) {
+  const baseDefaults = {
+    name: mealType,
+    cookingPreference: COOKING_PREFERENCE.CAN_COOK,
+    mealSize: MEAL_SIZE.NORMAL,
+    availableTime: AVAILABLE_TIME.SOME_TIME,
+    complexity: MEAL_COMPLEXITY.MODERATE
+  };
+
+  // Define dish categories based on meal type
+  const dishCategoriesByMealType = {
+    [MEAL_TYPE.BREAKFAST]: [DISH_CATEGORY.BREAKFAST, DISH_CATEGORY.BEVERAGE],
+    [MEAL_TYPE.LUNCH]: [
+      DISH_CATEGORY.MAIN_COURSE,
+      DISH_CATEGORY.SOUP,
+      DISH_CATEGORY.SIDE_DISH
+    ],
+    [MEAL_TYPE.DINNER]: [
+      DISH_CATEGORY.MAIN_COURSE,
+      DISH_CATEGORY.SOUP,
+      DISH_CATEGORY.SALAD
+    ],
+    [MEAL_TYPE.SNACK]: [DISH_CATEGORY.SNACK, DISH_CATEGORY.BEVERAGE],
+    [MEAL_TYPE.DESSERT]: [DISH_CATEGORY.DESSERT, DISH_CATEGORY.BEVERAGE]
+  };
+
+  return {
+    ...baseDefaults,
+    dishCategories: dishCategoriesByMealType[mealType] || []
+  };
+}
 
 export function StepThreeGoals({ control, watch }) {
   const [showExactGoal, setShowExactGoal] = useState(false);
@@ -52,14 +263,9 @@ export function StepThreeGoals({ control, watch }) {
 
   useEffect(() => {
     if (fields.length === 0) {
-      const defaultMeals = MEAL_TYPE_OPTIONS.map(option => ({
-        name: option.value,
-        dishCategories: [],
-        cookingPreference: COOKING_PREFERENCE.CAN_COOK,
-        mealSize: MEAL_SIZE.NORMAL,
-        availableTime: AVAILABLE_TIME.SOME_TIME,
-        complexity: MEAL_COMPLEXITY.MODERATE
-      }));
+      const defaultMeals = MEAL_TYPE_OPTIONS.map(option =>
+        getMealDefaults(option.value)
+      );
       replace(defaultMeals);
     }
   }, [fields.length, replace]);
@@ -312,29 +518,9 @@ export function StepThreeGoals({ control, watch }) {
       </div>
 
       <div className='space-y-4'>
-        <div className='flex items-center justify-between'>
-          <h4 className='text-sm font-medium'>
-            Các bữa ăn hàng ngày (Đã thiết lập mặc định)
-          </h4>
-          <Button
-            type='button'
-            variant='outline'
-            size='sm'
-            onClick={() =>
-              append({
-                name: '',
-                dishCategories: [],
-                cookingPreference: COOKING_PREFERENCE.CAN_COOK,
-                mealSize: MEAL_SIZE.NORMAL,
-                availableTime: AVAILABLE_TIME.SOME_TIME,
-                complexity: MEAL_COMPLEXITY.MODERATE
-              })
-            }
-          >
-            <PlusIcon />
-            Thêm bữa ăn
-          </Button>
-        </div>
+        <h4 className='text-sm font-medium'>
+          Các bữa ăn hàng ngày (Đã thiết lập mặc định)
+        </h4>
 
         <p className='text-muted-foreground text-xs'>
           Các bữa ăn mặc định đã được thiết lập sẵn. Bạn có thể chỉnh sửa hoặc
@@ -348,231 +534,41 @@ export function StepThreeGoals({ control, watch }) {
                 key={field.id}
                 className='border-input relative rounded-md border p-6 space-y-4'
               >
-                {index >= MEAL_TYPE_OPTIONS.length && (
-                  <Button
-                    type='button'
-                    variant='ghost'
-                    size='icon'
-                    className='absolute right-2 top-2'
-                    onClick={() => remove(index)}
-                  >
-                    <XIcon />
-                  </Button>
-                )}
+                <Button
+                  type='button'
+                  variant='ghost'
+                  size='icon'
+                  className='absolute right-2 top-2'
+                  onClick={() => remove(index)}
+                >
+                  <XIcon />
+                </Button>
 
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  <FormField
-                    control={control}
-                    name={`mealSettings.${index}.name`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Loại bữa ăn{' '}
-                          <span className='text-destructive'>*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className='w-full'>
-                              <SelectValue placeholder='Chọn loại bữa ăn' />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {MEAL_TYPE_OPTIONS.map(option => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Controller
-                    control={control}
-                    name={`mealSettings.${index}.dishCategories`}
-                    render={({ field, fieldState }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Danh mục món ăn{' '}
-                          <span className='text-destructive'>*</span>
-                        </FormLabel>
-                        <MultiSelect
-                          values={field.value || []}
-                          onValuesChange={field.onChange}
-                        >
-                          <FormControl>
-                            <MultiSelectTrigger className='w-full'>
-                              <MultiSelectValue placeholder='Chọn danh mục món ăn' />
-                            </MultiSelectTrigger>
-                          </FormControl>
-                          <MultiSelectContent>
-                            {DISH_CATEGORY_OPTIONS.map(option => (
-                              <MultiSelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </MultiSelectItem>
-                            ))}
-                          </MultiSelectContent>
-                        </MultiSelect>
-                        {fieldState.error && (
-                          <p className='text-destructive text-sm'>
-                            {fieldState.error.message}
-                          </p>
-                        )}
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={control}
-                    name={`mealSettings.${index}.cookingPreference`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Sở thích nấu ăn{' '}
-                          <span className='text-destructive'>*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className='w-full'>
-                              <SelectValue placeholder='Chọn sở thích nấu ăn' />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {COOKING_PREFERENCE_OPTIONS.map(option => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={control}
-                    name={`mealSettings.${index}.mealSize`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Kích thước bữa ăn{' '}
-                          <span className='text-destructive'>*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className='w-full'>
-                              <SelectValue placeholder='Chọn kích thước' />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {MEAL_SIZE_OPTIONS.map(option => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={control}
-                    name={`mealSettings.${index}.availableTime`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Thời gian sẵn có{' '}
-                          <span className='text-destructive'>*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className='w-full'>
-                              <SelectValue placeholder='Chọn thời gian' />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {AVAILABLE_TIME_OPTIONS.map(option => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={control}
-                    name={`mealSettings.${index}.complexity`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Độ phức tạp{' '}
-                          <span className='text-destructive'>*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className='w-full'>
-                              <SelectValue placeholder='Chọn độ phức tạp' />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {MEAL_COMPLEXITY_OPTIONS.map(option => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <MealSettingFields control={control} index={index} />
               </div>
             );
           })}
         </div>
+
+        <Button
+          type='button'
+          variant='outline'
+          size='sm'
+          className='w-full'
+          onClick={() =>
+            append({
+              name: '',
+              dishCategories: [],
+              cookingPreference: COOKING_PREFERENCE.CAN_COOK,
+              mealSize: MEAL_SIZE.NORMAL,
+              availableTime: AVAILABLE_TIME.SOME_TIME,
+              complexity: MEAL_COMPLEXITY.MODERATE
+            })
+          }
+        >
+          <PlusIcon />
+          Thêm bữa ăn
+        </Button>
       </div>
     </div>
   );
