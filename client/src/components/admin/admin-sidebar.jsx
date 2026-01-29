@@ -1,4 +1,4 @@
-import { Apple, Home, Users } from 'lucide-react';
+import { Apple, Ham, Home, Users } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router';
 
 import {
@@ -64,6 +64,11 @@ export function AdminSidebar({ ...props }) {
           title: 'Nguyên liệu',
           url: '/nutritionist/manage-ingredients',
           icon: Apple
+        },
+        {
+          title: 'Món ăn',
+          url: '/nutritionist/manage-dishes',
+          icon: Ham
         }
       ]
     }
