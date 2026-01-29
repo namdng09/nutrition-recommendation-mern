@@ -1,8 +1,8 @@
 export const MEAL_COMPLEXITY = Object.freeze({
-  SUPER_SIMPLE: 'Rất đơn giản',
-  SIMPLE: 'Đơn giản',
-  MODERATE: 'Trung bình',
-  COMPLEX: 'Phức tạp'
+  SUPER_SIMPLE: 'SUPER_SIMPLE',
+  SIMPLE: 'SIMPLE',
+  MODERATE: 'MODERATE',
+  COMPLEX: 'COMPLEX'
 });
 
 export const MEAL_COMPLEXITY_OPTIONS = [

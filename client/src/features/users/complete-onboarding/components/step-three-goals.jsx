@@ -300,16 +300,15 @@ export function StepThreeGoals({ control, watch }) {
         </div>
 
         {!showExactGoal ? (
-          <Controller
+          <FormField
             control={control}
             name='goal.target'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Mục tiêu</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                <FormLabel>
+                  Mục tiêu <span className='text-destructive'>*</span>
+                </FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger className='w-full'>
                       <SelectValue placeholder='Chọn mục tiêu của bạn' />
@@ -329,16 +328,15 @@ export function StepThreeGoals({ control, watch }) {
           />
         ) : (
           <div className='space-y-4'>
-            <Controller
+            <FormField
               control={control}
               name='goal.target'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mục tiêu</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <FormLabel>
+                    Mục tiêu <span className='text-destructive'>*</span>
+                  </FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className='w-full'>
                         <SelectValue placeholder='Chọn mục tiêu của bạn' />
