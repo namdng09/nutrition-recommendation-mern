@@ -1,10 +1,15 @@
 import * as yup from 'yup';
 
+import { ACTIVITY_LEVEL } from '~/constants/activity-level';
 import { ALLERGEN } from '~/constants/allergen';
-// import { ACTIVITY_LEVEL } from '~/constants/activity-level';
+import { AVAILABLE_TIME } from '~/constants/available-time';
 import { BODYFAT } from '~/constants/bodyfat';
+import { COOKING_PREFERENCE } from '~/constants/cooking-preference';
 import { DIET } from '~/constants/diet';
+import { DISH_CATEGORY } from '~/constants/dish-category';
 import { GENDER } from '~/constants/gender';
+import { MEAL_COMPLEXITY } from '~/constants/meal-complexity';
+import { MEAL_SIZE } from '~/constants/meal-size';
 import { MEAL_TYPE } from '~/constants/meal-type';
 import { USER_TARGET } from '~/constants/user-target';
 
@@ -41,11 +46,31 @@ const mealSettingSchema = yup.object({
     .string()
     .oneOf(getEnumValues(MEAL_TYPE), 'Loại bữa ăn không hợp lệ')
     .required('Loại bữa ăn là bắt buộc'),
-  categories: yup
+  dishCategories: yup
     .array()
-    .of(yup.string().trim())
-    .min(1, 'Phải chọn ít nhất một danh mục')
-    .required('Danh mục bữa ăn là bắt buộc')
+    .of(
+      yup
+        .string()
+        .oneOf(getEnumValues(DISH_CATEGORY), 'Danh mục món ăn không hợp lệ')
+    )
+    .min(1, 'Phải chọn ít nhất một danh mục món ăn')
+    .required('Danh mục món ăn là bắt buộc'),
+  cookingPreference: yup
+    .string()
+    .oneOf(getEnumValues(COOKING_PREFERENCE), 'Sở thích nấu ăn không hợp lệ')
+    .required('Sở thích nấu ăn là bắt buộc'),
+  mealSize: yup
+    .string()
+    .oneOf(getEnumValues(MEAL_SIZE), 'Kích thước bữa ăn không hợp lệ')
+    .required('Kích thước bữa ăn là bắt buộc'),
+  availableTime: yup
+    .string()
+    .oneOf(getEnumValues(AVAILABLE_TIME), 'Thời gian sẵn có không hợp lệ')
+    .required('Thời gian sẵn có là bắt buộc'),
+  complexity: yup
+    .string()
+    .oneOf(getEnumValues(MEAL_COMPLEXITY), 'Độ phức tạp không hợp lệ')
+    .required('Độ phức tạp là bắt buộc')
 });
 
 export const stepOneSchema = yup.object({
@@ -84,7 +109,11 @@ export const stepTwoSchema = yup.object({
   bodyfat: yup
     .string()
     .oneOf(getEnumValues(BODYFAT), 'Mức độ mỡ cơ thể không hợp lệ')
-    .required('Mức độ mỡ cơ thể là bắt buộc')
+    .required('Mức độ mỡ cơ thể là bắt buộc'),
+  activityLevel: yup
+    .string()
+    .oneOf(getEnumValues(ACTIVITY_LEVEL), 'Mức độ hoạt động không hợp lệ')
+    .required('Mức độ hoạt động là bắt buộc')
 });
 
 export const stepThreeSchema = yup.object({
@@ -99,8 +128,10 @@ export const stepThreeSchema = yup.object({
     })
     .optional(),
   nutritionTarget: nutritionTargetSchema.optional(),
-  mealSetting: yup.array().of(mealSettingSchema).optional()
+  mealSettings: yup.array().of(mealSettingSchema).optional()
 });
+
+export const stepFourSchema = yup.object({});
 
 export const onboardingSchema = yup.object({
   diet: yup
@@ -137,11 +168,10 @@ export const onboardingSchema = yup.object({
     .string()
     .oneOf(getEnumValues(BODYFAT), 'Mức độ mỡ cơ thể không hợp lệ')
     .required('Mức độ mỡ cơ thể là bắt buộc'),
-  // TODO: Backend team to add activityLevel field
-  // activityLevel: yup
-  //   .string()
-  //   .oneOf(getEnumValues(ACTIVITY_LEVEL), 'Mức độ hoạt động không hợp lệ')
-  //   .required('Mức độ hoạt động là bắt buộc'),
+  activityLevel: yup
+    .string()
+    .oneOf(getEnumValues(ACTIVITY_LEVEL), 'Mức độ hoạt động không hợp lệ')
+    .required('Mức độ hoạt động là bắt buộc'),
 
   goal: yup
     .object({
@@ -154,5 +184,5 @@ export const onboardingSchema = yup.object({
     })
     .optional(),
   nutritionTarget: nutritionTargetSchema.optional(),
-  mealSetting: yup.array().of(mealSettingSchema).optional()
+  mealSettings: yup.array().of(mealSettingSchema).optional()
 });

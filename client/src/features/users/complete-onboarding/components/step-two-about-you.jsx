@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '~/components/ui/select';
+import { ACTIVITY_LEVEL_OPTIONS } from '~/constants/activity-level';
 import { BODYFAT_OPTIONS } from '~/constants/bodyfat';
 import { GENDER_OPTIONS } from '~/constants/gender';
 import { cn } from '~/lib/utils';
@@ -166,7 +167,7 @@ export function StepTwoAboutYou({ control }) {
           control={control}
           name='bodyfat'
           render={({ field }) => (
-            <FormItem className='md:col-span-2'>
+            <FormItem>
               <FormLabel>
                 Mức độ mỡ cơ thể <span className='text-destructive'>*</span>
               </FormLabel>
@@ -178,6 +179,33 @@ export function StepTwoAboutYou({ control }) {
                 </FormControl>
                 <SelectContent>
                   {BODYFAT_OPTIONS.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name='activityLevel'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Mức độ hoạt động <span className='text-destructive'>*</span>
+              </FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger className='w-full'>
+                    <SelectValue placeholder='Chọn mức độ hoạt động' />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {ACTIVITY_LEVEL_OPTIONS.map(option => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>
