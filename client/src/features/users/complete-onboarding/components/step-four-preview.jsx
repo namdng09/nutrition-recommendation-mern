@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '~/components/ui/button';
+import { Progress } from '~/components/ui/progress';
 import { Skeleton } from '~/components/ui/skeleton';
 import { cn } from '~/lib/utils';
 
@@ -44,12 +45,11 @@ function MacroDisplay({ type, min, max, percentage }) {
           {min}g - {max}g
         </span>
       </div>
-      <div className='bg-muted h-2 w-full overflow-hidden rounded-full'>
-        <div
-          className={cn('h-full', config.bgClass)}
-          style={{ width: `${percentage}%` }}
-        />
-      </div>
+      <Progress
+        value={percentage}
+        className='h-2'
+        indicatorClassName={config.bgClass}
+      />
     </div>
   );
 }
@@ -113,7 +113,7 @@ export function StepFourPreview({ formData, onBack }) {
   };
 
   const calculateMacroPercentage = (macroMax, totalMax) => {
-    return ((macroMax / totalMax) * 100).toFixed(1);
+    return Number(((macroMax / totalMax) * 100).toFixed(1));
   };
 
   return (

@@ -9,7 +9,7 @@ const Onboarding = () => {
       <div className='container mx-auto px-4 py-12'>
         <div className='mb-8 text-center'>
           <h1 className='mb-2 flex items-center justify-center gap-2 text-3xl font-bold tracking-tight md:text-4xl'>
-            Chào mừng bạn! <Sparkles className='text-primary' />
+            Chào mừng bạn!
           </h1>
           <p className='text-muted-foreground mx-auto max-w-2xl text-lg'>
             Hãy hoàn thành những bước sau để chúng tôi có thể tạo ra kế hoạch
