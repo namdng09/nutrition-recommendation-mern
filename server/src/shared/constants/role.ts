@@ -1,7 +1,7 @@
 export const ROLE = {
-  USER: 'Người dùng',
-  ADMIN: 'Quản trị viên',
-  NUTRITIONIST: 'Chuyên gia dinh dưỡng'
+  USER: 'user',
+  ADMIN: 'admin',
+  NUTRITIONIST: 'nutritionist'
 } as const;
 
 export type Role = (typeof ROLE)[keyof typeof ROLE];
