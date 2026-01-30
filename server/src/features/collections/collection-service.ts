@@ -1,7 +1,7 @@
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
 
-import { CollectionModel } from '~/shared/database/models';
+import { CollectionModel, DishModel } from '~/shared/database/models';
 import type { Collection } from '~/shared/database/models/collection-model';
 import {
   buildPaginateOptions,
@@ -18,6 +18,25 @@ import {
   UpdateCollectionRequest
 } from './collection-dto';
 
+/**
+ * Calculate total calories for a dish based on its ingredients
+ * @param dish Object representing the dish
+ * @returns Total calories for the dish
+ */
+const calculateDishCalories = (dish: any): number => {
+  if (!dish.ingredients || dish.ingredients.length === 0) {
+    return 0;
+  }
+  
+  let totalCalories = 0;
+  for (const ingredient of dish.ingredients) {
+    const ingredientCalories = ingredient.nutrients?.calories?.value || 0;
+    totalCalories += ingredientCalories;
+  }
+  
+  return totalCalories;
+};
+
 export const CollectionService = {
   createCollection: async (
     userId: string,
@@ -25,13 +44,36 @@ export const CollectionService = {
     data: CreateCollectionRequest,
     image?: Express.Multer.File
   ) => {
+    let dishesData: any[] = [];
+    if (data.dishes && data.dishes.length > 0) {
+      for (const dishId of data.dishes) {
+        if (!validateObjectId(dishId)) {
+          throw createHttpError(400, `Định dạng ID món ăn không hợp lệ: ${dishId}`);
+        }
+      }
+
+      const dishes = await DishModel.find({ _id: { $in: data.dishes } });
+
+      if (dishes.length !== data.dishes.length) {
+        throw createHttpError(404, 'Một hoặc nhiều món ăn không tồn tại');
+      }
+
+      dishesData = dishes.map(dish => ({
+        dishId: dish._id,
+        name: dish.name,
+        calories: calculateDishCalories(dish),
+        image: dish.image,
+        addedAt: new Date()
+      }));
+    }
+
     const newCollection = await CollectionModel.create({
       ...data,
       user: {
         _id: userId,
         name: userName
       },
-      dishes: data.dishes || []
+      dishes: dishesData
     });
 
     if (!newCollection) {
@@ -158,6 +200,12 @@ export const CollectionService = {
       throw createHttpError(400, 'Định dạng ID bộ sưu tập không hợp lệ');
     }
 
+    for (const dishId of data.dishIds) {
+      if (!validateObjectId(dishId)) {
+        throw createHttpError(400, `Định dạng ID món ăn không hợp lệ: ${dishId}`);
+      }
+    }
+
     const collection = await CollectionModel.findById(id);
 
     if (!collection) {
@@ -168,22 +216,28 @@ export const CollectionService = {
       throw createHttpError(403, 'Bạn không có quyền sửa bộ sưu tập này');
     }
 
-    const dishExists = collection.dishes.some(
-      (dish) => dish.dishId?.toString() === data.dishId
-    );
-
-    if (dishExists) {
-      throw createHttpError(400, 'Món ăn đã tồn tại trong bộ sưu tập');
+    const existingDishIds = collection.dishes.map(dish => dish.dishId?.toString());
+    const duplicates = data.dishIds.filter(dishId => existingDishIds.includes(dishId));
+    
+    if (duplicates.length > 0) {
+      throw createHttpError(400, `Các món ăn sau đã tồn tại trong bộ sưu tập: ${duplicates.join(', ')}`);
     }
 
-    collection.dishes.push({
-      dishId: data.dishId as any,
-      name: data.name,
-      calories: data.calories,
-      image: data.image,
-      addedAt: new Date()
-    });
+    const dishes = await DishModel.find({ _id: { $in: data.dishIds } });
 
+    if (dishes.length !== data.dishIds.length) {
+      throw createHttpError(404, 'Một hoặc nhiều món ăn không tồn tại');
+    }
+
+    const newDishes = dishes.map(dish => ({
+      dishId: dish._id as any,
+      name: dish.name,
+      calories: calculateDishCalories(dish),
+      image: dish.image,
+      addedAt: new Date()
+    }));
+
+    collection.dishes.push(...newDishes);
     await collection.save();
 
     return collection;
@@ -208,15 +262,19 @@ export const CollectionService = {
       throw createHttpError(403, 'Bạn không có quyền sửa bộ sưu tập này');
     }
 
-    const dishIndex = collection.dishes.findIndex(
-      (dish) => dish.dishId?.toString() === data.dishId
-    );
-
-    if (dishIndex === -1) {
-      throw createHttpError(404, 'Không tìm thấy món ăn trong bộ sưu tập');
+    const initialDishCount = collection.dishes.length;
+    
+    for (let i = collection.dishes.length - 1; i >= 0; i--) {
+      const currentDishId = collection.dishes[i].dishId?.toString() || '';
+      
+      if (data.dishIds.includes(currentDishId)) {
+        collection.dishes.splice(i, 1);
+      }
     }
 
-    collection.dishes.splice(dishIndex, 1);
+    if (collection.dishes.length === initialDishCount) {
+      throw createHttpError(404, 'Không tìm thấy món ăn nào trong bộ sưu tập');
+    }
 
     await collection.save();
 
