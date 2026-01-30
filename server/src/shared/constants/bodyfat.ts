@@ -1,7 +1,7 @@
 export const BODYFAT = {
   LOW: 'Thấp',
   MEDIUM: 'Trung Bình',
-  HIGH: 'CAO'
+  HIGH: 'Cao'
 } as const;
 
 export type Bodyfat = (typeof BODYFAT)[keyof typeof BODYFAT];
