@@ -15,7 +15,11 @@ const AuthCallbackPage = () => {
     toast.success('Login successful!');
   }, []);
 
-  return <Navigate to='/' />;
+  const hasOnboarded =
+    searchParams.get('hasOnboarded') === 'true' ||
+    searchParams.get('hasOnboarded') === true;
+
+  return <Navigate to={hasOnboarded ? '/' : '/onboarding'} />;
 };
 
 export default AuthCallbackPage;
