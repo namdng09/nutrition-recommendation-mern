@@ -20,14 +20,12 @@ const unitSchema = z.object({
   value: z.coerce.number().min(0, 'Giá trị phải lớn hơn hoặc bằng 0'),
   quantity: z.coerce.number().min(0, 'Số lượng phải lớn hơn hoặc bằng 0'),
   unit: z.string().trim().min(1, 'Đơn vị không được để trống'),
-  isDefault: z
-    .union([z.boolean(), z.string()])
-    .transform((val) => {
-      if (typeof val === 'boolean') return val;
-      if (val === 'true') return true;
-      if (val === 'false') return false;
-      throw new Error('isDefault phải là "true" hoặc "false"');
-    })
+  isDefault: z.union([z.boolean(), z.string()]).transform(val => {
+    if (typeof val === 'boolean') return val;
+    if (val === 'true') return true;
+    if (val === 'false') return false;
+    throw new Error('isDefault phải là "true" hoặc "false"');
+  })
 });
 
 const dishIngredientSchema = z.object({
@@ -48,7 +46,9 @@ export const createDishRequestSchema = z.object({
   description: z.string().trim().optional(),
   categories: z.preprocess(
     parseJSON,
-    z.array(z.enum(Object.values(DISH_CATEGORY))).min(1, 'Phải có ít nhất 1 danh mục')
+    z
+      .array(z.enum(Object.values(DISH_CATEGORY)))
+      .min(1, 'Phải có ít nhất 1 danh mục')
   ),
   ingredients: z.preprocess(
     parseJSON,
@@ -65,7 +65,7 @@ export const createDishRequestSchema = z.object({
   tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
   isActive: z
     .union([z.boolean(), z.string()])
-    .transform((val) => {
+    .transform(val => {
       if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;
@@ -74,7 +74,7 @@ export const createDishRequestSchema = z.object({
     .optional(),
   isPublic: z
     .union([z.boolean(), z.string()])
-    .transform((val) => {
+    .transform(val => {
       if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;
@@ -88,18 +88,26 @@ export type CreateDishRequest = z.infer<typeof createDishRequestSchema>;
 export const updateDishRequestSchema = z.object({
   name: z.string().trim().min(2, 'Tên phải có ít nhất 2 ký tự').optional(),
   description: z.string().trim().optional(),
-  categories: z.preprocess(
-    parseJSON,
-    z.array(z.enum(Object.values(DISH_CATEGORY))).min(1, 'Phải có ít nhất 1 danh mục')
-  ).optional(),
-  ingredients: z.preprocess(
-    parseJSON,
-    z.array(dishIngredientSchema).min(1, 'Phải có ít nhất 1 nguyên liệu')
-  ).optional(),
-  instructions: z.preprocess(
-    parseJSON,
-    z.array(instructionSchema).min(1, 'Phải có ít nhất 1 bước hướng dẫn')
-  ).optional(),
+  categories: z
+    .preprocess(
+      parseJSON,
+      z
+        .array(z.enum(Object.values(DISH_CATEGORY)))
+        .min(1, 'Phải có ít nhất 1 danh mục')
+    )
+    .optional(),
+  ingredients: z
+    .preprocess(
+      parseJSON,
+      z.array(dishIngredientSchema).min(1, 'Phải có ít nhất 1 nguyên liệu')
+    )
+    .optional(),
+  instructions: z
+    .preprocess(
+      parseJSON,
+      z.array(instructionSchema).min(1, 'Phải có ít nhất 1 bước hướng dẫn')
+    )
+    .optional(),
   image: z.file().optional(),
   preparationTime: z.coerce.number().min(0).optional(),
   cookTime: z.coerce.number().min(0).optional(),
@@ -107,7 +115,7 @@ export const updateDishRequestSchema = z.object({
   tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
   isActive: z
     .union([z.boolean(), z.string()])
-    .transform((val) => {
+    .transform(val => {
       if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;
@@ -116,7 +124,7 @@ export const updateDishRequestSchema = z.object({
     .optional(),
   isPublic: z
     .union([z.boolean(), z.string()])
-    .transform((val) => {
+    .transform(val => {
       if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;

@@ -47,6 +47,18 @@ export const UserController = {
       .json(ApiResponse.success('Onboarding completed successfully', result));
   },
 
+  calculateNutritionTarget: async (req: Request, res: Response) => {
+    const data = req.body;
+
+    const result = await UserService.calculateNutritionTarget(data);
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Nutrition target calculated successfully', result)
+      );
+  },
+
   updateProfile: async (req: Request, res: Response) => {
     const id = req.user?.id;
     const data = req.body;

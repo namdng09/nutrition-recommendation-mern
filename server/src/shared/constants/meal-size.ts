@@ -1,6 +1,6 @@
 export const MEAL_SIZE = {
-  TINY: 'Rất nhỏ',
-  SMALL: 'Nhỏ',
+  TINY: 'Nhỏ',
+  SMALL: 'Vừa',
   NORMAL: 'Bình thường',
   BIG: 'Lớn',
   HUGE: 'Rất lớn'

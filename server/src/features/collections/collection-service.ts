@@ -169,7 +169,7 @@ export const CollectionService = {
     }
 
     const dishExists = collection.dishes.some(
-      (dish) => dish.dishId?.toString() === data.dishId
+      dish => dish.dishId?.toString() === data.dishId
     );
 
     if (dishExists) {
@@ -209,7 +209,7 @@ export const CollectionService = {
     }
 
     const dishIndex = collection.dishes.findIndex(
-      (dish) => dish.dishId?.toString() === data.dishId
+      dish => dish.dishId?.toString() === data.dishId
     );
 
     if (dishIndex === -1) {
