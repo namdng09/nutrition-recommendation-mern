@@ -16,6 +16,7 @@ import {
 
 import {
   CreateUserRequest,
+  OnboardingRequest,
   UpdateProfileRequest,
   UpdateUserRequest
 } from './user-dto';
@@ -81,6 +82,33 @@ export const UserService = {
     if (!user) {
       throw createHttpError(404, 'User not found');
     }
+
+    return user;
+  },
+
+  onboardUser: async (id: string, data: OnboardingRequest) => {
+    if (!validateObjectId(id)) {
+      throw createHttpError(400, 'Invalid user ID format');
+    }
+
+    const user = await UserModel.findById(id);
+
+    if (!user) {
+      throw createHttpError(404, 'User not found');
+    }
+
+    if (user.hasOnboarded) {
+      throw createHttpError(400, 'User already onboarded');
+    }
+
+    const { weight, ...rest } = data;
+    user.set(rest);
+    if (weight !== undefined) {
+      user.weightRecord = [{ weight, date: new Date() }];
+    }
+    user.hasOnboarded = true;
+
+    await user.save();
 
     return user;
   },

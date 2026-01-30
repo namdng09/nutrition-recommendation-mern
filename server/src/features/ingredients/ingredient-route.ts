@@ -23,13 +23,6 @@ router.post(
 
 router.get('/', asyncHandler(IngredientController.viewIngredients));
 
-router.delete(
-  '/',
-  authenticate(),
-  authorize([ROLE.NUTRITIONIST]),
-  asyncHandler(IngredientController.deleteBulk)
-);
-
 router.get('/:id', asyncHandler(IngredientController.viewIngredientDetail));
 
 router.put(
