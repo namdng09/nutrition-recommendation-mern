@@ -45,7 +45,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
-  const { data: profile } = useProfileForPage(); // ✅ Suspense hook!
+  const { data: profile } = useProfileForPage();
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile({
     onSuccess: response => {
       toast.success(response?.message || 'Cập nhật hồ sơ thành công');

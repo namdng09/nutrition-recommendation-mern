@@ -50,6 +50,10 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/dishes/[id]/page'))
           },
           {
+            path: 'onboarding',
+            Component: lazy(() => import('~/app/onboarding/page'))
+          },
+          {
             path: 'profile',
             Component: () => (
               <PrivateRoute allowedRoles={['user', 'admin']}>
