@@ -30,15 +30,7 @@ export const createCollectionRequestSchema = z.object({
   tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
   dishes: z.preprocess(
     parseJSON,
-    z
-      .array(
-        z.object({
-          dishId: z.string().trim(),
-          name: z.string().trim(),
-          calories: z.number().optional(),
-          image: z.string().trim().optional()
-        })
-      )
+    z.array(z.string().trim())
   ).optional()
 });
 
@@ -71,10 +63,7 @@ export type UpdateCollectionRequest = z.infer<
 >;
 
 export const addDishToCollectionRequestSchema = z.object({
-  dishId: z.string().trim().min(1, 'ID món ăn là bắt buộc'),
-  name: z.string().trim().min(1, 'Tên món ăn là bắt buộc'),
-  calories: z.number().optional(),
-  image: z.string().trim().optional()
+  dishIds: z.array(z.string().trim().min(1, 'ID món ăn là bắt buộc')).min(1, 'Cần ít nhất một món ăn')
 });
 
 export type AddDishToCollectionRequest = z.infer<
@@ -82,7 +71,7 @@ export type AddDishToCollectionRequest = z.infer<
 >;
 
 export const removeDishFromCollectionRequestSchema = z.object({
-  dishId: z.string().trim().min(1, 'ID món ăn là bắt buộc')
+  dishIds: z.array(z.string().trim().min(1, 'ID món ăn là bắt buộc')).min(1, 'Cần ít nhất một món ăn')
 });
 
 export type RemoveDishFromCollectionRequest = z.infer<
