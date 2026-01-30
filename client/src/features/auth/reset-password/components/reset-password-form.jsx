@@ -37,14 +37,16 @@ const ResetPasswordForm = ({ onSubmit, isLoading }) => {
           name='password'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='text-[#1B5E20]/80'>Mật khẩu mới</FormLabel>
+              <FormLabel className='text-muted-foreground'>
+                Mật khẩu mới
+              </FormLabel>
               <FormControl>
                 <div className='relative'>
-                  <HiOutlineLockClosed className='pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#2E7D32]/60' />
+                  <HiOutlineLockClosed className='pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground' />
                   <Input
                     type='password'
                     placeholder='Nhập mật khẩu mới'
-                    className='h-11 rounded-xl border-[#2E7D32]/25 pl-10 focus-visible:ring-[#2E7D32]/30'
+                    className='h-11 rounded-xl border-border pl-10 focus-visible:ring-ring'
                     {...field}
                   />
                 </div>
@@ -59,16 +61,16 @@ const ResetPasswordForm = ({ onSubmit, isLoading }) => {
           name='confirmPassword'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='text-[#1B5E20]/80'>
+              <FormLabel className='text-muted-foreground'>
                 Xác nhận mật khẩu mới
               </FormLabel>
               <FormControl>
                 <div className='relative'>
-                  <HiOutlineLockClosed className='pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#2E7D32]/60' />
+                  <HiOutlineLockClosed className='pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground' />
                   <Input
                     type='password'
                     placeholder='Nhập lại mật khẩu mới'
-                    className='h-11 rounded-xl border-[#2E7D32]/25 pl-10 focus-visible:ring-[#2E7D32]/30'
+                    className='h-11 rounded-xl border-border pl-10 focus-visible:ring-ring'
                     {...field}
                   />
                 </div>
@@ -80,7 +82,7 @@ const ResetPasswordForm = ({ onSubmit, isLoading }) => {
 
         <Button
           type='submit'
-          className='h-11 w-full rounded-xl bg-[#1B5E20] text-white hover:bg-[#145017]'
+          className='h-11 w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90'
           disabled={isLoading}
         >
           {isLoading ? 'Đang đặt lại...' : 'Đặt lại mật khẩu'}

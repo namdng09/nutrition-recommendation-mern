@@ -34,20 +34,20 @@ const ForgotPasswordCard = () => {
   };
 
   return (
-    <Card className='w-full max-w-md overflow-hidden rounded-2xl border border-[#2E7D32]/15 bg-background/85 shadow-[0_18px_60px_rgba(0,0,0,0.08)] backdrop-blur supports-[backdrop-filter]:bg-background/60'>
-      <div className='h-1 w-full bg-gradient-to-r from-transparent via-[#2E7D32]/45 to-transparent' />
+    <Card className='w-full max-w-md overflow-hidden rounded-2xl border border-border bg-background/85 shadow-[0_18px_60px_rgba(0,0,0,0.08)] backdrop-blur supports-[backdrop-filter]:bg-background/60'>
+      <div className='h-1 w-full bg-gradient-to-r from-transparent via-border to-transparent' />
 
       <CardHeader className='space-y-2'>
         <div className='flex items-center gap-3'>
-          <div className='flex h-10 w-10 items-center justify-center rounded-xl border border-[#2E7D32]/20 bg-[#2E7D32]/5'>
-            <HiOutlineMail className='h-6 w-6 text-[#1B5E20]' />
+          <div className='flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-accent'>
+            <HiOutlineMail className='h-6 w-6 text-primary' />
           </div>
 
           <div className='flex flex-col'>
-            <CardTitle className='text-2xl font-bold text-[#1B5E20]'>
+            <CardTitle className='text-2xl font-bold text-primary'>
               Quên mật khẩu
             </CardTitle>
-            <CardDescription className='text-sm text-[#2E7D32]/70'>
+            <CardDescription className='text-sm text-muted-foreground'>
               Nhập email để nhận liên kết đặt lại mật khẩu
             </CardDescription>
           </div>
@@ -62,13 +62,13 @@ const ForgotPasswordCard = () => {
       </CardContent>
 
       <CardFooter className='flex flex-col gap-3'>
-        <div className='h-px w-full bg-gradient-to-r from-transparent via-[#2E7D32]/20 to-transparent' />
+        <div className='h-px w-full bg-gradient-to-r from-transparent via-border to-transparent' />
 
-        <p className='text-sm text-[#1B5E20]/75'>
+        <p className='text-sm text-muted-foreground'>
           Nhớ mật khẩu rồi?{' '}
           <Link
             to='/auth/login'
-            className='inline-flex items-center gap-1 font-medium text-[#1B5E20] hover:underline'
+            className='inline-flex items-center gap-1 font-medium text-primary hover:underline'
           >
             <HiOutlineArrowLeft className='h-4 w-4' />
             Quay lại đăng nhập

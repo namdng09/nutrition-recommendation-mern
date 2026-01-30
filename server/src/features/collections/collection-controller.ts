@@ -80,9 +80,7 @@ export const CollectionController = {
 
     await CollectionService.deleteCollection(id, userId);
 
-    res
-      .status(200)
-      .json(ApiResponse.success('Xóa bộ sưu tập thành công'));
+    res.status(200).json(ApiResponse.success('Xóa bộ sưu tập thành công'));
   },
 
   addDishToCollection: async (req: Request, res: Response) => {
@@ -125,10 +123,7 @@ export const CollectionController = {
     res
       .status(200)
       .json(
-        ApiResponse.success(
-          'Xóa món ăn khỏi bộ sưu tập thành công',
-          result
-        )
+        ApiResponse.success('Xóa món ăn khỏi bộ sưu tập thành công', result)
       );
   },
 

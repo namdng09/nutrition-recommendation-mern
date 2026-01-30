@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -78,6 +78,14 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  /* EatDee green */
+
+  --primary: #1b5e20; /* xanh đậm (text-primary) */
+  --primary-foreground: #ffffff; /* chữ trên nền primary */
+
+  --accent: color-mix(in srgb, #2e7d32 12%, transparent); /* hover bg */
+  --accent-foreground: #1b5e20;
+  --muted-foreground: color-mix(in srgb, #1b5e20 70%, transparent);
 }
 
 .dark {
@@ -114,6 +122,14 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  /* Dark: text white */
+  --primary: #66bb6a;
+  --primary-foreground: #0b1a0f;
+
+  --accent: color-mix(in srgb, #66bb6a 18%, transparent);
+  --accent-foreground: #ffffff;
+
+  --muted-foreground: color-mix(in srgb, white 70%, transparent);
 }
 
 @layer base {
