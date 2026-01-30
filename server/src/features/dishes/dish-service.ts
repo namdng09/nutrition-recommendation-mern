@@ -1,9 +1,9 @@
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
 
+import { ROLE } from '~/shared/constants/role';
 import { DishModel, IngredientModel } from '~/shared/database/models';
 import type { Dish } from '~/shared/database/models/dish-model';
-import { ROLE } from '~/shared/constants/role';
 import {
   buildPaginateOptions,
   deleteImage,
@@ -23,14 +23,20 @@ export const DishService = {
   ) => {
     // Validate and fetch ingredient details
     const ingredientDetails = await Promise.all(
-      data.ingredients.map(async (ing) => {
+      data.ingredients.map(async ing => {
         if (!validateObjectId(ing.ingredientId)) {
-          throw createHttpError(400, `ID nguyên liệu không hợp lệ: ${ing.ingredientId}`);
+          throw createHttpError(
+            400,
+            `ID nguyên liệu không hợp lệ: ${ing.ingredientId}`
+          );
         }
 
         const ingredient = await IngredientModel.findById(ing.ingredientId);
         if (!ingredient) {
-          throw createHttpError(404, `Không tìm thấy nguyên liệu với ID: ${ing.ingredientId}`);
+          throw createHttpError(
+            404,
+            `Không tìm thấy nguyên liệu với ID: ${ing.ingredientId}`
+          );
         }
 
         return {
@@ -69,7 +75,10 @@ export const DishService = {
     }
 
     if (image) {
-      const uploadResult = await uploadImage(image.buffer, newDish._id.toString());
+      const uploadResult = await uploadImage(
+        image.buffer,
+        newDish._id.toString()
+      );
       if (uploadResult.success && uploadResult.data) {
         newDish.image = uploadResult.data.secure_url;
         await newDish.save();
@@ -129,14 +138,20 @@ export const DishService = {
     // If ingredients are updated, fetch their details
     if (data.ingredients) {
       const ingredientDetails = await Promise.all(
-        data.ingredients.map(async (ing) => {
+        data.ingredients.map(async ing => {
           if (!validateObjectId(ing.ingredientId)) {
-            throw createHttpError(400, `ID nguyên liệu không hợp lệ: ${ing.ingredientId}`);
+            throw createHttpError(
+              400,
+              `ID nguyên liệu không hợp lệ: ${ing.ingredientId}`
+            );
           }
 
           const ingredient = await IngredientModel.findById(ing.ingredientId);
           if (!ingredient) {
-            throw createHttpError(404, `Không tìm thấy nguyên liệu với ID: ${ing.ingredientId}`);
+            throw createHttpError(
+              404,
+              `Không tìm thấy nguyên liệu với ID: ${ing.ingredientId}`
+            );
           }
 
           return {
@@ -165,7 +180,10 @@ export const DishService = {
     if (image) {
       await deleteImage(updatedDish._id.toString());
 
-      const uploadResult = await uploadImage(image.buffer, updatedDish._id.toString());
+      const uploadResult = await uploadImage(
+        image.buffer,
+        updatedDish._id.toString()
+      );
       if (uploadResult.success && uploadResult.data) {
         updatedDish.image = uploadResult.data.secure_url;
         await updatedDish.save();

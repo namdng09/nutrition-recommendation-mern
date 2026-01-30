@@ -20,7 +20,7 @@ export const createCollectionRequestSchema = z.object({
   image: z.file().optional(),
   isPublic: z
     .union([z.boolean(), z.string()])
-    .transform((val) => {
+    .transform(val => {
       if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;
@@ -28,10 +28,10 @@ export const createCollectionRequestSchema = z.object({
     })
     .optional(),
   tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
-  dishes: z.preprocess(
-    parseJSON,
-    z
-      .array(
+  dishes: z
+    .preprocess(
+      parseJSON,
+      z.array(
         z.object({
           dishId: z.string().trim(),
           name: z.string().trim(),
@@ -39,7 +39,8 @@ export const createCollectionRequestSchema = z.object({
           image: z.string().trim().optional()
         })
       )
-  ).optional()
+    )
+    .optional()
 });
 
 export type CreateCollectionRequest = z.infer<
@@ -47,16 +48,12 @@ export type CreateCollectionRequest = z.infer<
 >;
 
 export const updateCollectionRequestSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, 'Tên phải có ít nhất 2 ký tự')
-    .optional(),
+  name: z.string().trim().min(2, 'Tên phải có ít nhất 2 ký tự').optional(),
   description: z.string().trim().optional(),
   image: z.file().optional(),
   isPublic: z
     .union([z.boolean(), z.string()])
-    .transform((val) => {
+    .transform(val => {
       if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;
