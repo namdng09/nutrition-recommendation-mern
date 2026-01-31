@@ -8,6 +8,12 @@ import { GENDER } from '~/constants/gender';
 import { USER_TARGET } from '~/constants/user-target';
 
 export const updateNutritionTargetSchema = yup.object({
+  diet: yup.string().oneOf(Object.values(DIET), 'Invalid diet').optional(),
+  allergens: yup
+    .array()
+    .of(yup.string().oneOf(Object.values(ALLERGEN), 'Invalid allergen'))
+    .optional(),
+  medicalHistory: yup.array().of(yup.string().trim()).optional(),
   height: yup
     .number()
     .positive('Height must be positive')

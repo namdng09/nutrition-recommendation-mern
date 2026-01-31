@@ -95,7 +95,31 @@ export const updateProfileRequestSchema = z.object({
   gender: z
     .enum(Object.values(GENDER), { message: 'Invalid gender' })
     .optional(),
-  dob: z.string().optional()
+  dob: z.string().optional(),
+  height: z.number().positive().optional(),
+  weight: z.number().positive().optional(),
+  bodyfat: z
+    .enum(Object.values(BODYFAT), { message: 'Invalid bodyfat' })
+    .optional(),
+  diet: z.enum(Object.values(DIET), { message: 'Invalid diet' }).optional(),
+  allergens: z
+    .array(z.enum(Object.values(ALLERGEN), { message: 'Invalid allergen' }))
+    .optional(),
+  medicalHistory: z.array(z.string().trim()).optional(),
+  nutritionTarget: nutritionTargetSchema.optional(),
+  mealSettings: z.array(mealSettingSchema).optional(),
+  activityLevel: z
+    .enum(Object.values(ACTIVITY_LEVEL), {
+      message: 'Invalid Activity Level'
+    })
+    .optional(),
+  goal: z
+    .object({
+      target: z.enum(Object.values(USER_TARGET), { message: 'Invalid target' }),
+      weightGoal: z.number().optional(),
+      targetWeightChange: z.number().optional()
+    })
+    .optional()
 });
 
 export type UpdateProfileRequest = z.infer<typeof updateProfileRequestSchema>;
@@ -136,31 +160,7 @@ export const updateUserRequestSchema = z.object({
     .optional(),
   role: z.enum(Object.values(ROLE), { message: 'Invalid role' }).optional(),
   dob: z.string().optional(),
-  isActive: z.enum(['true', 'false']).optional(),
-  height: z.number().positive().optional(),
-  weight: z.number().positive().optional(),
-  bodyfat: z
-    .enum(Object.values(BODYFAT), { message: 'Invalid bodyfat' })
-    .optional(),
-  diet: z.enum(Object.values(DIET), { message: 'Invalid diet' }).optional(),
-  allergens: z
-    .array(z.enum(Object.values(ALLERGEN), { message: 'Invalid allergen' }))
-    .optional(),
-  medicalHistory: z.array(z.string().trim()).optional(),
-  nutritionTarget: nutritionTargetSchema.optional(),
-  mealSettings: z.array(mealSettingSchema).optional(),
-  activityLevel: z
-    .enum(Object.values(ACTIVITY_LEVEL), {
-      message: 'Invalid Activity Level'
-    })
-    .optional(),
-  goal: z
-    .object({
-      target: z.enum(Object.values(USER_TARGET), { message: 'Invalid target' }),
-      weightGoal: z.number().optional(),
-      targetWeightChange: z.number().optional()
-    })
-    .optional()
+  isActive: z.enum(['true', 'false']).optional()
 });
 
 export type UpdateUserRequest = z.infer<typeof updateUserRequestSchema>;

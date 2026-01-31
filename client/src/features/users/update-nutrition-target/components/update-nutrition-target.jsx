@@ -83,13 +83,18 @@ export function UpdateNutritionTarget() {
     values: profile
       ? {
           height: profile.height || 0,
-          weight: profile.weight || 0,
+          weight:
+            profile.weightRecord?.length > 0
+              ? profile.weightRecord
+                  .slice()
+                  .sort((a, b) => new Date(b.date) - new Date(a.date))[0].weight
+              : 0,
           bodyfat: profile.bodyfat || '',
           activityLevel: profile.activityLevel || '',
-          goal: profile.goal || {
-            target: '',
-            weightGoal: 0,
-            targetWeightChange: 0
+          goal: {
+            target: profile.goal?.target || '',
+            weightGoal: profile.goal?.weightGoal || undefined,
+            targetWeightChange: profile.goal?.targetWeightChange || undefined
           },
           nutritionTarget: {
             caloriesTarget: profile.nutritionTarget?.caloriesTarget || 0,
