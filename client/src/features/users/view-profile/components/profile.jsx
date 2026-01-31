@@ -94,7 +94,7 @@ const Profile = () => {
     <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-0'>
       <div className='mb-4 flex items-center gap-2'>
         <HiOutlineUserCircle className='h-7 w-7 text-primary' />
-        <h1 className='text-2xl font-bold text-primary'>Hồ sơ cá nhân</h1>
+        <h1 className='text-2xl font-bold'>Hồ sơ cá nhân</h1>
       </div>
 
       <div className='flex flex-col gap-4 rounded-2xl border border-border bg-background p-5 shadow-sm md:flex-row md:items-center md:justify-between'>

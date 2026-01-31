@@ -7,10 +7,9 @@ const AppLayout = lazy(() => import('~/components/layouts/app-layout'));
 const RootLayout = lazy(() => import('~/components/layouts/root-layout'));
 const AuthLayout = lazy(() => import('~/components/layouts/auth-layout'));
 const AdminLayout = lazy(() => import('~/components/layouts/admin-layout'));
+const ProfileLayout = lazy(() => import('~/components/layouts/profile-layout'));
 
 const ErrorComponent = lazy(() => import('~/components/error'));
-
-const ProfilePage = lazy(() => import('~/app/profile/page'));
 
 const router = createBrowserRouter([
   {
@@ -57,9 +56,25 @@ const router = createBrowserRouter([
             path: 'profile',
             Component: () => (
               <PrivateRoute allowedRoles={['user', 'admin']}>
-                <ProfilePage />
+                <ProfileLayout />
               </PrivateRoute>
-            )
+            ),
+            children: [
+              {
+                index: true,
+                Component: lazy(() => import('~/app/profile/page'))
+              },
+              {
+                path: 'diet',
+                Component: lazy(() => import('~/app/profile/diet/page'))
+              },
+              {
+                path: 'nutrition-target',
+                Component: lazy(
+                  () => import('~/app/profile/nutrition-target/page')
+                )
+              }
+            ]
           }
         ]
       },
