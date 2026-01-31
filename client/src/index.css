@@ -141,3 +141,30 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  /* Green - Success */
+  .text-green-light {
+    @apply text-green-600 bg-green-50 border-green-100 dark:text-green-400 dark:bg-green-950/30 dark:border-green-900/50;
+  }
+
+  /* Blue - Info */
+  .text-blue-light {
+    @apply text-blue-600 bg-blue-50 border-blue-100 dark:text-blue-400 dark:bg-blue-950/30 dark:border-blue-900/50;
+  }
+
+  /* Orange - Warning */
+  .text-orange-light {
+    @apply text-orange-600 bg-orange-50 border-orange-100 dark:text-orange-400 dark:bg-orange-950/30 dark:border-orange-900/50;
+  }
+
+  /* Purple - Danger/Accent */
+  .text-purple-light {
+    @apply text-purple-600 bg-purple-50 border-purple-100 dark:text-purple-400 dark:bg-purple-950/30 dark:border-purple-900/50;
+  }
+
+  /* Cyan - Primary/Info */
+  .text-cyan-light {
+    @apply text-cyan-600 bg-cyan-50 border-cyan-100 dark:text-cyan-400 dark:bg-cyan-950/30 dark:border-cyan-900/50;
+  }
+}
