@@ -1,6 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Calculator, Save, Target } from 'lucide-react';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -35,9 +34,6 @@ import { useProfileForPage } from '~/features/users/view-profile/api/view-profil
 
 export function UpdateNutritionTarget() {
   const { data: profile } = useProfileForPage();
-  const [macroMode, setMacroMode] = useState(
-    profile?.nutritionTarget?.macros ? 'manual' : 'auto'
-  );
 
   const { mutate: updateNutritionTarget, isPending: isUpdating } =
     useUpdateNutritionTarget({
@@ -58,13 +54,22 @@ export function UpdateNutritionTarget() {
     useCalculateNutrition({
       onSuccess: response => {
         const calculated = response.data;
-        // Auto-save calculated values
-        updateNutritionTarget({
-          nutritionTarget: {
-            caloriesTarget: calculated.caloriesTarget,
-            macros: calculated.macros
-          }
-        });
+        // Update form values with calculated macros
+        if (calculated.macros) {
+          form.setValue(
+            'nutritionTarget.macros.carbs',
+            calculated.macros.carbs?.min || 0
+          );
+          form.setValue(
+            'nutritionTarget.macros.fat',
+            calculated.macros.fat?.min || 0
+          );
+          form.setValue(
+            'nutritionTarget.macros.protein',
+            calculated.macros.protein?.min || 0
+          );
+        }
+        toast.success('Tính toán dinh dưỡng thành công');
       },
       onError: error => {
         toast.error(
@@ -86,14 +91,41 @@ export function UpdateNutritionTarget() {
             weightGoal: 0,
             targetWeightChange: 0
           },
-          macroMode,
-          nutritionTarget: profile.nutritionTarget || {}
+          nutritionTarget: {
+            caloriesTarget: profile.nutritionTarget?.caloriesTarget || 0,
+            macros: {
+              carbs: profile.nutritionTarget?.macros?.carbs?.min || 0,
+              fat: profile.nutritionTarget?.macros?.fat?.min || 0,
+              protein: profile.nutritionTarget?.macros?.protein?.min || 0
+            }
+          }
         }
       : undefined
   });
 
   const handleSave = data => {
-    updateNutritionTarget(data);
+    // Transform single values to min/max format for backend
+    const transformedData = {
+      ...data,
+      nutritionTarget: {
+        ...data.nutritionTarget,
+        macros: {
+          carbs: {
+            min: data.nutritionTarget.macros.carbs,
+            max: data.nutritionTarget.macros.carbs
+          },
+          fat: {
+            min: data.nutritionTarget.macros.fat,
+            max: data.nutritionTarget.macros.fat
+          },
+          protein: {
+            min: data.nutritionTarget.macros.protein,
+            max: data.nutritionTarget.macros.protein
+          }
+        }
+      }
+    };
+    updateNutritionTarget(transformedData);
   };
 
   const handleCalculate = () => {
@@ -104,11 +136,12 @@ export function UpdateNutritionTarget() {
       bodyfat: formData.bodyfat,
       activityLevel: formData.activityLevel,
       goal: formData.goal,
-      diet: profile?.diet
+      diet: profile?.diet,
+      gender: profile?.gender,
+      dob: profile?.dob,
+      allergens: profile?.allergens
     });
   };
-
-  const currentMacros = profile?.nutritionTarget?.macros;
 
   return (
     <div className='max-w-4xl mx-auto'>
@@ -277,273 +310,148 @@ export function UpdateNutritionTarget() {
             </p>
           </div>
 
-          {/* Macro Mode Selection */}
-          <div className='mb-6'>
-            <label className='text-sm font-medium mb-2 block'>
-              Tính toán macro
-            </label>
-            <Select value={macroMode} onValueChange={setMacroMode}>
-              <SelectTrigger className='w-full rounded-xl border-border focus:ring-ring'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='auto'>Tự động tính vi chất</SelectItem>
-                <SelectItem value='manual'>Nhập vi chất</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {macroMode === 'auto' ? (
-            <div className='space-y-4'>
-              {/* Display current calculated values */}
-              {profile?.nutritionTarget?.caloriesTarget && (
-                <div className='bg-muted/50 rounded-xl p-4'>
-                  <p className='text-sm font-semibold mb-2'>
-                    Mục tiêu hiện tại
-                  </p>
-                  <div className='grid grid-cols-2 gap-4 text-sm'>
-                    <div>
-                      <span>Calories:</span>
-                      <span className='font-semibold ml-2'>
-                        {profile.nutritionTarget.caloriesTarget} kcal/day
-                      </span>
-                    </div>
-                    {currentMacros && (
-                      <>
-                        <div>
-                          <span className='text-muted-foreground'>Carbs:</span>
-                          <span className='font-semibold ml-2'>
-                            {currentMacros.carbs?.min}-
-                            {currentMacros.carbs?.max}g
-                          </span>
-                        </div>
-                        <div>
-                          <span className='text-muted-foreground'>
-                            Protein:
-                          </span>
-                          <span className='font-semibold ml-2'>
-                            {currentMacros.protein?.min}-
-                            {currentMacros.protein?.max}g
-                          </span>
-                        </div>
-                        <div>
-                          <span className='text-muted-foreground'>Fat:</span>
-                          <span className='font-semibold ml-2'>
-                            {currentMacros.fat?.min}-{currentMacros.fat?.max}g
-                          </span>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              <Button
-                type='button'
-                onClick={handleCalculate}
-                disabled={isCalculating || isUpdating}
-                className='w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90'
-              >
-                {isCalculating || isUpdating ? (
-                  <Spinner className='h-4 w-4 mr-2' />
-                ) : (
-                  <Calculator className='h-4 w-4 mr-2' />
-                )}
-                Recalculate Nutrition Target
-              </Button>
-            </div>
-          ) : (
-            <Form {...form}>
+          <Form {...form}>
+            <div className='space-y-6'>
+              {/* Macro Sliders */}
               <div className='space-y-6'>
-                {/* Manual Macro Sliders */}
-                <div className='space-y-6'>
-                  {/* Carbs */}
-                  <div className='space-y-3'>
-                    <div className='flex items-center justify-between'>
-                      <label className='text-sm font-medium'>
-                        <span className='inline-block w-2 h-2 rounded-full bg-yellow-500 mr-2'></span>
-                        Carbs
-                      </label>
-                      <div className='flex items-center gap-2 text-sm'>
-                        <Input
-                          type='number'
-                          value={
-                            form.watch('nutritionTarget.macros.carbs.min') || 7
-                          }
-                          onChange={e =>
-                            form.setValue(
-                              'nutritionTarget.macros.carbs.min',
-                              parseInt(e.target.value) || 0
-                            )
-                          }
-                          className='w-16 h-8 text-center rounded-md'
-                        />
-                        <span>to</span>
-                        <Input
-                          type='number'
-                          value={
-                            form.watch('nutritionTarget.macros.carbs.max') || 83
-                          }
-                          onChange={e =>
-                            form.setValue(
-                              'nutritionTarget.macros.carbs.max',
-                              parseInt(e.target.value) || 0
-                            )
-                          }
-                          className='w-16 h-8 text-center rounded-md'
-                        />
-                        <span>g</span>
-                      </div>
+                {/* Carbs */}
+                <div className='space-y-3'>
+                  <div className='flex items-center justify-between'>
+                    <label className='text-sm font-medium'>
+                      <span className='inline-block w-2 h-2 rounded-full bg-yellow-500 mr-2'></span>
+                      Carbs
+                    </label>
+                    <div className='flex items-center gap-2 text-sm'>
+                      <Input
+                        type='number'
+                        value={form.watch('nutritionTarget.macros.carbs') || 0}
+                        onChange={e =>
+                          form.setValue(
+                            'nutritionTarget.macros.carbs',
+                            parseInt(e.target.value) || 0
+                          )
+                        }
+                        className='w-20 h-8 text-center rounded-md'
+                      />
+                      <span>g</span>
                     </div>
-                    <Slider
-                      value={[
-                        form.watch('nutritionTarget.macros.carbs.min') || 7,
-                        form.watch('nutritionTarget.macros.carbs.max') || 83
-                      ]}
-                      onValueChange={([min, max]) => {
-                        form.setValue('nutritionTarget.macros.carbs.min', min);
-                        form.setValue('nutritionTarget.macros.carbs.max', max);
-                      }}
-                      min={0}
-                      max={300}
-                      step={1}
-                      className='[&_[role=slider]]:bg-yellow-500 [&_[role=slider]]:border-yellow-600'
-                    />
                   </div>
-
-                  {/* Fats */}
-                  <div className='space-y-3'>
-                    <div className='flex items-center justify-between'>
-                      <label className='text-sm font-medium'>
-                        <span className='inline-block w-2 h-2 rounded-full bg-cyan-500 mr-2'></span>
-                        Fats
-                      </label>
-                      <div className='flex items-center gap-2 text-sm'>
-                        <Input
-                          type='number'
-                          value={
-                            form.watch('nutritionTarget.macros.fat.min') || 12
-                          }
-                          onChange={e =>
-                            form.setValue(
-                              'nutritionTarget.macros.fat.min',
-                              parseInt(e.target.value) || 0
-                            )
-                          }
-                          className='w-16 h-8 text-center rounded-md'
-                        />
-                        <span>to</span>
-                        <Input
-                          type='number'
-                          value={
-                            form.watch('nutritionTarget.macros.fat.max') || 37
-                          }
-                          onChange={e =>
-                            form.setValue(
-                              'nutritionTarget.macros.fat.max',
-                              parseInt(e.target.value) || 0
-                            )
-                          }
-                          className='w-16 h-8 text-center rounded-md'
-                        />
-                        <span>g</span>
-                      </div>
-                    </div>
-                    <Slider
-                      value={[
-                        form.watch('nutritionTarget.macros.fat.min') || 12,
-                        form.watch('nutritionTarget.macros.fat.max') || 37
-                      ]}
-                      onValueChange={([min, max]) => {
-                        form.setValue('nutritionTarget.macros.fat.min', min);
-                        form.setValue('nutritionTarget.macros.fat.max', max);
-                      }}
-                      min={0}
-                      max={150}
-                      step={1}
-                      className='[&_[role=slider]]:bg-cyan-500 [&_[role=slider]]:border-cyan-600'
-                    />
-                  </div>
-
-                  {/* Protein */}
-                  <div className='space-y-3'>
-                    <div className='flex items-center justify-between'>
-                      <label className='text-sm font-medium'>
-                        <span className='inline-block w-2 h-2 rounded-full bg-purple-500 mr-2'></span>
-                        Protein
-                      </label>
-                      <div className='flex items-center gap-2 text-sm'>
-                        <Input
-                          type='number'
-                          value={
-                            form.watch('nutritionTarget.macros.protein.min') ||
-                            13
-                          }
-                          onChange={e =>
-                            form.setValue(
-                              'nutritionTarget.macros.protein.min',
-                              parseInt(e.target.value) || 0
-                            )
-                          }
-                          className='w-16 h-8 text-center rounded-md'
-                        />
-                        <span>to</span>
-                        <Input
-                          type='number'
-                          value={
-                            form.watch('nutritionTarget.macros.protein.max') ||
-                            83
-                          }
-                          onChange={e =>
-                            form.setValue(
-                              'nutritionTarget.macros.protein.max',
-                              parseInt(e.target.value) || 0
-                            )
-                          }
-                          className='w-16 h-8 text-center rounded-md'
-                        />
-                        <span>g</span>
-                      </div>
-                    </div>
-                    <Slider
-                      value={[
-                        form.watch('nutritionTarget.macros.protein.min') || 13,
-                        form.watch('nutritionTarget.macros.protein.max') || 83
-                      ]}
-                      onValueChange={([min, max]) => {
-                        form.setValue(
-                          'nutritionTarget.macros.protein.min',
-                          min
-                        );
-                        form.setValue(
-                          'nutritionTarget.macros.protein.max',
-                          max
-                        );
-                      }}
-                      min={0}
-                      max={300}
-                      step={1}
-                      className='[&_[role=slider]]:bg-purple-500 [&_[role=slider]]:border-purple-600'
-                    />
-                  </div>
+                  <Slider
+                    value={[form.watch('nutritionTarget.macros.carbs') || 0]}
+                    onValueChange={([value]) => {
+                      form.setValue('nutritionTarget.macros.carbs', value);
+                    }}
+                    min={0}
+                    max={300}
+                    step={1}
+                    className='[&_[role=slider]]:bg-yellow-500 [&_[role=slider]]:border-yellow-600'
+                  />
                 </div>
+
+                {/* Fats */}
+                <div className='space-y-3'>
+                  <div className='flex items-center justify-between'>
+                    <label className='text-sm font-medium'>
+                      <span className='inline-block w-2 h-2 rounded-full bg-cyan-500 mr-2'></span>
+                      Fats
+                    </label>
+                    <div className='flex items-center gap-2 text-sm'>
+                      <Input
+                        type='number'
+                        value={form.watch('nutritionTarget.macros.fat') || 0}
+                        onChange={e =>
+                          form.setValue(
+                            'nutritionTarget.macros.fat',
+                            parseInt(e.target.value) || 0
+                          )
+                        }
+                        className='w-20 h-8 text-center rounded-md'
+                      />
+                      <span>g</span>
+                    </div>
+                  </div>
+                  <Slider
+                    value={[form.watch('nutritionTarget.macros.fat') || 0]}
+                    onValueChange={([value]) => {
+                      form.setValue('nutritionTarget.macros.fat', value);
+                    }}
+                    min={0}
+                    max={150}
+                    step={1}
+                    className='[&_[role=slider]]:bg-cyan-500 [&_[role=slider]]:border-cyan-600'
+                  />
+                </div>
+
+                {/* Protein */}
+                <div className='space-y-3'>
+                  <div className='flex items-center justify-between'>
+                    <label className='text-sm font-medium'>
+                      <span className='inline-block w-2 h-2 rounded-full bg-purple-500 mr-2'></span>
+                      Protein
+                    </label>
+                    <div className='flex items-center gap-2 text-sm'>
+                      <Input
+                        type='number'
+                        value={
+                          form.watch('nutritionTarget.macros.protein') || 0
+                        }
+                        onChange={e =>
+                          form.setValue(
+                            'nutritionTarget.macros.protein',
+                            parseInt(e.target.value) || 0
+                          )
+                        }
+                        className='w-20 h-8 text-center rounded-md'
+                      />
+                      <span>g</span>
+                    </div>
+                  </div>
+                  <Slider
+                    value={[form.watch('nutritionTarget.macros.protein') || 0]}
+                    onValueChange={([value]) => {
+                      form.setValue('nutritionTarget.macros.protein', value);
+                    }}
+                    min={0}
+                    max={300}
+                    step={1}
+                    className='[&_[role=slider]]:bg-purple-500 [&_[role=slider]]:border-purple-600'
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className='flex gap-3'>
+                <Button
+                  type='button'
+                  onClick={handleCalculate}
+                  disabled={isCalculating || isUpdating}
+                  variant='outline'
+                  className='flex-1 rounded-xl border-border hover:bg-muted'
+                >
+                  {isCalculating ? (
+                    <Spinner className='h-4 w-4 mr-2' />
+                  ) : (
+                    <Calculator className='h-4 w-4 mr-2' />
+                  )}
+                  Tính toán lại
+                </Button>
 
                 <Button
                   type='button'
                   onClick={form.handleSubmit(handleSave)}
                   disabled={isUpdating}
-                  className='w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90'
+                  className='flex-1 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90'
                 >
                   {isUpdating ? (
                     <Spinner className='h-4 w-4 mr-2' />
                   ) : (
                     <Save className='h-4 w-4 mr-2' />
                   )}
-                  Save Changes
+                  Lưu thay đổi
                 </Button>
               </div>
-            </Form>
-          )}
+            </div>
+          </Form>
         </div>
       </div>
     </div>

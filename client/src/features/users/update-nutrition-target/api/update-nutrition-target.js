@@ -9,10 +9,7 @@ const updateNutritionTarget = async data => {
 };
 
 const calculateNutrition = async data => {
-  const response = await apiClient.post(
-    '/api/users/calculate-nutrition-target',
-    data
-  );
+  const response = await apiClient.post('/api/users/me/nutrition-target', data);
   return response.data;
 };
 
