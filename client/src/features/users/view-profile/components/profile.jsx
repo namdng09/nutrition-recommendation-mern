@@ -93,7 +93,7 @@ const Profile = () => {
   return (
     <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-0'>
       <div className='mb-4 flex items-center gap-2'>
-        <HiOutlineUserCircle className='h-7 w-7 text-primary' />
+        <HiOutlineUserCircle className='h-7 w-7' />
         <h1 className='text-2xl font-bold'>Hồ sơ cá nhân</h1>
       </div>
 
@@ -119,7 +119,7 @@ const Profile = () => {
               </Avatar>
 
               <div className='absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-background border border-border flex items-center justify-center shadow-sm transition group-hover:bg-accent'>
-                <Camera className='h-4 w-4 text-primary' />
+                <Camera className='h-4 w-4' />
               </div>
             </div>
 
@@ -132,16 +132,14 @@ const Profile = () => {
             />
 
             {isUpdating && (
-              <div className='absolute inset-0 flex items-center justify-center bg-black/45 rounded-full'>
-                <Spinner className='text-white' />
+              <div className='absolute inset-0 flex items-center justify-center bg-background backdrop-blur-sm rounded-full'>
+                <Spinner />
               </div>
             )}
           </div>
 
           <div className='min-w-0'>
-            <h2 className='truncate text-xl font-bold text-primary'>
-              {profile?.name}
-            </h2>
+            <h2 className='truncate text-xl font-bold'>{profile?.name}</h2>
             <p className='truncate text-sm text-muted-foreground'>
               {profile?.email}
             </p>
@@ -177,12 +175,10 @@ const Profile = () => {
 
       <div className='mt-6 rounded-2xl border border-border bg-background p-6 shadow-sm'>
         <div className='mb-4'>
-          <h2 className='text-lg font-semibold text-primary'>
-            Thông tin cá nhân
-          </h2>
+          <h2 className='text-lg font-semibold'>Thông tin cá nhân</h2>
           <p className='text-sm text-muted-foreground'>
             Chỉnh sửa thông tin và bấm{' '}
-            <span className='font-semibold text-primary'>Lưu</span> để cập nhật
+            <span className='font-semibold'>Lưu</span> để cập nhật
           </p>
         </div>
 
@@ -193,9 +189,7 @@ const Profile = () => {
               name='name'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-muted-foreground'>
-                    Họ và tên
-                  </FormLabel>
+                  <FormLabel>Họ và tên</FormLabel>
                   <FormControl>
                     <Input
                       placeholder='Nhập họ và tên'
@@ -209,10 +203,8 @@ const Profile = () => {
             />
 
             <div className='space-y-1'>
-              <label className='text-sm font-medium text-muted-foreground'>
-                Email
-              </label>
-              <p className='text-sm py-2 text-primary'>{profile?.email}</p>
+              <label className='text-sm font-medium'>Email</label>
+              <p className='text-sm py-2'>{profile?.email}</p>
             </div>
 
             <FormField
@@ -220,9 +212,7 @@ const Profile = () => {
               name='gender'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-muted-foreground'>
-                    Giới tính
-                  </FormLabel>
+                  <FormLabel>Giới tính</FormLabel>
                   <Select
                     key={profile?.id + '-gender-' + (field.value ?? '')}
                     value={field.value}
@@ -251,17 +241,15 @@ const Profile = () => {
               name='dob'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-muted-foreground'>
-                    Ngày sinh
-                  </FormLabel>
+                  <FormLabel>Ngày sinh</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
                           variant='outline'
                           className={cn(
-                            'w-full rounded-xl border-border pl-3 text-left font-normal text-primary',
-                            !field.value && 'text-muted-foreground'
+                            'w-full rounded-xl border-border pl-3 text-left font-normal',
+                            !field.value && 'text-foreground/50'
                           )}
                         >
                           {field.value ? (

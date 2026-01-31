@@ -311,7 +311,7 @@ export function UpdateNutritionTarget() {
                 <div className='space-y-3'>
                   <div className='flex items-center justify-between'>
                     <label className='text-sm font-medium'>
-                      <span className='inline-block w-2 h-2 rounded-full bg-yellow-500 mr-2'></span>
+                      <span className='inline-block w-2 h-2 rounded-full bg-chart-1 mr-2'></span>
                       Carbs
                     </label>
                     <div className='flex items-center gap-2 text-sm'>
@@ -357,7 +357,7 @@ export function UpdateNutritionTarget() {
                     min={0}
                     max={500}
                     step={1}
-                    className='[&_[role=slider]]:bg-yellow-500 [&_[role=slider]]:border-yellow-600'
+                    className='[&_[role=slider]]:bg-chart-1 [&_[role=slider]]:border-chart-1'
                   />
                 </div>
 
@@ -365,7 +365,7 @@ export function UpdateNutritionTarget() {
                 <div className='space-y-3'>
                   <div className='flex items-center justify-between'>
                     <label className='text-sm font-medium'>
-                      <span className='inline-block w-2 h-2 rounded-full bg-cyan-500 mr-2'></span>
+                      <span className='inline-block w-2 h-2 rounded-full bg-chart-2 mr-2'></span>
                       Fats
                     </label>
                     <div className='flex items-center gap-2 text-sm'>
@@ -411,7 +411,7 @@ export function UpdateNutritionTarget() {
                     min={0}
                     max={200}
                     step={1}
-                    className='[&_[role=slider]]:bg-cyan-500 [&_[role=slider]]:border-cyan-600'
+                    className='[&_[role=slider]]:bg-chart-2 [&_[role=slider]]:border-chart-2'
                   />
                 </div>
 
@@ -419,7 +419,7 @@ export function UpdateNutritionTarget() {
                 <div className='space-y-3'>
                   <div className='flex items-center justify-between'>
                     <label className='text-sm font-medium'>
-                      <span className='inline-block w-2 h-2 rounded-full bg-purple-500 mr-2'></span>
+                      <span className='inline-block w-2 h-2 rounded-full bg-chart-3 mr-2'></span>
                       Protein
                     </label>
                     <div className='flex items-center gap-2 text-sm'>
@@ -465,7 +465,7 @@ export function UpdateNutritionTarget() {
                     min={0}
                     max={500}
                     step={1}
-                    className='[&_[role=slider]]:bg-purple-500 [&_[role=slider]]:border-purple-600'
+                    className='[&_[role=slider]]:bg-chart-3 [&_[role=slider]]:border-chart-3'
                   />
                 </div>
               </div>
