@@ -253,7 +253,7 @@ const Profile = () => {
                           )}
                         >
                           {field.value ? (
-                            format(new Date(field.value), 'PPP')
+                            format(new Date(field.value), 'dd/MM/yyyy')
                           ) : (
                             <span>Chọn ngày</span>
                           )}
