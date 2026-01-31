@@ -1,7 +1,12 @@
 import { Router } from 'express';
 
 import { ROLE } from '~/shared/constants/role';
-import { authenticate, authorize, validate } from '~/shared/middlewares';
+import {
+  authenticate,
+  authorize,
+  parseFormData,
+  validate
+} from '~/shared/middlewares';
 import { asyncHandler } from '~/shared/utils';
 
 import { ScheduleController } from './schedule-controller';
@@ -16,6 +21,7 @@ router.post(
   '/',
   authenticate(),
   authorize([ROLE.USER, ROLE.NUTRITIONIST, ROLE.ADMIN]),
+  parseFormData,
   validate(createScheduleRequestSchema.shape),
   asyncHandler(ScheduleController.createSchedule)
 );

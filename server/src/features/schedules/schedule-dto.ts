@@ -43,7 +43,7 @@ export const createScheduleRequestSchema = z.object({
   dayOfWeek: z.enum(Object.values(DAY_OF_WEEK), {
     message: 'Invalid day of week'
   }),
-  meals: z.preprocess(parseJSON, z.array(scheduleMealSchema)).optional(),
+  // meals: z.preprocess(parseJSON, z.array(scheduleMealSchema)).optional(),
   notes: z.string().trim().optional(),
   isActive: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
 });
