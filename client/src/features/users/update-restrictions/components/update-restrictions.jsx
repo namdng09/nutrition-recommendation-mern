@@ -117,8 +117,9 @@ export function UpdateRestrictions() {
                 <FormItem>
                   <FormLabel>Dị ứng thực phẩm</FormLabel>
                   <MultiSelect
-                    value={field.value || []}
-                    onValueChange={field.onChange}
+                    key={profile?.id + '-allergens'}
+                    values={field.value || []}
+                    onValuesChange={field.onChange}
                   >
                     <FormControl>
                       <MultiSelectTrigger className='w-full rounded-xl border-border focus:ring-ring'>
