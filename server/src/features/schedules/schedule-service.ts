@@ -2,7 +2,7 @@ import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
 
 import { ROLE } from '~/shared/constants/role';
-import { ScheduleModel } from '~/shared/database/models';
+import { ScheduleModel, UserModel } from '~/shared/database/models';
 import type { Schedule } from '~/shared/database/models/schedule-model';
 import {
   buildPaginateOptions,
@@ -48,7 +48,16 @@ export const ScheduleService = {
     }
 
     const date = ensureValidDate(data.date);
-    validateDishIds(data.meals);
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      throw createHttpError(404, 'Không tìm thấy người dùng');
+    }
+
+    const meals = user.mealSettings.map(setting => ({
+      mealType: setting.name,
+      dishes: []
+    }));
 
     const newSchedule = await ScheduleModel.create({
       user: {
@@ -58,7 +67,7 @@ export const ScheduleService = {
       date,
       dayOfWeek: data.dayOfWeek,
       isActive: data.isActive ?? true,
-      meals: data.meals || [],
+      meals,
       notes: data.notes
     });
 
