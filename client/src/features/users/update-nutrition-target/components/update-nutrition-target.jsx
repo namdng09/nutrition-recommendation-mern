@@ -56,18 +56,18 @@ export function UpdateNutritionTarget() {
         const calculated = response.data;
         // Update form values with calculated macros
         if (calculated.macros) {
-          form.setValue(
-            'nutritionTarget.macros.carbs',
-            calculated.macros.carbs?.min || 0
-          );
-          form.setValue(
-            'nutritionTarget.macros.fat',
-            calculated.macros.fat?.min || 0
-          );
-          form.setValue(
-            'nutritionTarget.macros.protein',
-            calculated.macros.protein?.min || 0
-          );
+          form.setValue('nutritionTarget.macros.carbs', {
+            min: calculated.macros.carbs?.min || 0,
+            max: calculated.macros.carbs?.max || 0
+          });
+          form.setValue('nutritionTarget.macros.fat', {
+            min: calculated.macros.fat?.min || 0,
+            max: calculated.macros.fat?.max || 0
+          });
+          form.setValue('nutritionTarget.macros.protein', {
+            min: calculated.macros.protein?.min || 0,
+            max: calculated.macros.protein?.max || 0
+          });
         }
         toast.success('Tính toán dinh dưỡng thành công');
       },
@@ -94,9 +94,18 @@ export function UpdateNutritionTarget() {
           nutritionTarget: {
             caloriesTarget: profile.nutritionTarget?.caloriesTarget || 0,
             macros: {
-              carbs: profile.nutritionTarget?.macros?.carbs?.min || 0,
-              fat: profile.nutritionTarget?.macros?.fat?.min || 0,
-              protein: profile.nutritionTarget?.macros?.protein?.min || 0
+              carbs: {
+                min: profile.nutritionTarget?.macros?.carbs?.min || 0,
+                max: profile.nutritionTarget?.macros?.carbs?.max || 0
+              },
+              fat: {
+                min: profile.nutritionTarget?.macros?.fat?.min || 0,
+                max: profile.nutritionTarget?.macros?.fat?.max || 0
+              },
+              protein: {
+                min: profile.nutritionTarget?.macros?.protein?.min || 0,
+                max: profile.nutritionTarget?.macros?.protein?.max || 0
+              }
             }
           }
         }
@@ -104,28 +113,7 @@ export function UpdateNutritionTarget() {
   });
 
   const handleSave = data => {
-    // Transform single values to min/max format for backend
-    const transformedData = {
-      ...data,
-      nutritionTarget: {
-        ...data.nutritionTarget,
-        macros: {
-          carbs: {
-            min: data.nutritionTarget.macros.carbs,
-            max: data.nutritionTarget.macros.carbs
-          },
-          fat: {
-            min: data.nutritionTarget.macros.fat,
-            max: data.nutritionTarget.macros.fat
-          },
-          protein: {
-            min: data.nutritionTarget.macros.protein,
-            max: data.nutritionTarget.macros.protein
-          }
-        }
-      }
-    };
-    updateNutritionTarget(transformedData);
+    updateNutritionTarget(data);
   };
 
   const handleCalculate = () => {
@@ -324,25 +312,45 @@ export function UpdateNutritionTarget() {
                     <div className='flex items-center gap-2 text-sm'>
                       <Input
                         type='number'
-                        value={form.watch('nutritionTarget.macros.carbs') || 0}
+                        value={
+                          form.watch('nutritionTarget.macros.carbs.min') || 0
+                        }
                         onChange={e =>
                           form.setValue(
-                            'nutritionTarget.macros.carbs',
+                            'nutritionTarget.macros.carbs.min',
                             parseInt(e.target.value) || 0
                           )
                         }
-                        className='w-20 h-8 text-center rounded-md'
+                        className='w-16 h-8 text-center rounded-md'
+                      />
+                      <span>to</span>
+                      <Input
+                        type='number'
+                        value={
+                          form.watch('nutritionTarget.macros.carbs.max') || 0
+                        }
+                        onChange={e =>
+                          form.setValue(
+                            'nutritionTarget.macros.carbs.max',
+                            parseInt(e.target.value) || 0
+                          )
+                        }
+                        className='w-16 h-8 text-center rounded-md'
                       />
                       <span>g</span>
                     </div>
                   </div>
                   <Slider
-                    value={[form.watch('nutritionTarget.macros.carbs') || 0]}
-                    onValueChange={([value]) => {
-                      form.setValue('nutritionTarget.macros.carbs', value);
+                    value={[
+                      form.watch('nutritionTarget.macros.carbs.min') || 0,
+                      form.watch('nutritionTarget.macros.carbs.max') || 0
+                    ]}
+                    onValueChange={([min, max]) => {
+                      form.setValue('nutritionTarget.macros.carbs.min', min);
+                      form.setValue('nutritionTarget.macros.carbs.max', max);
                     }}
                     min={0}
-                    max={300}
+                    max={500}
                     step={1}
                     className='[&_[role=slider]]:bg-yellow-500 [&_[role=slider]]:border-yellow-600'
                   />
@@ -358,25 +366,45 @@ export function UpdateNutritionTarget() {
                     <div className='flex items-center gap-2 text-sm'>
                       <Input
                         type='number'
-                        value={form.watch('nutritionTarget.macros.fat') || 0}
+                        value={
+                          form.watch('nutritionTarget.macros.fat.min') || 0
+                        }
                         onChange={e =>
                           form.setValue(
-                            'nutritionTarget.macros.fat',
+                            'nutritionTarget.macros.fat.min',
                             parseInt(e.target.value) || 0
                           )
                         }
-                        className='w-20 h-8 text-center rounded-md'
+                        className='w-16 h-8 text-center rounded-md'
+                      />
+                      <span>to</span>
+                      <Input
+                        type='number'
+                        value={
+                          form.watch('nutritionTarget.macros.fat.max') || 0
+                        }
+                        onChange={e =>
+                          form.setValue(
+                            'nutritionTarget.macros.fat.max',
+                            parseInt(e.target.value) || 0
+                          )
+                        }
+                        className='w-16 h-8 text-center rounded-md'
                       />
                       <span>g</span>
                     </div>
                   </div>
                   <Slider
-                    value={[form.watch('nutritionTarget.macros.fat') || 0]}
-                    onValueChange={([value]) => {
-                      form.setValue('nutritionTarget.macros.fat', value);
+                    value={[
+                      form.watch('nutritionTarget.macros.fat.min') || 0,
+                      form.watch('nutritionTarget.macros.fat.max') || 0
+                    ]}
+                    onValueChange={([min, max]) => {
+                      form.setValue('nutritionTarget.macros.fat.min', min);
+                      form.setValue('nutritionTarget.macros.fat.max', max);
                     }}
                     min={0}
-                    max={150}
+                    max={200}
                     step={1}
                     className='[&_[role=slider]]:bg-cyan-500 [&_[role=slider]]:border-cyan-600'
                   />
@@ -393,26 +421,44 @@ export function UpdateNutritionTarget() {
                       <Input
                         type='number'
                         value={
-                          form.watch('nutritionTarget.macros.protein') || 0
+                          form.watch('nutritionTarget.macros.protein.min') || 0
                         }
                         onChange={e =>
                           form.setValue(
-                            'nutritionTarget.macros.protein',
+                            'nutritionTarget.macros.protein.min',
                             parseInt(e.target.value) || 0
                           )
                         }
-                        className='w-20 h-8 text-center rounded-md'
+                        className='w-16 h-8 text-center rounded-md'
+                      />
+                      <span>to</span>
+                      <Input
+                        type='number'
+                        value={
+                          form.watch('nutritionTarget.macros.protein.max') || 0
+                        }
+                        onChange={e =>
+                          form.setValue(
+                            'nutritionTarget.macros.protein.max',
+                            parseInt(e.target.value) || 0
+                          )
+                        }
+                        className='w-16 h-8 text-center rounded-md'
                       />
                       <span>g</span>
                     </div>
                   </div>
                   <Slider
-                    value={[form.watch('nutritionTarget.macros.protein') || 0]}
-                    onValueChange={([value]) => {
-                      form.setValue('nutritionTarget.macros.protein', value);
+                    value={[
+                      form.watch('nutritionTarget.macros.protein.min') || 0,
+                      form.watch('nutritionTarget.macros.protein.max') || 0
+                    ]}
+                    onValueChange={([min, max]) => {
+                      form.setValue('nutritionTarget.macros.protein.min', min);
+                      form.setValue('nutritionTarget.macros.protein.max', max);
                     }}
                     min={0}
-                    max={300}
+                    max={500}
                     step={1}
                     className='[&_[role=slider]]:bg-purple-500 [&_[role=slider]]:border-purple-600'
                   />

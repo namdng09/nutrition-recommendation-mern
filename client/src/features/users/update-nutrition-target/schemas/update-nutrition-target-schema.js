@@ -39,9 +39,24 @@ export const updateNutritionTargetSchema = yup.object({
       caloriesTarget: yup.number().min(0).optional(),
       macros: yup
         .object({
-          carbs: yup.number().min(0, 'Carbs must be at least 0').optional(),
-          protein: yup.number().min(0, 'Protein must be at least 0').optional(),
-          fat: yup.number().min(0, 'Fat must be at least 0').optional()
+          carbs: yup
+            .object({
+              min: yup.number().min(0).required(),
+              max: yup.number().min(0).required()
+            })
+            .optional(),
+          protein: yup
+            .object({
+              min: yup.number().min(0).required(),
+              max: yup.number().min(0).required()
+            })
+            .optional(),
+          fat: yup
+            .object({
+              min: yup.number().min(0).required(),
+              max: yup.number().min(0).required()
+            })
+            .optional()
         })
         .optional()
     })
