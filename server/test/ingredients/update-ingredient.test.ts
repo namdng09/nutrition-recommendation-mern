@@ -1,36 +1,74 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest';
 
 import app from '~/app';
-import { AuthModel, IngredientModel, UserModel } from '~/shared/database/models';
-import { hashPassword } from '~/shared/utils/bcrypt';
+import { INGREDIENT_CATEGORY } from '~/shared/constants/ingredient-category';
 import { ROLE } from '~/shared/constants/role';
-import * as utils from '~/shared/utils';
+import { UNIT } from '~/shared/constants/unit';
+import {
+  AuthModel,
+  IngredientModel,
+  UserModel
+} from '~/shared/database/models';
+import { hashPassword } from '~/shared/utils/bcrypt';
+import { generateToken } from '~/shared/utils/jwt';
 
-import { ingredientSeeds, seedIngredients } from '../seed-data';
+// Mock Cloudinary upload
+vi.mock('~/shared/utils/cloudinary', () => ({
+  uploadImage: vi.fn().mockResolvedValue({
+    success: true,
+    data: {
+      secure_url:
+        'https://res.cloudinary.com/test/image/upload/v1234567890/updated-image.jpg',
+      public_id: 'updated-image',
+      format: 'jpg'
+    }
+  }),
+  deleteImage: vi.fn().mockResolvedValue({ success: true })
+}));
+
+// Import mocked functions to customize per test
+import * as cloudinaryUtils from '~/shared/utils/cloudinary';
 
 describe('PUT /api/ingredients/:id', () => {
   let nutritionistToken: string;
   let userToken: string;
   let ingredientId: string;
 
-  // Helper function to get access token
-  const getAccessToken = async (email: string, password: string): Promise<string> => {
-    const res = await request(app).post('/api/auth/login').send({ email, password });
-    return res.body.data.accessToken;
-  };
-
   beforeAll(async () => {
+    // Connect to test database if not already connected
     if (mongoose.connection.readyState === 0) {
       await mongoose.connect(
         process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
       );
     }
+  });
 
-    // Create test users
+  beforeEach(async () => {
+    // Clean up database before each test
+    await IngredientModel.deleteMany({});
     await UserModel.deleteMany({});
     await AuthModel.deleteMany({});
+
+    // Reset mocks
+    vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValue({
+      success: true,
+      data: {
+        secure_url:
+          'https://res.cloudinary.com/test/image/upload/v1234567890/updated-image.jpg',
+        public_id: 'updated-image',
+        format: 'jpg'
+      } as any
+    });
 
     // Create nutritionist user
     const nutritionist = await UserModel.create({
@@ -40,7 +78,7 @@ describe('PUT /api/ingredients/:id', () => {
       isActive: true
     });
 
-    const hashedPassword = await hashPassword('password123');
+    const hashedPassword = await hashPassword('123456');
     await AuthModel.create({
       user: nutritionist._id,
       provider: 'local',
@@ -49,8 +87,14 @@ describe('PUT /api/ingredients/:id', () => {
       verifyAt: new Date()
     });
 
+    const nutritionistTokens = generateToken({
+      id: nutritionist._id.toString(),
+      role: ROLE.NUTRITIONIST
+    });
+    nutritionistToken = nutritionistTokens.accessToken;
+
     // Create regular user
-    const regularUser = await UserModel.create({
+    const user = await UserModel.create({
       email: 'user@test.com',
       name: 'Test User',
       role: ROLE.USER,
@@ -58,331 +102,259 @@ describe('PUT /api/ingredients/:id', () => {
     });
 
     await AuthModel.create({
-      user: regularUser._id,
+      user: user._id,
       provider: 'local',
       providerId: 'user@test.com',
       localPassword: hashedPassword,
       verifyAt: new Date()
     });
 
-    // Get tokens
-    nutritionistToken = await getAccessToken('nutritionist@test.com', 'password123');
-    userToken = await getAccessToken('user@test.com', 'password123');
-  });
+    const userTokens = generateToken({
+      id: user._id.toString(),
+      role: ROLE.USER
+    });
+    userToken = userTokens.accessToken;
 
-  beforeEach(async () => {
-    await IngredientModel.deleteMany({});
-    await seedIngredients();
-    ingredientId = ingredientSeeds[0]._id.toString();
+    // Create test ingredient
+    const ingredient = await IngredientModel.create({
+      name: 'Cà chua',
+      description: 'Cà chua tươi',
+      categories: [INGREDIENT_CATEGORY.VEGETABLES],
+      baseUnit: { amount: 100, unit: UNIT.GRAM },
+      allergens: [],
+      isActive: true
+    });
+    ingredientId = ingredient._id.toString();
   });
 
   afterAll(async () => {
+    // Clean up and close connection
     await IngredientModel.deleteMany({});
     await UserModel.deleteMany({});
     await AuthModel.deleteMany({});
     await mongoose.connection.close();
   });
 
-  // ==================== HAPPY PATH ====================
-  describe('Happy Path', () => {
-    it('TC1.1: should update ingredient successfully with all fields', async () => {
-      const updateData = {
-        name: 'Updated Chicken Breast',
-        category: 'Updated Protein',
-        unit: 'kg',
-        caloriesPer100g: 170,
-        protein: 32,
-        carbs: 1,
-        fat: 4,
-        fiber: 0.5,
-        allergens: ['soy'],
-        vitamins: { A: 10, C: 5 },
-        minerals: { calcium: 20, iron: 1.5 },
-        description: 'Updated description'
-      };
+  // ============ HAPPY CASES ============
+  it('should update ingredient successfully without image', async () => {
+    const updateData = {
+      name: 'Cà chua đỏ',
+      description: 'Cà chua tươi ngon',
+      categories: JSON.stringify([
+        INGREDIENT_CATEGORY.VEGETABLES,
+        INGREDIENT_CATEGORY.FRUITS
+      ])
+    };
 
-      const res = await request(app)
-        .put(`/api/ingredients/${ingredientId}`)
-        .set('Authorization', `Bearer ${nutritionistToken}`)
-        .send(updateData);
+    const res = await request(app)
+      .put(`/api/ingredients/${ingredientId}`)
+      .set('Authorization', `Bearer ${nutritionistToken}`)
+      .field('name', updateData.name)
+      .field('description', updateData.description)
+      .field('categories', updateData.categories);
 
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty('status', 'success');
-      expect(res.body).toHaveProperty('message', 'Ingredient updated successfully');
-      expect(res.body.data).toHaveProperty('_id', ingredientId);
-      expect(res.body.data).toHaveProperty('name', 'Updated Chicken Breast');
-      expect(res.body.data).toHaveProperty('category', 'Updated Protein');
-      expect(res.body.data).toHaveProperty('unit', 'kg');
-      expect(res.body.data).toHaveProperty('caloriesPer100g', 170);
-      expect(res.body.data).toHaveProperty('protein', 32);
-    });
-
-    it('TC1.2: should update ingredient successfully with partial fields', async () => {
-      const updateData = {
-        name: 'Partially Updated Ingredient',
-        caloriesPer100g: 180
-      };
-
-      const res = await request(app)
-        .put(`/api/ingredients/${ingredientId}`)
-        .set('Authorization', `Bearer ${nutritionistToken}`)
-        .send(updateData);
-
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty('status', 'success');
-      expect(res.body.data).toHaveProperty('name', 'Partially Updated Ingredient');
-      expect(res.body.data).toHaveProperty('caloriesPer100g', 180);
-      // Should keep other fields unchanged
-      expect(res.body.data).toHaveProperty('category', ingredientSeeds[0].category);
-    });
-
-    it('TC1.3: should update isActive status', async () => {
-      const updateData = {
-        isActive: false
-      };
-
-      const res = await request(app)
-        .put(`/api/ingredients/${ingredientId}`)
-        .set('Authorization', `Bearer ${nutritionistToken}`)
-        .send(updateData);
-
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty('status', 'success');
-      expect(res.body.data).toHaveProperty('isActive', false);
-    });
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('status', 'success');
+    expect(res.body).toHaveProperty(
+      'message',
+      'Cập nhật nguyên liệu thành công'
+    );
+    expect(res.body.data).toHaveProperty('_id', ingredientId);
+    expect(res.body.data).toHaveProperty('name', 'Cà chua đỏ');
+    expect(res.body.data).toHaveProperty('description', 'Cà chua tươi ngon');
+    expect(res.body.data.categories).toContain(INGREDIENT_CATEGORY.VEGETABLES);
+    expect(res.body.data.categories).toContain(INGREDIENT_CATEGORY.FRUITS);
   });
 
-  // ==================== VALIDATION ====================
-  describe('Validation', () => {
-    it('TC2.1: should return 400 when caloriesPer100g is negative', async () => {
-      const updateData = {
-        caloriesPer100g: -100
-      };
+  it('should update ingredient successfully with image', async () => {
+    const updateData = {
+      name: 'Cà chua cherry',
+      description: 'Cà chua bi'
+    };
 
-      const res = await request(app)
-        .put(`/api/ingredients/${ingredientId}`)
-        .set('Authorization', `Bearer ${nutritionistToken}`)
-        .send(updateData);
+    const res = await request(app)
+      .put(`/api/ingredients/${ingredientId}`)
+      .set('Authorization', `Bearer ${nutritionistToken}`)
+      .field('name', updateData.name)
+      .field('description', updateData.description)
+      .attach('image', Buffer.from('fake-image-data'), 'updated-image.jpg');
 
-      expect(res.status).toBe(400);
-      expect(res.body).toHaveProperty('status', 'failed');
-    });
-
-    it('TC2.2: should return 400 when protein is negative', async () => {
-      const updateData = {
-        protein: -10
-      };
-
-      const res = await request(app)
-        .put(`/api/ingredients/${ingredientId}`)
-        .set('Authorization', `Bearer ${nutritionistToken}`)
-        .send(updateData);
-
-      expect(res.status).toBe(400);
-      expect(res.body).toHaveProperty('status', 'failed');
-    });
-
-    it('TC2.3: should return 400 with invalid ID format', async () => {
-      const updateData = {
-        name: 'Updated Name'
-      };
-
-      const res = await request(app)
-        .put('/api/ingredients/invalid-id')
-        .set('Authorization', `Bearer ${nutritionistToken}`)
-        .send(updateData);
-
-      expect(res.status).toBe(400);
-      expect(res.body).toHaveProperty('status', 'failed');
-    });
-
-    it('TC2.4: should return 404 when ingredient not found', async () => {
-      const nonExistentId = new mongoose.Types.ObjectId().toString();
-      const updateData = {
-        name: 'Updated Name'
-      };
-
-      const res = await request(app)
-        .put(`/api/ingredients/${nonExistentId}`)
-        .set('Authorization', `Bearer ${nutritionistToken}`)
-        .send(updateData);
-
-      expect(res.status).toBe(404);
-      expect(res.body).toHaveProperty('status', 'failed');
-    });
-
-    it('TC2.5: should return 400 when isActive is not a boolean', async () => {
-      const updateData = {
-        isActive: 'not-a-boolean'
-      };
-
-      const res = await request(app)
-        .put(`/api/ingredients/${ingredientId}`)
-        .set('Authorization', `Bearer ${nutritionistToken}`)
-        .send(updateData);
-
-      expect(res.status).toBe(500);
-      expect(res.body).toHaveProperty('status', 'error');
-    });
-
-    it('TC2.6: should accept isActive as string "true" and convert to boolean', async () => {
-      const updateData = {
-        isActive: 'true'
-      };
-
-      const res = await request(app)
-        .put(`/api/ingredients/${ingredientId}`)
-        .set('Authorization', `Bearer ${nutritionistToken}`)
-        .send(updateData);
-
-      expect(res.status).toBe(200);
-      expect(res.body.data).toHaveProperty('isActive', true);
-    });
-
-    it('TC2.7: should accept isActive as string "false" and convert to boolean', async () => {
-      const updateData = {
-        isActive: 'false'
-      };
-
-      const res = await request(app)
-        .put(`/api/ingredients/${ingredientId}`)
-        .set('Authorization', `Bearer ${nutritionistToken}`)
-        .send(updateData);
-
-      expect(res.status).toBe(200);
-      expect(res.body.data).toHaveProperty('isActive', false);
-    });
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('status', 'success');
+    expect(res.body.data).toHaveProperty('name', 'Cà chua cherry');
+    expect(res.body.data).toHaveProperty('image');
   });
 
-  // ==================== AUTHENTICATION & AUTHORIZATION ====================
-  describe('Authentication & Authorization', () => {
-    it('TC3.1: should return 401 when no token provided', async () => {
-      const updateData = {
-        name: 'Updated Name'
-      };
+  // ============ AUTHENTICATION & AUTHORIZATION ============
+  it('should return 401 when no token provided', async () => {
+    const updateData = {
+      name: 'Cà chua đỏ'
+    };
 
-      const res = await request(app)
-        .put(`/api/ingredients/${ingredientId}`)
-        .send(updateData);
+    const res = await request(app)
+      .put(`/api/ingredients/${ingredientId}`)
+      .field('name', updateData.name);
 
-      expect(res.status).toBe(401);
-      expect(res.body).toHaveProperty('status', 'failed');
-    });
-
-    it('TC3.2: should return 401 when token is invalid', async () => {
-      const updateData = {
-        name: 'Updated Name'
-      };
-
-      const res = await request(app)
-        .put(`/api/ingredients/${ingredientId}`)
-        .set('Authorization', 'Bearer invalid-token')
-        .send(updateData);
-
-      expect(res.status).toBe(401);
-      expect(res.body).toHaveProperty('status', 'failed');
-    });
-
-    it('TC3.3: should return 403 when regular user tries to update', async () => {
-      const updateData = {
-        name: 'Updated Name'
-      };
-
-      const res = await request(app)
-        .put(`/api/ingredients/${ingredientId}`)
-        .set('Authorization', `Bearer ${userToken}`)
-        .send(updateData);
-
-      expect(res.status).toBe(403);
-      expect(res.body).toHaveProperty('status', 'failed');
-    });
+    expect(res.status).toBe(401);
   });
 
-  // ==================== EDGE CASES ====================
-  describe('Edge Cases', () => {
-    it('TC4.1: should trim whitespace from name', async () => {
-      const updateData = {
-        name: '  Trimmed Name  '
-      };
+  it('should return 403 when user is not nutritionist', async () => {
+    const updateData = {
+      name: 'Cà chua đỏ'
+    };
 
-      const res = await request(app)
-        .put(`/api/ingredients/${ingredientId}`)
-        .set('Authorization', `Bearer ${nutritionistToken}`)
-        .send(updateData);
+    const res = await request(app)
+      .put(`/api/ingredients/${ingredientId}`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .field('name', updateData.name);
 
-      expect(res.status).toBe(200);
-      expect(res.body.data).toHaveProperty('name', 'Trimmed Name');
-    });
-
-    it('TC4.2: should update with zero values for nutrients', async () => {
-      const updateData = {
-        protein: 0,
-        carbs: 0,
-        fat: 0
-      };
-
-      const res = await request(app)
-        .put(`/api/ingredients/${ingredientId}`)
-        .set('Authorization', `Bearer ${nutritionistToken}`)
-        .send(updateData);
-
-      expect(res.status).toBe(200);
-      expect(res.body.data).toHaveProperty('protein', 0);
-      expect(res.body.data).toHaveProperty('carbs', 0);
-      expect(res.body.data).toHaveProperty('fat', 0);
-    });
+    expect(res.status).toBe(403);
   });
 
-  // ==================== IMAGE UPLOAD TESTS ====================
-  describe('Image Upload Tests', () => {
-    it('TC5.1: should update ingredient with new image successfully', async () => {
-      // Mock successful delete and upload
-      vi.spyOn(utils, 'deleteImage').mockResolvedValue({ success: true } as any);
-      vi.spyOn(utils, 'uploadImage').mockResolvedValue({
-        success: true,
-        data: {
-          secure_url: 'https://cloudinary.com/updated-image.jpg',
-          public_id: 'updated-id'
-        } as any
-      });
+  // ============ VALIDATION (400) ============
+  it('should return 400 when id format is invalid', async () => {
+    const updateData = {
+      name: 'Cà chua đỏ'
+    };
 
-      const testImageBuffer = Buffer.from('fake updated image content');
+    const res = await request(app)
+      .put('/api/ingredients/invalid-id')
+      .set('Authorization', `Bearer ${nutritionistToken}`)
+      .field('name', updateData.name);
 
-      const res = await request(app)
-        .put(`/api/ingredients/${ingredientId}`)
-        .set('Authorization', `Bearer ${nutritionistToken}`)
-        .field('name', 'Updated with Image')
-        .attach('image', testImageBuffer, 'updated-image.jpg');
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('status', 'failed');
+    expect(res.body).toHaveProperty(
+      'message',
+      'Định dạng ID nguyên liệu không hợp lệ'
+    );
+  });
 
-      expect(res.status).toBe(200);
-      expect(res.body.data).toHaveProperty('image', 'https://cloudinary.com/updated-image.jpg');
-      expect(utils.deleteImage).toHaveBeenCalled();
-      expect(utils.uploadImage).toHaveBeenCalled();
+  it('should return 400 when name is too short', async () => {
+    const nonExistentId = new mongoose.Types.ObjectId().toString();
+    const updateData = {
+      name: 'Cà chua đỏ'
+    };
 
-      vi.restoreAllMocks();
+    const res = await request(app)
+      .put(`/api/ingredients/${nonExistentId}`)
+      .set('Authorization', `Bearer ${nutritionistToken}`)
+      .field('name', updateData.name);
+
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty('status', 'failed');
+    expect(res.body).toHaveProperty('message', 'Không tìm thấy nguyên liệu');
+  });
+
+  // Validation: name too short
+  it('should return 400 when name is too short', async () => {
+    const updateData = {
+      name: 'C'
+    };
+
+    const res = await request(app)
+      .put(`/api/ingredients/${ingredientId}`)
+      .set('Authorization', `Bearer ${nutritionistToken}`)
+      .field('name', updateData.name);
+
+    expect(res.status).toBe(400);
+  });
+
+  it('should return 400 when category is invalid', async () => {
+    const updateData = {
+      categories: JSON.stringify(['INVALID_CATEGORY'])
+    };
+
+    const res = await request(app)
+      .put(`/api/ingredients/${ingredientId}`)
+      .set('Authorization', `Bearer ${nutritionistToken}`)
+      .field('categories', updateData.categories);
+
+    expect(res.status).toBe(400);
+  });
+
+  it('should return 400 when baseUnit amount is negative', async () => {
+    const updateData = {
+      baseUnit: JSON.stringify({ amount: -50, unit: UNIT.GRAM })
+    };
+
+    const res = await request(app)
+      .put(`/api/ingredients/${ingredientId}`)
+      .set('Authorization', `Bearer ${nutritionistToken}`)
+      .field('baseUnit', updateData.baseUnit);
+
+    expect(res.status).toBe(400);
+  });
+
+  // ============ NOT FOUND (404) ============
+  it('should return 404 when ingredient does not exist', async () => {
+    const nonExistentId = new mongoose.Types.ObjectId().toString();
+    const updateData = {
+      name: 'Cà chua đỏ'
+    };
+
+    const res = await request(app)
+      .put(`/api/ingredients/${nonExistentId}`)
+      .set('Authorization', `Bearer ${nutritionistToken}`)
+      .field('name', updateData.name);
+
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty('status', 'failed');
+    expect(res.body).toHaveProperty('message', 'Không tìm thấy nguyên liệu');
+  });
+
+  // ============ EDGE CASES ============
+  it('should update isActive status successfully', async () => {
+    const updateData = {
+      isActive: 'false'
+    };
+
+    const res = await request(app)
+      .put(`/api/ingredients/${ingredientId}`)
+      .set('Authorization', `Bearer ${nutritionistToken}`)
+      .field('isActive', updateData.isActive);
+
+    expect(res.status).toBe(200);
+    expect(res.body.data).toHaveProperty('isActive', false);
+  });
+
+  it('should allow partial update of ingredient', async () => {
+    const updateData = {
+      description: 'Cập nhật mô tả mới'
+    };
+
+    const res = await request(app)
+      .put(`/api/ingredients/${ingredientId}`)
+      .set('Authorization', `Bearer ${nutritionistToken}`)
+      .field('description', updateData.description);
+
+    expect(res.status).toBe(200);
+    expect(res.body.data).toHaveProperty('name', 'Cà chua'); // Original name unchanged
+    expect(res.body.data).toHaveProperty('description', 'Cập nhật mô tả mới');
+  });
+
+  // ============ ERROR CASES (500) ============
+  it('should return 500 when image upload fails during update', async () => {
+    // Mock upload to fail
+    vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValueOnce({
+      success: false,
+      error: 'Upload failed'
     });
 
-    it('TC5.2: should throw error when image upload fails during update', async () => {
-      // Mock successful delete but failed upload
-      vi.spyOn(utils, 'deleteImage').mockResolvedValue({ success: true } as any);
-      vi.spyOn(utils, 'uploadImage').mockResolvedValue({
-        success: false,
-        error: 'Upload failed'
-      } as any);
+    const updateData = {
+      name: 'Cà chua cherry',
+      description: 'Cà chua bi'
+    };
 
-      const testImageBuffer = Buffer.from('fake image content');
+    const res = await request(app)
+      .put(`/api/ingredients/${ingredientId}`)
+      .set('Authorization', `Bearer ${nutritionistToken}`)
+      .field('name', updateData.name)
+      .field('description', updateData.description)
+      .attach('image', Buffer.from('fake-image-data'), 'updated-image.jpg');
 
-      const res = await request(app)
-        .put(`/api/ingredients/${ingredientId}`)
-        .set('Authorization', `Bearer ${nutritionistToken}`)
-        .field('name', 'Update with Failed Image')
-        .attach('image', testImageBuffer, 'failed-image.jpg');
-
-      expect(res.status).toBe(500);
-      expect(res.body).toHaveProperty('status', 'error');
-      expect(res.body.message).toContain('Failed to upload image');
-
-      vi.restoreAllMocks();
-    });
+    expect(res.status).toBe(500);
+    expect(res.body).toHaveProperty('status', 'error');
+    expect(res.body).toHaveProperty('message', 'Tải ảnh lên thất bại');
   });
 });

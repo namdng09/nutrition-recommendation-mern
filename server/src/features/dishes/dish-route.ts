@@ -1,8 +1,8 @@
 import { Router } from 'express';
 
+import { ROLE } from '~/shared/constants/role';
 import { authenticate, authorize, validate } from '~/shared/middlewares';
 import { asyncHandler, handleSingleImageUpload } from '~/shared/utils';
-import { ROLE } from '~/shared/constants/role';
 
 import { DishController } from './dish-controller';
 import { createDishRequestSchema, updateDishRequestSchema } from './dish-dto';

@@ -9,19 +9,19 @@ export const ALLERGEN = {
   WHEAT: 'Lúa mì',
   SOYBEANS: 'Đậu nành',
   SESAME: 'Mè',
-  
+
   // EU Allergens
   MUSTARD: 'Mù tạt',
   CELERY: 'Cần tây',
   LUPIN: 'Đậu lupin',
   MOLLUSCS: 'Động vật thân mềm',
   SULFITES: 'Sulfite',
-  
+
   // Gluten-related
   GLUTEN: 'Gluten',
   BARLEY: 'Lúa mạch',
   RYE: 'Lúa mạch đen',
-  
+
   // Specific Shellfish & Seafood
   SHRIMP: 'Tôm',
   CRAB: 'Cua',
@@ -29,7 +29,7 @@ export const ALLERGEN = {
   SQUID: 'Mực',
   OYSTER: 'Hàu',
   CLAM: 'Nghêu',
-  
+
   // Specific Tree Nuts
   ALMOND: 'Hạnh nhân',
   CASHEW: 'Hạt điều',
@@ -39,7 +39,7 @@ export const ALLERGEN = {
   HAZELNUT: 'Hạt phỉ',
   MACADAMIA: 'Hạt macadamia',
   BRAZIL_NUT: 'Hạt brazil',
-  
+
   // Fruits
   KIWI: 'Kiwi',
   BANANA: 'Chuối',
@@ -47,7 +47,7 @@ export const ALLERGEN = {
   STRAWBERRY: 'Dâu tây',
   PEACH: 'Đào',
   MANGO: 'Xoài',
-  
+
   // Other Common Allergens
   LACTOSE: 'Lactose',
   CORN: 'Ngô',

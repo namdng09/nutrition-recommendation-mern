@@ -20,7 +20,7 @@ export const createCollectionRequestSchema = z.object({
   image: z.file().optional(),
   isPublic: z
     .union([z.boolean(), z.string()])
-    .transform((val) => {
+    .transform(val => {
       if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;
@@ -28,10 +28,7 @@ export const createCollectionRequestSchema = z.object({
     })
     .optional(),
   tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
-  dishes: z.preprocess(
-    parseJSON,
-    z.array(z.string().trim())
-  ).optional()
+  dishes: z.preprocess(parseJSON, z.array(z.string().trim())).optional()
 });
 
 export type CreateCollectionRequest = z.infer<
@@ -39,16 +36,12 @@ export type CreateCollectionRequest = z.infer<
 >;
 
 export const updateCollectionRequestSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, 'Tên phải có ít nhất 2 ký tự')
-    .optional(),
+  name: z.string().trim().min(2, 'Tên phải có ít nhất 2 ký tự').optional(),
   description: z.string().trim().optional(),
   image: z.file().optional(),
   isPublic: z
     .union([z.boolean(), z.string()])
-    .transform((val) => {
+    .transform(val => {
       if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;
@@ -63,7 +56,9 @@ export type UpdateCollectionRequest = z.infer<
 >;
 
 export const addDishToCollectionRequestSchema = z.object({
-  dishIds: z.array(z.string().trim().min(1, 'ID món ăn là bắt buộc')).min(1, 'Cần ít nhất một món ăn')
+  dishIds: z
+    .array(z.string().trim().min(1, 'ID món ăn là bắt buộc'))
+    .min(1, 'Cần ít nhất một món ăn')
 });
 
 export type AddDishToCollectionRequest = z.infer<
@@ -71,7 +66,9 @@ export type AddDishToCollectionRequest = z.infer<
 >;
 
 export const removeDishFromCollectionRequestSchema = z.object({
-  dishIds: z.array(z.string().trim().min(1, 'ID món ăn là bắt buộc')).min(1, 'Cần ít nhất một món ăn')
+  dishIds: z
+    .array(z.string().trim().min(1, 'ID món ăn là bắt buộc'))
+    .min(1, 'Cần ít nhất một món ăn')
 });
 
 export type RemoveDishFromCollectionRequest = z.infer<

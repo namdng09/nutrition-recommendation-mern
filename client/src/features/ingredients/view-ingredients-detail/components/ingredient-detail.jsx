@@ -1,13 +1,20 @@
 import { ArrowLeft } from 'lucide-react';
 import React from 'react';
-import { FaFireAlt } from 'react-icons/fa';
-import { GiCottonFlower, GiMeat, GiOlive, GiWheat } from 'react-icons/gi';
+import { FaAlignLeft, FaBox, FaFireAlt, FaTag } from 'react-icons/fa';
+import {
+  GiCottonFlower,
+  GiMeat,
+  GiOlive,
+  GiSaltShaker,
+  GiWheat
+} from 'react-icons/gi';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { Button } from '~/components/ui/button';
 
 import { useIngredientDetail } from '../api/view-ingredient-detail';
 import IngredientNutritionPie from './ingredient-nutrition-pie';
+import NutritionStatCard from './nutrition-stat-card';
 
 export default function IngredientDetail() {
   const navigate = useNavigate();
@@ -15,6 +22,8 @@ export default function IngredientDetail() {
   const { data } = useIngredientDetail(id);
 
   const item = data;
+  const nutrients = item?.nutrition?.nutrients || {};
+  const defaultUnit = item?.units?.find(u => u.isDefault) || item?.units?.[0];
 
   return (
     <div className='mx-auto w-full max-w-8xl space-y-5'>
@@ -28,34 +37,66 @@ export default function IngredientDetail() {
           Quay lại
         </Button>
 
-        <div className='text-sm'>
-          <span className='inline-flex items-center rounded-full border border-border bg-accent px-3 py-1 font-medium text-accent-foreground'>
-            {item?.category}
-          </span>
+        <div className='flex flex-wrap gap-2 text-sm'>
+          {item?.categories?.map(c => (
+            <span
+              key={c}
+              className='inline-flex items-center rounded-full border border-border bg-accent px-3 py-1 font-medium text-accent-foreground'
+            >
+              {c}
+            </span>
+          ))}
         </div>
       </div>
 
       <div className='grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-start'>
-        <div className='rounded-2xl border border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-5 shadow-sm'>
-          <div className='flex flex-col gap-5 md:flex-row md:items-start'>
-            <div className='h-44 w-full overflow-hidden rounded-2xl border border-border bg-muted md:h-56 md:w-56'>
+        <div className='rounded-2xl border border-border bg-background/80 backdrop-blur p-5 shadow-sm'>
+          <div className='flex flex-col gap-5 md:flex-row'>
+            <div className='h-44 w-full overflow-hidden rounded-2xl border bg-muted md:h-56 md:w-56'>
               <img
                 src={item?.image || '/placeholder.png'}
                 alt={item?.name}
                 className='h-full w-full object-cover'
-                loading='lazy'
               />
             </div>
 
-            <div className='min-w-0 flex-1 space-y-4'>
+            <div className='flex-1 space-y-4'>
               <div className='flex items-start justify-between gap-3'>
                 <div className='min-w-0'>
                   <h1 className='truncate text-2xl font-bold text-foreground'>
                     {item?.name}
                   </h1>
-                  <p className='mt-1 text-sm text-muted-foreground'>
-                    {item?.category} • {item?.unit}
-                  </p>
+
+                  <div className='mt-1 flex flex-wrap items-center gap-2 text-sm'>
+                    {item?.categories?.map(cat => (
+                      <span
+                        key={cat}
+                        className='inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground ring-1 ring-border'
+                      >
+                        <FaTag className='h-3.5 w-3.5' />
+                        {cat}
+                      </span>
+                    ))}
+
+                    {defaultUnit?.unit && (
+                      <span className='inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground ring-1 ring-border'>
+                        <FaBox className='h-3.5 w-3.5' />
+                        {defaultUnit.unit}
+                      </span>
+                    )}
+                  </div>
+
+                  {item?.description && (
+                    <div className='mt-3 w-full rounded-xl border border-border bg-muted/40 p-4'>
+                      <div className='mb-1 flex items-center gap-2 text-sm font-medium text-emerald-700'>
+                        <FaAlignLeft className='h-4 w-4' />
+                        Mô tả
+                      </div>
+                      <p className='text-sm text-foreground leading-relaxed'>
+                        {item.description}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <span
@@ -70,97 +111,88 @@ export default function IngredientDetail() {
               </div>
 
               <div className='grid grid-cols-2 gap-3 sm:grid-cols-3'>
-                <div className='group rounded-xl border border-border bg-gradient-to-br from-orange-50/70 to-background p-3 transition hover:-translate-y-0.5 hover:shadow-md'>
-                  <div className='flex items-center gap-2 text-xs text-muted-foreground'>
-                    <span className='inline-flex h-8 w-8 items-center justify-center rounded-xl bg-orange-500/10 ring-1 ring-orange-500/15'>
-                      <FaFireAlt className='h-4 w-4 text-orange-600' />
-                    </span>
-                    Calo / 100g
-                  </div>
-                  <div className='mt-2 text-2xl font-bold tracking-tight text-foreground'>
-                    {item?.caloriesPer100g ?? 0}
-                  </div>
-                </div>
+                <NutritionStatCard
+                  icon={<FaFireAlt />}
+                  label={`Calo / ${item?.baseUnit?.amount}${item?.baseUnit?.unit}`}
+                  value={`${nutrients.calories?.value ?? 0} ${
+                    nutrients.calories?.unit ?? ''
+                  }`}
+                  color='orange'
+                />
+                <NutritionStatCard
+                  icon={<GiMeat />}
+                  label='Đạm (Protein)'
+                  value={`${nutrients.protein?.value ?? 0}g`}
+                  color='emerald'
+                />
+                <NutritionStatCard
+                  icon={<GiWheat />}
+                  label='Tinh bột (Carbs)'
+                  value={`${nutrients.carbs?.value ?? 0}g`}
+                  color='sky'
+                />
+                <NutritionStatCard
+                  icon={<GiOlive />}
+                  label='Chất béo (Fat)'
+                  value={`${nutrients.fat?.value ?? 0}g`}
+                  color='fuchsia'
+                />
+                <NutritionStatCard
+                  icon={<GiCottonFlower />}
+                  label='Chất xơ (Fiber)'
+                  value={`${nutrients.fiber?.value ?? 0}g`}
+                  color='violet'
+                />
+                <NutritionStatCard
+                  icon={<GiSaltShaker />}
+                  label='Natri (Sodium)'
+                  value={`${nutrients.sodium?.value ?? 0}${
+                    nutrients.sodium?.unit ?? ''
+                  }`}
+                  color='amber'
+                />
+              </div>
 
-                <div className='group rounded-xl border border-border bg-gradient-to-br from-emerald-50/70 to-background p-3 transition hover:-translate-y-0.5 hover:shadow-md'>
-                  <div className='flex items-center gap-2 text-xs text-muted-foreground'>
-                    <span className='inline-flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 ring-1 ring-emerald-500/15'>
-                      <GiMeat className='h-4 w-4 text-emerald-600' />
+              <div className='rounded-xl border p-3'>
+                <div className='text-sm font-semibold'>Đơn vị sử dụng</div>
+                <div className='mt-2 flex flex-wrap gap-2'>
+                  {item?.units?.map(u => (
+                    <span
+                      key={u._id}
+                      className={`rounded-full px-3 py-1 text-xs ${
+                        u.isDefault
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-muted-foreground'
+                      }`}
+                    >
+                      {u.value} {u.unit}
                     </span>
-                    Đạm (Protein)
-                  </div>
-                  <div className='mt-2 text-2xl font-bold tracking-tight text-foreground'>
-                    {item?.protein ?? 0}g
-                  </div>
-                </div>
-
-                <div className='group rounded-xl border border-border bg-gradient-to-br from-sky-50/70 to-background p-3 transition hover:-translate-y-0.5 hover:shadow-md'>
-                  <div className='flex items-center gap-2 text-xs text-muted-foreground'>
-                    <span className='inline-flex h-8 w-8 items-center justify-center rounded-xl bg-sky-500/10 ring-1 ring-sky-500/15'>
-                      <GiWheat className='h-4 w-4 text-sky-600' />
-                    </span>
-                    Tinh bột (Carbs)
-                  </div>
-                  <div className='mt-2 text-2xl font-bold tracking-tight text-foreground'>
-                    {item?.carbs ?? 0}g
-                  </div>
-                </div>
-
-                <div className='group rounded-xl border border-border bg-gradient-to-br from-fuchsia-50/70 to-background p-3 transition hover:-translate-y-0.5 hover:shadow-md'>
-                  <div className='flex items-center gap-2 text-xs text-muted-foreground'>
-                    <span className='inline-flex h-8 w-8 items-center justify-center rounded-xl bg-fuchsia-500/10 ring-1 ring-fuchsia-500/15'>
-                      <GiOlive className='h-4 w-4 text-fuchsia-600' />
-                    </span>
-                    Chất béo (Fat)
-                  </div>
-                  <div className='mt-2 text-2xl font-bold tracking-tight text-foreground'>
-                    {item?.fat ?? 0}g
-                  </div>
-                </div>
-
-                <div className='group rounded-xl border border-border bg-gradient-to-br from-violet-50/70 to-background p-3 transition hover:-translate-y-0.5 hover:shadow-md'>
-                  <div className='flex items-center gap-2 text-xs text-muted-foreground'>
-                    <span className='inline-flex h-8 w-8 items-center justify-center rounded-xl bg-violet-500/10 ring-1 ring-violet-500/15'>
-                      <GiCottonFlower className='h-4 w-4 text-violet-600' />
-                    </span>
-                    Chất xơ (Fiber)
-                  </div>
-                  <div className='mt-2 text-2xl font-bold tracking-tight text-foreground'>
-                    {item?.fiber ?? 0}g
-                  </div>
+                  ))}
                 </div>
               </div>
 
-              <div className='rounded-xl border border-border p-3'>
-                <div className='text-sm font-semibold text-foreground'>
-                  Chất gây dị ứng
-                </div>
+              <div className='rounded-xl border p-3'>
+                <div className='text-sm font-semibold'>Chất gây dị ứng</div>
                 <div className='mt-2 text-sm text-muted-foreground'>
-                  {item?.allergens?.length ? (
-                    <div className='flex flex-wrap gap-2'>
-                      {item.allergens.map(a => (
+                  {item?.allergens?.length
+                    ? item.allergens.map(a => (
                         <span
                           key={a}
-                          className='rounded-full bg-muted px-2 py-1 text-xs'
+                          className='mr-2 rounded-full bg-muted px-2 py-1 text-xs'
                         >
                           {a}
                         </span>
-                      ))}
-                    </div>
-                  ) : (
-                    'Không có'
-                  )}
+                      ))
+                    : 'Không có'}
                 </div>
               </div>
 
-              <div className='pt-1'>
-                <Link
-                  to='/ingredients'
-                  className='text-sm font-medium text-primary hover:underline underline-offset-4'
-                >
-                  Trở về danh sách nguyên liệu
-                </Link>
-              </div>
+              <Link
+                to='/ingredients'
+                className='text-sm font-medium text-primary hover:underline'
+              >
+                Trở về danh sách nguyên liệu
+              </Link>
             </div>
           </div>
         </div>
