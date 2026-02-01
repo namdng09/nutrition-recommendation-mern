@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import CollectionsList from '~/features/collections/view-collections/components/collection-list';
 import CollectionSkeleton from '~/features/collections/view-collections/components/collection-skeleton';

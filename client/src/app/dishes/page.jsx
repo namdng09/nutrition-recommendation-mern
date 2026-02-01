@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import DishSkeleton from '~/features/dishes/view-dishes/components/dish-skeleton';
 import DishesList from '~/features/dishes/view-dishes/components/dishes-list';
