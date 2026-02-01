@@ -1,8 +1,9 @@
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
 
+import { MEAL_TYPE } from '~/shared/constants/meal-type';
 import { ROLE } from '~/shared/constants/role';
-import { ScheduleModel, UserModel } from '~/shared/database/models';
+import { DishModel, ScheduleModel, UserModel } from '~/shared/database/models';
 import type { Schedule } from '~/shared/database/models/schedule-model';
 import {
   buildPaginateOptions,
@@ -10,13 +11,26 @@ import {
   validateObjectId
 } from '~/shared/utils';
 
-import { CreateScheduleRequest, UpdateScheduleRequest } from './schedule-dto';
+import {
+  CreateScheduleRequest,
+  UpdateScheduleMealsRequest,
+  UpdateScheduleRequest
+} from './schedule-dto';
 
 type ScheduleMeal = {
+  mealType?: string;
+  notes?: string;
   dishes?: Array<{
     dishId?: string;
   }>;
 };
+
+type MealType = (typeof MEAL_TYPE)[keyof typeof MEAL_TYPE];
+
+const mealTypeValues = Object.values(MEAL_TYPE) as MealType[];
+
+const isValidMealType = (value: string): value is MealType =>
+  mealTypeValues.includes(value as MealType);
 
 const ensureValidDate = (value: Date) => {
   if (Number.isNaN(value.getTime())) {
@@ -35,6 +49,63 @@ const validateDishIds = (meals?: ScheduleMeal[]) => {
       }
     });
   });
+};
+
+const calculateDishCalories = (dish: unknown) => {
+  if (!dish || typeof dish !== 'object') return 0;
+
+  const isValidNumber = (value: unknown): value is number =>
+    typeof value === 'number' && Number.isFinite(value);
+
+  const ingredients = (dish as { ingredients?: unknown }).ingredients;
+  if (!Array.isArray(ingredients) || ingredients.length === 0) return 0;
+
+  const totalCalories = ingredients.reduce((sum, ingredient) => {
+    if (!ingredient || typeof ingredient !== 'object') return sum;
+
+    const nutrients = (ingredient as { nutrients?: unknown }).nutrients;
+    const caloriesValue =
+      nutrients && typeof nutrients === 'object'
+        ? (nutrients as { calories?: { value?: unknown } }).calories?.value
+        : undefined;
+
+    const baseUnit = (ingredient as { baseUnit?: unknown }).baseUnit;
+    const baseAmount =
+      baseUnit && typeof baseUnit === 'object'
+        ? (baseUnit as { amount?: unknown }).amount
+        : undefined;
+
+    const units = (ingredient as { units?: unknown }).units;
+    const unitArray = Array.isArray(units) ? units : [];
+    const unit =
+      unitArray.find(
+        item => !!item && (item as { isDefault?: unknown }).isDefault
+      ) ?? unitArray[0];
+
+    const unitValue =
+      unit && typeof unit === 'object'
+        ? (unit as { value?: unknown }).value
+        : undefined;
+    const unitQuantity =
+      unit && typeof unit === 'object'
+        ? (unit as { quantity?: unknown }).quantity
+        : undefined;
+
+    if (
+      !isValidNumber(caloriesValue) ||
+      !isValidNumber(baseAmount) ||
+      !isValidNumber(unitValue) ||
+      !isValidNumber(unitQuantity) ||
+      baseAmount === 0
+    ) {
+      return sum;
+    }
+
+    const totalAmount = unitValue * unitQuantity;
+    return sum + (totalAmount / baseAmount) * caloriesValue;
+  }, 0);
+
+  return Math.round(totalCalories);
 };
 
 export const ScheduleService = {
@@ -66,9 +137,7 @@ export const ScheduleService = {
       },
       date,
       dayOfWeek: data.dayOfWeek,
-      isActive: data.isActive ?? true,
-      meals,
-      notes: data.notes
+      meals
     });
 
     if (!newSchedule) {
@@ -156,6 +225,118 @@ export const ScheduleService = {
     return updatedSchedule;
   },
 
+  updateScheduleMeals: async (
+    id: string,
+    userId: string,
+    data: UpdateScheduleMealsRequest
+  ) => {
+    if (!validateObjectId(id)) {
+      throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
+    }
+
+    const schedule = await ScheduleModel.findById(id);
+
+    if (!schedule) {
+      throw createHttpError(404, 'Không tìm thấy lịch ăn');
+    }
+
+    if (schedule.user?._id.toString() !== userId) {
+      throw createHttpError(403, 'Bạn không có quyền cập nhật lịch ăn này');
+    }
+
+    validateDishIds(data.meals);
+
+    const dishIds = new Set<string>();
+    data.meals.forEach(meal => {
+      meal.dishes?.forEach(dish => {
+        if (!dish.dishId) {
+          throw createHttpError(400, 'Dish ID is required');
+        }
+        dishIds.add(dish.dishId);
+      });
+    });
+
+    const dishes = dishIds.size
+      ? await DishModel.find({ _id: { $in: Array.from(dishIds) } })
+          .select('name image servings ingredients')
+          .lean()
+      : [];
+
+    if (dishes.length !== dishIds.size) {
+      throw createHttpError(404, 'Không tìm thấy món ăn');
+    }
+
+    const dishById = new Map(dishes.map(dish => [dish._id.toString(), dish]));
+
+    const mealsByType = new Map(
+      schedule.meals.map(meal => [meal.mealType, meal])
+    );
+
+    data.meals.forEach(incomingMeal => {
+      let targetMeal = mealsByType.get(incomingMeal.mealType);
+
+      if (!targetMeal) {
+        targetMeal = schedule.meals.create({
+          mealType: incomingMeal.mealType,
+          dishes: []
+        });
+        schedule.meals.push(targetMeal);
+        mealsByType.set(incomingMeal.mealType, targetMeal);
+      }
+
+      if (incomingMeal.notes !== undefined) {
+        targetMeal.notes = incomingMeal.notes;
+      }
+
+      if (incomingMeal.dishes?.length) {
+        const existingDishes = targetMeal.dishes ?? [];
+
+        incomingMeal.dishes.forEach(dish => {
+          const dishInfo = dish.dishId ? dishById.get(dish.dishId) : null;
+
+          if (!dishInfo) {
+            throw createHttpError(404, 'Không tìm thấy món ăn');
+          }
+
+          const baseCalories = calculateDishCalories(dishInfo);
+          const recipeServings = dishInfo.servings ?? 1;
+          const requestedServings = dish.servings ?? recipeServings;
+          const caloriesPerServing =
+            recipeServings > 0 ? baseCalories / recipeServings : baseCalories;
+          const totalCalories = Math.round(
+            caloriesPerServing * requestedServings
+          );
+
+          const dishPayload = {
+            dishId: dishInfo._id,
+            name: dishInfo.name,
+            image: dishInfo.image,
+            servings: requestedServings,
+            calories: totalCalories
+          };
+
+          const existingIndex = existingDishes.findIndex(
+            existingDish =>
+              existingDish.dishId?.toString() === dishInfo._id.toString()
+          );
+
+          if (existingIndex >= 0) {
+            Object.assign(existingDishes[existingIndex], dishPayload);
+          } else {
+            const createdDish = existingDishes.create(dishPayload);
+            existingDishes.push(createdDish);
+          }
+        });
+
+        targetMeal.dishes = existingDishes;
+      }
+    });
+
+    await schedule.save();
+
+    return schedule;
+  },
+
   deleteSchedule: async (
     id: string,
     userId: string,
@@ -176,5 +357,91 @@ export const ScheduleService = {
     }
 
     await ScheduleModel.findByIdAndDelete(id);
+  },
+
+  removeScheduleDish: async (
+    id: string,
+    userId: string,
+    role: string | undefined,
+    mealType: string,
+    dishId: string
+  ) => {
+    if (!validateObjectId(id)) {
+      throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
+    }
+
+    if (!validateObjectId(dishId)) {
+      throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
+    }
+
+    if (!isValidMealType(mealType)) {
+      throw createHttpError(400, 'Invalid meal type');
+    }
+
+    const schedule = await ScheduleModel.findById(id);
+
+    if (!schedule) {
+      throw createHttpError(404, 'Không tìm thấy lịch ăn');
+    }
+
+    if (role !== ROLE.ADMIN && schedule.user?._id.toString() !== userId) {
+      throw createHttpError(403, 'Bạn không có quyền cập nhật lịch ăn này');
+    }
+
+    const meal = schedule.meals.find(item => item.mealType === mealType);
+
+    if (!meal) {
+      throw createHttpError(404, 'Không tìm thấy bữa ăn');
+    }
+
+    const originalCount = meal.dishes?.length ?? 0;
+    meal.dishes?.pull({ dishId });
+
+    if ((meal.dishes?.length ?? 0) === originalCount) {
+      throw createHttpError(404, 'Không tìm thấy món ăn trong bữa');
+    }
+
+    await schedule.save();
+
+    return schedule;
+  },
+
+  clearScheduleMealDishes: async (
+    id: string,
+    userId: string,
+    role: string | undefined,
+    mealType: string
+  ) => {
+    if (!validateObjectId(id)) {
+      throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
+    }
+
+    if (!isValidMealType(mealType)) {
+      throw createHttpError(400, 'Invalid meal type');
+    }
+
+    const schedule = await ScheduleModel.findById(id);
+
+    if (!schedule) {
+      throw createHttpError(404, 'Không tìm thấy lịch ăn');
+    }
+
+    if (role !== ROLE.ADMIN && schedule.user?._id.toString() !== userId) {
+      throw createHttpError(403, 'Bạn không có quyền cập nhật lịch ăn này');
+    }
+
+    const meal = schedule.meals.find(item => item.mealType === mealType);
+
+    if (!meal) {
+      throw createHttpError(404, 'Không tìm thấy bữa ăn');
+    }
+
+    if (meal.dishes?.length) {
+      meal.dishes.splice(0, meal.dishes.length);
+    }
+
+    await schedule.save();
+
+    return schedule;
   }
 };

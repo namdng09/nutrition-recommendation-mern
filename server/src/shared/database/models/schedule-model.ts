@@ -19,16 +19,16 @@ const scheduleSchema = new Schema(
       enum: Object.values(DAY_OF_WEEK),
       required: true
     },
-    isActive: { type: Boolean, default: true },
     meals: [
       {
         mealType: { type: String, required: true },
+        notes: { type: String },
         dishes: [
           {
             dishId: { type: Schema.Types.ObjectId, ref: 'Dish' },
             name: { type: String, required: true },
             calories: { type: Number },
-            servings: { type: Number },
+            servings: { type: Number, default: 1 },
             image: { type: String }
           }
         ]

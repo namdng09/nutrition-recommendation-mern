@@ -12,6 +12,7 @@ import { asyncHandler } from '~/shared/utils';
 import { ScheduleController } from './schedule-controller';
 import {
   createScheduleRequestSchema,
+  updateScheduleMealsRequestSchema,
   updateScheduleRequestSchema
 } from './schedule-dto';
 
@@ -42,11 +43,34 @@ router.put(
   asyncHandler(ScheduleController.updateSchedule)
 );
 
+router.put(
+  '/:id/meals',
+  authenticate(),
+  authorize([ROLE.USER]),
+  parseFormData,
+  validate(updateScheduleMealsRequestSchema.shape),
+  asyncHandler(ScheduleController.updateScheduleMeals)
+);
+
 router.delete(
   '/:id',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST, ROLE.ADMIN]),
+  authorize([ROLE.USER]),
   asyncHandler(ScheduleController.deleteSchedule)
+);
+
+router.delete(
+  '/:id/meals/:mealType/dishes/:dishId',
+  authenticate(),
+  authorize([ROLE.USER]),
+  asyncHandler(ScheduleController.removeScheduleDish)
+);
+
+router.delete(
+  '/:id/meals/:mealType/dishes',
+  authenticate(),
+  authorize([ROLE.USER]),
+  asyncHandler(ScheduleController.clearScheduleMealDishes)
 );
 
 export default router;
