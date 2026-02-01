@@ -2,7 +2,7 @@ import { Skeleton } from '~/components/ui/skeleton';
 
 export function UpdateRestrictionsSkeleton() {
   return (
-    <div className='max-w-4xl mx-auto'>
+    <div className='px-4 sm:px-6'>
       <div className='mb-4 flex items-center gap-2'>
         <Skeleton className='h-7 w-7 rounded' />
         <Skeleton className='h-8 w-48' />

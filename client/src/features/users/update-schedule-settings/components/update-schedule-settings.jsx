@@ -304,76 +304,78 @@ const UpdateScheduleSettings = () => {
   };
 
   return (
-    <div className='rounded-2xl border border-border bg-background p-6 shadow-sm'>
+    <div className='px-4 sm:px-6'>
       <div className='mb-4 flex items-center gap-2'>
-        <Calendar className='h-5 w-5' />
-        <h2 className='text-lg font-semibold'>Cài đặt lịch trình bữa ăn</h2>
+        <Calendar className='h-7 w-7' />
+        <h1 className='text-2xl font-bold'>Cài đặt lịch trình bữa ăn</h1>
       </div>
       <p className='text-sm text-muted-foreground mb-6'>
         Thiết lập các bữa ăn hàng ngày và sở thích của bạn
       </p>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSave)} className='space-y-6'>
-          <div className='space-y-4'>
-            {fields.map((field, index) => {
-              return (
-                <div
-                  key={field.id}
-                  className='border-input relative rounded-xl border p-6 space-y-4'
-                >
-                  <Button
-                    type='button'
-                    variant='ghost'
-                    size='icon'
-                    className='absolute right-2 top-2'
-                    onClick={() => remove(index)}
+      <div className='rounded-2xl border border-border bg-background p-6 shadow-sm'>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSave)} className='space-y-6'>
+            <div className='space-y-4'>
+              {fields.map((field, index) => {
+                return (
+                  <div
+                    key={field.id}
+                    className='border-input relative rounded-xl border p-6 space-y-4'
                   >
-                    <XIcon className='h-4 w-4' />
-                  </Button>
+                    <Button
+                      type='button'
+                      variant='ghost'
+                      size='icon'
+                      className='absolute right-2 top-2'
+                      onClick={() => remove(index)}
+                    >
+                      <XIcon className='h-4 w-4' />
+                    </Button>
 
-                  <MealSettingFields control={form.control} index={index} />
-                </div>
-              );
-            })}
-          </div>
+                    <MealSettingFields control={form.control} index={index} />
+                  </div>
+                );
+              })}
+            </div>
 
-          <Button
-            type='button'
-            variant='outline'
-            size='sm'
-            className='w-full rounded-xl'
-            onClick={() =>
-              append({
-                name: '',
-                dishCategories: [],
-                cookingPreference: COOKING_PREFERENCE.CAN_COOK,
-                mealSize: MEAL_SIZE.NORMAL,
-                availableTime: AVAILABLE_TIME.SOME_TIME,
-                complexity: MEAL_COMPLEXITY.MODERATE
-              })
-            }
-          >
-            <PlusIcon className='h-4 w-4 mr-1' />
-            Thêm bữa ăn
-          </Button>
-
-          <div className='flex justify-end'>
             <Button
-              type='submit'
-              disabled={isUpdating}
-              className='rounded-xl bg-primary text-primary-foreground hover:bg-primary/90'
+              type='button'
+              variant='outline'
+              size='sm'
+              className='w-full rounded-xl'
+              onClick={() =>
+                append({
+                  name: '',
+                  dishCategories: [],
+                  cookingPreference: COOKING_PREFERENCE.CAN_COOK,
+                  mealSize: MEAL_SIZE.NORMAL,
+                  availableTime: AVAILABLE_TIME.SOME_TIME,
+                  complexity: MEAL_COMPLEXITY.MODERATE
+                })
+              }
             >
-              {isUpdating ? (
-                <Spinner className='h-4 w-4 mr-1' />
-              ) : (
-                <Save className='h-4 w-4 mr-1' />
-              )}
-              Lưu thay đổi
+              <PlusIcon className='h-4 w-4 mr-1' />
+              Thêm bữa ăn
             </Button>
-          </div>
-        </form>
-      </Form>
+
+            <div className='flex justify-end'>
+              <Button
+                type='submit'
+                disabled={isUpdating}
+                className='rounded-xl bg-primary text-primary-foreground hover:bg-primary/90'
+              >
+                {isUpdating ? (
+                  <Spinner className='h-4 w-4 mr-1' />
+                ) : (
+                  <Save className='h-4 w-4 mr-1' />
+                )}
+                Lưu thay đổi
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 };

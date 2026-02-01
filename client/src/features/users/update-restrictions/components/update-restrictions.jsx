@@ -64,9 +64,9 @@ export function UpdateRestrictions() {
   };
 
   return (
-    <div className='max-w-4xl mx-auto'>
+    <div className='px-4 sm:px-6'>
       <div className='mb-4 flex items-center gap-2'>
-        <Utensils className='h-7 w-7 text-primary' />
+        <Utensils className='h-7 w-7' />
         <h1 className='text-2xl font-bold'>Chế độ ăn & Dị ứng</h1>
       </div>
 

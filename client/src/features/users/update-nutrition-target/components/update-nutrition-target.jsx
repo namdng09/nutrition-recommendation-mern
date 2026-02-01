@@ -133,9 +133,9 @@ export function UpdateNutritionTarget() {
   };
 
   return (
-    <div className='max-w-4xl mx-auto'>
+    <div className='px-4 sm:px-6'>
       <div className='mb-4 flex items-center gap-2'>
-        <Target className='h-7 w-7 text-primary' />
+        <Target className='h-7 w-7' />
         <h1 className='text-2xl font-bold'>Mục tiêu dinh dưỡng</h1>
       </div>
 
@@ -238,7 +238,7 @@ export function UpdateNutritionTarget() {
                         }
                         className='w-16 h-8 text-center rounded-md'
                       />
-                      <span>to</span>
+                      <span>đến</span>
                       <Input
                         type='number'
                         value={
@@ -292,7 +292,7 @@ export function UpdateNutritionTarget() {
                         }
                         className='w-16 h-8 text-center rounded-md'
                       />
-                      <span>to</span>
+                      <span>đến</span>
                       <Input
                         type='number'
                         value={
@@ -346,7 +346,7 @@ export function UpdateNutritionTarget() {
                         }
                         className='w-16 h-8 text-center rounded-md'
                       />
-                      <span>to</span>
+                      <span>đến</span>
                       <Input
                         type='number'
                         value={
