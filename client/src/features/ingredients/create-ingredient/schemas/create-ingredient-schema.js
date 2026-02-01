@@ -1,5 +1,6 @@
 import * as yup from 'yup';
 
+// Import constants từ backend - cần tạo file constants tương ứng
 export const INGREDIENT_CATEGORY_OPTIONS = [
   { value: 'Rau củ', label: 'Rau củ' },
   { value: 'Trái cây', label: 'Trái cây' },
@@ -34,7 +35,57 @@ export const UNIT_OPTIONS = [
   { value: 'tbsp', label: 'Tablespoon (tbsp)' },
   { value: 'tsp', label: 'Teaspoon (tsp)' },
   { value: 'cup', label: 'Cup' },
-  { value: 'piece', label: 'Piece' }
+  { value: 'piece', label: 'Piece' },
+  { value: 'oz', label: 'Ounce (oz)' },
+  { value: 'lb', label: 'Pound (lb)' }
+];
+
+// Vitamins từ backend
+export const VITAMIN_OPTIONS = [
+  { value: 'Vitamin A', label: 'Vitamin A' },
+  { value: 'Vitamin A IU', label: 'Vitamin A IU' },
+  { value: 'Vitamin B6', label: 'Vitamin B6' },
+  { value: 'Vitamin B12', label: 'Vitamin B12' },
+  { value: 'Vitamin C', label: 'Vitamin C' },
+  { value: 'Vitamin D IU', label: 'Vitamin D IU' },
+  { value: 'Vitamin D2', label: 'Vitamin D2' },
+  { value: 'Vitamin D3', label: 'Vitamin D3' },
+  { value: 'Vitamin E', label: 'Vitamin E' },
+  { value: 'Vitamin K', label: 'Vitamin K' }
+];
+
+// Minerals từ backend (cần kiểm tra file nutrition-minerals.ts)
+export const MINERAL_OPTIONS = [
+  { value: 'Calcium', label: 'Calcium' },
+  { value: 'Iron', label: 'Iron' },
+  { value: 'Magnesium', label: 'Magnesium' },
+  { value: 'Phosphorus', label: 'Phosphorus' },
+  { value: 'Potassium', label: 'Potassium' },
+  { value: 'Sodium', label: 'Sodium' },
+  { value: 'Zinc', label: 'Zinc' }
+];
+
+// Amino Acids từ backend
+export const AMINO_ACID_OPTIONS = [
+  { value: 'Alanine', label: 'Alanine' },
+  { value: 'Arginine', label: 'Arginine' },
+  { value: 'Aspartic acid', label: 'Aspartic acid' },
+  { value: 'Cystine', label: 'Cystine' },
+  { value: 'Glutamic acid', label: 'Glutamic acid' },
+  { value: 'Glycine', label: 'Glycine' },
+  { value: 'Histidine', label: 'Histidine' },
+  { value: 'Hydroxyproline', label: 'Hydroxyproline' },
+  { value: 'Isoleucine', label: 'Isoleucine' },
+  { value: 'Leucine', label: 'Leucine' },
+  { value: 'Lysine', label: 'Lysine' },
+  { value: 'Methionine', label: 'Methionine' },
+  { value: 'Phenylalanine', label: 'Phenylalanine' },
+  { value: 'Proline', label: 'Proline' },
+  { value: 'Serine', label: 'Serine' },
+  { value: 'Threonine', label: 'Threonine' },
+  { value: 'Tryptophan', label: 'Tryptophan' },
+  { value: 'Tyrosine', label: 'Tyrosine' },
+  { value: 'Valine', label: 'Valine' }
 ];
 
 const nutrientValueSchema = yup.object({
@@ -50,17 +101,9 @@ const nutrientsSchema = yup.object({
   carbs: nutrientValueSchema.required('Carbs là bắt buộc'),
   fat: nutrientValueSchema.required('Fat là bắt buộc'),
   protein: nutrientValueSchema.required('Protein là bắt buộc'),
-  fiber: nutrientValueSchema.required('Fiber là bắt buộc'),
-  sodium: nutrientValueSchema.required('Sodium là bắt buộc'),
-  cholesterol: nutrientValueSchema.required('Cholesterol là bắt buộc')
-});
-
-const baseUnitSchema = yup.object({
-  amount: yup
-    .number()
-    .min(0, 'Số lượng không được âm')
-    .required('Số lượng là bắt buộc'),
-  unit: yup.string().required('Đơn vị là bắt buộc')
+  fiber: nutrientValueSchema.optional(),
+  sodium: nutrientValueSchema.optional(),
+  cholesterol: nutrientValueSchema.optional()
 });
 
 const unitSchema = yup.object({
@@ -70,6 +113,12 @@ const unitSchema = yup.object({
     .required('Giá trị là bắt buộc'),
   unit: yup.string().required('Đơn vị là bắt buộc'),
   isDefault: yup.boolean().required('isDefault là bắt buộc')
+});
+
+const detailedNutrientSchema = yup.object({
+  label: yup.string().required(),
+  value: yup.number().min(0, 'Giá trị không được âm'),
+  unit: yup.string().required('Đơn vị là bắt buộc')
 });
 
 export const createIngredientSchema = yup.object({
@@ -88,12 +137,37 @@ export const createIngredientSchema = yup.object({
     )
     .min(1, 'Phải chọn ít nhất 1 danh mục')
     .required('Danh mục là bắt buộc'),
-  baseUnit: baseUnitSchema.required('Đơn vị cơ bản là bắt buộc'),
-  units: yup.array().of(unitSchema).optional(),
+  baseUnit: yup
+    .object({
+      amount: yup
+        .number()
+        .min(0, 'Số lượng không được âm')
+        .required('Số lượng là bắt buộc'),
+      unit: yup.string().required('Đơn vị là bắt buộc')
+    })
+    .required('Base unit là bắt buộc'),
+  units: yup
+    .array()
+    .of(unitSchema)
+    .min(1, 'Phải có ít nhất 1 kích thước phần ăn')
+    .test(
+      'has-default',
+      'Phải chọn 1 kích thước phần ăn làm mặc định',
+      function (value) {
+        return value && value.some(unit => unit.isDefault === true);
+      }
+    )
+    .required('Kích thước phần ăn là bắt buộc'),
   allergens: yup.array().of(yup.string()).optional(),
   nutrition: yup
     .object({
-      nutrients: nutrientsSchema.required('Thông tin dinh dưỡng là bắt buộc')
+      nutrients: nutrientsSchema.required('Thông tin dinh dưỡng là bắt buộc'),
+      minerals: yup.array().of(detailedNutrientSchema).optional(),
+      vitamins: yup.array().of(detailedNutrientSchema).optional(),
+      sugars: yup.array().of(detailedNutrientSchema).optional(),
+      fats: yup.array().of(detailedNutrientSchema).optional(),
+      fattyAcids: yup.array().of(detailedNutrientSchema).optional(),
+      aminoAcids: yup.array().of(detailedNutrientSchema).optional()
     })
     .required('Thông tin dinh dưỡng là bắt buộc'),
   image: yup.mixed().optional(),
