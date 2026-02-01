@@ -34,15 +34,59 @@ export const UNIT_OPTIONS = [
   { value: 'tbsp', label: 'Tablespoon (tbsp)' },
   { value: 'tsp', label: 'Teaspoon (tsp)' },
   { value: 'cup', label: 'Cup' },
-  { value: 'piece', label: 'Piece' }
+  { value: 'piece', label: 'Piece' },
+  { value: 'oz', label: 'Ounce (oz)' },
+  { value: 'lb', label: 'Pound (lb)' }
+];
+
+export const VITAMIN_OPTIONS = [
+  { value: 'Vitamin A', label: 'Vitamin A' },
+  { value: 'Vitamin A IU', label: 'Vitamin A IU' },
+  { value: 'Vitamin B6', label: 'Vitamin B6' },
+  { value: 'Vitamin B12', label: 'Vitamin B12' },
+  { value: 'Vitamin C', label: 'Vitamin C' },
+  { value: 'Vitamin D IU', label: 'Vitamin D IU' },
+  { value: 'Vitamin D2', label: 'Vitamin D2' },
+  { value: 'Vitamin D3', label: 'Vitamin D3' },
+  { value: 'Vitamin E', label: 'Vitamin E' },
+  { value: 'Vitamin K', label: 'Vitamin K' }
+];
+
+export const MINERAL_OPTIONS = [
+  { value: 'Calcium', label: 'Calcium' },
+  { value: 'Iron', label: 'Iron' },
+  { value: 'Magnesium', label: 'Magnesium' },
+  { value: 'Phosphorus', label: 'Phosphorus' },
+  { value: 'Potassium', label: 'Potassium' },
+  { value: 'Sodium', label: 'Sodium' },
+  { value: 'Zinc', label: 'Zinc' }
+];
+
+export const AMINO_ACID_OPTIONS = [
+  { value: 'Alanine', label: 'Alanine' },
+  { value: 'Arginine', label: 'Arginine' },
+  { value: 'Aspartic acid', label: 'Aspartic acid' },
+  { value: 'Cystine', label: 'Cystine' },
+  { value: 'Glutamic acid', label: 'Glutamic acid' },
+  { value: 'Glycine', label: 'Glycine' },
+  { value: 'Histidine', label: 'Histidine' },
+  { value: 'Hydroxyproline', label: 'Hydroxyproline' },
+  { value: 'Isoleucine', label: 'Isoleucine' },
+  { value: 'Leucine', label: 'Leucine' },
+  { value: 'Lysine', label: 'Lysine' },
+  { value: 'Methionine', label: 'Methionine' },
+  { value: 'Phenylalanine', label: 'Phenylalanine' },
+  { value: 'Proline', label: 'Proline' },
+  { value: 'Serine', label: 'Serine' },
+  { value: 'Threonine', label: 'Threonine' },
+  { value: 'Tryptophan', label: 'Tryptophan' },
+  { value: 'Tyrosine', label: 'Tyrosine' },
+  { value: 'Valine', label: 'Valine' }
 ];
 
 const nutrientValueSchema = yup.object({
-  value: yup
-    .number()
-    .min(0, 'Giá trị không được âm')
-    .required('Giá trị là bắt buộc'),
-  unit: yup.string().required('Đơn vị là bắt buộc')
+  value: yup.number().min(0, 'Giá trị không được âm'),
+  unit: yup.string()
 });
 
 const nutrientsSchema = yup.object({
@@ -55,21 +99,16 @@ const nutrientsSchema = yup.object({
   cholesterol: nutrientValueSchema.optional()
 });
 
-const baseUnitSchema = yup.object({
-  amount: yup
-    .number()
-    .min(0, 'Số lượng không được âm')
-    .required('Số lượng là bắt buộc'),
-  unit: yup.string().required('Đơn vị là bắt buộc')
+const unitSchema = yup.object({
+  value: yup.number().min(0, 'Giá trị không được âm'),
+  unit: yup.string(),
+  isDefault: yup.boolean()
 });
 
-const unitSchema = yup.object({
-  value: yup
-    .number()
-    .min(0, 'Giá trị không được âm')
-    .required('Giá trị là bắt buộc'),
-  unit: yup.string().required('Đơn vị là bắt buộc'),
-  isDefault: yup.boolean().required('isDefault là bắt buộc')
+const detailedNutrientSchema = yup.object({
+  label: yup.string(),
+  value: yup.number().min(0, 'Giá trị không được âm'),
+  unit: yup.string()
 });
 
 export const updateIngredientSchema = yup.object({
@@ -87,12 +126,23 @@ export const updateIngredientSchema = yup.object({
       )
     )
     .optional(),
-  baseUnit: baseUnitSchema.optional(),
+  baseUnit: yup
+    .object({
+      amount: yup.number().min(0, 'Số lượng không được âm'),
+      unit: yup.string()
+    })
+    .optional(),
   units: yup.array().of(unitSchema).optional(),
   allergens: yup.array().of(yup.string()).optional(),
   nutrition: yup
     .object({
-      nutrients: nutrientsSchema.optional()
+      nutrients: nutrientsSchema.optional(),
+      minerals: yup.array().of(detailedNutrientSchema).optional(),
+      vitamins: yup.array().of(detailedNutrientSchema).optional(),
+      sugars: yup.array().of(detailedNutrientSchema).optional(),
+      fats: yup.array().of(detailedNutrientSchema).optional(),
+      fattyAcids: yup.array().of(detailedNutrientSchema).optional(),
+      aminoAcids: yup.array().of(detailedNutrientSchema).optional()
     })
     .optional(),
   image: yup.string().optional(),
