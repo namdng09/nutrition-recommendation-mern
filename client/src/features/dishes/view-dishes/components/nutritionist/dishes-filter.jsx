@@ -95,7 +95,7 @@ const DishesFilter = () => {
 
           <Button
             type='button'
-            onClick={() => navigate('/nutritionist/manage-dishes/create')}
+            onClick={() => navigate('/nutritionist/manage-dishes/create-dish')}
             className='sm:ml-auto'
           >
             <Plus className='mr-2 h-4 w-4' />
