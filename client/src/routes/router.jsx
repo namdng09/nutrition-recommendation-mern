@@ -188,6 +188,29 @@ const router = createBrowserRouter([
             Component: lazy(
               () => import('~/app/nutritionist/manage-dishes/[id]/page')
             )
+          },
+
+          // Manage collections
+          {
+            path: 'manage-collections/',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-collections/page')
+            )
+          },
+          {
+            path: 'manage-collections/create-collection',
+            Component: lazy(
+              () =>
+                import(
+                  '~/app/nutritionist/manage-collections/create-collections/page'
+                )
+            )
+          },
+          {
+            path: 'manage-collections/:id',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-collections/[id]/page')
+            )
           }
         ]
       },
