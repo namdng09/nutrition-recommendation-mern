@@ -62,8 +62,6 @@ const Profile = () => {
     values: profile
       ? {
           name: profile.name || '',
-          gender: profile.gender || '',
-          dob: profile.dob ? profile.dob.split('T')[0] : '',
           avatar: undefined
         }
       : undefined
@@ -206,92 +204,6 @@ const Profile = () => {
               <label className='text-sm font-medium'>Email</label>
               <p className='text-sm py-2'>{profile?.email}</p>
             </div>
-
-            <FormField
-              control={form.control}
-              name='gender'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Giới tính</FormLabel>
-                  <Select
-                    key={profile?.id + '-gender-' + (field.value ?? '')}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <FormControl>
-                      <SelectTrigger className='w-full rounded-xl border-border focus:ring-ring'>
-                        <SelectValue placeholder='Chọn giới tính' />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {GENDER_OPTIONS.map(option => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='dob'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ngày sinh</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant='outline'
-                          className={cn(
-                            'w-full rounded-xl border-border pl-3 text-left font-normal',
-                            !field.value && 'text-foreground/50'
-                          )}
-                        >
-                          {field.value ? (
-                            format(new Date(field.value), 'dd/MM/yyyy')
-                          ) : (
-                            <span>Chọn ngày</span>
-                          )}
-                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className='w-auto p-0' align='start'>
-                      <Calendar
-                        key={profile?.id + '-dob-' + (field.value ?? '')}
-                        mode='single'
-                        captionLayout='dropdown'
-                        selected={
-                          field.value ? new Date(field.value) : undefined
-                        }
-                        onSelect={date => {
-                          field.onChange(
-                            date ? format(date, 'yyyy-MM-dd') : ''
-                          );
-                        }}
-                        disabled={date =>
-                          date > new Date() || date < new Date('1900-01-01')
-                        }
-                        defaultMonth={
-                          field.value
-                            ? new Date(field.value)
-                            : new Date(2000, 0)
-                        }
-                        startMonth={new Date(1900, 0)}
-                        endMonth={new Date()}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </form>
         </Form>
       </div>

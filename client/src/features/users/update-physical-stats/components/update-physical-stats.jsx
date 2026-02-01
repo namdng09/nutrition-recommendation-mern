@@ -1,9 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Activity, Save } from 'lucide-react';
+import { format } from 'date-fns';
+import { Activity, Calendar as CalendarIcon, Save } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { Button } from '~/components/ui/button';
+import { Calendar } from '~/components/ui/calendar';
 import {
   Form,
   FormControl,
@@ -14,6 +16,11 @@ import {
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '~/components/ui/popover';
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -23,9 +30,11 @@ import {
 import { Spinner } from '~/components/ui/spinner';
 import { ACTIVITY_LEVEL_OPTIONS } from '~/constants/activity-level';
 import { BODYFAT_OPTIONS } from '~/constants/bodyfat';
+import { GENDER_OPTIONS } from '~/constants/gender';
 import { useUpdatePhysicalStats } from '~/features/users/update-physical-stats/api/update-physical-stats';
 import { updatePhysicalStatsSchema } from '~/features/users/update-physical-stats/schemas/update-physical-stats-schema';
 import { useProfileForPage } from '~/features/users/view-profile/api/view-profile';
+import { cn } from '~/lib/utils';
 
 const UpdatePhysicalStats = () => {
   const { data: profile } = useProfileForPage();
@@ -45,6 +54,8 @@ const UpdatePhysicalStats = () => {
     resolver: yupResolver(updatePhysicalStatsSchema),
     values: profile
       ? {
+          gender: profile.gender || '',
+          dob: profile.dob ? profile.dob.split('T')[0] : '',
           height: profile.height || '',
           weight:
             profile.weightRecord?.length > 0
@@ -76,6 +87,96 @@ const UpdatePhysicalStats = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSave)} className='space-y-6'>
           <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+            <FormField
+              control={form.control}
+              name='gender'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Giới tính <span className='text-destructive'>*</span>
+                  </FormLabel>
+                  <Select
+                    key={profile?.id + '-gender-' + (field.value ?? '')}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger className='w-full rounded-xl border-border focus:ring-ring'>
+                        <SelectValue placeholder='Chọn giới tính' />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {GENDER_OPTIONS.map(option => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='dob'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Ngày sinh <span className='text-destructive'>*</span>
+                  </FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant='outline'
+                          className={cn(
+                            'w-full rounded-xl border-border pl-3 text-left font-normal',
+                            !field.value && 'text-foreground/50'
+                          )}
+                        >
+                          {field.value ? (
+                            format(new Date(field.value), 'dd/MM/yyyy')
+                          ) : (
+                            <span>Chọn ngày sinh</span>
+                          )}
+                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className='w-auto p-0' align='start'>
+                      <Calendar
+                        key={profile?.id + '-dob-' + (field.value ?? '')}
+                        mode='single'
+                        captionLayout='dropdown'
+                        selected={
+                          field.value ? new Date(field.value) : undefined
+                        }
+                        onSelect={date => {
+                          field.onChange(
+                            date ? format(date, 'yyyy-MM-dd') : ''
+                          );
+                        }}
+                        disabled={date =>
+                          date > new Date() || date < new Date('1900-01-01')
+                        }
+                        defaultMonth={
+                          field.value
+                            ? new Date(field.value)
+                            : new Date(2000, 0)
+                        }
+                        startMonth={new Date(1900, 0)}
+                        endMonth={new Date()}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name='height'
