@@ -3,6 +3,7 @@ import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import app from '~/app';
+import { ROLE } from '~/shared/constants/role';
 import { AuthModel, UserModel } from '~/shared/database/models';
 import { hashPassword } from '~/shared/utils/bcrypt';
 
@@ -27,7 +28,7 @@ describe('POST /api/auth/login', () => {
     const user = await UserModel.create({
       email: 'haidangphan2015@gmail.com',
       name: 'Test User',
-      role: 'user',
+      role: ROLE.USER,
       isActive: true
     });
     userId = user._id.toString();
@@ -93,7 +94,7 @@ describe('POST /api/auth/login', () => {
     const oauthUser = await UserModel.create({
       email: 'oauth@gmail.com',
       name: 'OAuth User',
-      role: 'user',
+      role: ROLE.USER,
       isActive: true
     });
 
