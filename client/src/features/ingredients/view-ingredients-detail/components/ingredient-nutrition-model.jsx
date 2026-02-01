@@ -16,7 +16,19 @@ import NutritionDetailSection from './nutrition-detail-section';
 export default function IngredientNutritionModal({ open, onClose, nutrition }) {
   if (!open) return null;
 
+  const macroNutrients = nutrition?.nutrients
+    ? Object.entries(nutrition.nutrients).map(([key, val]) => ({
+        label: key,
+        value: val.value,
+        unit: val.unit
+      }))
+    : [];
+
   const config = {
+    'Thành phần chính': {
+      themeClass: 'text-emerald-light',
+      icon: <IoFitness size={14} />
+    },
     Vitamin: { themeClass: 'text-green-light', icon: <IoLeaf size={14} /> },
     'Khoáng chất': {
       themeClass: 'text-blue-light',
@@ -34,6 +46,7 @@ export default function IngredientNutritionModal({ open, onClose, nutrition }) {
   };
 
   const sections = [
+    { title: 'Thành phần chính', data: macroNutrients },
     { title: 'Vitamin', data: nutrition?.vitamins },
     { title: 'Khoáng chất', data: nutrition?.minerals },
     { title: 'Đường', data: nutrition?.sugars },
@@ -59,36 +72,34 @@ export default function IngredientNutritionModal({ open, onClose, nutrition }) {
                 Thành phần dinh dưỡng
               </h2>
               <p className='mt-1 text-xs text-muted-foreground'>
-                Chi tiết hàm lượng vi chất
+                Tính trên 100g nguyên liệu
               </p>
             </div>
           </div>
-          <Button
-            variant='ghost'
-            size='icon'
-            onClick={onClose}
-            className='rounded-full'
-          >
+          <Button variant='ghost' size='icon' onClick={onClose}>
             <IoClose size={24} />
           </Button>
         </div>
 
         <div className='max-h-[65vh] overflow-y-auto p-6 space-y-8'>
-          {sections.map(section => (
-            <NutritionDetailSection
-              key={section.title}
-              title={section.title}
-              items={section.data}
-              themeClass={config[section.title].themeClass}
-              icon={config[section.title].icon}
-            />
-          ))}
+          {sections.map(
+            section =>
+              section.data?.length > 0 && (
+                <NutritionDetailSection
+                  key={section.title}
+                  title={section.title}
+                  items={section.data}
+                  themeClass={config[section.title].themeClass}
+                  icon={config[section.title].icon}
+                />
+              )
+          )}
         </div>
 
         <div className='border-t bg-muted/30 p-4 flex justify-center'>
           <Button
             onClick={onClose}
-            className='w-full max-w-[200px] rounded-2xl font-semibold active:scale-95 transition-transform'
+            className='w-full max-w-[200px] rounded-2xl font-semibold'
           >
             Đóng bảng
           </Button>
