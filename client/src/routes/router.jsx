@@ -2,6 +2,7 @@ import { lazy } from 'react';
 import { createBrowserRouter } from 'react-router';
 
 import PrivateRoute from '~/components/private-route';
+import { ROLE } from '~/constants/role';
 
 const AppLayout = lazy(() => import('~/components/layouts/app-layout'));
 const RootLayout = lazy(() => import('~/components/layouts/root-layout'));
@@ -55,7 +56,7 @@ const router = createBrowserRouter([
           {
             path: 'profile',
             Component: () => (
-              <PrivateRoute allowedRoles={['user', 'admin']}>
+              <PrivateRoute allowedRoles={[ROLE.USER, ROLE.ADMIN]}>
                 <ProfileLayout />
               </PrivateRoute>
             ),
