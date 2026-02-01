@@ -28,9 +28,9 @@ export const IngredientService = {
 
     if (image) {
       const uploadResult = await uploadImage(
-        image.buffer, 
+        image.buffer,
         newIngredient._id.toString()
-    );
+      );
       if (uploadResult.success && uploadResult.data) {
         newIngredient.image = uploadResult.data.secure_url;
         await newIngredient.save();
@@ -91,7 +91,8 @@ export const IngredientService = {
     if (image) {
       await deleteImage(updatedIngredient._id.toString());
 
-      const uploadResult = await uploadImage(image.buffer, 
+      const uploadResult = await uploadImage(
+        image.buffer,
         updatedIngredient._id.toString()
       );
       if (uploadResult.success && uploadResult.data) {

@@ -20,7 +20,7 @@ export const createCollectionRequestSchema = z.object({
   image: z.file().optional(),
   isPublic: z
     .union([z.boolean(), z.string()])
-    .transform((val) => {
+    .transform(val => {
       if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;
@@ -39,16 +39,12 @@ export type CreateCollectionRequest = z.infer<
 >;
 
 export const updateCollectionRequestSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, 'Tên phải có ít nhất 2 ký tự')
-    .optional(),
+  name: z.string().trim().min(2, 'Tên phải có ít nhất 2 ký tự').optional(),
   description: z.string().trim().optional(),
   image: z.file().optional(),
   isPublic: z
     .union([z.boolean(), z.string()])
-    .transform((val) => {
+    .transform(val => {
       if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;

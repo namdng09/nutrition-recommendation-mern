@@ -1,13 +1,13 @@
 export const DISH_CATEGORY = {
   APPETIZER: 'Khai vị',
   MAIN_COURSE: 'Món chính',
-  SIDE_DISH: 'Món phụ',
+  SIDE_DISH: 'Món ăn kèm',
   DESSERT: 'Tráng miệng',
   SOUP: 'Súp',
   SALAD: 'Salad',
   BEVERAGE: 'Đồ uống',
   BREAKFAST: 'Bữa sáng',
-  SNACK: 'Đồ ăn vặt',
+  SNACK: 'Ăn nhẹ',
   SAUCE: 'Nước sốt'
 } as const;
 

@@ -24,7 +24,9 @@ export const IngredientController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Lấy danh sách nguyên liệu thành công', result));
+      .json(
+        ApiResponse.success('Lấy danh sách nguyên liệu thành công', result)
+      );
   },
 
   viewIngredientDetail: async (req: Request, res: Response) => {
@@ -34,7 +36,9 @@ export const IngredientController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Lấy thông tin nguyên liệu thành công', result));
+      .json(
+        ApiResponse.success('Lấy thông tin nguyên liệu thành công', result)
+      );
   },
 
   updateIngredient: async (req: Request, res: Response) => {
@@ -54,8 +58,6 @@ export const IngredientController = {
 
     await IngredientService.deleteIngredient(id);
 
-    res
-      .status(200)
-      .json(ApiResponse.success('Xóa nguyên liệu thành công'));
+    res.status(200).json(ApiResponse.success('Xóa nguyên liệu thành công'));
   }
 };

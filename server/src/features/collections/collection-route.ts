@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import { ROLE } from '~/shared/constants/role';
 import {
   authenticate,
   authorize,
@@ -7,7 +8,6 @@ import {
   validate
 } from '~/shared/middlewares';
 import { asyncHandler, handleSingleImageUpload } from '~/shared/utils';
-import { ROLE } from '~/shared/constants/role';
 
 import { CollectionController } from './collection-controller';
 import {
