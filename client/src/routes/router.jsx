@@ -176,17 +176,29 @@ const router = createBrowserRouter([
             Component: lazy(
               () => import('~/app/nutritionist/manage-dishes/page')
             )
+          },
+          {
+            path: 'manage-dishes/create-dish',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-dishes/create-dish/page')
+            )
+          },
+          {
+            path: 'manage-dishes/:id',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-dishes/[id]/page')
+            )
           }
         ]
       },
       {
         path: '/admin/',
-        // Component: () => (
-        //   <PrivateRoute allowedRoles={[ROLE.ADMIN]}>
-        //     <AdminLayout />
-        //   </PrivateRoute>
-        // ),
-        Component: AdminLayout,
+        Component: () => (
+          <PrivateRoute allowedRoles={[ROLE.ADMIN]}>
+            <AdminLayout />
+          </PrivateRoute>
+        ),
+        // Component: AdminLayout,
         children: [
           {
             path: '',
