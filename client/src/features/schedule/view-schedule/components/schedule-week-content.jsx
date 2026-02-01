@@ -19,7 +19,7 @@ export default function ScheduleWeekContent() {
         onNext={() => setCurrentWeekDate(d => addWeeks(d, 1))}
       />
 
-      <div className='rounded-3xl px-6 py-6'>
+      <div className='rounded-3xl border border-slate-200 px-6 py-6'>
         <ScheduleWeek startOfSelectedWeek={currentWeekDate} />
       </div>
     </div>

@@ -21,7 +21,7 @@ export default function ScheduleWeek({ startOfSelectedWeek }) {
   );
 
   return (
-    <div className='flex gap-5 overflow-x-auto pb-6 pt-5 px-2 scrollbar-hide'>
+    <div className='flex gap-5 overflow-x-auto pb-6 pt-6 px-2 scrollbar-hide'>
       {weekDays.map(({ date, schedule }, index) => (
         <ScheduleWeekCard
           key={index}

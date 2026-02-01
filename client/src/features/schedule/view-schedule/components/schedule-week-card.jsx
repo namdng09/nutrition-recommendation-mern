@@ -41,21 +41,20 @@ export default function ScheduleWeekCard({
     <div
       className={cn(
         `
-      relative min-w-[320px] flex-1 rounded-[40px] p-8
-      flex flex-col transition-all duration-300
-      bg-card
-      border border-border
+      relative min-w-[340px] flex-1 rounded-[32px] p-5
+      flex flex-col transition-all duration-500
+      bg-card border-2 border-border/60
     `,
         isDayToday
           ? `
-          border-primary/60
-          bg-accent
-          shadow-2xl
-          scale-[1.02]
+          border-[#2D6A4F] 
+          bg-[#F0F7F4] 
+          shadow-[0_20px_50px_rgba(45,106,79,0.12)] 
+          scale-[1.01]
           z-10
         `
           : `
-          hover:border-border/70
+          hover:border-[#2D6A4F]/40
           hover:shadow-xl
         `
       )}
@@ -63,11 +62,11 @@ export default function ScheduleWeekCard({
       {isDayToday && (
         <div
           className='absolute -top-3.5 left-1/2 -translate-x-1/2 z-20
-      rounded-full bg-primary
-      px-4 py-1.5
-      text-[10px] font-black uppercase tracking-tighter
-      text-primary-foreground
-      shadow-lg shadow-primary/40'
+      rounded-full bg-[#2D6A4F] 
+      px-6 py-1.5
+      text-[10px] font-black uppercase tracking-widest
+      text-white border-2 border-[#F0F7F4]
+      shadow-lg shadow-[#2D6A4F]/30'
         >
           Hôm nay
         </div>
@@ -76,22 +75,24 @@ export default function ScheduleWeekCard({
       <div className='mb-6 text-center'>
         <p
           className={cn(
-            'text-[10px] font-black uppercase tracking-[0.15em] mb-1',
-            isDayToday ? 'text-primary' : 'text-muted-foreground'
+            'text-[11px] font-black uppercase tracking-[0.2em] mb-1.5',
+            isDayToday ? 'text-[#2D6A4F]' : 'text-muted-foreground/60'
           )}
         >
           {format(date, 'EEEE', { locale: vi })}
         </p>
 
-        <h3 className='text-2xl font-black text-foreground'>
-          {format(date, 'dd')}
-          <span className='text-xs font-bold text-muted-foreground ml-1'>
+        <h3 className='flex items-baseline justify-center gap-1'>
+          <span className='text-4xl font-black text-[#1B4332] tracking-tighter'>
+            {format(date, 'dd')}
+          </span>
+          <span className='text-sm font-bold text-[#2D6A4F]/40'>
             / {format(date, 'MM')}
           </span>
         </h3>
       </div>
 
-      <div className='flex-1 flex flex-col justify-between'>
+      <div className='flex-1 flex flex-col'>
         <DayScheduleContent
           schedule={schedule}
           isDayToday={isDayToday}
