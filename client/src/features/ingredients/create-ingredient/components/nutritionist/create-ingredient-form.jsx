@@ -406,7 +406,7 @@ const CreateIngredientForm = () => {
             <Separator />
 
             {/* Package Info */}
-            <div className='space-y-4'>
+            {/* <div className='space-y-4'>
               <h3 className='text-sm font-semibold'>Thông tin gói</h3>
 
               <div className='grid grid-cols-2 gap-4'>
@@ -466,7 +466,7 @@ const CreateIngredientForm = () => {
                   )}
                 />
               </div>
-            </div>
+            </div> */}
 
             <Separator />
 
