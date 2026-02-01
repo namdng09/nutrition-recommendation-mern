@@ -39,6 +39,7 @@ router.put(
   '/:id',
   authenticate(),
   authorize([ROLE.USER, ROLE.NUTRITIONIST, ROLE.ADMIN]),
+  parseFormData,
   validate(updateScheduleRequestSchema.shape),
   asyncHandler(ScheduleController.updateSchedule)
 );
