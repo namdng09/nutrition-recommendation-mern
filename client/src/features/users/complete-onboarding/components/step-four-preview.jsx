@@ -64,7 +64,7 @@ function InfoItem({ label, value }) {
   );
 }
 
-export function StepFourPreview({ formData, onBack }) {
+export function StepFourPreview({ formData, onBack, setValue }) {
   const [calculatedTarget, setCalculatedTarget] = useState(null);
   const { mutate: calculateTarget, isPending } = useCalculateNutritionTarget();
 
@@ -84,6 +84,9 @@ export function StepFourPreview({ formData, onBack }) {
     calculateTarget(requestData, {
       onSuccess: data => {
         setCalculatedTarget(data.data);
+        // Update form values with calculated nutrition target
+        setValue('nutritionTarget', data.data);
+        toast.success('Đã tính toán mục tiêu dinh dưỡng thành công!');
       },
       onError: error => {
         toast.error('Không thể tính toán mục tiêu dinh dưỡng');

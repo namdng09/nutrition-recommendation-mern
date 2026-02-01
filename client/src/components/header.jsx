@@ -57,7 +57,7 @@ const Header = () => {
             to='/'
             className='group flex items-center gap-3 transition-all hover:opacity-90'
           >
-            <div className='relative flex h-20 w-20 items-center justify-center bg-transparent transition-transform duration-500 group-hover:scale-110'>
+            <div className='relative flex h-17 w-17 items-center justify-center bg-transparent'>
               <img
                 src='/logo2.png'
                 alt='Logo'

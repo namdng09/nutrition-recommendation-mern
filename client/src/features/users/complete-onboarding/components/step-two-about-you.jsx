@@ -129,7 +129,7 @@ export function StepTwoAboutYou({ control }) {
               </FormLabel>
               <FormControl>
                 <Input
-                  type='number'
+                  type='text'
                   placeholder='170'
                   className='w-full'
                   {...field}
@@ -151,7 +151,7 @@ export function StepTwoAboutYou({ control }) {
               </FormLabel>
               <FormControl>
                 <Input
-                  type='number'
+                  type='text'
                   placeholder='65'
                   className='w-full'
                   {...field}

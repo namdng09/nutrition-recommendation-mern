@@ -1,5 +1,5 @@
 import { ArrowLeft } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 import { FaAlignLeft, FaBox, FaFireAlt, FaTag } from 'react-icons/fa';
 import {
   GiCottonFlower,
@@ -8,11 +8,13 @@ import {
   GiSaltShaker,
   GiWheat
 } from 'react-icons/gi';
+import { IoChevronForward } from 'react-icons/io5';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { Button } from '~/components/ui/button';
 
 import { useIngredientDetail } from '../api/view-ingredient-detail';
+import IngredientNutritionModal from './ingredient-nutrition-model';
 import IngredientNutritionPie from './ingredient-nutrition-pie';
 import NutritionStatCard from './nutrition-stat-card';
 
@@ -24,6 +26,8 @@ export default function IngredientDetail() {
   const item = data;
   const nutrients = item?.nutrition?.nutrients || {};
   const defaultUnit = item?.units?.find(u => u.isDefault) || item?.units?.[0];
+
+  const [openNutrition, setOpenNutrition] = useState(false);
 
   return (
     <div className='mx-auto w-full max-w-8xl space-y-5'>
@@ -153,6 +157,15 @@ export default function IngredientDetail() {
                 />
               </div>
 
+              <Button
+                variant='outline'
+                className='w-fit rounded-xl text-sm flex items-center gap-2'
+                onClick={() => setOpenNutrition(true)}
+              >
+                Xem chi tiết dinh dưỡng
+                <IoChevronForward size={16} className='text-muted-foreground' />
+              </Button>
+
               <div className='rounded-xl border p-3'>
                 <div className='text-sm font-semibold'>Đơn vị sử dụng</div>
                 <div className='mt-2 flex flex-wrap gap-2'>
@@ -199,6 +212,12 @@ export default function IngredientDetail() {
 
         <IngredientNutritionPie item={item} />
       </div>
+
+      <IngredientNutritionModal
+        open={openNutrition}
+        onClose={() => setOpenNutrition(false)}
+        nutrition={item?.nutrition}
+      />
     </div>
   );
 }

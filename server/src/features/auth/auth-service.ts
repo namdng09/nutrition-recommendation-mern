@@ -52,7 +52,8 @@ export const AuthService = {
 
     return {
       accessToken,
-      refreshToken
+      refreshToken,
+      hasOnboarded: user.hasOnboarded
     };
   },
 
@@ -86,7 +87,8 @@ export const AuthService = {
 
     return {
       accessToken,
-      refreshToken
+      refreshToken,
+      hasOnboarded: user.hasOnboarded
     };
   },
 
@@ -125,7 +127,8 @@ export const AuthService = {
 
     return {
       accessToken,
-      refreshToken
+      refreshToken,
+      hasOnboarded: newUser.hasOnboarded
     };
   },
 

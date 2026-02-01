@@ -1,6 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
 import React, { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaGoogle } from 'react-icons/fa';
@@ -14,7 +12,6 @@ import {
 
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
-import { Calendar } from '~/components/ui/calendar';
 import {
   Form,
   FormControl,
@@ -24,20 +21,6 @@ import {
   FormMessage
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '~/components/ui/popover';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '~/components/ui/select';
-import { GENDER_OPTIONS } from '~/constants/gender';
-import { cn } from '~/lib/utils';
 
 import { signUpSchema } from '../schemas/sign-up-schema';
 
@@ -49,8 +32,6 @@ const SignUpForm = ({ onSubmit, isLoading }) => {
     defaultValues: {
       email: '',
       name: '',
-      gender: '',
-      dob: '',
       password: '',
       confirmPassword: '',
       avatar: undefined
@@ -232,81 +213,6 @@ const SignUpForm = ({ onSubmit, isLoading }) => {
                     />
                   </div>
                 </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name='gender'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className='text-primary'>Giới tính</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger className='w-full rounded-xl border-border focus:ring-ring/30'>
-                      <SelectValue placeholder='Chọn giới tính' />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {GENDER_OPTIONS.map(option => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name='dob'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className='text-primary'>Ngày sinh</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant='outline'
-                        className={cn(
-                          'w-full rounded-xl border-border bg-background/60 pl-3 text-left font-normal text-primary hover:bg-accent',
-                          !field.value && 'text-muted-foreground'
-                        )}
-                      >
-                        {field.value ? (
-                          format(new Date(field.value), 'PPP')
-                        ) : (
-                          <span>Chọn ngày</span>
-                        )}
-                        <CalendarIcon className='ml-auto h-4 w-4 opacity-60' />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className='w-auto p-0' align='start'>
-                    <Calendar
-                      mode='single'
-                      captionLayout='dropdown'
-                      selected={field.value ? new Date(field.value) : undefined}
-                      onSelect={date => {
-                        field.onChange(date ? format(date, 'yyyy-MM-dd') : '');
-                      }}
-                      disabled={date =>
-                        date > new Date() || date < new Date('1900-01-01')
-                      }
-                      defaultMonth={
-                        field.value ? new Date(field.value) : new Date(2000, 0)
-                      }
-                      startMonth={new Date(1900, 0)}
-                      endMonth={new Date()}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
                 <FormMessage />
               </FormItem>
             )}

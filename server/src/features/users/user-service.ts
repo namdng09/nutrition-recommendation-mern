@@ -265,7 +265,13 @@ export const UserService = {
       throw createHttpError(400, 'Invalid user ID format');
     }
 
-    const updatedUser = await UserModel.findByIdAndUpdate(id, data, {
+    const { weight, ...rest } = data;
+
+    const updateOp = weight
+      ? { $set: rest, $push: { weightRecord: { weight, date: new Date() } } }
+      : rest;
+
+    const updatedUser = await UserModel.findByIdAndUpdate(id, updateOp, {
       new: true
     });
 

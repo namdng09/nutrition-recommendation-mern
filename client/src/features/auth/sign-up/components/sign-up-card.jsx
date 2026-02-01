@@ -24,9 +24,9 @@ const SignUpCard = () => {
 
   const signUpMutation = useSignUp({
     onSuccess: data => {
-      const { accessToken } = data.data;
+      const { accessToken, hasOnboarded } = data.data;
       dispatch(loadUser({ accessToken }));
-      navigate('/');
+      navigate(hasOnboarded ? '/' : '/onboarding');
       toast.success(data.message || 'Tạo tài khoản thành công');
     },
     onError: error => {

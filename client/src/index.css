@@ -51,14 +51,9 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --warning: oklch(0.795 0.184 86.047);
   --warning-foreground: oklch(0.145 0 0);
@@ -78,12 +73,12 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  /* EatDee green */
 
-  --primary: #1b5e20; /* xanh đậm (text-primary) */
-  --primary-foreground: #ffffff; /* chữ trên nền primary */
-
-  --accent: color-mix(in srgb, #2e7d32 12%, transparent); /* hover bg */
+  /* EatDee green brand colors */
+  --primary: #1b5e20;
+  /* Dark green */
+  --primary-foreground: #ffffff;
+  --accent: color-mix(in srgb, #2e7d32 12%, transparent);
   --accent-foreground: #1b5e20;
   --muted-foreground: color-mix(in srgb, #1b5e20 70%, transparent);
 }
@@ -95,14 +90,9 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --warning: oklch(0.828 0.189 84.429);
   --warning-foreground: oklch(0.145 0 0);
@@ -122,13 +112,13 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-  /* Dark: text white */
-  --primary: #66bb6a;
-  --primary-foreground: #0b1a0f;
 
+  /* EatDee green brand colors for dark mode */
+  --primary: #66bb6a;
+  /* Light green */
+  --primary-foreground: #0b1a0f;
   --accent: color-mix(in srgb, #66bb6a 18%, transparent);
   --accent-foreground: #ffffff;
-
   --muted-foreground: color-mix(in srgb, white 70%, transparent);
 }
 
@@ -139,5 +129,33 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+
+  /* Green - Success */
+  .text-green-light {
+    @apply text-green-600 bg-green-50 border-green-100 dark:text-green-400 dark:bg-green-950/30 dark:border-green-900/50;
+  }
+
+  /* Blue - Info */
+  .text-blue-light {
+    @apply text-blue-600 bg-blue-50 border-blue-100 dark:text-blue-400 dark:bg-blue-950/30 dark:border-blue-900/50;
+  }
+
+  /* Orange - Warning */
+  .text-orange-light {
+    @apply text-orange-600 bg-orange-50 border-orange-100 dark:text-orange-400 dark:bg-orange-950/30 dark:border-orange-900/50;
+  }
+
+  /* Purple - Danger/Accent */
+  .text-purple-light {
+    @apply text-purple-600 bg-purple-50 border-purple-100 dark:text-purple-400 dark:bg-purple-950/30 dark:border-purple-900/50;
+  }
+
+  /* Cyan - Primary/Info */
+  .text-cyan-light {
+    @apply text-cyan-600 bg-cyan-50 border-cyan-100 dark:text-cyan-400 dark:bg-cyan-950/30 dark:border-cyan-900/50;
   }
 }

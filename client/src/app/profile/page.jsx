@@ -5,11 +5,9 @@ import ProfileSkeleton from '~/features/users/view-profile/components/profile-sk
 
 const Page = () => {
   return (
-    <div className='container mx-auto py-8 px-4'>
-      <Suspense fallback={<ProfileSkeleton />}>
-        <Profile />
-      </Suspense>
-    </div>
+    <Suspense fallback={<ProfileSkeleton />}>
+      <Profile />
+    </Suspense>
   );
 };
 
