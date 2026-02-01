@@ -362,7 +362,6 @@ export const ScheduleService = {
   removeScheduleDish: async (
     id: string,
     userId: string,
-    role: string | undefined,
     mealType: string,
     dishId: string
   ) => {
@@ -374,17 +373,13 @@ export const ScheduleService = {
       throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
     }
 
-    if (!isValidMealType(mealType)) {
-      throw createHttpError(400, 'Invalid meal type');
-    }
-
     const schedule = await ScheduleModel.findById(id);
 
     if (!schedule) {
       throw createHttpError(404, 'Không tìm thấy lịch ăn');
     }
 
-    if (role !== ROLE.ADMIN && schedule.user?._id.toString() !== userId) {
+    if (schedule.user?._id.toString() !== userId) {
       throw createHttpError(403, 'Bạn không có quyền cập nhật lịch ăn này');
     }
 
@@ -394,12 +389,16 @@ export const ScheduleService = {
       throw createHttpError(404, 'Không tìm thấy bữa ăn');
     }
 
-    const originalCount = meal.dishes?.length ?? 0;
-    meal.dishes?.pull({ dishId });
+    const dishes = meal.dishes ?? [];
+    const dishIndex = dishes.findIndex(
+      dish => dish.dishId?.toString() === dishId
+    );
 
-    if ((meal.dishes?.length ?? 0) === originalCount) {
+    if (dishIndex === -1) {
       throw createHttpError(404, 'Không tìm thấy món ăn trong bữa');
     }
+
+    dishes.splice(dishIndex, 1);
 
     await schedule.save();
 
@@ -409,15 +408,10 @@ export const ScheduleService = {
   clearScheduleMealDishes: async (
     id: string,
     userId: string,
-    role: string | undefined,
     mealType: string
   ) => {
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
-    }
-
-    if (!isValidMealType(mealType)) {
-      throw createHttpError(400, 'Invalid meal type');
     }
 
     const schedule = await ScheduleModel.findById(id);
@@ -426,7 +420,7 @@ export const ScheduleService = {
       throw createHttpError(404, 'Không tìm thấy lịch ăn');
     }
 
-    if (role !== ROLE.ADMIN && schedule.user?._id.toString() !== userId) {
+    if (schedule.user?._id.toString() !== userId) {
       throw createHttpError(403, 'Bạn không có quyền cập nhật lịch ăn này');
     }
 

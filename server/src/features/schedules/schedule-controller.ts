@@ -80,12 +80,10 @@ export const ScheduleController = {
     const dishId = req.params.dishId;
     const mealType = req.params.mealType;
     const userId = req.user!._id.toString();
-    const role = req.user?.role;
 
     const result = await ScheduleService.removeScheduleDish(
       id,
       userId,
-      role,
       mealType,
       dishId
     );
@@ -99,12 +97,10 @@ export const ScheduleController = {
     const id = req.params.id;
     const mealType = req.params.mealType;
     const userId = req.user!._id.toString();
-    const role = req.user?.role;
 
     const result = await ScheduleService.clearScheduleMealDishes(
       id,
       userId,
-      role,
       mealType
     );
 
