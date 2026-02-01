@@ -53,6 +53,18 @@ export const ScheduleController = {
       .json(ApiResponse.success('Cập nhật lịch ăn thành công', result));
   },
 
+  updateScheduleMeals: async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const data = req.body;
+    const userId = req.user!._id.toString();
+
+    const result = await ScheduleService.updateScheduleMeals(id, userId, data);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Cập nhật bữa ăn thành công', result));
+  },
+
   deleteSchedule: async (req: Request, res: Response) => {
     const id = req.params.id;
     const userId = req.user!._id.toString();
@@ -61,5 +73,45 @@ export const ScheduleController = {
     await ScheduleService.deleteSchedule(id, userId, role);
 
     res.status(200).json(ApiResponse.success('Xóa lịch ăn thành công'));
+  },
+
+  removeScheduleDish: async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const dishId = req.params.dishId;
+    const mealType = req.params.mealType;
+    const userId = req.user!._id.toString();
+    const role = req.user?.role;
+
+    const result = await ScheduleService.removeScheduleDish(
+      id,
+      userId,
+      role,
+      mealType,
+      dishId
+    );
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Xóa món ăn khỏi bữa thành công', result));
+  },
+
+  clearScheduleMealDishes: async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const mealType = req.params.mealType;
+    const userId = req.user!._id.toString();
+    const role = req.user?.role;
+
+    const result = await ScheduleService.clearScheduleMealDishes(
+      id,
+      userId,
+      role,
+      mealType
+    );
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Xóa tất cả món ăn trong bữa thành công', result)
+      );
   }
 };
