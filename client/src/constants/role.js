@@ -1,5 +1,6 @@
 export const ROLE = Object.freeze({
   USER: 'User',
+  NUTRITIONIST: 'Nutritionist',
   ADMIN: 'Admin'
 });
 
