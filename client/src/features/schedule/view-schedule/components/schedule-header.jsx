@@ -34,40 +34,43 @@ export default function ScheduleHeader({
   };
 
   return (
-    <div className='flex items-center justify-between rounded-xl border border-border bg-card px-4 py-2.5 shadow-sm'>
-      <div className='flex items-center gap-4'>
-        <ScheduleViewSwitcher view={view} onChange={handleChangeView} />
+    <div className='flex items-center justify-between rounded-[28px] border border-border/60 bg-card px-6 py-4 shadow-[0_10px_40px_rgba(45,106,79,0.06)]'>
+      <div className='flex items-center gap-6'>
+        {/* VIEW SWITCHER - To và rõ hơn */}
+        <div className='scale-110 origin-left'>
+          <ScheduleViewSwitcher view={view} onChange={handleChangeView} />
+        </div>
 
-        <div className='flex items-center gap-1 border-l border-border pl-4'>
+        {/* DATE CONTROLS */}
+        <div className='flex items-center gap-3 border-l-2 border-border/40 pl-6'>
           <Button
             variant='ghost'
             size='icon'
             onClick={onPrev}
-            className='h-8 w-8 rounded-lg hover:bg-accent hover:text-primary transition-colors'
+            className='h-11 w-11 rounded-2xl text-muted-foreground hover:bg-[#F0F7F4] hover:text-[#2D6A4F] transition-all'
           >
-            <HiChevronLeft size={18} />
+            <HiChevronLeft size={24} />
           </Button>
 
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant='outline'
-                size='sm'
                 className='
-                  h-8 gap-1.5 rounded-lg border-border bg-background
-                  px-2.5 text-xs font-bold text-muted-foreground
-                  hover:bg-accent hover:border-primary/30 hover:text-primary
-                  transition-all
-                '
+              h-11 gap-2.5 rounded-2xl border-border/80 bg-background
+              px-5 text-[12px] font-black uppercase tracking-[0.1em] text-[#2D6A4F]
+              hover:bg-[#F0F7F4] hover:border-[#2D6A4F]/40
+              transition-all shadow-sm active:scale-95
+            '
               >
-                <HiOutlineCalendar size={15} className='text-primary' />
+                <HiOutlineCalendar size={18} />
                 <span>Chọn ngày</span>
               </Button>
             </PopoverTrigger>
 
             <PopoverContent
               align='start'
-              className='w-auto p-0 rounded-xl border border-border bg-popover text-popover-foreground shadow-xl overflow-hidden'
+              className='w-auto p-0 rounded-[32px] border border-border/60 bg-card shadow-2xl overflow-hidden'
             >
               <Calendar
                 mode={view === 'day' ? 'single' : 'range'}
@@ -89,20 +92,22 @@ export default function ScheduleHeader({
             variant='ghost'
             size='icon'
             onClick={onNext}
-            className='h-8 w-8 rounded-lg hover:bg-accent hover:text-primary transition-colors'
+            className='h-11 w-11 rounded-2xl text-muted-foreground hover:bg-[#F0F7F4] hover:text-[#2D6A4F] transition-all'
           >
-            <HiChevronRight size={18} />
+            <HiChevronRight size={24} />
           </Button>
         </div>
       </div>
 
-      <div className='hidden sm:block text-right'>
-        <h2 className='text-sm font-black capitalize leading-none text-foreground'>
+      <div className='hidden md:flex flex-col items-end gap-1.5'>
+        <h2 className='text-lg font-black capitalize leading-tight text-[#1B4332] tracking-tight'>
           {formatScheduleTitle(view, selectedDate)}
         </h2>
-        <p className='mt-1 text-[9px] font-bold uppercase tracking-widest text-primary/60'>
-          {view === 'day' ? 'Hàng ngày' : 'Cả tuần'}
-        </p>
+        <div className='rounded-full bg-[#2D6A4F] px-3 py-1 shadow-lg shadow-[#2D6A4F]/20'>
+          <p className='text-[9px] font-black uppercase tracking-[0.2em] text-white'>
+            {view === 'day' ? 'Lịch trình ngày' : 'Kế hoạch tuần'}
+          </p>
+        </div>
       </div>
     </div>
   );
