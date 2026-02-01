@@ -73,6 +73,18 @@ const router = createBrowserRouter([
                 Component: lazy(
                   () => import('~/app/profile/nutrition-target/page')
                 )
+              },
+              {
+                path: 'physical-stats',
+                Component: lazy(
+                  () => import('~/app/profile/physical-stats/page')
+                )
+              },
+              {
+                path: 'schedule-settings',
+                Component: lazy(
+                  () => import('~/app/profile/schedule-settings/page')
+                )
               }
             ]
           }

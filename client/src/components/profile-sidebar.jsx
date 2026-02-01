@@ -1,4 +1,11 @@
-import { LogOut, Target, User, Utensils } from 'lucide-react';
+import {
+  Activity,
+  Calendar,
+  LogOut,
+  Target,
+  User,
+  Utensils
+} from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router';
 
@@ -37,6 +44,16 @@ export function ProfileSidebar({ ...props }) {
       title: 'Mục tiêu dinh dưỡng',
       url: '/profile/nutrition-target',
       icon: Target
+    },
+    {
+      title: 'Chỉ số cơ thể',
+      url: '/profile/physical-stats',
+      icon: Activity
+    },
+    {
+      title: 'Lịch trình bữa ăn',
+      url: '/profile/schedule-settings',
+      icon: Calendar
     }
   ];
 

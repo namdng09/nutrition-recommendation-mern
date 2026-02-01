@@ -22,8 +22,6 @@ import {
 } from '~/components/ui/select';
 import { Slider } from '~/components/ui/slider';
 import { Spinner } from '~/components/ui/spinner';
-import { ACTIVITY_LEVEL_OPTIONS } from '~/constants/activity-level';
-import { BODYFAT_OPTIONS } from '~/constants/bodyfat';
 import { USER_TARGET_OPTIONS } from '~/constants/user-target';
 import {
   useCalculateNutrition,
@@ -82,15 +80,6 @@ export function UpdateNutritionTarget() {
     resolver: yupResolver(updateNutritionTargetSchema),
     values: profile
       ? {
-          height: profile.height || 0,
-          weight:
-            profile.weightRecord?.length > 0
-              ? profile.weightRecord
-                  .slice()
-                  .sort((a, b) => new Date(b.date) - new Date(a.date))[0].weight
-              : 0,
-          bodyfat: profile.bodyfat || '',
-          activityLevel: profile.activityLevel || '',
           goal: {
             target: profile.goal?.target || '',
             weightGoal: profile.goal?.weightGoal || undefined,
@@ -123,11 +112,18 @@ export function UpdateNutritionTarget() {
 
   const handleCalculate = () => {
     const formData = form.getValues();
+    const latestWeight =
+      profile?.weightRecord?.length > 0
+        ? profile.weightRecord
+            .slice()
+            .sort((a, b) => new Date(b.date) - new Date(a.date))[0].weight
+        : 0;
+
     calculateNutrition({
-      height: formData.height,
-      weight: formData.weight,
-      bodyfat: formData.bodyfat,
-      activityLevel: formData.activityLevel,
+      height: profile?.height,
+      weight: latestWeight,
+      bodyfat: profile?.bodyfat,
+      activityLevel: profile?.activityLevel,
       goal: formData.goal,
       diet: profile?.diet,
       gender: profile?.gender,
@@ -144,152 +140,43 @@ export function UpdateNutritionTarget() {
       </div>
 
       <div className='space-y-6'>
-        {/* Physical Metrics */}
+        {/* Goal Section */}
         <div className='rounded-2xl border border-border bg-background p-6 shadow-sm'>
           <div className='mb-6'>
-            <h2 className='text-lg font-semibold'>Chỉ số cơ thể</h2>
-            <p className='text-sm'>Nhập các chỉ số hiện tại của cơ thể bạn</p>
+            <h2 className='text-lg font-semibold'>Mục tiêu</h2>
+            <p className='text-sm'>Chọn mục tiêu dinh dưỡng của bạn</p>
           </div>
 
           <Form {...form}>
             <form className='space-y-6'>
-              <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-                <FormField
-                  control={form.control}
-                  name='height'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Chiều cao (cm)</FormLabel>
+              <FormField
+                control={form.control}
+                name='goal.target'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Mục tiêu</FormLabel>
+                    <Select
+                      key={profile?.id + '-goal-' + (field.value ?? '')}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
                       <FormControl>
-                        <Input
-                          type='number'
-                          placeholder='175'
-                          className='rounded-xl border-border focus-visible:ring-ring'
-                          {...field}
-                          onChange={e =>
-                            field.onChange(parseFloat(e.target.value) || 0)
-                          }
-                        />
+                        <SelectTrigger className='w-full rounded-xl border-border focus:ring-ring'>
+                          <SelectValue placeholder='Chọn mục tiêu' />
+                        </SelectTrigger>
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='weight'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Cân nặng (kg)</FormLabel>
-                      <FormControl>
-                        <Input
-                          type='number'
-                          placeholder='70'
-                          className='rounded-xl border-border focus-visible:ring-ring'
-                          {...field}
-                          onChange={e =>
-                            field.onChange(parseFloat(e.target.value) || 0)
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='bodyfat'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Tỷ lệ mỡ</FormLabel>
-                      <Select
-                        key={profile?.id + '-bodyfat-' + (field.value ?? '')}
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <FormControl>
-                          <SelectTrigger className='w-full rounded-xl border-border focus:ring-ring'>
-                            <SelectValue placeholder='Chọn tỷ lệ mỡ' />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {BODYFAT_OPTIONS.map(option => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='activityLevel'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Mức độ hoạt động</FormLabel>
-                      <Select
-                        key={
-                          profile?.id + '-activityLevel-' + (field.value ?? '')
-                        }
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <FormControl>
-                          <SelectTrigger className='w-full rounded-xl border-border focus:ring-ring'>
-                            <SelectValue placeholder='Chọn mức độ hoạt động' />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {ACTIVITY_LEVEL_OPTIONS.map(option => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Goal Section */}
-              <div className='space-y-4 pt-2'>
-                <FormField
-                  control={form.control}
-                  name='goal.target'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Mục tiêu</FormLabel>
-                      <Select
-                        key={profile?.id + '-goal-' + (field.value ?? '')}
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <FormControl>
-                          <SelectTrigger className='w-full rounded-xl border-border focus:ring-ring'>
-                            <SelectValue placeholder='Chọn mục tiêu' />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {USER_TARGET_OPTIONS.map(option => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                      <SelectContent>
+                        {USER_TARGET_OPTIONS.map(option => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </form>
           </Form>
         </div>
@@ -305,6 +192,29 @@ export function UpdateNutritionTarget() {
 
           <Form {...form}>
             <div className='space-y-6'>
+              {/* Calories Target */}
+              <FormField
+                control={form.control}
+                name='nutritionTarget.caloriesTarget'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Mục tiêu Calo (kcal)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type='number'
+                        placeholder='2000'
+                        className='rounded-xl border-border focus-visible:ring-ring'
+                        {...field}
+                        onChange={e =>
+                          field.onChange(parseFloat(e.target.value) || 0)
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               {/* Macro Sliders */}
               <div className='space-y-6'>
                 {/* Carbs */}
