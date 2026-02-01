@@ -71,8 +71,8 @@ export function StepOneDiet({ control }) {
           <FormItem>
             <FormLabel>Dị ứng thực phẩm</FormLabel>
             <MultiSelect
-              value={field.value || []}
-              onValueChange={field.onChange}
+              values={field.value || []}
+              onValuesChange={field.onChange}
             >
               <FormControl>
                 <MultiSelectTrigger className='w-full'>

@@ -1,3 +1,4 @@
+import { vi } from 'date-fns/locale';
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
@@ -23,6 +24,7 @@ function Calendar({
 
   return (
     <DayPicker
+      locale={vi}
       showOutsideDays={showOutsideDays}
       className={cn(
         'bg-background group/calendar p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent',
@@ -33,7 +35,7 @@ function Calendar({
       captionLayout={captionLayout}
       formatters={{
         formatMonthDropdown: date =>
-          date.toLocaleString('default', { month: 'short' }),
+          date.toLocaleString('vi', { month: 'short' }),
         ...formatters
       }}
       classNames={{
