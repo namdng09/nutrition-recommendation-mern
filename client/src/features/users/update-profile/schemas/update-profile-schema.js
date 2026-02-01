@@ -7,14 +7,6 @@ export const updateProfileSchema = yup.object({
     .string()
     .min(2, 'Name must be at least 2 characters long')
     .optional(),
-  gender: yup
-    .string()
-    .oneOf(
-      GENDER_OPTIONS.map(option => option.value),
-      'Invalid gender'
-    )
-    .optional(),
-  dob: yup.string().optional(),
   avatar: yup
     .mixed()
     .test('fileSize', 'File size too large (max 5MB)', value => {
