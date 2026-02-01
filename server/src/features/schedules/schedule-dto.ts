@@ -42,6 +42,7 @@ export type CreateScheduleRequest = z.infer<typeof createScheduleRequestSchema>;
 
 export const updateScheduleRequestSchema = z.object({
   date: z.coerce.date().optional(),
+  notes: z.coerce.string().optional(),
   dayOfWeek: z
     .enum(Object.values(DAY_OF_WEEK), { message: 'Invalid day of week' })
     .optional(),
