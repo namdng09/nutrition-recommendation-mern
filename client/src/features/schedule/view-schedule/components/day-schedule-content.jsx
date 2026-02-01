@@ -1,8 +1,13 @@
-import { HiOutlineChevronRight, HiOutlinePlus } from 'react-icons/hi';
+import {
+  HiFire,
+  HiOutlineChevronRight,
+  HiOutlineDotsVertical,
+  HiOutlinePlus
+} from 'react-icons/hi';
 
 import { cn } from '~/lib/utils';
 
-import DishItem from './dish-item';
+import AddFoodModal from './add-food-modal';
 
 export default function DayScheduleContent({
   schedule,
@@ -13,65 +18,85 @@ export default function DayScheduleContent({
 }) {
   if (schedule) {
     return (
-      <div className='space-y-3'>
+      <div className='space-y-4'>
         {schedule.meals.map(meal => (
           <div
             key={meal._id}
             className={cn(
-              `
-              group flex items-center gap-4
-              rounded-2xl p-3.5
-              border transition-all
-            `,
+              'group rounded-[32px] border p-5 transition-all duration-200',
               isDayToday
-                ? `
-                border-primary/20
-                bg-card
-                shadow-sm
-              `
-                : `
-                border-border
-                bg-muted/40
-                hover:bg-card
-                hover:border-border/70
-                hover:shadow-md
-              `
+                ? 'border-primary/20 bg-card shadow-sm'
+                : 'border-border/60 bg-muted/20'
             )}
           >
-            <div
-              className='flex h-10 w-10 items-center justify-center
-              rounded-xl bg-card
-              border border-border
-              shadow-sm
-              group-hover:scale-110 transition-transform'
-            >
-              {getSmallMealIcon(meal.mealType)}
+            <div className='flex items-center justify-between mb-5 px-1'>
+              <div className='flex items-center gap-3'>
+                <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-card border border-border shadow-inner text-xl'>
+                  {getSmallMealIcon(meal.mealType)}
+                </div>
+
+                <h5 className='text-sm font-black uppercase tracking-widest text-foreground/80'>
+                  {meal.mealType}
+                </h5>
+              </div>
+
+              <div className='flex items-center gap-2'>
+                <span className='text-[10px] font-bold text-muted-foreground/50 bg-muted/50 px-2 py-0.5 rounded-full'>
+                  {meal.dishes.length} món
+                </span>
+
+                <AddFoodModal
+                  mealType={meal.mealType}
+                  scheduleId={schedule._id}
+                  scheduleMeals={schedule.meals}
+                >
+                  <button className='flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-primary transition-colors'>
+                    <HiOutlineDotsVertical size={16} />
+                  </button>
+                </AddFoodModal>
+              </div>
             </div>
 
-            <div className='flex-1 min-w-0'>
-              <p
-                className='text-[10px] font-black uppercase tracking-wider mb-1
-                text-muted-foreground
-                group-hover:text-primary transition-colors'
-              >
-                {meal.mealType}
-              </p>
+            <div className='space-y-4'>
+              {meal.dishes.length > 0 ? (
+                meal.dishes.map(dish => (
+                  <div
+                    key={dish._id}
+                    className='relative flex flex-col overflow-hidden rounded-[24px] border border-border/50 bg-card shadow-sm hover:shadow-md transition-shadow'
+                  >
+                    <div className='relative h-28 w-full overflow-hidden'>
+                      <img
+                        src={dish.image}
+                        alt={dish.name}
+                        className='h-full w-full object-cover'
+                      />
+                      <div className='absolute bottom-2 right-2 rounded-full bg-destructive px-2.5 py-1 text-[9px] font-black text-white shadow-lg uppercase'>
+                        {dish.servings} khẩu phần
+                      </div>
+                    </div>
 
-              <DishItem dishes={meal.dishes} />
+                    <div className='p-3.5'>
+                      <h4 className='text-[13px] font-black text-foreground mb-1 uppercase tracking-tight'>
+                        {dish.name}
+                      </h4>
+                      <div className='flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground'>
+                        <HiFire className='text-destructive' size={14} />
+                        <span>{dish.calories} kcal</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className='py-4 text-center text-[11px] italic text-muted-foreground/40'>
+                  Chưa có món ăn...
+                </div>
+              )}
             </div>
           </div>
         ))}
 
-        <button
-          className='mt-5 w-full flex items-center justify-center gap-2
-          rounded-2xl py-4
-          text-[11px] font-black uppercase tracking-[0.2em]
-          text-muted-foreground
-          border border-border
-          hover:bg-primary hover:text-primary-foreground
-          transition-all'
-        >
-          Chi tiết <HiOutlineChevronRight size={16} />
+        <button className='mt-2 w-full flex items-center justify-center gap-2 rounded-[20px] bg-background border border-border py-4 text-[11px] font-black uppercase tracking-[0.2em] text-foreground/60 hover:bg-muted/50 transition-all'>
+          CHI TIẾT <HiOutlineChevronRight size={16} />
         </button>
       </div>
     );
