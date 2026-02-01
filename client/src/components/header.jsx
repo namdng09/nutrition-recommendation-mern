@@ -57,11 +57,11 @@ const Header = () => {
             to='/'
             className='group flex items-center gap-3 transition-all hover:opacity-90'
           >
-            <div className='relative flex h-20 w-20 items-center justify-center bg-transparent transition-transform duration-500 group-hover:scale-110'>
+            <div className='relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg transition-transform duration-300 group-hover:scale-105'>
               <img
                 src='/logo2.png'
                 alt='Logo'
-                className='h-full w-full object-contain scale-[1.8]'
+                className='h-full w-full object-contain'
               />
             </div>
 
