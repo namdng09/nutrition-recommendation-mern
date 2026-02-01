@@ -23,9 +23,9 @@ const LoginCard = () => {
 
   const loginMutation = useLogin({
     onSuccess: (data, variables) => {
-      const { accessToken } = data.data;
+      const { accessToken, hasOnboarded } = data.data;
       dispatch(loadUser({ accessToken, isRemember: variables.isRemember }));
-      navigate('/');
+      navigate(hasOnboarded ? '/' : '/onboarding');
       toast.success(data.message || 'Đăng nhập thành công');
     },
     onError: error => {

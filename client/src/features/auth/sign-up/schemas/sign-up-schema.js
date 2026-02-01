@@ -1,18 +1,11 @@
 import * as yup from 'yup';
 
-import { GENDER } from '~/constants/gender';
-
 export const signUpSchema = yup.object({
   email: yup
     .string()
     .email('Sai định dạng email')
     .required('Vui lòng nhập email của bạn để tiếp tục'),
   name: yup.string().min(1, 'Tên là bắt buộc').required('Tên là bắt buộc'),
-  gender: yup
-    .string()
-    .oneOf([...Object.values(GENDER), ''], 'Giới tính không hợp lệ')
-    .optional(),
-  dob: yup.string().optional(),
   password: yup
     .string()
     .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
