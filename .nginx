@@ -1,0 +1,28 @@
+server {
+    listen 80;
+    server_name your-domain.com;
+
+    # Frontend: React Static Files
+    root /var/www/my-app/client/dist;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Cache versioned assets (Vite uses hashes like index-hash.js)
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Backend: Node/Express Proxy
+    location /api/ {
+        proxy_pass http://localhost:5000; # Change to your port
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}

@@ -1,0 +1,24 @@
+#:schema node_modules/wrangler/config-schema.json
+#Command to run to add prerender token: npx wrangler secret put PRERENDER_TOKEN
+
+name = "my-seo-worker"
+main = "index.ts"
+compatibility_date = "2024-05-02"
+
+# 1. Routing: This tells Cloudflare where to run the worker
+# Use 'custom_domain = true' to automatically handle DNS for you
+[[routes]]
+pattern = "your-domain.com"
+custom_domain = true
+
+[[routes]]
+pattern = "your-domain.com/*"
+custom_domain = true
+
+# 2. Variables: Public config (Non-sensitive)
+[vars]
+ENVIRONMENT = "production"
+
+# Note: Sensitive secrets (like PRERENDER_TOKEN) 
+# should be added via the Cloudflare Dashboard 
+# or 'wrangler secret put PRERENDER_TOKEN'

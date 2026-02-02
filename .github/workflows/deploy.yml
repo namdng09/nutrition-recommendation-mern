@@ -1,0 +1,65 @@
+name: Deploy App
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+
+      # Build both Frontend and Backend
+      - name: Build
+        run: |
+          cd frontend && npm install && npm run build
+          cd ../backend && npm install && npm run build
+
+      # Send to VM via SCP
+      # Send Frontend to VM
+      - name: Deploy Frontend
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          source: 'frontend/dist/*'
+          target: '/var/www/my-app/client/dist'
+          strip_components: 2
+
+      # Send Backend to VM
+      - name: Deploy Backend
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          source: 'backend/dist/*'
+          target: '/var/www/my-app/server'
+          strip_components: 2
+
+      # Restart API
+      - name: Restart PM2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: 'pm2 reload all'
+
+      # Deploy Cloudflare Worker
+      - name: Deploy Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          workingDirectory: 'worker'
+
+      # Selective Cache Purge (only assets, keeping meal pages cached)
+      - name: Purge Assets Cache
+        run: |
+          curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE_ID }}/purge_cache" \
+          -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          --data '{"prefixes": ["your-domain.com/assets"]}'
