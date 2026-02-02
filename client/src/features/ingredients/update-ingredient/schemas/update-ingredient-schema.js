@@ -35,8 +35,12 @@ export const UNIT_OPTIONS = [
   { value: 'tsp', label: 'Teaspoon (tsp)' },
   { value: 'cup', label: 'Cup' },
   { value: 'piece', label: 'Piece' },
+  { value: 'whole', label: 'Whole' },
   { value: 'oz', label: 'Ounce (oz)' },
-  { value: 'lb', label: 'Pound (lb)' }
+  { value: 'lb', label: 'Pound (lb)' },
+  { value: 'mg', label: 'Milligram (mg)' },
+  { value: 'μg', label: 'Microgram (μg)' },
+  { value: 'IU', label: 'International Unit (IU)' }
 ];
 
 export const VITAMIN_OPTIONS = [
@@ -53,12 +57,24 @@ export const VITAMIN_OPTIONS = [
 ];
 
 export const MINERAL_OPTIONS = [
-  { value: 'Calcium', label: 'Calcium' },
-  { value: 'Iron', label: 'Iron' },
+  { value: 'Alpha carotene', label: 'Alpha carotene' },
+  { value: 'Beta carotene', label: 'Beta carotene' },
+  { value: 'Caffeine', label: 'Caffeine' },
+  { value: 'Choline', label: 'Choline' },
+  { value: 'Copper', label: 'Copper' },
+  { value: 'Fluoride', label: 'Fluoride' },
+  { value: 'Folate (B9)', label: 'Folate (B9)' },
+  { value: 'Lycopene', label: 'Lycopene' },
   { value: 'Magnesium', label: 'Magnesium' },
+  { value: 'Manganese', label: 'Manganese' },
+  { value: 'Niacin', label: 'Niacin' },
+  { value: 'Pantothenic acid', label: 'Pantothenic acid' },
   { value: 'Phosphorus', label: 'Phosphorus' },
-  { value: 'Potassium', label: 'Potassium' },
-  { value: 'Sodium', label: 'Sodium' },
+  { value: 'Retinol', label: 'Retinol' },
+  { value: 'Riboflavin (B2)', label: 'Riboflavin (B2)' },
+  { value: 'Selenium', label: 'Selenium' },
+  { value: 'Theobromine', label: 'Theobromine' },
+  { value: 'Thiamine', label: 'Thiamine' },
   { value: 'Zinc', label: 'Zinc' }
 ];
 
@@ -82,6 +98,42 @@ export const AMINO_ACID_OPTIONS = [
   { value: 'Tryptophan', label: 'Tryptophan' },
   { value: 'Tyrosine', label: 'Tyrosine' },
   { value: 'Valine', label: 'Valine' }
+];
+
+export const SUGAR_OPTIONS = [
+  { value: 'Sugar', label: 'Sugar (Tổng đường)' },
+  { value: 'Sucrose', label: 'Sucrose (Đường mía)' },
+  { value: 'Glucose', label: 'Glucose (Đường nho)' },
+  { value: 'Fructose', label: 'Fructose (Đường trái cây)' },
+  { value: 'Lactose', label: 'Lactose (Đường sữa)' },
+  { value: 'Maltose', label: 'Maltose (Đường mạch nha)' },
+  { value: 'Galactose', label: 'Galactose' },
+  { value: 'Starch', label: 'Starch (Tinh bột)' }
+];
+
+export const FAT_OPTIONS = [
+  { value: 'Saturated fats', label: 'Saturated fats (Chất béo bão hòa)' },
+  {
+    value: 'Monounsaturated fats',
+    label: 'Monounsaturated fats (Chất béo không bão hòa đơn)'
+  },
+  {
+    value: 'Polyunsaturated fats',
+    label: 'Polyunsaturated fats (Chất béo không bão hòa đa)'
+  },
+  { value: 'Trans fats', label: 'Trans fats (Chất béo chuyển hóa)' }
+];
+
+export const FATTY_ACID_OPTIONS = [
+  { value: 'Total omega 3', label: 'Total omega 3 (Tổng omega 3)' },
+  { value: 'Total omega 6', label: 'Total omega 6 (Tổng omega 6)' },
+  { value: 'Alpha Linolenic Acid (ALA)', label: 'Alpha Linolenic Acid (ALA)' },
+  { value: 'Docosahexaenoic Acid (DHA)', label: 'Docosahexaenoic Acid (DHA)' },
+  {
+    value: 'Eicosapentaenoic Acid (EPA)',
+    label: 'Eicosapentaenoic Acid (EPA)'
+  },
+  { value: 'Docosapentaenoic Acid (DPA)', label: 'Docosapentaenoic Acid (DPA)' }
 ];
 
 const nutrientValueSchema = yup.object({
