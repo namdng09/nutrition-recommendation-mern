@@ -3,14 +3,20 @@ import React, { useEffect } from 'react';
 import { useFieldArray } from 'react-hook-form';
 
 import { Button } from '~/components/ui/button';
+import { AVAILABLE_TIME } from '~/constants/available-time';
+import { COOKING_PREFERENCE } from '~/constants/cooking-preference';
 import { DISH_CATEGORY } from '~/constants/dish-category';
+import { MEAL_COMPLEXITY } from '~/constants/meal-complexity';
 import { MEAL_SIZE } from '~/constants/meal-size';
 import { MEAL_TYPE, MEAL_TYPE_OPTIONS } from '~/constants/meal-type';
 
 function getMealDefaults(mealType) {
   const baseDefaults = {
     name: mealType,
-    mealSize: MEAL_SIZE.NORMAL
+    mealSize: MEAL_SIZE.NORMAL,
+    availableTime: AVAILABLE_TIME.SOME_TIME,
+    cookingPreference: COOKING_PREFERENCE.CAN_COOK,
+    complexity: MEAL_COMPLEXITY.SIMPLE
   };
 
   const dishCategoriesByMealType = {
@@ -122,7 +128,10 @@ export function StepThreeOneSchedule({ control, onEditMeal }) {
             append({
               name: '',
               dishCategories: [],
-              mealSize: MEAL_SIZE.NORMAL
+              mealSize: MEAL_SIZE.NORMAL,
+              availableTime: AVAILABLE_TIME.SOME_TIME,
+              cookingPreference: COOKING_PREFERENCE.CAN_COOK,
+              complexity: MEAL_COMPLEXITY.SIMPLE
             })
           }
         >

@@ -14,10 +14,16 @@ export function StepThreeContainer({
     if (currentSubStep === 1) {
       return <StepThreeOneSchedule control={control} onEditMeal={onEditMeal} />;
     }
+
+    // Calculate meal index from substep if not explicitly set
+    // Substep 2 = meal index 0, substep 3 = meal index 1, etc.
+    const mealIndex =
+      selectedMealIndex !== null ? selectedMealIndex : currentSubStep - 2;
+
     return (
       <StepThreeXMealDetail
         control={control}
-        mealIndex={selectedMealIndex}
+        mealIndex={mealIndex}
         onBack={onBackToList}
       />
     );
