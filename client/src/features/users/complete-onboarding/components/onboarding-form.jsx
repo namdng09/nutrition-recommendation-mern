@@ -9,19 +9,20 @@ import { Form } from '~/components/ui/form';
 import { useCompleteOnboarding } from '../api/use-complete-onboarding';
 import {
   onboardingSchema,
-  stepFourSchema,
   stepOneSchema,
   stepThreeSchema,
   stepTwoSchema
 } from '../schemas/onboarding-schema';
-import { StepFourPreview } from './step-four-preview';
-import { StepOneDiet } from './step-one-diet';
+import { StepOneContainer } from './step-one';
 import { StepProgress } from './step-progress';
-import { StepThreeGoals } from './step-three-goals';
-import { StepTwoAboutYou } from './step-two-about-you';
+import { StepThreeContainer } from './step-three';
+import { StepTwoContainer } from './step-two';
 
 export function OnboardingForm() {
   const [currentStep, setCurrentStep] = useState(1);
+  const [subSteps, setSubSteps] = useState({ 1: 1, 2: 1, 3: 1 }); // Track sub-step for each main step
+  const [selectedMealIndex, setSelectedMealIndex] = useState(null); // For Step 3 meal editing
+
   const navigate = useNavigate();
   const { mutate: completeOnboarding, isPending } = useCompleteOnboarding();
 
@@ -53,6 +54,40 @@ export function OnboardingForm() {
     }
   });
 
+  // Get total sub-steps for current main step
+  const getTotalSubSteps = step => {
+    switch (step) {
+      case 1:
+      case 2:
+        return 3;
+      case 3:
+        return 2; // List view is sub-step 1, detail view is sub-step 2
+      default:
+        return 1;
+    }
+  };
+
+  const currentSubStep = subSteps[currentStep];
+  const totalSubSteps = getTotalSubSteps(currentStep);
+
+  // Navigate to next sub-step or next main step
+  const handleSubStepNext = () => {
+    if (currentSubStep < totalSubSteps) {
+      setSubSteps(prev => ({ ...prev, [currentStep]: prev[currentStep] + 1 }));
+    } else {
+      handleNext(); // Move to next main step
+    }
+  };
+
+  // Navigate to previous sub-step or previous main step
+  const handleSubStepPrevious = () => {
+    if (currentSubStep > 1) {
+      setSubSteps(prev => ({ ...prev, [currentStep]: prev[currentStep] - 1 }));
+    } else {
+      handlePrevious(); // Move to previous main step
+    }
+  };
+
   const getStepSchema = step => {
     switch (step) {
       case 1:
@@ -61,8 +96,6 @@ export function OnboardingForm() {
         return stepTwoSchema;
       case 3:
         return stepThreeSchema;
-      case 4:
-        return stepFourSchema;
       default:
         return null;
     }
@@ -74,7 +107,7 @@ export function OnboardingForm() {
 
     try {
       await stepSchema.validate(currentValues, { abortEarly: false });
-      setCurrentStep(prev => Math.min(prev + 1, 4));
+      setCurrentStep(prev => Math.min(prev + 1, 3));
     } catch (error) {
       if (error.inner) {
         error.inner.forEach(err => {
@@ -90,10 +123,6 @@ export function OnboardingForm() {
 
   const handlePrevious = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
-  };
-
-  const handleGoToStep = step => {
-    setCurrentStep(step);
   };
 
   const onFinalSubmit = async data => {
@@ -116,17 +145,34 @@ export function OnboardingForm() {
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return <StepOneDiet control={form.control} />;
-      case 2:
-        return <StepTwoAboutYou control={form.control} />;
-      case 3:
-        return <StepThreeGoals control={form.control} watch={form.watch} />;
-      case 4:
         return (
-          <StepFourPreview
-            formData={form.getValues()}
-            onBack={handleGoToStep}
+          <StepOneContainer
+            control={form.control}
+            currentSubStep={currentSubStep}
+          />
+        );
+      case 2:
+        return (
+          <StepTwoContainer
+            control={form.control}
+            watch={form.watch}
             setValue={form.setValue}
+            currentSubStep={currentSubStep}
+          />
+        );
+      case 3:
+        return (
+          <StepThreeContainer
+            control={form.control}
+            currentSubStep={currentSubStep}
+            selectedMealIndex={selectedMealIndex}
+            onEditMeal={index => {
+              setSelectedMealIndex(index);
+              setSubSteps(prev => ({ ...prev, 3: 2 }));
+            }}
+            onBackToList={() => {
+              setSubSteps(prev => ({ ...prev, 3: 1 }));
+            }}
           />
         );
       default:
@@ -135,10 +181,11 @@ export function OnboardingForm() {
   };
 
   const handleNextClick = () => {
-    if (currentStep < 4) {
-      handleNext();
-    } else {
+    // On last step and last sub-step, submit
+    if (currentStep === 3 && currentSubStep === totalSubSteps) {
       form.handleSubmit(onFinalSubmit)();
+    } else {
+      handleSubStepNext();
     }
   };
 
@@ -154,11 +201,13 @@ export function OnboardingForm() {
 
       <StepProgress
         currentStep={currentStep}
-        totalSteps={4}
+        totalSteps={3}
+        currentSubStep={currentSubStep}
+        totalSubSteps={totalSubSteps}
         onNext={handleNextClick}
-        onPrevious={handlePrevious}
+        onPrevious={handleSubStepPrevious}
         isPending={isPending}
-        isLastStep={currentStep === 4}
+        isLastStep={currentStep === 3 && currentSubStep === totalSubSteps}
       />
     </div>
   );

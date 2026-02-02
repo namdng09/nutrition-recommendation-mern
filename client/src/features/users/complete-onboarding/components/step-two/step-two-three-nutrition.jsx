@@ -2,12 +2,11 @@ import { Beef, ClipboardList, Droplet, Target, Wheat } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { Button } from '~/components/ui/button';
 import { Progress } from '~/components/ui/progress';
 import { Skeleton } from '~/components/ui/skeleton';
 import { cn } from '~/lib/utils';
 
-import { useCalculateNutritionTarget } from '../api/use-calculate-nutrition-target';
+import { useCalculateNutritionTarget } from '../../api/use-calculate-nutrition-target';
 
 const MACRO_CONFIG = {
   carbs: {
@@ -54,17 +53,7 @@ function MacroDisplay({ type, min, max, percentage }) {
   );
 }
 
-// Reusable InfoItem component
-function InfoItem({ label, value }) {
-  return (
-    <div>
-      <span className='text-muted-foreground'>{label}:</span>
-      <span className='ml-2 font-medium'>{value}</span>
-    </div>
-  );
-}
-
-export function StepFourPreview({ formData, onBack, setValue }) {
+export function StepTwoThreeNutrition({ formData, setValue }) {
   const [calculatedTarget, setCalculatedTarget] = useState(null);
   const { mutate: calculateTarget, isPending } = useCalculateNutritionTarget();
 
@@ -84,7 +73,6 @@ export function StepFourPreview({ formData, onBack, setValue }) {
     calculateTarget(requestData, {
       onSuccess: data => {
         setCalculatedTarget(data.data);
-        // Update form values with calculated nutrition target
         setValue('nutritionTarget', data.data);
         toast.success('Đã tính toán mục tiêu dinh dưỡng thành công!');
       },
@@ -95,26 +83,6 @@ export function StepFourPreview({ formData, onBack, setValue }) {
     });
   }, []);
 
-  const calculateBMI = () => {
-    const heightInMeters = formData.height / 100;
-    return (formData.weight / (heightInMeters * heightInMeters)).toFixed(1);
-  };
-
-  const calculateAge = () => {
-    if (!formData.dob) return 0;
-    const today = new Date();
-    const birthDate = new Date(formData.dob);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birthDate.getDate())
-    ) {
-      age--;
-    }
-    return age;
-  };
-
   const calculateMacroPercentage = (macroMax, totalMax) => {
     return Number(((macroMax / totalMax) * 100).toFixed(1));
   };
@@ -122,9 +90,9 @@ export function StepFourPreview({ formData, onBack, setValue }) {
   return (
     <div className='space-y-6'>
       <div className='space-y-4'>
-        <h3 className='text-xl font-semibold'>Xem trước & Hoàn tất</h3>
+        <h3 className='text-xl font-semibold'>Mục tiêu dinh dưỡng</h3>
         <p className='text-muted-foreground text-sm'>
-          Xem lại mục tiêu dinh dưỡng được tính toán và xác nhận thông tin
+          Mục tiêu dinh dưỡng được tính toán dựa trên thông tin của bạn
         </p>
       </div>
 
@@ -135,13 +103,12 @@ export function StepFourPreview({ formData, onBack, setValue }) {
         </div>
       ) : (
         <>
-          {/* Nutrition Target Summary */}
-          <div className='border-input rounded-lg border bg-muted/50 p-6'>
-            <h4 className='mb-4 flex items-center gap-2 text-lg font-semibold'>
-              <Target className='size-5 text-primary' />
-              Mục tiêu dinh dưỡng hàng ngày
-            </h4>
-            {calculatedTarget && (
+          {calculatedTarget && (
+            <div className='border-input rounded-lg border bg-muted/50 p-6'>
+              <h4 className='mb-4 flex items-center gap-2 text-lg font-semibold'>
+                <Target className='size-5 text-primary' />
+                Mục tiêu dinh dưỡng hàng ngày
+              </h4>
               <div className='space-y-4'>
                 <div className='flex items-baseline gap-2'>
                   <span className='text-3xl font-bold text-primary'>
@@ -153,7 +120,6 @@ export function StepFourPreview({ formData, onBack, setValue }) {
                 <div className='space-y-3'>
                   <h5 className='text-sm font-medium'>Phân bổ Macros:</h5>
 
-                  {/* Calculate total max for percentages */}
                   {(() => {
                     const totalMax =
                       calculatedTarget.macros.carbs.max +
@@ -194,56 +160,8 @@ export function StepFourPreview({ formData, onBack, setValue }) {
                   })()}
                 </div>
               </div>
-            )}
-          </div>
-
-          {/* User Info Summary */}
-          <div className='border-input rounded-lg border p-6'>
-            <h4 className='mb-4 flex items-center gap-2 text-lg font-semibold'>
-              <ClipboardList className='size-5' />
-              Thông tin của bạn
-            </h4>
-            <div className='grid grid-cols-2 gap-4 text-sm'>
-              <InfoItem label='Tuổi' value={`${calculateAge()} tuổi`} />
-              <InfoItem label='Chiều cao' value={`${formData.height} cm`} />
-              <InfoItem label='Cân nặng' value={`${formData.weight} kg`} />
-              <InfoItem label='BMI' value={calculateBMI()} />
-              <div className='col-span-2'>
-                <InfoItem
-                  label='Số bữa ăn'
-                  value={`${formData.mealSettings?.length || 0} bữa/ngày`}
-                />
-              </div>
             </div>
-          </div>
-
-          {/* Edit Options */}
-          <div className='flex gap-2'>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={() => onBack(1)}
-              className='flex-1'
-            >
-              Chỉnh sửa chế độ ăn
-            </Button>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={() => onBack(2)}
-              className='flex-1'
-            >
-              Chỉnh sửa thông tin
-            </Button>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={() => onBack(3)}
-              className='flex-1'
-            >
-              Chỉnh sửa mục tiêu
-            </Button>
-          </div>
+          )}
         </>
       )}
     </div>

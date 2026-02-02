@@ -29,13 +29,13 @@ import { BODYFAT_OPTIONS } from '~/constants/bodyfat';
 import { GENDER_OPTIONS } from '~/constants/gender';
 import { cn } from '~/lib/utils';
 
-export function StepTwoAboutYou({ control }) {
+export function StepTwoOnePhysical({ control }) {
   return (
     <div className='space-y-6'>
       <div className='space-y-4'>
-        <h3 className='text-2xl font-semibold'>Về bạn</h3>
+        <h3 className='text-2xl font-semibold'>Thông tin cơ thể</h3>
         <p className='text-muted-foreground text-base'>
-          Cung cấp thông tin cá nhân để chúng tôi tính toán nhu cầu dinh dưỡng
+          Cung cấp thông tin cơ thể để tính toán nhu cầu dinh dưỡng
         </p>
       </div>
 
