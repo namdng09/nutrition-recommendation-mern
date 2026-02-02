@@ -22,7 +22,7 @@ export function StepOneOneDiet({ control }) {
         </p>
       </div>
 
-      <div className='grid grid-cols-1 lg:grid-cols-12 gap-8'>
+      <div className='grid grid-cols-1 lg:grid-cols-12 gap-4'>
         {/* Left Column - Decorative Illustration */}
         <div className='hidden lg:flex lg:col-span-5 flex-col items-center justify-center p-8'>
           <div className='relative flex items-center justify-center'>
@@ -36,13 +36,13 @@ export function StepOneOneDiet({ control }) {
 
         {/* Right Column - Diet Options List */}
         <div className='col-span-1 lg:col-span-7'>
-          <div className='max-h-[60vh] lg:max-h-none overflow-y-auto lg:overflow-visible'>
+          <div className='flex flex-col gap-1'>
             <FormField
               control={control}
               name='diet'
               render={({ field }) => (
-                <FormItem className='space-y-3'>
-                  <div className='flex flex-col gap-2'>
+                <FormItem className='space-y-0'>
+                  <div className='flex flex-col gap-0'>
                     {DIET_OPTIONS.map(option => {
                       const isSelected = field.value === option.value;
                       const Icon = option.icon;
@@ -51,40 +51,48 @@ export function StepOneOneDiet({ control }) {
                         <div
                           key={option.value}
                           className={cn(
-                            'relative flex items-start p-3 rounded-lg border-2 cursor-pointer transition-all hover:bg-accent/50',
+                            'relative group flex items-center gap-3 p-2 rounded-lg border transition-all duration-200 cursor-pointer hover:bg-accent/40',
                             isSelected
-                              ? 'border-primary bg-primary/5'
-                              : 'border-border'
+                              ? 'border-primary bg-primary/5 shadow-sm'
+                              : 'border-transparent hover:border-border/50'
                           )}
                           onClick={() => field.onChange(option.value)}
                         >
                           {/* Radio Indicator */}
-                          <div className='mr-3 shrink-0 mt-0.5'>
+                          <div className='shrink-0'>
                             <div
                               className={cn(
-                                'h-3.5 w-3.5 rounded-full border-2 flex items-center justify-center',
+                                'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
                                 isSelected
                                   ? 'border-primary'
-                                  : 'border-muted-foreground'
+                                  : 'border-muted-foreground group-hover:border-primary/50'
                               )}
                             >
                               {isSelected && (
-                                <div className='h-1.5 w-1.5 rounded-full bg-primary' />
+                                <div className='h-2 w-2 rounded-full bg-primary shadow-sm' />
                               )}
                             </div>
                           </div>
 
                           {/* Icon */}
-                          <div className='mr-3 shrink-0'>
-                            <Icon className='w-6 h-6' />
+                          <div
+                            className={cn(
+                              'p-1.5 rounded-md bg-background shadow-sm border shrink-0',
+                              isSelected ? 'border-primary/20' : 'border-border'
+                            )}
+                          >
+                            <Icon
+                              className='size-5 opacity-80'
+                              strokeWidth={1.5}
+                            />
                           </div>
 
                           {/* Content */}
                           <div className='flex-1 min-w-0'>
-                            <h4 className='font-semibold text-base text-foreground mb-1'>
+                            <h4 className='font-medium text-base leading-tight mb-0'>
                               {option.label}
                             </h4>
-                            <p className='text-sm text-muted-foreground'>
+                            <p className='text-xs text-muted-foreground leading-snug line-clamp-1'>
                               {option.description}
                             </p>
                           </div>
