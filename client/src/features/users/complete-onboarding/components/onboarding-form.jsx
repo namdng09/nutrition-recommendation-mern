@@ -1,11 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ArrowLeftIcon, ArrowRightIcon, LoaderIcon } from 'lucide-react';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
-import { Button } from '~/components/ui/button';
 import { Form } from '~/components/ui/form';
 
 import { useCompleteOnboarding } from '../api/use-complete-onboarding';
@@ -16,9 +14,9 @@ import {
   stepThreeSchema,
   stepTwoSchema
 } from '../schemas/onboarding-schema';
-import { ProgressIndicator } from './progress-indicator';
 import { StepFourPreview } from './step-four-preview';
 import { StepOneDiet } from './step-one-diet';
+import { StepProgress } from './step-progress';
 import { StepThreeGoals } from './step-three-goals';
 import { StepTwoAboutYou } from './step-two-about-you';
 
@@ -136,51 +134,32 @@ export function OnboardingForm() {
     }
   };
 
-  return (
-    <div className='mx-auto w-full max-w-3xl'>
-      <ProgressIndicator currentStep={currentStep} />
+  const handleNextClick = () => {
+    if (currentStep < 4) {
+      handleNext();
+    } else {
+      form.handleSubmit(onFinalSubmit)();
+    }
+  };
 
+  return (
+    <div className='mx-auto w-full max-w-3xl pb-32'>
       <Form {...form}>
         <div className='space-y-8'>
           <div className='bg-card min-h-[400px] rounded-lg border p-6 shadow-sm'>
             {renderStep()}
           </div>
-
-          <div className='flex justify-between'>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={handlePrevious}
-              disabled={currentStep === 1 || isPending}
-            >
-              <ArrowLeftIcon />
-              Quay lại
-            </Button>
-
-            {currentStep < 4 ? (
-              <Button type='button' onClick={handleNext} disabled={isPending}>
-                Tiếp theo
-                <ArrowRightIcon />
-              </Button>
-            ) : (
-              <Button
-                type='button'
-                onClick={form.handleSubmit(onFinalSubmit)}
-                disabled={isPending}
-              >
-                {isPending ? (
-                  <>
-                    <LoaderIcon className='animate-spin' />
-                    Đang xử lý...
-                  </>
-                ) : (
-                  'Hoàn thành'
-                )}
-              </Button>
-            )}
-          </div>
         </div>
       </Form>
+
+      <StepProgress
+        currentStep={currentStep}
+        totalSteps={4}
+        onNext={handleNextClick}
+        onPrevious={handlePrevious}
+        isPending={isPending}
+        isLastStep={currentStep === 4}
+      />
     </div>
   );
 }
