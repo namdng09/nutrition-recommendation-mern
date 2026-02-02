@@ -15,10 +15,10 @@ import {
   stepThreeSchema,
   stepTwoSchema
 } from '../schemas/onboarding-schema';
-import { StepOneContainer } from './step-one';
+import { StepOneContainer } from './step-one/step-one-container';
 import { StepProgress } from './step-progress';
-import { StepThreeContainer } from './step-three';
-import { StepTwoContainer } from './step-two';
+import { StepThreeContainer } from './step-three/step-three-container';
+import { StepTwoContainer } from './step-two/step-two-container';
 
 export function OnboardingForm() {
   const [currentStep, setCurrentStep] = useState(1);
