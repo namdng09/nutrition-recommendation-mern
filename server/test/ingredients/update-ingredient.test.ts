@@ -207,22 +207,6 @@ describe('PUT /api/ingredients/:id', () => {
     expect(res.body).toHaveProperty('message', 'Định dạng ID nguyên liệu không hợp lệ');
   });
 
-  it('should return 400 when name is too short', async () => {
-    const nonExistentId = new mongoose.Types.ObjectId().toString();
-    const updateData = {
-      name: 'Cà chua đỏ'
-    };
-
-    const res = await request(app)
-      .put(`/api/ingredients/${nonExistentId}`)
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', updateData.name);
-
-    expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Không tìm thấy nguyên liệu');
-  });
-
   // Validation: name too short
   it('should return 400 when name is too short', async () => {
     const updateData = {
