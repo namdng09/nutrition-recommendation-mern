@@ -12,6 +12,8 @@ const ProfileLayout = lazy(() => import('~/components/layouts/profile-layout'));
 
 const ErrorComponent = lazy(() => import('~/components/error'));
 
+const OnboardingPage = lazy(() => import('~/app/onboarding/page'));
+
 const router = createBrowserRouter([
   {
     Component: AppLayout,
@@ -51,7 +53,11 @@ const router = createBrowserRouter([
           },
           {
             path: 'onboarding',
-            Component: lazy(() => import('~/app/onboarding/page'))
+            Component: () => (
+              <PrivateRoute allowedRoles={[ROLE.USER]}>
+                <OnboardingPage />
+              </PrivateRoute>
+            )
           },
           {
             path: 'profile',
