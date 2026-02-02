@@ -46,15 +46,29 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
 
         <div className='flex items-center gap-3'>
           {targetCalories && (
-            <div className='flex flex-col items-end'>
-              <div className='flex items-center gap-1.5 rounded-full bg-destructive/10 px-3 py-1 text-[11px] font-black text-destructive'>
-                <HiFire size={14} />
-                {targetCalories} kcal
+            <div className='flex flex-col items-end gap-0.5'>
+              <span className='text-[10px] font-black uppercase tracking-[0.2em] text-[#2D6A4F]/60 px-1'>
+                Mục tiêu ngày
+              </span>
+
+              <div
+                className='
+        flex items-center gap-1.5 
+        rounded-full border border-[#2D6A4F]/20 
+        bg-[#F0F7F4] px-3 py-1 
+        shadow-sm
+      '
+              >
+                <HiFire className='text-[#2D6A4F]' size={14} />
+                <span className='text-[12px] font-black tracking-tight text-[#1B4332]'>
+                  {targetCalories}{' '}
+                  <span className='text-[9px] font-bold opacity-60'>kcal</span>
+                </span>
               </div>
             </div>
           )}
 
-          <div className='flex h-12 w-12 items-center justify-center rounded-2xl bg-accent text-primary shadow-inner'>
+          <div className='flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#2D6A4F] text-white shadow-inner border-2 border-[#F0F7F4]'>
             <HiOutlineClipboardList size={24} />
           </div>
         </div>
