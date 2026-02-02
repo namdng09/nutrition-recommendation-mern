@@ -15,7 +15,7 @@ export function StepProgress({
 
   return (
     <div className='fixed bottom-0 left-0 right-0 z-50 bg-background border-t shadow-lg'>
-      <div className='mx-auto w-full max-w-3xl px-6 py-4'>
+      <div className='mx-auto w-full max-w-5xl px-6 py-5'>
         {/* Segmented progress bar with breakpoints */}
         <div className='mb-4'>
           <div className='relative h-1'>
@@ -53,18 +53,29 @@ export function StepProgress({
             variant='outline'
             onClick={onPrevious}
             disabled={currentStep === 1 || isPending}
+            className='text-base'
           >
             <ArrowLeftIcon />
             Quay lại
           </Button>
 
           {!isLastStep ? (
-            <Button type='button' onClick={onNext} disabled={isPending}>
+            <Button
+              type='button'
+              onClick={onNext}
+              disabled={isPending}
+              className='text-base'
+            >
               Tiếp theo
               <ArrowRightIcon />
             </Button>
           ) : (
-            <Button type='button' onClick={onNext} disabled={isPending}>
+            <Button
+              type='button'
+              onClick={onNext}
+              disabled={isPending}
+              className='text-base'
+            >
               {isPending ? (
                 <>
                   <LoaderIcon className='animate-spin' />
