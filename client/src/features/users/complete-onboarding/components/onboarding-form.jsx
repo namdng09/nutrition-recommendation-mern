@@ -191,10 +191,10 @@ export function OnboardingForm() {
   };
 
   return (
-    <div className='mx-auto w-full max-w-5xl pb-32'>
+    <div className='mx-auto w-full max-w-5xl pb-4'>
       <Form {...form}>
         <div className='space-y-8'>
-          <div className='bg-card min-h-[400px] rounded-lg border p-6 shadow-sm'>
+          <div className='bg-card rounded-lg border p-6 shadow-sm'>
             {renderStep()}
           </div>
         </div>
