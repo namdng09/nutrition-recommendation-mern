@@ -1,6 +1,7 @@
 import {
   HiFire,
   HiOutlineChevronRight,
+  HiOutlineClipboardList,
   HiOutlineDotsVertical,
   HiOutlinePlus
 } from 'react-icons/hi';
@@ -94,6 +95,35 @@ export default function DayScheduleContent({
                 </div>
               )}
             </div>
+
+            {meal.notes && meal.notes.trim() !== '' && (
+              <div
+                className='
+                  group mt-4 relative overflow-hidden
+                  rounded-[20px] border-2 border-primary/10
+                  bg-primary/3
+                  px-4 py-3.5
+                  transition-all duration-300
+                '
+              >
+                <div className='absolute left-0 top-0 bottom-0 w-1 bg-primary/20' />
+
+                <div className='flex gap-3'>
+                  <div className='flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+                    <HiOutlineClipboardList size={14} />
+                  </div>
+
+                  <div className='flex-1 min-w-0'>
+                    <p className='text-[10px] font-black uppercase tracking-widest text-primary/60 mb-0.5'>
+                      Ghi chú bữa ăn
+                    </p>
+                    <p className='text-[13px] font-medium text-foreground/80 leading-relaxed italic'>
+                      "{meal.notes}"
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         ))}
 
