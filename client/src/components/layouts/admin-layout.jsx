@@ -36,7 +36,12 @@ const AdminLayout = () => {
       'manage-ingredients': 'Quản lý nguyên liệu',
       'create-ingredient': 'Tạo nguyên liệu',
       'update-ingredient': 'Cập nhật nguyên liệu',
-      'manage-dishes': 'Quản lý món ăn'
+      'manage-dishes': 'Quản lý món ăn',
+      'create-dish': 'Tạo món ăn',
+      'update-dish': 'Cập nhật món ăn',
+      'manage-collections': 'Quản lý bộ sưu tập',
+      'create-collection': 'Tạo bộ sưu tập',
+      'update-collection': 'Cập nhật bộ sưu tập'
     };
 
     const items = [];
