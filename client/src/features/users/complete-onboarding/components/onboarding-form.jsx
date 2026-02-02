@@ -191,7 +191,7 @@ export function OnboardingForm() {
   };
 
   return (
-    <div className='mx-auto w-full max-w-5xl pb-4'>
+    <div className='mx-auto w-full max-w-5xl pb-32'>
       <Form {...form}>
         <div className='space-y-8'>
           <div className='bg-card rounded-lg border p-6 shadow-sm'>
