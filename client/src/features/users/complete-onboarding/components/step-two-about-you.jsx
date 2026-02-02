@@ -33,8 +33,8 @@ export function StepTwoAboutYou({ control }) {
   return (
     <div className='space-y-6'>
       <div className='space-y-4'>
-        <h3 className='text-xl font-semibold'>Về bạn</h3>
-        <p className='text-muted-foreground text-sm'>
+        <h3 className='text-2xl font-semibold'>Về bạn</h3>
+        <p className='text-muted-foreground text-base'>
           Cung cấp thông tin cá nhân để chúng tôi tính toán nhu cầu dinh dưỡng
         </p>
       </div>
