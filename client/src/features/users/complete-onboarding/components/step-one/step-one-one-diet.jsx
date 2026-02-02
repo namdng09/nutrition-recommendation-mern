@@ -16,7 +16,7 @@ export function StepOneOneDiet({ control }) {
     <div className='space-y-6'>
       <div className='space-y-4'>
         <h3 className='text-3xl font-bold'>Bạn muốn ăn gì?</h3>
-        <p className='text-muted-foreground text-sm'>
+        <p className='text-muted-foreground'>
           Chọn một loại chế độ ăn chính. Bạn có thể loại trừ các thực phẩm cụ
           thể ở bước tiếp theo.
         </p>
@@ -51,7 +51,7 @@ export function StepOneOneDiet({ control }) {
                         <div
                           key={option.value}
                           className={cn(
-                            'relative group flex items-center gap-3 p-2 rounded-lg border transition-all duration-200 cursor-pointer hover:bg-accent/40',
+                            'relative group flex items-center gap-3 p-2.5 rounded-lg border transition-all duration-200 cursor-pointer hover:bg-accent/40',
                             isSelected
                               ? 'border-primary bg-primary/5 shadow-sm'
                               : 'border-transparent hover:border-border/50'
@@ -75,7 +75,7 @@ export function StepOneOneDiet({ control }) {
                           {/* Icon */}
                           <Icon
                             className={cn(
-                              'size-8 transition-colors flex-shrink-0',
+                              'size-9 transition-colors flex-shrink-0',
                               isSelected
                                 ? 'text-primary'
                                 : 'text-muted-foreground/50 group-hover:text-muted-foreground/80'
@@ -85,7 +85,7 @@ export function StepOneOneDiet({ control }) {
 
                           {/* Content */}
                           <div className='min-w-0 flex-1'>
-                            <h4 className='font-medium text-lg leading-tight mb-0'>
+                            <h4 className='font-medium text-lg leading-tight mb-0.5'>
                               {option.label}
                             </h4>
                             <p className='text-sm text-muted-foreground line-clamp-2'>
