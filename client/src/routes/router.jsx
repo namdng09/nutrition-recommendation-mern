@@ -9,7 +9,9 @@ const RootLayout = lazy(() => import('~/components/layouts/root-layout'));
 const AuthLayout = lazy(() => import('~/components/layouts/auth-layout'));
 const AdminLayout = lazy(() => import('~/components/layouts/admin-layout'));
 const ProfileLayout = lazy(() => import('~/components/layouts/profile-layout'));
-
+const OnboardingLayout = lazy(
+  () => import('~/components/layouts/onboarding-layout')
+);
 const ErrorComponent = lazy(() => import('~/components/error'));
 
 const OnboardingPage = lazy(() => import('~/app/onboarding/page'));
@@ -52,14 +54,6 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/dishes/[id]/page'))
           },
           {
-            path: 'onboarding',
-            Component: () => (
-              <PrivateRoute allowedRoles={[ROLE.USER]}>
-                <OnboardingPage />
-              </PrivateRoute>
-            )
-          },
-          {
             path: 'profile',
             Component: () => (
               <PrivateRoute allowedRoles={[ROLE.USER, ROLE.ADMIN]}>
@@ -94,6 +88,20 @@ const router = createBrowserRouter([
                 )
               }
             ]
+          }
+        ]
+      },
+      {
+        path: 'onboarding',
+        Component: OnboardingLayout,
+        children: [
+          {
+            index: true,
+            Component: () => (
+              <PrivateRoute allowedRoles={[ROLE.USER]}>
+                <OnboardingPage />
+              </PrivateRoute>
+            )
           }
         ]
       },
