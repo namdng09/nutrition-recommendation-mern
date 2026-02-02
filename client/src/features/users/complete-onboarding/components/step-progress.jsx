@@ -8,12 +8,38 @@ export function StepProgress({
   totalSteps,
   currentSubStep = 1,
   totalSubSteps = 1,
+  step3MealCount = 0,
   onNext,
   onPrevious,
   isPending,
   isLastStep
 }) {
-  const progressPercentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
+  // Calculate progress based on both main steps and sub-steps
+  const getTotalSubStepsForStep = step => {
+    switch (step) {
+      case 1:
+      case 2:
+        return 3;
+      case 3:
+        // Dynamic: 1 (list view) + number of meals (detail views)
+        return 1 + step3MealCount;
+      default:
+        return 1;
+    }
+  };
+
+  // Calculate progress proportionally within each step's section
+  const calculateProgress = () => {
+    const sectionSize = 100 / totalSteps; // Each step gets equal section (33.33% for 3 steps)
+    const currentStepProgress = (currentStep - 1) * sectionSize; // Start of current section
+    const currentSubStepProgress =
+      ((currentSubStep - 1) / getTotalSubStepsForStep(currentStep)) *
+      sectionSize;
+
+    return currentStepProgress + currentSubStepProgress;
+  };
+
+  const progressPercentage = calculateProgress();
 
   return (
     <div className='fixed bottom-0 left-0 right-0 z-50 bg-background border-t shadow-lg'>
@@ -30,15 +56,16 @@ export function StepProgress({
               style={{ width: `${progressPercentage}%` }}
             />
 
-            {/* Breakpoint markers */}
-            <div className='absolute inset-0 flex justify-between'>
-              {Array.from({ length: totalSteps }).map((_, index) => (
+            {/* Breakpoint markers - only middle points */}
+            <div className='absolute inset-0'>
+              {Array.from({ length: totalSteps - 1 }).map((_, index) => (
                 <div
                   key={index}
-                  className='relative flex items-center justify-center'
+                  className='absolute'
                   style={{
-                    width:
-                      index === 0 || index === totalSteps - 1 ? '0' : 'auto'
+                    left: `${((index + 1) / totalSteps) * 100}%`,
+                    top: '50%',
+                    transform: 'translate(-50%, -50%)'
                   }}
                 >
                   <div className='size-3 rounded-full bg-primary border-2 border-background' />
@@ -60,11 +87,6 @@ export function StepProgress({
             <ArrowLeftIcon />
             Quay lại
           </Button>
-
-          {/* Sub-step indicator */}
-          <div className='text-muted-foreground text-sm'>
-            Bước {currentSubStep}/{totalSubSteps}
-          </div>
 
           {!isLastStep ? (
             <Button

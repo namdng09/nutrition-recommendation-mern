@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { Form } from '~/components/ui/form';
+import { DIET } from '~/constants/diet';
+import { USER_TARGET } from '~/constants/user-target';
 
 import { useCompleteOnboarding } from '../api/use-complete-onboarding';
 import {
@@ -30,7 +32,7 @@ export function OnboardingForm() {
     resolver: yupResolver(onboardingSchema),
     mode: 'onChange',
     defaultValues: {
-      diet: '',
+      diet: DIET.ANYTHING,
       allergens: [],
       medicalHistory: [],
       gender: '',
@@ -40,7 +42,7 @@ export function OnboardingForm() {
       bodyfat: '',
       activityLevel: '',
       goal: {
-        target: ''
+        target: USER_TARGET.MAINTAIN_WEIGHT
       },
       nutritionTarget: {
         caloriesTarget: 0,
@@ -60,8 +62,11 @@ export function OnboardingForm() {
       case 1:
       case 2:
         return 3;
-      case 3:
-        return 2; // List view is sub-step 1, detail view is sub-step 2
+      case 3: {
+        // Dynamic: 1 (list view) + number of meals (detail views)
+        const mealCount = form.watch('mealSettings')?.length || 0;
+        return 1 + mealCount;
+      }
       default:
         return 1;
     }
@@ -69,6 +74,7 @@ export function OnboardingForm() {
 
   const currentSubStep = subSteps[currentStep];
   const totalSubSteps = getTotalSubSteps(currentStep);
+  const mealCount = form.watch('mealSettings')?.length || 0;
 
   // Navigate to next sub-step or next main step
   const handleSubStepNext = () => {
@@ -204,6 +210,7 @@ export function OnboardingForm() {
         totalSteps={3}
         currentSubStep={currentSubStep}
         totalSubSteps={totalSubSteps}
+        step3MealCount={mealCount}
         onNext={handleNextClick}
         onPrevious={handleSubStepPrevious}
         isPending={isPending}
