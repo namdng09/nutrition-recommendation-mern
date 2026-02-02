@@ -35,8 +35,11 @@ import { useCreateIngredient } from '~/features/ingredients/create-ingredient/ap
 import {
   AMINO_ACID_OPTIONS,
   createIngredientSchema,
+  FAT_OPTIONS,
+  FATTY_ACID_OPTIONS,
   INGREDIENT_CATEGORY_OPTIONS,
   MINERAL_OPTIONS,
+  SUGAR_OPTIONS,
   UNIT_OPTIONS,
   VITAMIN_OPTIONS
 } from '~/features/ingredients/create-ingredient/schemas/create-ingredient-schema';
@@ -53,7 +56,7 @@ const CreateIngredientForm = () => {
       name: '',
       description: '',
       categories: [],
-      baseUnit: { amount: 100, unit: 'g' },
+      baseUnit: { amount: 100, unit: 'g' }, // Base là 100g
       units: [{ value: 100, unit: 'g', isDefault: true }],
       allergens: [],
       nutrition: {
@@ -113,6 +116,33 @@ const CreateIngredientForm = () => {
     name: 'nutrition.aminoAcids'
   });
 
+  const {
+    fields: sugarFields,
+    append: appendSugar,
+    remove: removeSugar
+  } = useFieldArray({
+    control: form.control,
+    name: 'nutrition.sugars'
+  });
+
+  const {
+    fields: fatFields,
+    append: appendFat,
+    remove: removeFat
+  } = useFieldArray({
+    control: form.control,
+    name: 'nutrition.fats'
+  });
+
+  const {
+    fields: fattyAcidFields,
+    append: appendFattyAcid,
+    remove: removeFattyAcid
+  } = useFieldArray({
+    control: form.control,
+    name: 'nutrition.fattyAcids'
+  });
+
   const { mutate: createIngredient, isPending } = useCreateIngredient({
     onSuccess: response => {
       form.reset();
@@ -159,7 +189,7 @@ const CreateIngredientForm = () => {
   };
 
   const handleAddServingSize = () => {
-    appendUnit({ value: 0, unit: 'g', isDefault: false });
+    appendUnit({ value: 0, unit: 'whole', isDefault: false });
   };
 
   const handleSetDefaultServing = index => {
@@ -276,16 +306,81 @@ const CreateIngredientForm = () => {
 
             <Separator />
 
-            {/* Serving Size */}
+            {/* Base Unit - Khối lượng cơ sở */}
             <div className='space-y-4'>
               <div>
                 <h3 className='text-sm font-semibold mb-1'>
-                  Kích thước phần ăn
+                  Khối lượng cơ sở (Base Unit)
                 </h3>
                 <p className='text-xs text-muted-foreground'>
-                  Để chuyển đổi hoạt động, hãy đảm bảo kích thước phần ăn đại
-                  diện cho số lượng tương đương.
+                  Giá trị dinh dưỡng sẽ được tính cho khối lượng này
                 </p>
+              </div>
+
+              <div className='grid grid-cols-2 gap-4'>
+                <FormField
+                  control={form.control}
+                  name='baseUnit.amount'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='text-xs'>Số lượng</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='number'
+                          step='0.1'
+                          min='0'
+                          placeholder='100'
+                          className='h-9'
+                          {...field}
+                          onChange={e =>
+                            field.onChange(parseFloat(e.target.value) || 0)
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='baseUnit.unit'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='text-xs'>Đơn vị</FormLabel>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger className='h-9'>
+                            <SelectValue placeholder='Chọn đơn vị' />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value='g'>gram (g)</SelectItem>
+                          <SelectItem value='ml'>milliliter (ml)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Serving Sizes - Các đơn vị chuyển đổi */}
+            <div className='space-y-4'>
+              <div>
+                <h3 className='text-sm font-semibold mb-1'>
+                  Đơn vị chuyển đổi
+                </h3>
+                {/* <p className='text-xs text-muted-foreground'>
+                  Nhập số lượng tương đương với khối lượng cơ sở. Ví dụ: 1 quả
+                  trứng = 50g, để bằng 100g base cần 2 quả
+                </p> */}
               </div>
 
               <FormLabel className='text-sm font-medium'>Mặc định</FormLabel>
@@ -303,7 +398,7 @@ const CreateIngredientForm = () => {
                   {unitFields.map((field, index) => (
                     <div
                       key={field.id}
-                      className='flex items-center gap-2 p-2 border rounded-lg'
+                      className='flex items-center gap-2 p-3 border rounded-lg bg-accent/5'
                     >
                       <FormField
                         control={form.control}
@@ -320,12 +415,15 @@ const CreateIngredientForm = () => {
                         )}
                       />
 
-                      <div className='flex-1 flex gap-2'>
+                      <div className='flex-1 flex gap-2 items-end'>
                         <FormField
                           control={form.control}
                           name={`units.${index}.value`}
                           render={({ field }) => (
                             <FormItem className='flex-1'>
+                              <FormLabel className='text-xs'>
+                                Số lượng
+                              </FormLabel>
                               <FormControl>
                                 <Input
                                   type='number'
@@ -349,14 +447,15 @@ const CreateIngredientForm = () => {
                           control={form.control}
                           name={`units.${index}.unit`}
                           render={({ field }) => (
-                            <FormItem className='w-32'>
+                            <FormItem className='w-40'>
+                              <FormLabel className='text-xs'>Đơn vị</FormLabel>
                               <Select
                                 value={field.value}
                                 onValueChange={field.onChange}
                               >
                                 <FormControl>
                                   <SelectTrigger className='h-9'>
-                                    <SelectValue placeholder='Đơn vị' />
+                                    <SelectValue placeholder='Chọn' />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
@@ -373,6 +472,11 @@ const CreateIngredientForm = () => {
                             </FormItem>
                           )}
                         />
+
+                        <div className='text-xs text-muted-foreground pb-2'>
+                          = {form.watch('baseUnit.amount')}
+                          {form.watch('baseUnit.unit') || 'g'}
+                        </div>
                       </div>
 
                       {unitFields.length > 1 && (
@@ -399,74 +503,9 @@ const CreateIngredientForm = () => {
                 className='w-full'
               >
                 <Plus className='h-4 w-4 mr-2' />
-                Thêm kích thước phần ăn
+                Thêm đơn vị chuyển đổi
               </Button>
             </div>
-
-            <Separator />
-
-            {/* Package Info */}
-            {/* <div className='space-y-4'>
-              <h3 className='text-sm font-semibold'>Thông tin gói</h3>
-
-              <div className='grid grid-cols-2 gap-4'>
-                <FormField
-                  control={form.control}
-                  name='servingsPerPackage'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className='text-xs'>
-                        Servings per package
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type='number'
-                          min='1'
-                          placeholder='1'
-                          className='h-9'
-                          {...field}
-                          onChange={e =>
-                            field.onChange(parseInt(e.target.value) || 1)
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='price.value'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className='text-xs'>
-                        Price (optional)
-                      </FormLabel>
-                      <div className='flex gap-2'>
-                        <FormControl>
-                          <Input
-                            type='number'
-                            step='0.01'
-                            min='0'
-                            placeholder='0.00'
-                            className='h-9'
-                            {...field}
-                            onChange={e =>
-                              field.onChange(parseFloat(e.target.value) || 0)
-                            }
-                          />
-                        </FormControl>
-                        <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
-                          $USD
-                        </div>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div> */}
 
             <Separator />
 
@@ -1093,6 +1132,325 @@ const CreateIngredientForm = () => {
                           size='icon'
                           className='h-9 w-9'
                           onClick={() => removeAminoAcid(index)}
+                        >
+                          <Trash2 className='h-4 w-4' />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Sugars */}
+                  <div className='space-y-4'>
+                    <div className='flex items-center justify-between'>
+                      <h4 className='text-sm font-medium'>Đường (Sugars)</h4>
+                      <Select
+                        onValueChange={label =>
+                          appendSugar({ label, value: 0, unit: 'g' })
+                        }
+                      >
+                        <SelectTrigger className='w-[200px] h-8'>
+                          <SelectValue placeholder='Thêm loại đường' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {SUGAR_OPTIONS.map(option => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {sugarFields.map((field, index) => (
+                      <div key={field.id} className='flex items-end gap-2'>
+                        <FormField
+                          control={form.control}
+                          name={`nutrition.sugars.${index}.label`}
+                          render={({ field }) => (
+                            <FormItem className='flex-1'>
+                              <FormLabel className='text-xs'>
+                                {field.value}
+                              </FormLabel>
+                              <FormControl>
+                                <input type='hidden' {...field} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name={`nutrition.sugars.${index}.value`}
+                          render={({ field }) => (
+                            <FormItem className='flex-1'>
+                              <FormControl>
+                                <Input
+                                  type='number'
+                                  step='0.1'
+                                  min='0'
+                                  placeholder='0'
+                                  className='h-9'
+                                  {...field}
+                                  onChange={e =>
+                                    field.onChange(
+                                      parseFloat(e.target.value) || 0
+                                    )
+                                  }
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name={`nutrition.sugars.${index}.unit`}
+                          render={({ field }) => (
+                            <FormItem className='w-24'>
+                              <FormControl>
+                                <Select
+                                  value={field.value}
+                                  onValueChange={field.onChange}
+                                >
+                                  <SelectTrigger className='h-9'>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {UNIT_OPTIONS.map(option => (
+                                      <SelectItem
+                                        key={option.value}
+                                        value={option.value}
+                                      >
+                                        {option.value}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+
+                        <Button
+                          type='button'
+                          variant='ghost'
+                          size='icon'
+                          className='h-9 w-9'
+                          onClick={() => removeSugar(index)}
+                        >
+                          <Trash2 className='h-4 w-4' />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Separator />
+
+                  {/* Fats */}
+                  <div className='space-y-4'>
+                    <div className='flex items-center justify-between'>
+                      <h4 className='text-sm font-medium'>Chi tiết chất béo</h4>
+                      <Select
+                        onValueChange={label =>
+                          appendFat({ label, value: 0, unit: 'g' })
+                        }
+                      >
+                        <SelectTrigger className='w-[280px] h-8'>
+                          <SelectValue placeholder='Thêm loại chất béo' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {FAT_OPTIONS.map(option => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {fatFields.map((field, index) => (
+                      <div key={field.id} className='flex items-end gap-2'>
+                        <FormField
+                          control={form.control}
+                          name={`nutrition.fats.${index}.label`}
+                          render={({ field }) => (
+                            <FormItem className='flex-1'>
+                              <FormLabel className='text-xs'>
+                                {field.value}
+                              </FormLabel>
+                              <FormControl>
+                                <input type='hidden' {...field} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name={`nutrition.fats.${index}.value`}
+                          render={({ field }) => (
+                            <FormItem className='flex-1'>
+                              <FormControl>
+                                <Input
+                                  type='number'
+                                  step='0.1'
+                                  min='0'
+                                  placeholder='0'
+                                  className='h-9'
+                                  {...field}
+                                  onChange={e =>
+                                    field.onChange(
+                                      parseFloat(e.target.value) || 0
+                                    )
+                                  }
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name={`nutrition.fats.${index}.unit`}
+                          render={({ field }) => (
+                            <FormItem className='w-24'>
+                              <FormControl>
+                                <Select
+                                  value={field.value}
+                                  onValueChange={field.onChange}
+                                >
+                                  <SelectTrigger className='h-9'>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {UNIT_OPTIONS.map(option => (
+                                      <SelectItem
+                                        key={option.value}
+                                        value={option.value}
+                                      >
+                                        {option.value}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+
+                        <Button
+                          type='button'
+                          variant='ghost'
+                          size='icon'
+                          className='h-9 w-9'
+                          onClick={() => removeFat(index)}
+                        >
+                          <Trash2 className='h-4 w-4' />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Separator />
+
+                  {/* Fatty Acids */}
+                  <div className='space-y-4'>
+                    <div className='flex items-center justify-between'>
+                      <h4 className='text-sm font-medium'>Axit béo</h4>
+                      <Select
+                        onValueChange={label =>
+                          appendFattyAcid({ label, value: 0, unit: 'g' })
+                        }
+                      >
+                        <SelectTrigger className='w-[280px] h-8'>
+                          <SelectValue placeholder='Thêm axit béo' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {FATTY_ACID_OPTIONS.map(option => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {fattyAcidFields.map((field, index) => (
+                      <div key={field.id} className='flex items-end gap-2'>
+                        <FormField
+                          control={form.control}
+                          name={`nutrition.fattyAcids.${index}.label`}
+                          render={({ field }) => (
+                            <FormItem className='flex-1'>
+                              <FormLabel className='text-xs'>
+                                {field.value}
+                              </FormLabel>
+                              <FormControl>
+                                <input type='hidden' {...field} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name={`nutrition.fattyAcids.${index}.value`}
+                          render={({ field }) => (
+                            <FormItem className='flex-1'>
+                              <FormControl>
+                                <Input
+                                  type='number'
+                                  step='0.001'
+                                  min='0'
+                                  placeholder='0'
+                                  className='h-9'
+                                  {...field}
+                                  onChange={e =>
+                                    field.onChange(
+                                      parseFloat(e.target.value) || 0
+                                    )
+                                  }
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name={`nutrition.fattyAcids.${index}.unit`}
+                          render={({ field }) => (
+                            <FormItem className='w-24'>
+                              <FormControl>
+                                <Select
+                                  value={field.value}
+                                  onValueChange={field.onChange}
+                                >
+                                  <SelectTrigger className='h-9'>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {UNIT_OPTIONS.map(option => (
+                                      <SelectItem
+                                        key={option.value}
+                                        value={option.value}
+                                      >
+                                        {option.value}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+
+                        <Button
+                          type='button'
+                          variant='ghost'
+                          size='icon'
+                          className='h-9 w-9'
+                          onClick={() => removeFattyAcid(index)}
                         >
                           <Trash2 className='h-4 w-4' />
                         </Button>
