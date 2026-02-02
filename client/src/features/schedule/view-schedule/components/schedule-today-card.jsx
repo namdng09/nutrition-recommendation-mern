@@ -1,7 +1,6 @@
 import {
   HiChevronRight,
   HiFire,
-  HiLightningBolt,
   HiOutlineChevronRight,
   HiOutlineClipboardList,
   HiOutlineDotsVertical,
@@ -10,6 +9,7 @@ import {
 import { IoCafe, IoFastFood, IoLeaf, IoMoon, IoSunny } from 'react-icons/io5';
 import { Link } from 'react-router';
 
+import { useProfileForPage } from '~/features/users/view-profile/api/view-profile';
 import { formatDateVI } from '~/lib/utils';
 
 import AddFoodModal from './add-food-modal';
@@ -29,6 +29,9 @@ const getMealIcon = (type = '') => {
 };
 
 export default function ScheduleTodayCard({ schedule, selectedDate }) {
+  const { data: profile } = useProfileForPage();
+  const targetCalories = profile?.nutritionTarget?.caloriesTarget ?? undefined;
+
   return (
     <div className='rounded-[32px] border border-border bg-card p-6 shadow-sm'>
       <div className='mb-8 flex items-center justify-between px-1'>
@@ -36,12 +39,24 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
           <h2 className='text-2xl font-black tracking-tight text-foreground'>
             {formatDateVI(selectedDate)}
           </h2>
-          <p className='text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-1'>
+          <p className='mt-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60'>
             Lịch trình ăn uống
           </p>
         </div>
-        <div className='h-12 w-12 rounded-2xl bg-accent flex items-center justify-center text-primary shadow-inner'>
-          <HiOutlineClipboardList size={24} />
+
+        <div className='flex items-center gap-3'>
+          {targetCalories && (
+            <div className='flex flex-col items-end'>
+              <div className='flex items-center gap-1.5 rounded-full bg-destructive/10 px-3 py-1 text-[11px] font-black text-destructive'>
+                <HiFire size={14} />
+                {targetCalories} kcal
+              </div>
+            </div>
+          )}
+
+          <div className='flex h-12 w-12 items-center justify-center rounded-2xl bg-accent text-primary shadow-inner'>
+            <HiOutlineClipboardList size={24} />
+          </div>
         </div>
       </div>
 
