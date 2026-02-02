@@ -128,6 +128,7 @@ export function OnboardingForm() {
           <StepFourPreview
             formData={form.getValues()}
             onBack={handleGoToStep}
+            setValue={form.setValue}
           />
         );
       default:

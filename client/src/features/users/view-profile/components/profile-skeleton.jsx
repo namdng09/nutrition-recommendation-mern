@@ -2,7 +2,7 @@ import { Skeleton } from '~/components/ui/skeleton';
 
 const ProfileSkeleton = () => {
   return (
-    <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-0'>
+    <div className='px-4 sm:px-6'>
       {/* Page Header */}
       <div className='mb-4 flex items-center gap-2'>
         <Skeleton className='h-7 w-7 rounded' />
@@ -10,7 +10,7 @@ const ProfileSkeleton = () => {
       </div>
 
       {/* Profile Card */}
-      <div className='flex flex-col gap-4 rounded-2xl border border-[#2E7D32]/15 bg-background p-5 shadow-sm md:flex-row md:items-center md:justify-between'>
+      <div className='flex flex-col gap-4 rounded-2xl border border-border bg-background p-5 shadow-sm md:flex-row md:items-center md:justify-between'>
         <div className='flex items-center gap-4'>
           <Skeleton className='h-20 w-20 rounded-full' />
           <div className='space-y-2'>
@@ -26,7 +26,7 @@ const ProfileSkeleton = () => {
       </div>
 
       {/* Personal Information Form Card */}
-      <div className='mt-6 rounded-2xl border border-[#2E7D32]/15 bg-background p-6 shadow-sm'>
+      <div className='mt-6 rounded-2xl border border-border bg-background p-6 shadow-sm'>
         <div className='mb-4 space-y-1'>
           <Skeleton className='h-6 w-40' />
           <Skeleton className='h-4 w-72' />

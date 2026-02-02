@@ -1,6 +1,6 @@
 export const ROLE = Object.freeze({
-  USER: 'user',
-  ADMIN: 'admin'
+  USER: 'User',
+  ADMIN: 'Admin'
 });
 
 export const ROLE_OPTIONS = [

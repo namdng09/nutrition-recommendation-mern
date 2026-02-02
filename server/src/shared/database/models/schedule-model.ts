@@ -5,7 +5,7 @@ import mongoose, {
 } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
-import { MEAL_TYPE } from '~/shared/constants/meal-type';
+import { DAY_OF_WEEK } from '~/shared/constants/day-of-week';
 
 const scheduleSchema = new Schema(
   {
@@ -14,26 +14,26 @@ const scheduleSchema = new Schema(
       name: { type: String, required: true }
     },
     date: { type: Date, required: true },
-    dayOfWeek: { type: String, required: true },
-    isActive: { type: Boolean, default: true },
+    dayOfWeek: {
+      type: String,
+      enum: Object.values(DAY_OF_WEEK),
+      required: true
+    },
     meals: [
       {
-        mealType: {
-          type: String,
-          enum: Object.values(MEAL_TYPE),
-          required: true
-        },
+        mealType: { type: String, required: true },
+        notes: { type: String },
         dishes: [
           {
             dishId: { type: Schema.Types.ObjectId, ref: 'Dish' },
             name: { type: String, required: true },
             calories: { type: Number },
+            servings: { type: Number, default: 1 },
             image: { type: String }
           }
         ]
       }
     ],
-    totalCalories: { type: Number },
     notes: { type: String }
   },
   {
