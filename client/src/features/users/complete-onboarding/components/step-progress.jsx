@@ -39,7 +39,7 @@ export function StepProgress({
 
   return (
     <div className='fixed bottom-0 left-0 right-0 z-50 bg-background border-t shadow-lg'>
-      <div className='mx-auto w-full max-w-5xl px-6 py-5'>
+      <div className='mx-auto w-full max-w-5xl px-4 py-4'>
         <div className='mb-4'>
           <div className='relative h-1'>
             <div className='absolute inset-0 bg-muted rounded-full' />
@@ -67,7 +67,7 @@ export function StepProgress({
           </div>
         </div>
 
-        <div className='flex justify-between items-center'>
+        <div className='flex justify-between items-center gap-2'>
           <Button
             type='button'
             variant='outline'
