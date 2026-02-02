@@ -1,4 +1,4 @@
-import { Beef, ClipboardList, Droplet, Target, Wheat } from 'lucide-react';
+import { Beef, Droplet, Target, Wheat } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 

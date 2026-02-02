@@ -7,7 +7,6 @@ export function StepProgress({
   currentStep,
   totalSteps,
   currentSubStep = 1,
-  totalSubSteps = 1,
   step3MealCount = 0,
   onNext,
   onPrevious,
