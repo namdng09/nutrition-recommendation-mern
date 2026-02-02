@@ -28,8 +28,12 @@ import { MEAL_SIZE_OPTIONS } from '~/constants/meal-size';
 import { MEAL_TYPE_OPTIONS } from '~/constants/meal-type';
 
 export function StepThreeXMealDetail({ control, mealIndex, onBack }) {
+  if (mealIndex === null || mealIndex === undefined) {
+    return null;
+  }
+
   return (
-    <div className='space-y-6'>
+    <div key={`meal-detail-${mealIndex}`} className='space-y-6'>
       <div className='space-y-4'>
         <h3 className='text-xl font-semibold'>Chi tiết bữa ăn</h3>
         <p className='text-muted-foreground text-sm'>
@@ -46,20 +50,24 @@ export function StepThreeXMealDetail({ control, mealIndex, onBack }) {
               <FormLabel>
                 Loại bữa ăn <span className='text-destructive'>*</span>
               </FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
+              <FormControl>
+                <Select
+                  key={`meal-name-${mealIndex}`}
+                  onValueChange={field.onChange}
+                  value={field.value || ''}
+                >
                   <SelectTrigger className='w-full'>
                     <SelectValue placeholder='Chọn loại bữa ăn' />
                   </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {MEAL_TYPE_OPTIONS.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  <SelectContent>
+                    {MEAL_TYPE_OPTIONS.map(option => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -73,20 +81,24 @@ export function StepThreeXMealDetail({ control, mealIndex, onBack }) {
               <FormLabel>
                 Khẩu phần <span className='text-destructive'>*</span>
               </FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
+              <FormControl>
+                <Select
+                  key={`meal-size-${mealIndex}`}
+                  onValueChange={field.onChange}
+                  value={field.value || ''}
+                >
                   <SelectTrigger className='w-full'>
                     <SelectValue placeholder='Chọn khẩu phần' />
                   </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {MEAL_SIZE_OPTIONS.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  <SelectContent>
+                    {MEAL_SIZE_OPTIONS.map(option => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
