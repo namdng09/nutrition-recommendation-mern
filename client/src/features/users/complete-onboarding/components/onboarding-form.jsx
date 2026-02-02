@@ -191,7 +191,7 @@ export function OnboardingForm() {
   };
 
   return (
-    <div className='pb-32'>
+    <div className='pb-24'>
       <Form {...form}>
         <div className='space-y-8'>
           <div>{renderStep()}</div>
