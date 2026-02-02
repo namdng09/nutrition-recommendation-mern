@@ -4,6 +4,7 @@ import {
   HiOutlineDotsVertical,
   HiOutlinePlus
 } from 'react-icons/hi';
+import { Link } from 'react-router';
 
 import { cn } from '~/lib/utils';
 
@@ -60,7 +61,8 @@ export default function DayScheduleContent({
             <div className='space-y-4'>
               {meal.dishes.length > 0 ? (
                 meal.dishes.map(dish => (
-                  <div
+                  <Link
+                    to={`/dishes/${dish.dishId}`}
                     key={dish._id}
                     className='relative flex flex-col overflow-hidden rounded-[24px] border border-border/50 bg-card shadow-sm hover:shadow-md transition-shadow'
                   >
@@ -84,7 +86,7 @@ export default function DayScheduleContent({
                         <span>{dish.calories} kcal</span>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))
               ) : (
                 <div className='py-4 text-center text-[11px] italic text-muted-foreground/40'>

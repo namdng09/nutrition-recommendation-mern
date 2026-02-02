@@ -8,6 +8,7 @@ import {
   HiOutlineUserGroup
 } from 'react-icons/hi';
 import { IoCafe, IoFastFood, IoLeaf, IoMoon, IoSunny } from 'react-icons/io5';
+import { Link } from 'react-router';
 
 import { formatDateVI } from '~/lib/utils';
 
@@ -71,16 +72,23 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
             <div className='space-y-3'>
               {meal.dishes.length > 0 ? (
                 meal.dishes.map(dish => (
-                  <div
+                  <Link
                     key={dish._id}
-                    className='group flex items-center gap-4 p-3 rounded-2xl border border-border/50 bg-background/50 hover:bg-card hover:border-primary/30 hover:shadow-sm transition-all duration-200'
+                    to={`/dishes/${dish.dishId}`}
+                    className='
+      group flex items-center gap-4 p-3
+      rounded-2xl border border-border/50
+      bg-background/50
+      hover:bg-card hover:border-primary/30 hover:shadow-sm
+      transition-all duration-200
+    '
                   >
                     <div className='h-14 w-14 shrink-0 overflow-hidden rounded-[16px] border border-border bg-muted'>
                       {dish.image ? (
                         <img
                           src={dish.image}
                           alt={dish.name}
-                          className='h-full w-full object-cover group-hover:scale-105 transition-transform'
+                          className='h-full w-full object-cover transition-transform group-hover:scale-105'
                         />
                       ) : (
                         <div className='flex h-full w-full items-center justify-center'>
@@ -93,32 +101,30 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
                     </div>
 
                     <div className='flex-1 min-w-0'>
-                      <h4 className='text-[14px] font-bold text-foreground leading-tight truncate'>
+                      <h4 className='truncate text-[14px] font-bold text-foreground leading-tight'>
                         {dish.name}
                       </h4>
+
                       <div className='mt-1.5 flex items-center gap-4 text-[11px] font-medium text-muted-foreground'>
                         <span className='flex items-center gap-1'>
                           <HiFire className='text-destructive/70' size={14} />
-                          <b className='text-foreground/80'>
-                            {dish.calories}
-                          </b>{' '}
+                          <b className='text-foreground/80'>{dish.calories}</b>
                           kcal
                         </span>
+
                         <span className='flex items-center gap-1'>
                           <HiOutlineUserGroup size={14} />
-                          <b className='text-foreground/80'>
-                            {dish.servings}
-                          </b>{' '}
+                          <b className='text-foreground/80'>{dish.servings}</b>
                           phần
                         </span>
                       </div>
                     </div>
 
                     <HiChevronRight
-                      className='text-muted-foreground/20 group-hover:text-primary transition-colors pr-1'
+                      className='pr-1 text-muted-foreground/20 transition-colors group-hover:text-primary'
                       size={18}
                     />
-                  </div>
+                  </Link>
                 ))
               ) : (
                 <div className='ml-1 text-[11px] italic text-muted-foreground/50'>
