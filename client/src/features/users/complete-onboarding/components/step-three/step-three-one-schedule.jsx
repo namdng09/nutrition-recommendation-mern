@@ -10,14 +10,12 @@ import {
 import { MEAL_SIZE } from '~/constants/meal-size';
 import { MEAL_TYPE, MEAL_TYPE_OPTIONS } from '~/constants/meal-type';
 
-// Helper function to get default values for each meal type
 function getMealDefaults(mealType) {
   const baseDefaults = {
     name: mealType,
     mealSize: MEAL_SIZE.NORMAL
   };
 
-  // Define dish categories based on meal type
   const dishCategoriesByMealType = {
     [MEAL_TYPE.BREAKFAST]: [DISH_CATEGORY.BREAKFAST, DISH_CATEGORY.BEVERAGE],
     [MEAL_TYPE.LUNCH]: [

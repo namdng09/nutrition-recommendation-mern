@@ -22,8 +22,8 @@ import { StepTwoContainer } from './step-two';
 
 export function OnboardingForm() {
   const [currentStep, setCurrentStep] = useState(1);
-  const [subSteps, setSubSteps] = useState({ 1: 1, 2: 1, 3: 1 }); // Track sub-step for each main step
-  const [selectedMealIndex, setSelectedMealIndex] = useState(null); // For Step 3 meal editing
+  const [subSteps, setSubSteps] = useState({ 1: 1, 2: 1, 3: 1 });
+  const [selectedMealIndex, setSelectedMealIndex] = useState(null);
 
   const navigate = useNavigate();
   const { mutate: completeOnboarding, isPending } = useCompleteOnboarding();
@@ -56,14 +56,12 @@ export function OnboardingForm() {
     }
   });
 
-  // Get total sub-steps for current main step
   const getTotalSubSteps = step => {
     switch (step) {
       case 1:
       case 2:
         return 3;
       case 3: {
-        // Dynamic: 1 (list view) + number of meals (detail views)
         const mealCount = form.watch('mealSettings')?.length || 0;
         return 1 + mealCount;
       }
@@ -76,21 +74,19 @@ export function OnboardingForm() {
   const totalSubSteps = getTotalSubSteps(currentStep);
   const mealCount = form.watch('mealSettings')?.length || 0;
 
-  // Navigate to next sub-step or next main step
   const handleSubStepNext = () => {
     if (currentSubStep < totalSubSteps) {
       setSubSteps(prev => ({ ...prev, [currentStep]: prev[currentStep] + 1 }));
     } else {
-      handleNext(); // Move to next main step
+      handleNext();
     }
   };
 
-  // Navigate to previous sub-step or previous main step
   const handleSubStepPrevious = () => {
     if (currentSubStep > 1) {
       setSubSteps(prev => ({ ...prev, [currentStep]: prev[currentStep] - 1 }));
     } else {
-      handlePrevious(); // Move to previous main step
+      handlePrevious();
     }
   };
 
@@ -187,7 +183,6 @@ export function OnboardingForm() {
   };
 
   const handleNextClick = () => {
-    // On last step and last sub-step, submit
     if (currentStep === 3 && currentSubStep === totalSubSteps) {
       form.handleSubmit(onFinalSubmit)();
     } else {

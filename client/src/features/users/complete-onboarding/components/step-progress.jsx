@@ -14,24 +14,21 @@ export function StepProgress({
   isPending,
   isLastStep
 }) {
-  // Calculate progress based on both main steps and sub-steps
   const getTotalSubStepsForStep = step => {
     switch (step) {
       case 1:
       case 2:
         return 3;
       case 3:
-        // Dynamic: 1 (list view) + number of meals (detail views)
         return 1 + step3MealCount;
       default:
         return 1;
     }
   };
 
-  // Calculate progress proportionally within each step's section
   const calculateProgress = () => {
-    const sectionSize = 100 / totalSteps; // Each step gets equal section (33.33% for 3 steps)
-    const currentStepProgress = (currentStep - 1) * sectionSize; // Start of current section
+    const sectionSize = 100 / totalSteps;
+    const currentStepProgress = (currentStep - 1) * sectionSize;
     const currentSubStepProgress =
       ((currentSubStep - 1) / getTotalSubStepsForStep(currentStep)) *
       sectionSize;
@@ -44,19 +41,15 @@ export function StepProgress({
   return (
     <div className='fixed bottom-0 left-0 right-0 z-50 bg-background border-t shadow-lg'>
       <div className='mx-auto w-full max-w-5xl px-6 py-5'>
-        {/* Segmented progress bar with breakpoints */}
         <div className='mb-4'>
           <div className='relative h-1'>
-            {/* Background bar */}
             <div className='absolute inset-0 bg-muted rounded-full' />
 
-            {/* Progress fill */}
             <div
               className='absolute inset-y-0 left-0 bg-primary rounded-full transition-all duration-500 ease-out'
               style={{ width: `${progressPercentage}%` }}
             />
 
-            {/* Breakpoint markers - only middle points */}
             <div className='absolute inset-0'>
               {Array.from({ length: totalSteps - 1 }).map((_, index) => (
                 <div
@@ -75,7 +68,6 @@ export function StepProgress({
           </div>
         </div>
 
-        {/* Navigation buttons */}
         <div className='flex justify-between items-center'>
           <Button
             type='button'
