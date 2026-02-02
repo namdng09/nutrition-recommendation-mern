@@ -42,8 +42,9 @@ export const DishController = {
     const data = req.body;
     const image = req.file;
     const userId = req.user!._id.toString();
+    const userRole = req.user!.role;
 
-    const result = await DishService.updateDish(id, userId, data, image);
+    const result = await DishService.updateDish(id, userId, userRole, data, image);
 
     res
       .status(200)
@@ -52,8 +53,10 @@ export const DishController = {
 
   deleteDish: async (req: Request, res: Response) => {
     const id = req.params.id;
+    const userId = req.user!._id.toString();
+    const userRole = req.user!.role;
 
-    await DishService.deleteDish(id);
+    await DishService.deleteDish(id, userId, userRole);
 
     res.status(200).json(ApiResponse.success('Xóa món ăn thành công'));
   }

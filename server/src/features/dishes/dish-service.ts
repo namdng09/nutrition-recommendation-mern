@@ -116,6 +116,7 @@ export const DishService = {
   updateDish: async (
     id: string,
     userId: string,
+    userRole: string,
     data: UpdateDishRequest,
     image?: Express.Multer.File
   ) => {
@@ -128,7 +129,12 @@ export const DishService = {
       throw createHttpError(404, 'Không tìm thấy món ăn');
     }
 
-    // Check ownership
+    // Admin cannot update dishes
+    if (userRole === ROLE.ADMIN) {
+      throw createHttpError(403, 'Admin không có quyền sửa món ăn');
+    }
+
+    // Check ownership - only owner can update
     if (existingDish.user?._id.toString() !== userId) {
       throw createHttpError(403, 'Bạn không có quyền cập nhật món ăn này');
     }
@@ -195,7 +201,7 @@ export const DishService = {
     return updatedDish;
   },
 
-  deleteDish: async (id: string) => {
+  deleteDish: async (id: string, userId: string, userRole: string) => {
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
     }
@@ -203,6 +209,15 @@ export const DishService = {
     const dish = await DishModel.findById(id);
     if (!dish) {
       throw createHttpError(404, 'Không tìm thấy món ăn');
+    }
+
+    // Check ownership or role-based permission
+    const isOwner = dish.user?._id.toString() === userId;
+    const isAdmin = userRole === ROLE.ADMIN;
+
+    // Admin can delete any dish, users can delete their own dishes
+    if (!isOwner && !isAdmin) {
+      throw createHttpError(403, 'Bạn không có quyền xóa món ăn này');
     }
 
     const deletedDish = await DishModel.findByIdAndDelete(id);
