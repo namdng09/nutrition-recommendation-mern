@@ -6,6 +6,8 @@ import { Button } from '~/components/ui/button';
 export function StepProgress({
   currentStep,
   totalSteps,
+  currentSubStep = 1,
+  totalSubSteps = 1,
   onNext,
   onPrevious,
   isPending,
@@ -47,17 +49,22 @@ export function StepProgress({
         </div>
 
         {/* Navigation buttons */}
-        <div className='flex justify-between'>
+        <div className='flex justify-between items-center'>
           <Button
             type='button'
             variant='outline'
             onClick={onPrevious}
-            disabled={currentStep === 1 || isPending}
+            disabled={(currentStep === 1 && currentSubStep === 1) || isPending}
             className='text-base'
           >
             <ArrowLeftIcon />
             Quay lại
           </Button>
+
+          {/* Sub-step indicator */}
+          <div className='text-muted-foreground text-sm'>
+            Bước {currentSubStep}/{totalSubSteps}
+          </div>
 
           {!isLastStep ? (
             <Button
