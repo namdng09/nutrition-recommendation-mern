@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  HiOutlineDocumentText,
   HiOutlineDuplicate,
   HiOutlinePencil,
   HiOutlinePlusCircle,
@@ -15,6 +16,8 @@ import {
 } from '~/components/ui/dropdown-menu';
 import DishModal from '~/features/dishes/view-dishes/components/dish-modal';
 
+import DishNoteModal from './dish-note-modal';
+
 export default function AddFoodModal({
   children,
   mealType,
@@ -22,6 +25,7 @@ export default function AddFoodModal({
   scheduleMeals
 }) {
   const [openDishModal, setOpenDishModal] = useState(false);
+  const [openNoteModal, setOpenNoteModal] = useState(false);
 
   return (
     <>
@@ -43,6 +47,14 @@ export default function AddFoodModal({
 
           <DropdownMenuSeparator />
 
+          <DropdownMenuItem
+            className='gap-3'
+            onClick={() => setOpenNoteModal(true)}
+          >
+            <HiOutlineDocumentText size={18} />
+            Thêm ghi chú món ăn
+          </DropdownMenuItem>
+
           <DropdownMenuItem className='gap-3'>
             <HiOutlineDuplicate size={18} />
             Sao chép thực đơn
@@ -63,6 +75,14 @@ export default function AddFoodModal({
       <DishModal
         open={openDishModal}
         onClose={() => setOpenDishModal(false)}
+        mealType={mealType}
+        scheduleId={scheduleId}
+        scheduleMeals={scheduleMeals}
+      />
+
+      <DishNoteModal
+        open={openNoteModal}
+        onClose={() => setOpenNoteModal(false)}
         mealType={mealType}
         scheduleId={scheduleId}
         scheduleMeals={scheduleMeals}
