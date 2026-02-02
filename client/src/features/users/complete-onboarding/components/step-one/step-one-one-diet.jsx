@@ -27,7 +27,7 @@ export function StepOneOneDiet({ control }) {
         <div className='hidden lg:flex lg:col-span-5 flex-col items-center justify-center p-8'>
           <div className='relative flex items-center justify-center'>
             <Sandwich
-              size={240}
+              size={180}
               strokeWidth={1}
               className='text-primary relative z-10'
             />
@@ -75,24 +75,24 @@ export function StepOneOneDiet({ control }) {
                           </div>
 
                           {/* Icon */}
-                          <div
-                            className={cn(
-                              'p-1.5 rounded-md bg-background shadow-sm border shrink-0',
-                              isSelected ? 'border-primary/20' : 'border-border'
-                            )}
-                          >
+                          <div className='shrink-0'>
                             <Icon
-                              className='size-5 opacity-80'
+                              className={cn(
+                                'size-8 transition-colors',
+                                isSelected
+                                  ? 'text-primary'
+                                  : 'text-muted-foreground/50 group-hover:text-muted-foreground/80'
+                              )}
                               strokeWidth={1.5}
                             />
                           </div>
 
                           {/* Content */}
                           <div className='flex-1 min-w-0'>
-                            <h4 className='font-medium text-base leading-tight mb-0'>
+                            <h4 className='font-medium text-lg leading-tight mb-0'>
                               {option.label}
                             </h4>
-                            <p className='text-xs text-muted-foreground leading-snug line-clamp-1'>
+                            <p className='text-sm text-muted-foreground text-pretty'>
                               {option.description}
                             </p>
                           </div>
