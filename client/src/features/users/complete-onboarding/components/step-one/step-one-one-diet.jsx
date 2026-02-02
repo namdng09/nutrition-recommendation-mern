@@ -22,9 +22,9 @@ export function StepOneOneDiet({ control }) {
         </p>
       </div>
 
-      <div className='grid grid-cols-1 lg:grid-cols-12 gap-4'>
+      <div className='flex flex-col lg:flex-row gap-4'>
         {/* Left Column - Decorative Illustration */}
-        <div className='hidden lg:flex lg:col-span-5 flex-col items-center justify-center p-8'>
+        <div className='hidden lg:flex lg:w-2/5 flex-col items-center justify-center p-4'>
           <div className='relative flex items-center justify-center'>
             <Sandwich
               size={180}
@@ -35,7 +35,7 @@ export function StepOneOneDiet({ control }) {
         </div>
 
         {/* Right Column - Diet Options List */}
-        <div className='col-span-1 lg:col-span-7'>
+        <div className='w-full lg:w-3/5'>
           <div className='flex flex-col gap-1'>
             <FormField
               control={control}
@@ -59,40 +59,36 @@ export function StepOneOneDiet({ control }) {
                           onClick={() => field.onChange(option.value)}
                         >
                           {/* Radio Indicator */}
-                          <div className='shrink-0'>
-                            <div
-                              className={cn(
-                                'h-4 w-4 rounded-full border flex items-center justify-center transition-colors',
-                                isSelected
-                                  ? 'border-primary'
-                                  : 'border-muted-foreground group-hover:border-primary/50'
-                              )}
-                            >
-                              {isSelected && (
-                                <div className='h-2 w-2 rounded-full bg-primary shadow-sm' />
-                              )}
-                            </div>
+                          <div
+                            className={cn(
+                              'h-4 w-4 rounded-full border flex items-center justify-center transition-colors flex-shrink-0',
+                              isSelected
+                                ? 'border-primary'
+                                : 'border-muted-foreground group-hover:border-primary/50'
+                            )}
+                          >
+                            {isSelected && (
+                              <div className='h-2 w-2 rounded-full bg-primary shadow-sm' />
+                            )}
                           </div>
 
                           {/* Icon */}
-                          <div className='shrink-0'>
-                            <Icon
-                              className={cn(
-                                'size-8 transition-colors',
-                                isSelected
-                                  ? 'text-primary'
-                                  : 'text-muted-foreground/50 group-hover:text-muted-foreground/80'
-                              )}
-                              strokeWidth={1.5}
-                            />
-                          </div>
+                          <Icon
+                            className={cn(
+                              'size-8 transition-colors flex-shrink-0',
+                              isSelected
+                                ? 'text-primary'
+                                : 'text-muted-foreground/50 group-hover:text-muted-foreground/80'
+                            )}
+                            strokeWidth={1.5}
+                          />
 
                           {/* Content */}
-                          <div className='flex-1 min-w-0'>
+                          <div className='min-w-0 flex-1'>
                             <h4 className='font-medium text-lg leading-tight mb-0'>
                               {option.label}
                             </h4>
-                            <p className='text-sm text-muted-foreground text-pretty'>
+                            <p className='text-sm text-muted-foreground line-clamp-2'>
                               {option.description}
                             </p>
                           </div>
