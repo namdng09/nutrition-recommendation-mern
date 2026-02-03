@@ -7,6 +7,7 @@ import { Skeleton } from '~/components/ui/skeleton';
 import { cn } from '~/lib/utils';
 
 import { useCalculateNutritionTarget } from '../../api/use-calculate-nutrition-target';
+import { cleanGoalData } from '../../utils/clean-goal-data';
 
 const MACRO_CONFIG = {
   carbs: {
@@ -66,20 +67,7 @@ export function StepTwoThreeNutrition({ formData, setValue }) {
       bodyfat: formData.bodyfat,
       activityLevel: formData.activityLevel,
       dob: formData.dob,
-      goal: (() => {
-        if (!formData.goal) return undefined;
-        const { mode, ...restGoal } = formData.goal;
-
-        // Ensure numeric values are numbers
-        if (restGoal.weightGoal) {
-          restGoal.weightGoal = Number(restGoal.weightGoal);
-        }
-        if (restGoal.targetWeightChange) {
-          restGoal.targetWeightChange = Number(restGoal.targetWeightChange);
-        }
-
-        return restGoal;
-      })(),
+      goal: cleanGoalData(formData.goal),
       allergens: formData.allergens
     };
 
