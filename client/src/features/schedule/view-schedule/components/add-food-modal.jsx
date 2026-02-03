@@ -16,6 +16,7 @@ import {
 } from '~/components/ui/dropdown-menu';
 import DishModal from '~/features/dishes/view-dishes/components/dish-modal';
 
+import { useClearMealDishes } from '../../clear-dish/api/clear-dish';
 import DishNoteModal from './dish-note-modal';
 
 export default function AddFoodModal({
@@ -26,6 +27,11 @@ export default function AddFoodModal({
 }) {
   const [openDishModal, setOpenDishModal] = useState(false);
   const [openNoteModal, setOpenNoteModal] = useState(false);
+  const { mutate: clearMealDishes } = useClearMealDishes();
+
+  const handleClearMeal = () => {
+    clearMealDishes({ scheduleId, mealType });
+  };
 
   return (
     <>
@@ -65,9 +71,12 @@ export default function AddFoodModal({
             Thêm ngày mới
           </DropdownMenuItem>
 
-          <DropdownMenuItem className='gap-3 text-destructive'>
+          <DropdownMenuItem
+            className='gap-3 text-destructive'
+            onClick={handleClearMeal}
+          >
             <HiOutlineTrash size={18} />
-            Xoá toàn bộ ngày
+            Xoá toàn bộ món của bữa
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
