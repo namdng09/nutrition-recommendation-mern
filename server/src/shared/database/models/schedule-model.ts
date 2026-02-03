@@ -29,7 +29,8 @@ const scheduleSchema = new Schema(
             name: { type: String, required: true },
             calories: { type: Number },
             servings: { type: Number, default: 1 },
-            image: { type: String }
+            image: { type: String },
+            isEaten: { type: Boolean, default: false }
           }
         ]
       }
