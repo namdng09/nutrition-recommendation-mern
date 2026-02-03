@@ -1,5 +1,5 @@
 import { Activity } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 import { Controller } from 'react-hook-form';
 
 import {
@@ -49,49 +49,15 @@ export function StepOneThreeMedical({ control }) {
                 }
               };
 
-              // Helper for "Other" input
-              const otherValues = currentValues.filter(
-                v => !MEDICAL_HISTORY_OPTIONS.some(opt => opt.value === v)
-              );
-
-              const handleOtherChange = e => {
-                const inputValue = e.target.value;
-                const newOthers = inputValue
-                  ? inputValue.split(',').map(v => v.trim())
-                  : [];
-
-                // Keep predefined ones, replace others
-                const predefinedOnes = currentValues.filter(v =>
-                  MEDICAL_HISTORY_OPTIONS.some(opt => opt.value === v)
-                );
-
-                // Filter out empty strings from newOthers
-                const validNewOthers = newOthers.filter(v => v !== '');
-
-                // Remove duplicates if any
-                const uniqueNewOthers = [...new Set(validNewOthers)];
-
-                field.onChange([...predefinedOnes, ...uniqueNewOthers]);
-              };
-
-              const otherInputValue = otherValues.join(', ');
-
               return (
                 <FormItem>
                   <FormLabel className='sr-only'>Tiền sử bệnh lý</FormLabel>
                   <FormControl>
                     <div className='space-y-4'>
-                      <div className='space-y-2'>
-                        <h4 className='text-base font-medium text-primary'>
-                          Bệnh lý khác (nếu có)
-                        </h4>
-                        <Input
-                          className='w-full'
-                          placeholder='Nhập bệnh lý khác, cách nhau bởi dấu phẩy'
-                          value={otherInputValue}
-                          onChange={handleOtherChange}
-                        />
-                      </div>
+                      <OtherMedicalInput
+                        value={currentValues}
+                        onChange={field.onChange}
+                      />
 
                       <div className='space-y-2'>
                         <h4 className='text-base font-medium text-primary'>
@@ -146,6 +112,51 @@ export function StepOneThreeMedical({ control }) {
           />
         </div>
       </div>
+    </div>
+  );
+}
+
+function OtherMedicalInput({ value, onChange }) {
+  const [inputValue, setInputValue] = useState(() => {
+    const otherValues = value.filter(
+      v => !MEDICAL_HISTORY_OPTIONS.some(opt => opt.value === v)
+    );
+    return otherValues.join(', ');
+  });
+
+  const handleChange = e => {
+    const newVal = e.target.value;
+    setInputValue(newVal);
+
+    const newOthers = newVal
+      ? newVal
+          .split(',')
+          .map(v => v.trim())
+          .filter(v => v !== '')
+      : [];
+
+    // Keep predefined ones, replace others
+    const predefinedOnes = value.filter(v =>
+      MEDICAL_HISTORY_OPTIONS.some(opt => opt.value === v)
+    );
+
+    // Remove duplicates if any
+    const uniqueNewOthers = [...new Set(newOthers)];
+
+    onChange([...predefinedOnes, ...uniqueNewOthers]);
+  };
+
+  return (
+    <div className='space-y-2'>
+      <h4 className='text-base font-medium text-primary'>
+        Bệnh lý khác (nếu có)
+      </h4>
+      <Input
+        className='w-full'
+        placeholder='Nhập bệnh lý khác, cách nhau bởi dấu phẩy'
+        value={inputValue}
+        onChange={handleChange}
+      />
     </div>
   );
 }
