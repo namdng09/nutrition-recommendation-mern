@@ -215,6 +215,7 @@ export const AuthService = {
         provider: 'local',
         providerId: user.email,
         localPassword: hashedPassword,
+        verifyAt: new Date(),
         lastResetPasswordToken: token
       });
       return;
