@@ -12,7 +12,13 @@ export function StepTwoContainer({ control, watch, setValue, currentSubStep }) {
       case 2:
         return <StepTwoTwoGoal control={control} />;
       case 3:
-        return <StepTwoThreeNutrition formData={watch()} setValue={setValue} />;
+        return (
+          <StepTwoThreeNutrition
+            control={control}
+            watch={watch}
+            setValue={setValue}
+          />
+        );
       default:
         return null;
     }
