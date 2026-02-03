@@ -3,6 +3,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 
 import { UserModel } from '~/shared/database/models';
+import { ROLE } from '../constants/role';
 
 export const configurePassport = () => {
   if (process.env.JWT_SECRET) {
@@ -55,7 +56,7 @@ export const configurePassport = () => {
                 email: profile.emails?.[0]?.value || '',
                 name: profile.displayName || '',
                 avatar: profile.photos?.[0]?.value || '',
-                role: 'user'
+                role: ROLE.USER
               });
             }
 
