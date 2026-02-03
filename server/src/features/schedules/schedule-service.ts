@@ -433,7 +433,7 @@ export const ScheduleService = {
       });
     });
 
-    scheduleData.meals = scheduleData.meals?.map(meal => ({
+    const mealsWithNutrition = scheduleData.meals?.map(meal => ({
       ...meal,
       dishes: meal.dishes?.map(dish => {
         const dishId = dish.dishId?.toString();
@@ -463,7 +463,7 @@ export const ScheduleService = {
       })
     }));
 
-    return scheduleData;
+    return { ...scheduleData, meals: mealsWithNutrition };
   },
 
   updateSchedule: async (

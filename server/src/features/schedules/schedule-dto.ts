@@ -3,6 +3,14 @@ import { z } from 'zod';
 import { DAY_OF_WEEK } from '~/shared/constants/day-of-week';
 import { MEAL_TYPE } from '~/shared/constants/meal-type';
 
+const parseBoolean = (val: any) => {
+  if (typeof val === 'string') {
+    if (val === 'true') return true;
+    if (val === 'false') return false;
+  }
+  return val;
+};
+
 const parseJSON = (val: any) => {
   if (val === undefined || val === null) {
     return undefined;
@@ -78,7 +86,7 @@ export type UpdateScheduleMealsRequest = z.infer<
 >;
 
 export const updateScheduleDishStatusRequestSchema = z.object({
-  isEaten: z.coerce.boolean()
+  isEaten: z.preprocess(parseBoolean, z.coerce.boolean())
 });
 
 export type UpdateScheduleDishStatusRequest = z.infer<
