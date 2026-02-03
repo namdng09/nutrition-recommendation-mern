@@ -1,12 +1,24 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest';
 
 import app from '~/app';
 import { INGREDIENT_CATEGORY } from '~/shared/constants/ingredient-category';
 import { ROLE } from '~/shared/constants/role';
 import { UNIT } from '~/shared/constants/unit';
-import { AuthModel, IngredientModel, UserModel } from '~/shared/database/models';
+import {
+  AuthModel,
+  IngredientModel,
+  UserModel
+} from '~/shared/database/models';
 import { hashPassword } from '~/shared/utils/bcrypt';
 import { generateToken } from '~/shared/utils/jwt';
 
@@ -15,7 +27,8 @@ vi.mock('~/shared/utils/cloudinary', () => ({
   uploadImage: vi.fn().mockResolvedValue({
     success: true,
     data: {
-      secure_url: 'https://res.cloudinary.com/test/image/upload/v1234567890/updated-image.jpg',
+      secure_url:
+        'https://res.cloudinary.com/test/image/upload/v1234567890/updated-image.jpg',
       public_id: 'updated-image',
       format: 'jpg'
     }
@@ -50,7 +63,8 @@ describe('PUT /api/ingredients/:id', () => {
     vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValue({
       success: true,
       data: {
-        secure_url: 'https://res.cloudinary.com/test/image/upload/v1234567890/updated-image.jpg',
+        secure_url:
+          'https://res.cloudinary.com/test/image/upload/v1234567890/updated-image.jpg',
         public_id: 'updated-image',
         format: 'jpg'
       } as any
@@ -126,7 +140,10 @@ describe('PUT /api/ingredients/:id', () => {
     const updateData = {
       name: 'Cà chua đỏ',
       description: 'Cà chua tươi ngon',
-      categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES, INGREDIENT_CATEGORY.FRUITS])
+      categories: JSON.stringify([
+        INGREDIENT_CATEGORY.VEGETABLES,
+        INGREDIENT_CATEGORY.FRUITS
+      ])
     };
 
     const res = await request(app)
@@ -138,7 +155,10 @@ describe('PUT /api/ingredients/:id', () => {
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Cập nhật nguyên liệu thành công');
+    expect(res.body).toHaveProperty(
+      'message',
+      'Cập nhật nguyên liệu thành công'
+    );
     expect(res.body.data).toHaveProperty('_id', ingredientId);
     expect(res.body.data).toHaveProperty('name', 'Cà chua đỏ');
     expect(res.body.data).toHaveProperty('description', 'Cà chua tươi ngon');
@@ -204,7 +224,10 @@ describe('PUT /api/ingredients/:id', () => {
 
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Định dạng ID nguyên liệu không hợp lệ');
+    expect(res.body).toHaveProperty(
+      'message',
+      'Định dạng ID nguyên liệu không hợp lệ'
+    );
   });
 
   it('should return 400 when name is too short', async () => {

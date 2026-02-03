@@ -1,12 +1,24 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest';
 
 import app from '~/app';
 import { INGREDIENT_CATEGORY } from '~/shared/constants/ingredient-category';
 import { ROLE } from '~/shared/constants/role';
 import { UNIT } from '~/shared/constants/unit';
-import { AuthModel, IngredientModel, UserModel } from '~/shared/database/models';
+import {
+  AuthModel,
+  IngredientModel,
+  UserModel
+} from '~/shared/database/models';
 import { hashPassword } from '~/shared/utils/bcrypt';
 import { generateToken } from '~/shared/utils/jwt';
 
@@ -15,7 +27,8 @@ vi.mock('~/shared/utils/cloudinary', () => ({
   uploadImage: vi.fn().mockResolvedValue({
     success: true,
     data: {
-      secure_url: 'https://res.cloudinary.com/test/image/upload/v1234567890/test-image.jpg',
+      secure_url:
+        'https://res.cloudinary.com/test/image/upload/v1234567890/test-image.jpg',
       public_id: 'test-image',
       format: 'jpg'
     }
@@ -125,8 +138,7 @@ describe('DELETE /api/ingredients/:id', () => {
 
   // ============ AUTHENTICATION & AUTHORIZATION ============
   it('should return 401 when no token provided', async () => {
-    const res = await request(app)
-      .delete(`/api/ingredients/${ingredientId}`);
+    const res = await request(app).delete(`/api/ingredients/${ingredientId}`);
 
     expect(res.status).toBe(401);
   });
@@ -147,7 +159,10 @@ describe('DELETE /api/ingredients/:id', () => {
 
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Định dạng ID nguyên liệu không hợp lệ');
+    expect(res.body).toHaveProperty(
+      'message',
+      'Định dạng ID nguyên liệu không hợp lệ'
+    );
   });
 
   it('should return 400 when id contains special characters', async () => {
@@ -157,7 +172,10 @@ describe('DELETE /api/ingredients/:id', () => {
 
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Định dạng ID nguyên liệu không hợp lệ');
+    expect(res.body).toHaveProperty(
+      'message',
+      'Định dạng ID nguyên liệu không hợp lệ'
+    );
   });
 
   // ============ NOT FOUND (404) ============

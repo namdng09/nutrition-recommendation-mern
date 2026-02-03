@@ -150,9 +150,7 @@ describe('GET /api/ingredients', () => {
 
   // ============ EDGE CASES ============
   it('should return empty array when no ingredients match filter', async () => {
-    const res = await request(app).get(
-      '/api/ingredients?name=nonexistent'
-    );
+    const res = await request(app).get('/api/ingredients?name=nonexistent');
 
     expect(res.status).toBe(200);
     expect(res.body.data.docs).toEqual([]);
