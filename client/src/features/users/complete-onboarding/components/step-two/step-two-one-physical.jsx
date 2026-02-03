@@ -31,12 +31,9 @@ import { GENDER_OPTIONS } from '~/constants/gender';
 import { cn } from '~/lib/utils';
 
 const DEV_DEFAULT_VALUES = {
-  gender: GENDER_OPTIONS[0].value,
-  dob: '2000-01-01',
+  dob: '2000-01-08',
   height: 170,
-  weight: 60,
-  bodyfat: BODYFAT_OPTIONS[1].value,
-  activityLevel: ACTIVITY_LEVEL_OPTIONS[1].value
+  weight: 60
 };
 
 export function StepTwoOnePhysical({ control }) {

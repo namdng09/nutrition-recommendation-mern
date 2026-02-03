@@ -5,7 +5,10 @@ import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { Form } from '~/components/ui/form';
+import { ACTIVITY_LEVEL } from '~/constants/activity-level';
+import { BODYFAT } from '~/constants/bodyfat';
 import { DIET, DIET_OPTIONS } from '~/constants/diet';
+import { GENDER } from '~/constants/gender';
 import { USER_TARGET } from '~/constants/user-target';
 
 import { useCompleteOnboarding } from '../api/use-complete-onboarding';
@@ -13,7 +16,9 @@ import {
   onboardingSchema,
   stepOneSchema,
   stepThreeSchema,
-  stepTwoSchema
+  stepTwoOneSchema,
+  stepTwoSchema,
+  stepTwoTwoSchema
 } from '../schemas/onboarding-schema';
 import { StepOneContainer } from './step-one/step-one-container';
 import { StepProgress } from './step-progress';
@@ -35,12 +40,12 @@ export function OnboardingForm() {
       diet: DIET.ANYTHING,
       allergens: [],
       medicalHistory: [],
-      gender: '',
+      gender: GENDER.MALE,
       dob: '',
       height: 0,
       weight: 0,
-      bodyfat: '',
-      activityLevel: '',
+      bodyfat: BODYFAT.LOW,
+      activityLevel: ACTIVITY_LEVEL.DESK_JOB_LIGHT_EXERCISE,
       goal: {
         target: USER_TARGET.MAINTAIN_WEIGHT
       },
@@ -74,9 +79,24 @@ export function OnboardingForm() {
   const totalSubSteps = getTotalSubSteps(currentStep);
   const mealCount = form.watch('mealSettings')?.length || 0;
 
-  const handleSubStepNext = () => {
+  const handleSubStepNext = async () => {
+    let isValid = true;
+
+    if (currentStep === 2 && currentSubStep === 1) {
+      const fields = Object.keys(stepTwoOneSchema.fields);
+      isValid = await form.trigger(fields);
+    }
+
+    if (!isValid) {
+      toast.error('Vui lòng điền đầy đủ thông tin bắt buộc');
+      return;
+    }
+
     if (currentSubStep < totalSubSteps) {
-      setSubSteps(prev => ({ ...prev, [currentStep]: prev[currentStep] + 1 }));
+      setSubSteps(prev => ({
+        ...prev,
+        [currentStep]: prev[currentStep] + 1
+      }));
     } else {
       handleNext();
     }
