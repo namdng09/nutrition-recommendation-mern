@@ -8,5 +8,7 @@ export const QUERY_KEYS = {
   COLLECTION: id => ['collection', id],
   DISHES: ['dishes'],
   DISH: id => ['dish', id],
-  SCHEDULES: ['schedules']
+  SCHEDULES: ['schedules'],
+  POSTS: ['posts'],
+  POST: id => ['post', id]
 };
