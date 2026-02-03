@@ -47,6 +47,7 @@ export function OnboardingForm() {
       bodyfat: BODYFAT.LOW,
       activityLevel: ACTIVITY_LEVEL.DESK_JOB_LIGHT_EXERCISE,
       goal: {
+        mode: 'generic',
         target: USER_TARGET.MAINTAIN_WEIGHT
       },
       nutritionTarget: {
@@ -84,6 +85,11 @@ export function OnboardingForm() {
 
     if (currentStep === 2 && currentSubStep === 1) {
       const fields = Object.keys(stepTwoOneSchema.fields);
+      isValid = await form.trigger(fields);
+    }
+
+    if (currentStep === 2 && currentSubStep === 2) {
+      const fields = Object.keys(stepTwoTwoSchema.fields);
       isValid = await form.trigger(fields);
     }
 
@@ -148,16 +154,26 @@ export function OnboardingForm() {
   };
 
   const onFinalSubmit = async data => {
-    const selectedDiet = DIET_OPTIONS.find(d => d.value === data.diet);
+    // Extract goal and remove mode field
+    const { goal, ...restData } = data;
+    const { mode, ...goalWithoutMode } = goal || {};
+
+    // Create submit data with goal without mode
+    const submitData = {
+      ...restData,
+      goal: goalWithoutMode
+    };
+
+    const selectedDiet = DIET_OPTIONS.find(d => d.value === submitData.diet);
     if (selectedDiet?.excludedAllergens) {
       const allAllergens = [
-        ...data.allergens,
+        ...submitData.allergens,
         ...selectedDiet.excludedAllergens
       ];
-      data.allergens = [...new Set(allAllergens)];
+      submitData.allergens = [...new Set(allAllergens)];
     }
 
-    completeOnboarding(data, {
+    completeOnboarding(submitData, {
       onSuccess: response => {
         const successMessage =
           response?.message || 'Hoàn thành onboarding thành công!';

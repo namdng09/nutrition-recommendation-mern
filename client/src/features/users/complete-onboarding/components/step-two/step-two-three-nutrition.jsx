@@ -66,7 +66,20 @@ export function StepTwoThreeNutrition({ formData, setValue }) {
       bodyfat: formData.bodyfat,
       activityLevel: formData.activityLevel,
       dob: formData.dob,
-      goal: formData.goal,
+      goal: (() => {
+        if (!formData.goal) return undefined;
+        const { mode, ...restGoal } = formData.goal;
+
+        // Ensure numeric values are numbers
+        if (restGoal.weightGoal) {
+          restGoal.weightGoal = Number(restGoal.weightGoal);
+        }
+        if (restGoal.targetWeightChange) {
+          restGoal.targetWeightChange = Number(restGoal.targetWeightChange);
+        }
+
+        return restGoal;
+      })(),
       allergens: formData.allergens
     };
 

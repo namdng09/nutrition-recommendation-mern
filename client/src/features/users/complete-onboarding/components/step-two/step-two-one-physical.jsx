@@ -86,17 +86,17 @@ export function StepTwoOnePhysical({ control }) {
                   Giới tính <span className='text-destructive'>*</span>
                 </FormLabel>
                 <div className='w-[280px]'>
-                  <div className='flex space-x-2'>
+                  <div className='flex gap-2'>
                     {GENDER_OPTIONS.map(option => (
                       <button
                         key={option.value}
                         type='button'
                         onClick={() => field.onChange(option.value)}
                         className={cn(
-                          'flex-1 px-3 py-3 rounded-md transition-colors border text-base font-medium',
+                          'flex-1 px-4 py-2 rounded-lg border text-base font-medium transition-all duration-200',
                           field.value === option.value
-                            ? 'bg-primary text-primary-foreground border-primary'
-                            : 'bg-background hover:bg-muted border-input text-foreground'
+                            ? 'border-primary bg-primary/5 text-primary shadow-sm'
+                            : 'border-transparent bg-secondary/50 text-foreground hover:bg-secondary/80 hover:border-border/50'
                         )}
                       >
                         {option.label}
@@ -250,17 +250,17 @@ export function StepTwoOnePhysical({ control }) {
                   Tỷ lệ mỡ <span className='text-destructive'>*</span>
                 </FormLabel>
                 <div className='w-[280px]'>
-                  <div className='flex space-x-2'>
+                  <div className='flex gap-2'>
                     {BODYFAT_OPTIONS.map(option => (
                       <button
                         key={option.value}
                         type='button'
                         onClick={() => field.onChange(option.value)}
                         className={cn(
-                          'flex-1 px-3 py-3 rounded-md transition-colors border text-base font-medium whitespace-nowrap',
+                          'flex-1 px-4 py-2 rounded-lg border text-base font-medium transition-all duration-200 whitespace-nowrap',
                           field.value === option.value
-                            ? 'bg-primary text-primary-foreground border-primary'
-                            : 'bg-background hover:bg-muted border-input text-foreground'
+                            ? 'border-primary bg-primary/5 text-primary shadow-sm'
+                            : 'border-transparent bg-secondary/50 text-foreground hover:bg-secondary/80 hover:border-border/50'
                         )}
                       >
                         {option.label}

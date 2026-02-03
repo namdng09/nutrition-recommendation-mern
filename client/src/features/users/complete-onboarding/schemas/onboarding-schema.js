@@ -118,28 +118,48 @@ export const stepTwoOneSchema = yup.object({
     .required('Mức độ hoạt động là bắt buộc')
 });
 
-export const stepTwoTwoSchema = yup.object({
-  goal: yup.object({
-    target: yup
-      .string()
-      .oneOf(getEnumValues(USER_TARGET), 'Mục tiêu không hợp lệ')
-      .required('Mục tiêu là bắt buộc'),
-    weightGoal: yup.number().optional(),
-    targetWeightChange: yup.number().optional()
+const goalSchema = yup.object({
+  mode: yup.string().oneOf(['generic', 'exact']).default('generic'),
+  target: yup
+    .string()
+    .oneOf(getEnumValues(USER_TARGET), 'Mục tiêu không hợp lệ')
+    .required('Mục tiêu là bắt buộc'),
+  weightGoal: yup.number().when('mode', {
+    is: 'exact',
+    then: schema =>
+      schema
+        .typeError('Cân nặng mục tiêu phải là số')
+        .positive('Cân nặng mục tiêu phải là số dương')
+        .required('Cân nặng mục tiêu là bắt buộc'),
+    otherwise: schema =>
+      schema
+        .transform(value => (isNaN(value) ? undefined : value))
+        .notRequired()
+        .nullable()
+  }),
+  targetWeightChange: yup.number().when('mode', {
+    is: 'exact',
+    then: schema =>
+      schema
+        .typeError('Tốc độ thay đổi phải là số')
+        .positive('Tốc độ thay đổi phải là số dương')
+        .required('Tốc độ thay đổi là bắt buộc'),
+    otherwise: schema =>
+      schema
+        .transform(value => (isNaN(value) ? undefined : value))
+        .notRequired()
+        .nullable()
   })
+});
+
+export const stepTwoTwoSchema = yup.object({
+  goal: goalSchema
 });
 
 export const stepTwoSchema = stepTwoOneSchema.concat(stepTwoTwoSchema);
 
 export const stepThreeSchema = yup.object({
-  goal: yup.object({
-    target: yup
-      .string()
-      .oneOf(getEnumValues(USER_TARGET), 'Mục tiêu không hợp lệ')
-      .required('Mục tiêu là bắt buộc'),
-    weightGoal: yup.number().optional(),
-    targetWeightChange: yup.number().optional()
-  }),
+  goal: goalSchema,
   nutritionTarget: nutritionTargetSchema.optional(),
   mealSettings: yup.array().of(mealSettingSchema).optional()
 });
