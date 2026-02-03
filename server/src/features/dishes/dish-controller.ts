@@ -42,9 +42,8 @@ export const DishController = {
     const data = req.body;
     const image = req.file;
     const userId = req.user!._id.toString();
-    const userRole = req.user!.role;
 
-    const result = await DishService.updateDish(id, userId, userRole, data, image);
+    const result = await DishService.updateDish(id, userId, data, image);
 
     res
       .status(200)
