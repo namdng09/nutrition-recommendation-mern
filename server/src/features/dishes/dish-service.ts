@@ -116,7 +116,6 @@ export const DishService = {
   updateDish: async (
     id: string,
     userId: string,
-    userRole: string,
     data: UpdateDishRequest,
     image?: Express.Multer.File
   ) => {
@@ -127,11 +126,6 @@ export const DishService = {
     const existingDish = await DishModel.findById(id);
     if (!existingDish) {
       throw createHttpError(404, 'Không tìm thấy món ăn');
-    }
-
-    // Admin cannot update dishes
-    if (userRole === ROLE.ADMIN) {
-      throw createHttpError(403, 'Admin không có quyền sửa món ăn');
     }
 
     // Check ownership - only owner can update
