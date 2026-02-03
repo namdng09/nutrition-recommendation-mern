@@ -37,9 +37,6 @@ export function StepTwoTwoGoal({ control }) {
       setValue('goal.targetWeightChange', undefined);
     } else {
       setValue('goal.target', undefined);
-      if (!getValues('goal.weightGoal') && currentWeight) {
-        setValue('goal.weightGoal', currentWeight);
-      }
     }
   };
 
@@ -118,37 +115,39 @@ export function StepTwoTwoGoal({ control }) {
           </div>
 
           {/* Generic Target - Row Layout */}
-          <FormField
-            control={control}
-            name='goal.target'
-            render={({ field }) => (
-              <FormItem className='flex flex-row items-center justify-between space-y-0'>
-                <FormLabel className='text-lg'>
-                  Tôi muốn <span className='text-destructive'>*</span>
-                </FormLabel>
-                <FormControl>
-                  <div className='flex flex-wrap gap-2'>
-                    {USER_TARGET_OPTIONS.map(option => (
-                      <button
-                        key={option.value}
-                        type='button'
-                        onClick={() => field.onChange(option.value)}
-                        className={cn(
-                          'px-4 py-2 rounded-lg border text-base font-medium transition-all duration-200',
-                          field.value === option.value
-                            ? 'border-primary bg-primary/5 text-primary shadow-sm'
-                            : 'border-transparent bg-secondary/50 text-foreground hover:bg-secondary/80 hover:border-border/50'
-                        )}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {mode === 'generic' && (
+            <FormField
+              control={control}
+              name='goal.target'
+              render={({ field }) => (
+                <FormItem className='flex flex-row items-center justify-between space-y-0'>
+                  <FormLabel className='text-lg'>
+                    Tôi muốn <span className='text-destructive'>*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <div className='flex flex-wrap gap-2'>
+                      {USER_TARGET_OPTIONS.map(option => (
+                        <button
+                          key={option.value}
+                          type='button'
+                          onClick={() => field.onChange(option.value)}
+                          className={cn(
+                            'px-4 py-2 rounded-lg border text-base font-medium transition-all duration-200',
+                            field.value === option.value
+                              ? 'border-primary bg-primary/5 text-primary shadow-sm'
+                              : 'border-transparent bg-secondary/50 text-foreground hover:bg-secondary/80 hover:border-border/50'
+                          )}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
           {/* Specific Goal Fields - Row Layouts */}
           {mode === 'exact' && (

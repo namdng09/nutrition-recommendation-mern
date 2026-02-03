@@ -20,6 +20,7 @@ import {
   stepTwoSchema,
   stepTwoTwoSchema
 } from '../schemas/onboarding-schema';
+import { cleanGoalData } from '../utils/clean-goal-data';
 import { StepOneContainer } from './step-one/step-one-container';
 import { StepProgress } from './step-progress';
 import { StepThreeContainer } from './step-three/step-three-container';
@@ -48,7 +49,9 @@ export function OnboardingForm() {
       activityLevel: ACTIVITY_LEVEL.DESK_JOB_LIGHT_EXERCISE,
       goal: {
         mode: 'generic',
-        target: USER_TARGET.MAINTAIN_WEIGHT
+        target: USER_TARGET.MAINTAIN_WEIGHT,
+        weightGoal: undefined,
+        targetWeightChange: undefined
       },
       nutritionTarget: {
         caloriesTarget: 0,
@@ -154,14 +157,10 @@ export function OnboardingForm() {
   };
 
   const onFinalSubmit = async data => {
-    // Extract goal and remove mode field
-    const { goal, ...restData } = data;
-    const { mode, ...goalWithoutMode } = goal || {};
-
-    // Create submit data with goal without mode
+    // Extract goal and remove mode field using utility
     const submitData = {
-      ...restData,
-      goal: goalWithoutMode
+      ...data,
+      goal: cleanGoalData(data.goal)
     };
 
     const selectedDiet = DIET_OPTIONS.find(d => d.value === submitData.diet);
