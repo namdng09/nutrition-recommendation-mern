@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { Form } from '~/components/ui/form';
-import { DIET } from '~/constants/diet';
+import { DIET, DIET_OPTIONS } from '~/constants/diet';
 import { USER_TARGET } from '~/constants/user-target';
 
 import { useCompleteOnboarding } from '../api/use-complete-onboarding';
@@ -128,6 +128,15 @@ export function OnboardingForm() {
   };
 
   const onFinalSubmit = async data => {
+    const selectedDiet = DIET_OPTIONS.find(d => d.value === data.diet);
+    if (selectedDiet?.excludedAllergens) {
+      const allAllergens = [
+        ...data.allergens,
+        ...selectedDiet.excludedAllergens
+      ];
+      data.allergens = [...new Set(allAllergens)];
+    }
+
     completeOnboarding(data, {
       onSuccess: response => {
         const successMessage =

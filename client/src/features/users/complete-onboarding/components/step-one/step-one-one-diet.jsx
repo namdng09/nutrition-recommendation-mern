@@ -1,13 +1,7 @@
 import { Sandwich } from 'lucide-react';
 import React from 'react';
 
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '~/components/ui/form';
+import { FormField, FormItem, FormMessage } from '~/components/ui/form';
 import { DIET_OPTIONS } from '~/constants/diet';
 import { cn } from '~/lib/utils';
 
@@ -23,8 +17,7 @@ export function StepOneOneDiet({ control }) {
       </div>
 
       <div className='flex flex-col lg:flex-row gap-4'>
-        {/* Left Column - Decorative Illustration */}
-        <div className='hidden lg:flex lg:w-2/5 flex-col items-center justify-center p-4'>
+        <div className='hidden lg:flex lg:w-2/5 flex-col items-center justify-start p-4 pt-20 sticky top-0 h-fit'>
           <div className='relative flex items-center justify-center'>
             <Sandwich
               size={180}
@@ -34,7 +27,6 @@ export function StepOneOneDiet({ control }) {
           </div>
         </div>
 
-        {/* Right Column - Diet Options List */}
         <div className='w-full lg:w-3/5'>
           <div className='flex flex-col gap-1'>
             <FormField
@@ -58,7 +50,6 @@ export function StepOneOneDiet({ control }) {
                           )}
                           onClick={() => field.onChange(option.value)}
                         >
-                          {/* Radio Indicator */}
                           <div
                             className={cn(
                               'h-4 w-4 rounded-full border flex items-center justify-center transition-colors flex-shrink-0',
@@ -72,7 +63,6 @@ export function StepOneOneDiet({ control }) {
                             )}
                           </div>
 
-                          {/* Icon */}
                           <Icon
                             className={cn(
                               'size-9 transition-colors flex-shrink-0',
