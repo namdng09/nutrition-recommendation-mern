@@ -3,6 +3,7 @@ import {
   HiFire,
   HiOutlineChevronRight,
   HiOutlineClipboardList,
+  HiOutlineCog,
   HiOutlineDotsVertical,
   HiOutlineUserGroup
 } from 'react-icons/hi';
@@ -13,6 +14,7 @@ import { useProfileForPage } from '~/features/users/view-profile/api/view-profil
 import { formatDateVI } from '~/lib/utils';
 
 import AddFoodModal from './add-food-modal';
+import DeleteDishModal from './delete-dish-modal';
 
 const MEAL_CONFIG = {
   sáng: { icon: <IoCafe className='text-orange-400' /> },
@@ -101,59 +103,71 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
             <div className='space-y-3'>
               {meal.dishes.length > 0 ? (
                 meal.dishes.map(dish => (
-                  <Link
-                    key={dish._id}
-                    to={`/dishes/${dish.dishId}`}
-                    className='
-      group flex items-center gap-4 p-3
-      rounded-2xl border border-border/50
-      bg-background/50
-      hover:bg-card hover:border-primary/30 hover:shadow-sm
-      transition-all duration-200
-    '
-                  >
-                    <div className='h-14 w-14 shrink-0 overflow-hidden rounded-[16px] border border-border bg-muted'>
-                      {dish.image ? (
-                        <img
-                          src={dish.image}
-                          alt={dish.name}
-                          className='h-full w-full object-cover transition-transform group-hover:scale-105'
-                        />
-                      ) : (
-                        <div className='flex h-full w-full items-center justify-center'>
-                          <HiOutlinePhotograph
-                            className='text-muted-foreground/30'
-                            size={20}
+                  <div key={dish._id} className='relative group'>
+                    <Link
+                      to={`/dishes/${dish.dishId}`}
+                      className='
+        flex items-center gap-4 p-3
+        rounded-2xl border border-border/50
+        bg-background/50
+        hover:bg-card hover:border-primary/30 hover:shadow-sm
+        transition-all duration-200
+      '
+                    >
+                      <div className='h-14 w-14 shrink-0 overflow-hidden rounded-[16px] border border-border bg-muted'>
+                        {dish.image ? (
+                          <img
+                            src={dish.image}
+                            alt={dish.name}
+                            className='h-full w-full object-cover transition-transform group-hover:scale-105'
                           />
-                        </div>
-                      )}
-                    </div>
-
-                    <div className='flex-1 min-w-0'>
-                      <h4 className='truncate text-[14px] font-bold text-foreground leading-tight'>
-                        {dish.name}
-                      </h4>
-
-                      <div className='mt-1.5 flex items-center gap-4 text-[11px] font-medium text-muted-foreground'>
-                        <span className='flex items-center gap-1'>
-                          <HiFire className='text-destructive/70' size={14} />
-                          <b className='text-foreground/80'>{dish.calories}</b>
-                          kcal
-                        </span>
-
-                        <span className='flex items-center gap-1'>
-                          <HiOutlineUserGroup size={14} />
-                          <b className='text-foreground/80'>{dish.servings}</b>
-                          phần
-                        </span>
+                        ) : (
+                          <div className='flex h-full w-full items-center justify-center'>
+                            <HiOutlinePhotograph
+                              className='text-muted-foreground/30'
+                              size={20}
+                            />
+                          </div>
+                        )}
                       </div>
-                    </div>
 
-                    <HiChevronRight
-                      className='pr-1 text-muted-foreground/20 transition-colors group-hover:text-primary'
-                      size={18}
-                    />
-                  </Link>
+                      <div className='flex-1 min-w-0'>
+                        <h4 className='truncate text-[14px] font-bold text-foreground leading-tight'>
+                          {dish.name}
+                        </h4>
+
+                        <div className='mt-1.5 flex items-center gap-4 text-[11px] font-medium text-muted-foreground'>
+                          <span className='flex items-center gap-1'>
+                            <HiFire className='text-destructive/70' size={14} />
+                            <b className='text-foreground/80'>
+                              {dish.calories}
+                            </b>
+                            kcal
+                          </span>
+
+                          <span className='flex items-center gap-1'>
+                            <HiOutlineUserGroup size={14} />
+                            <b className='text-foreground/80'>
+                              {dish.servings}
+                            </b>
+                            phần
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+
+                    <div className='absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition'>
+                      <DeleteDishModal
+                        scheduleId={schedule._id}
+                        mealType={meal.mealType}
+                        dishId={dish.dishId}
+                      >
+                        <button className='p-1.5 rounded-full bg-white shadow'>
+                          <HiOutlineCog size={16} />
+                        </button>
+                      </DeleteDishModal>
+                    </div>
+                  </div>
                 ))
               ) : (
                 <div className='ml-1 text-[11px] italic text-muted-foreground/50'>

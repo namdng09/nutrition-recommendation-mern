@@ -2,6 +2,7 @@ import {
   HiFire,
   HiOutlineChevronRight,
   HiOutlineClipboardList,
+  HiOutlineCog,
   HiOutlineDotsVertical,
   HiOutlinePlus
 } from 'react-icons/hi';
@@ -10,6 +11,7 @@ import { Link } from 'react-router';
 import { cn } from '~/lib/utils';
 
 import AddFoodModal from './add-food-modal';
+import DeleteDishModal from './delete-dish-modal';
 
 export default function DayScheduleContent({
   schedule,
@@ -62,32 +64,45 @@ export default function DayScheduleContent({
             <div className='space-y-4'>
               {meal.dishes.length > 0 ? (
                 meal.dishes.map(dish => (
-                  <Link
-                    to={`/dishes/${dish.dishId}`}
-                    key={dish._id}
-                    className='relative flex flex-col overflow-hidden rounded-[24px] border border-border/50 bg-card shadow-sm hover:shadow-md transition-shadow'
-                  >
-                    <div className='relative h-28 w-full overflow-hidden'>
-                      <img
-                        src={dish.image}
-                        alt={dish.name}
-                        className='h-full w-full object-cover'
-                      />
-                      <div className='absolute bottom-2 right-2 rounded-full bg-destructive px-2.5 py-1 text-[9px] font-black text-white shadow-lg uppercase'>
-                        {dish.servings} khẩu phần
+                  <div key={dish._id} className='relative group'>
+                    <Link
+                      to={`/dishes/${dish.dishId}`}
+                      className='relative flex flex-col overflow-hidden rounded-[24px] border border-border/50 bg-card shadow-sm hover:shadow-md transition-shadow'
+                    >
+                      <div className='relative h-28 w-full overflow-hidden'>
+                        <img
+                          src={dish.image}
+                          alt={dish.name}
+                          className='h-full w-full object-cover'
+                        />
+                        <div className='absolute bottom-2 right-2 rounded-full bg-destructive px-2.5 py-1 text-[9px] font-black text-white shadow-lg uppercase'>
+                          {dish.servings} khẩu phần
+                        </div>
                       </div>
-                    </div>
 
-                    <div className='p-3.5'>
-                      <h4 className='text-[13px] font-black text-foreground mb-1 uppercase tracking-tight'>
-                        {dish.name}
-                      </h4>
-                      <div className='flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground'>
-                        <HiFire className='text-destructive' size={14} />
-                        <span>{dish.calories} kcal</span>
+                      <div className='p-3.5'>
+                        <h4 className='text-[13px] font-black text-foreground mb-1 uppercase tracking-tight'>
+                          {dish.name}
+                        </h4>
+                        <div className='flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground'>
+                          <HiFire className='text-destructive' size={14} />
+                          <span>{dish.calories} kcal</span>
+                        </div>
                       </div>
+                    </Link>
+
+                    <div className='absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition'>
+                      <DeleteDishModal
+                        scheduleId={schedule._id}
+                        mealType={meal.mealType}
+                        dishId={dish.dishId}
+                      >
+                        <button className='rounded-full bg-white/90 p-1.5 shadow'>
+                          <HiOutlineCog size={16} />
+                        </button>
+                      </DeleteDishModal>
                     </div>
-                  </Link>
+                  </div>
                 ))
               ) : (
                 <div className='py-4 text-center text-[11px] italic text-muted-foreground/40'>

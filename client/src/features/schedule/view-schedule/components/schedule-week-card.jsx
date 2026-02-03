@@ -2,7 +2,6 @@ import { format, isToday } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import {
   IoCafe,
-  IoCheckmarkCircleSharp,
   IoFastFood,
   IoMoon,
   IoRestaurant,
