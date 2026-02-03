@@ -22,7 +22,8 @@ const scheduleDishSchema = z.object({
   name: z.string().trim().min(1, 'Tên món ăn là bắt buộc'),
   calories: z.coerce.number().min(0).optional(),
   servings: z.coerce.number().min(0).optional(),
-  image: z.string().trim().optional()
+  image: z.string().trim().optional(),
+  isEaten: z.coerce.boolean().optional()
 });
 
 const scheduleMealSchema = z.object({
@@ -60,7 +61,8 @@ const scheduleMealUpdateSchema = z.object({
       z.array(
         z.object({
           dishId: z.string().trim().min(1, 'Dish ID is required'),
-          servings: z.coerce.number().min(0).optional()
+          servings: z.coerce.number().min(0).optional(),
+          isEaten: z.coerce.boolean().optional()
         })
       )
     )
@@ -73,4 +75,12 @@ export const updateScheduleMealsRequestSchema = z.object({
 
 export type UpdateScheduleMealsRequest = z.infer<
   typeof updateScheduleMealsRequestSchema
+>;
+
+export const updateScheduleDishStatusRequestSchema = z.object({
+  isEaten: z.coerce.boolean()
+});
+
+export type UpdateScheduleDishStatusRequest = z.infer<
+  typeof updateScheduleDishStatusRequestSchema
 >;
