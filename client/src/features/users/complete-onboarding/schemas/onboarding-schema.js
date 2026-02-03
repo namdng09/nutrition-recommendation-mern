@@ -100,10 +100,12 @@ export const stepTwoSchema = yup.object({
     }),
   height: yup
     .number()
+    .typeError('Chiều cao phải là số')
     .positive('Chiều cao phải là số dương')
     .required('Chiều cao là bắt buộc'),
   weight: yup
     .number()
+    .typeError('Cân nặng phải là số')
     .positive('Cân nặng phải là số dương')
     .required('Cân nặng là bắt buộc'),
   bodyfat: yup
@@ -156,10 +158,12 @@ export const onboardingSchema = yup.object({
     }),
   height: yup
     .number()
+    .typeError('Chiều cao phải là số')
     .positive('Chiều cao phải là số dương')
     .required('Chiều cao là bắt buộc'),
   weight: yup
     .number()
+    .typeError('Cân nặng phải là số')
     .positive('Cân nặng phải là số dương')
     .required('Cân nặng là bắt buộc'),
   bodyfat: yup
