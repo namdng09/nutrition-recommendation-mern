@@ -5,7 +5,7 @@ import {
   PlusIcon,
   Trash2
 } from 'lucide-react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 
 import { Button } from '~/components/ui/button';
@@ -15,7 +15,7 @@ import { COOKING_PREFERENCE } from '~/constants/cooking-preference';
 import { DISH_CATEGORY } from '~/constants/dish-category';
 import { MEAL_COMPLEXITY } from '~/constants/meal-complexity';
 import { MEAL_SIZE } from '~/constants/meal-size';
-import { MEAL_TYPE, MEAL_TYPE_OPTIONS } from '~/constants/meal-type';
+import { MEAL_TYPE } from '~/constants/meal-type';
 
 function getMealDefaults(mealType) {
   const baseDefaults = {
@@ -42,8 +42,17 @@ function getMealDefaults(mealType) {
     [MEAL_TYPE.DESSERT]: [DISH_CATEGORY.DESSERT, DISH_CATEGORY.BEVERAGE]
   };
 
+  const mealSizeByType = {
+    [MEAL_TYPE.BREAKFAST]: MEAL_SIZE.NORMAL,
+    [MEAL_TYPE.LUNCH]: MEAL_SIZE.BIG,
+    [MEAL_TYPE.DINNER]: MEAL_SIZE.BIG,
+    [MEAL_TYPE.SNACK]: MEAL_SIZE.SMALL,
+    [MEAL_TYPE.DESSERT]: MEAL_SIZE.SMALL
+  };
+
   return {
     ...baseDefaults,
+    mealSize: mealSizeByType[mealType] || MEAL_SIZE.NORMAL,
     dishCategories: dishCategoriesByMealType[mealType] || []
   };
 }
@@ -56,6 +65,21 @@ export function StepThreeOneSchedule({ control }) {
   const {
     formState: { errors }
   } = useFormContext();
+
+  const hasInitialized = useRef(false);
+
+  useEffect(() => {
+    if (!hasInitialized.current && fields.length === 0) {
+      append([
+        getMealDefaults(MEAL_TYPE.BREAKFAST),
+        getMealDefaults(MEAL_TYPE.LUNCH),
+        getMealDefaults(MEAL_TYPE.DINNER),
+        getMealDefaults(MEAL_TYPE.SNACK),
+        getMealDefaults(MEAL_TYPE.DESSERT)
+      ]);
+      hasInitialized.current = true;
+    }
+  }, []);
 
   return (
     <div className='space-y-6'>
@@ -81,6 +105,9 @@ export function StepThreeOneSchedule({ control }) {
         {/* Right Column - Form */}
         <div className='w-full lg:w-3/5 space-y-6'>
           <div className='space-y-4'>
+            <p className='text-sm text-muted-foreground'>
+              Sử dụng các nút mũi tên để thay đổi thứ tự bữa ăn trong ngày
+            </p>
             <div className='space-y-3'>
               {fields.map((field, index) => {
                 return (
@@ -96,7 +123,7 @@ export function StepThreeOneSchedule({ control }) {
                           <Input
                             placeholder='Tên bữa ăn'
                             {...inputField}
-                            className='font-medium'
+                            className='h-11 text-base font-medium md:text-base'
                           />
                         )}
                       />
@@ -142,8 +169,7 @@ export function StepThreeOneSchedule({ control }) {
             <Button
               type='button'
               variant='outline'
-              size='sm'
-              className='w-full'
+              className='h-11 w-full text-base font-medium md:text-base'
               disabled={fields.length >= 10}
               onClick={() =>
                 append({
