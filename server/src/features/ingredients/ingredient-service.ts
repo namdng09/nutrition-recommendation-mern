@@ -23,19 +23,19 @@ export const IngredientService = {
   ) => {
     const newIngredient = await IngredientModel.create(data);
     if (!newIngredient) {
-      throw createHttpError(500, 'Failed to create ingredient');
+      throw createHttpError(500, 'Tạo nguyên liệu thất bại');
     }
 
     if (image) {
       const uploadResult = await uploadImage(
-        image.buffer, 
+        image.buffer,
         newIngredient._id.toString()
-    );
+      );
       if (uploadResult.success && uploadResult.data) {
         newIngredient.image = uploadResult.data.secure_url;
         await newIngredient.save();
       } else {
-        throw createHttpError(500, 'Failed to upload image');
+        throw createHttpError(500, 'Tải ảnh lên thất bại');
       }
     }
 
@@ -55,13 +55,13 @@ export const IngredientService = {
 
   viewIngredientDetail: async (id: string) => {
     if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Invalid ingredient ID format');
+      throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
     }
 
     const ingredient = await IngredientModel.findById(id);
 
     if (!ingredient) {
-      throw createHttpError(404, 'Ingredient not found');
+      throw createHttpError(404, 'Không tìm thấy nguyên liệu');
     }
 
     return ingredient;
@@ -73,7 +73,7 @@ export const IngredientService = {
     image?: Express.Multer.File
   ) => {
     if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Invalid ingredient ID format');
+      throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
     }
 
     const updatedIngredient = await IngredientModel.findByIdAndUpdate(
@@ -85,20 +85,21 @@ export const IngredientService = {
     );
 
     if (!updatedIngredient) {
-      throw createHttpError(404, 'Ingredient not found');
+      throw createHttpError(404, 'Không tìm thấy nguyên liệu');
     }
 
     if (image) {
       await deleteImage(updatedIngredient._id.toString());
 
-      const uploadResult = await uploadImage(image.buffer, 
+      const uploadResult = await uploadImage(
+        image.buffer,
         updatedIngredient._id.toString()
       );
       if (uploadResult.success && uploadResult.data) {
         updatedIngredient.image = uploadResult.data.secure_url;
         await updatedIngredient.save();
       } else {
-        throw createHttpError(500, 'Failed to upload image');
+        throw createHttpError(500, 'Tải ảnh lên thất bại');
       }
     }
 
@@ -107,33 +108,17 @@ export const IngredientService = {
 
   deleteIngredient: async (id: string) => {
     if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Invalid ingredient ID format');
+      throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
     }
 
     const deletedIngredient = await IngredientModel.findByIdAndDelete(id);
 
     if (!deletedIngredient) {
-      throw createHttpError(404, 'Ingredient not found');
+      throw createHttpError(404, 'Không tìm thấy nguyên liệu');
     }
 
     await deleteImage(deletedIngredient._id.toString());
 
     return deletedIngredient;
-  },
-
-  deleteBulk: async (ids: string[]) => {
-    ids.forEach(id => {
-      if (!validateObjectId(id)) {
-        throw createHttpError(400, 'Invalid ingredient ID format');
-      }
-    });
-
-    const result = await IngredientModel.deleteMany({ _id: { $in: ids } });
-
-    await Promise.all(
-      ids.map(id => deleteImage(id))
-    );
-
-    return result;
   }
 };

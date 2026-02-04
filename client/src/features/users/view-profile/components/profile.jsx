@@ -45,7 +45,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
-  const { data: profile } = useProfileForPage(); // ✅ Suspense hook!
+  const { data: profile } = useProfileForPage();
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile({
     onSuccess: response => {
       toast.success(response?.message || 'Cập nhật hồ sơ thành công');
@@ -62,8 +62,6 @@ const Profile = () => {
     values: profile
       ? {
           name: profile.name || '',
-          gender: profile.gender || '',
-          dob: profile.dob ? profile.dob.split('T')[0] : '',
           avatar: undefined
         }
       : undefined
@@ -91,20 +89,20 @@ const Profile = () => {
   };
 
   return (
-    <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-0'>
+    <div className='px-4 sm:px-6'>
       <div className='mb-4 flex items-center gap-2'>
-        <HiOutlineUserCircle className='h-7 w-7 text-[#1B5E20]' />
-        <h1 className='text-2xl font-bold text-[#1B5E20]'>Hồ sơ cá nhân</h1>
+        <HiOutlineUserCircle className='h-7 w-7' />
+        <h1 className='text-2xl font-bold'>Hồ sơ cá nhân</h1>
       </div>
 
-      <div className='flex flex-col gap-4 rounded-2xl border border-[#2E7D32]/15 bg-background p-5 shadow-sm md:flex-row md:items-center md:justify-between'>
+      <div className='flex flex-col gap-4 rounded-2xl border border-border bg-background p-5 shadow-sm md:flex-row md:items-center md:justify-between'>
         <div className='flex items-center gap-4'>
           <div className='relative'>
             <div
               className='relative cursor-pointer group'
               onClick={handleAvatarClick}
             >
-              <Avatar className='h-20 w-20 ring-1 ring-[#2E7D32]/20'>
+              <Avatar className='h-20 w-20 ring-1 ring-border'>
                 <AvatarImage
                   src={avatarPreview || profile?.avatar}
                   alt={profile?.name}
@@ -118,8 +116,8 @@ const Profile = () => {
                 </AvatarFallback>
               </Avatar>
 
-              <div className='absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-background border border-[#2E7D32]/20 flex items-center justify-center shadow-sm transition group-hover:bg-[#2E7D32]/10'>
-                <Camera className='h-4 w-4 text-[#1B5E20]' />
+              <div className='absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-background border border-border flex items-center justify-center shadow-sm transition group-hover:bg-accent'>
+                <Camera className='h-4 w-4' />
               </div>
             </div>
 
@@ -132,17 +130,15 @@ const Profile = () => {
             />
 
             {isUpdating && (
-              <div className='absolute inset-0 flex items-center justify-center bg-black/45 rounded-full'>
-                <Spinner className='text-white' />
+              <div className='absolute inset-0 flex items-center justify-center bg-background backdrop-blur-sm rounded-full'>
+                <Spinner />
               </div>
             )}
           </div>
 
           <div className='min-w-0'>
-            <h2 className='truncate text-xl font-bold text-[#1B5E20]'>
-              {profile?.name}
-            </h2>
-            <p className='truncate text-sm text-[#2E7D32]/70'>
+            <h2 className='truncate text-xl font-bold'>{profile?.name}</h2>
+            <p className='truncate text-sm text-muted-foreground'>
               {profile?.email}
             </p>
           </div>
@@ -153,7 +149,7 @@ const Profile = () => {
             size='sm'
             onClick={form.handleSubmit(handleSave)}
             disabled={isUpdating}
-            className='rounded-xl bg-[#1B5E20] text-white hover:bg-[#145017]'
+            className='rounded-xl bg-primary text-primary-foreground hover:bg-primary/90'
           >
             {isUpdating ? (
               <Spinner className='h-4 w-4 mr-1' />
@@ -175,12 +171,10 @@ const Profile = () => {
         </div>
       </div>
 
-      <div className='mt-6 rounded-2xl border border-[#2E7D32]/15 bg-background p-6 shadow-sm'>
+      <div className='mt-6 rounded-2xl border border-border bg-background p-6 shadow-sm'>
         <div className='mb-4'>
-          <h2 className='text-lg font-semibold text-[#1B5E20]'>
-            Thông tin cá nhân
-          </h2>
-          <p className='text-sm text-[#2E7D32]/70'>
+          <h2 className='text-lg font-semibold'>Thông tin cá nhân</h2>
+          <p className='text-sm text-muted-foreground'>
             Chỉnh sửa thông tin và bấm{' '}
             <span className='font-semibold'>Lưu</span> để cập nhật
           </p>
@@ -193,11 +187,11 @@ const Profile = () => {
               name='name'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-[#1B5E20]/75'>Họ và tên</FormLabel>
+                  <FormLabel>Họ và tên</FormLabel>
                   <FormControl>
                     <Input
                       placeholder='Nhập họ và tên'
-                      className='rounded-xl border-[#2E7D32]/25 focus-visible:ring-[#2E7D32]/30'
+                      className='rounded-xl border-border focus-visible:ring-ring'
                       {...field}
                     />
                   </FormControl>
@@ -207,97 +201,9 @@ const Profile = () => {
             />
 
             <div className='space-y-1'>
-              <label className='text-sm font-medium text-[#1B5E20]/75'>
-                Email
-              </label>
-              <p className='text-sm py-2 text-[#1B5E20]'>{profile?.email}</p>
+              <label className='text-sm font-medium'>Email</label>
+              <p className='text-sm py-2'>{profile?.email}</p>
             </div>
-
-            <FormField
-              control={form.control}
-              name='gender'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-[#1B5E20]/75'>Giới tính</FormLabel>
-                  <Select
-                    key={profile?.id + '-gender-' + (field.value ?? '')}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <FormControl>
-                      <SelectTrigger className='w-full rounded-xl border-[#2E7D32]/25 focus:ring-[#2E7D32]/30'>
-                        <SelectValue placeholder='Chọn giới tính' />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {GENDER_OPTIONS.map(option => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='dob'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-[#1B5E20]/75'>Ngày sinh</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant='outline'
-                          className={cn(
-                            'w-full rounded-xl border-[#2E7D32]/25 pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground'
-                          )}
-                        >
-                          {field.value ? (
-                            format(new Date(field.value), 'PPP')
-                          ) : (
-                            <span>Chọn ngày</span>
-                          )}
-                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className='w-auto p-0' align='start'>
-                      <Calendar
-                        key={profile?.id + '-dob-' + (field.value ?? '')}
-                        mode='single'
-                        captionLayout='dropdown'
-                        selected={
-                          field.value ? new Date(field.value) : undefined
-                        }
-                        onSelect={date => {
-                          field.onChange(
-                            date ? format(date, 'yyyy-MM-dd') : ''
-                          );
-                        }}
-                        disabled={date =>
-                          date > new Date() || date < new Date('1900-01-01')
-                        }
-                        defaultMonth={
-                          field.value
-                            ? new Date(field.value)
-                            : new Date(2000, 0)
-                        }
-                        startMonth={new Date(1900, 0)}
-                        endMonth={new Date()}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </form>
         </Form>
       </div>

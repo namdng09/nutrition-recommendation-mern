@@ -1,7 +1,7 @@
 export const COOKING_PREFERENCE = {
-  CANNOT_COOK: 'CANNOT_COOK',
-  CAN_COOK: 'CAN_COOK',
-  MUST_COOK: 'MUST_COOK'
+  CANNOT_COOK: 'Không thể nấu',
+  CAN_COOK: 'Có thể nấu',
+  MUST_COOK: 'Phải nấu'
 } as const;
 
 export type CookingPreference =

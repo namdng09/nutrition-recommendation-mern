@@ -52,7 +52,8 @@ export const AuthService = {
 
     return {
       accessToken,
-      refreshToken
+      refreshToken,
+      hasOnboarded: user.hasOnboarded
     };
   },
 
@@ -86,7 +87,8 @@ export const AuthService = {
 
     return {
       accessToken,
-      refreshToken
+      refreshToken,
+      hasOnboarded: user.hasOnboarded
     };
   },
 
@@ -125,7 +127,8 @@ export const AuthService = {
 
     return {
       accessToken,
-      refreshToken
+      refreshToken,
+      hasOnboarded: newUser.hasOnboarded
     };
   },
 
@@ -212,6 +215,7 @@ export const AuthService = {
         provider: 'local',
         providerId: user.email,
         localPassword: hashedPassword,
+        verifyAt: new Date(),
         lastResetPasswordToken: token
       });
       return;

@@ -9,7 +9,8 @@ import { AuthService } from './auth-service';
 export const AuthController = {
   login: async (req: Request, res: Response) => {
     const loginData = req.body;
-    const { accessToken, refreshToken } = await AuthService.login(loginData);
+    const { accessToken, refreshToken, hasOnboarded } =
+      await AuthService.login(loginData);
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
@@ -18,9 +19,12 @@ export const AuthController = {
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
-    res
-      .status(200)
-      .json(ApiResponse.success('Login successful', { accessToken }));
+    res.status(200).json(
+      ApiResponse.success('Login successful', {
+        accessToken,
+        hasOnboarded
+      })
+    );
   },
 
   loginWithProvider: async (req: Request, res: Response) => {
@@ -28,11 +32,8 @@ export const AuthController = {
     const provider = (req as any).authInfo?.provider;
     const providerId = (req as any).authInfo?.providerId;
 
-    const { accessToken, refreshToken } = await AuthService.loginWithProvider(
-      provider,
-      providerId,
-      user
-    );
+    const { accessToken, refreshToken, hasOnboarded } =
+      await AuthService.loginWithProvider(provider, providerId, user);
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
@@ -42,7 +43,7 @@ export const AuthController = {
     });
 
     res.redirect(
-      `${process.env.CLIENT_URL}/auth/callback?accessToken=${accessToken}`
+      `${process.env.CLIENT_URL}/auth/callback?accessToken=${accessToken}&hasOnboarded=${hasOnboarded}`
     );
   },
 
@@ -50,10 +51,8 @@ export const AuthController = {
     const signUpData = req.body;
     const avatar = req.file;
 
-    const { accessToken, refreshToken } = await AuthService.signUp(
-      signUpData,
-      avatar
-    );
+    const { accessToken, refreshToken, hasOnboarded } =
+      await AuthService.signUp(signUpData, avatar);
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
@@ -62,9 +61,12 @@ export const AuthController = {
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
-    res
-      .status(200)
-      .json(ApiResponse.success('Sign up successful', { accessToken }));
+    res.status(200).json(
+      ApiResponse.success('Sign up successful', {
+        accessToken,
+        hasOnboarded
+      })
+    );
   },
 
   logout: async (req: Request, res: Response) => {

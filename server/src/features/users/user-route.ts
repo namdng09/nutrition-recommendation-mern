@@ -9,14 +9,20 @@ import {
 import { asyncHandler, handleSingleImageUpload } from '~/shared/utils';
 
 import { UserController } from './user-controller';
-import { createUserRequestSchema, updateUserRequestSchema } from './user-dto';
+import {
+  createUserRequestSchema,
+  nutritionTargetRequestSchema,
+  onboardingRequestSchema,
+  updateUserRequestSchema
+} from './user-dto';
+import { ROLE } from '~/shared/constants/role';
 
 const router = Router();
 
 router.post(
   '/',
   authenticate(),
-  authorize(['admin']),
+  authorize([ROLE.ADMIN]),
   parseFormData,
   validate(createUserRequestSchema.shape),
   asyncHandler(UserController.createUser)
@@ -25,18 +31,34 @@ router.post(
 router.get(
   '/',
   authenticate(),
-  authorize(['admin']),
+  authorize([ROLE.ADMIN]),
   asyncHandler(UserController.viewUsers)
 );
 
 router.delete(
   '/',
   authenticate(),
-  authorize(['admin']),
+  authorize([ROLE.ADMIN]),
   asyncHandler(UserController.deleteBulk)
 );
 
 router.get('/me', authenticate(), asyncHandler(UserController.viewProfile));
+
+router.post(
+  '/me/onboarding',
+  authenticate(),
+  parseFormData,
+  validate(onboardingRequestSchema.shape),
+  asyncHandler(UserController.onboardUser)
+);
+
+router.post(
+  '/me/nutrition-target',
+  authenticate(),
+  parseFormData,
+  validate(nutritionTargetRequestSchema.shape),
+  asyncHandler(UserController.calculateNutritionTarget)
+);
 
 router.put(
   '/me',
@@ -48,14 +70,14 @@ router.put(
 router.get(
   '/:id',
   authenticate(),
-  authorize(['admin']),
+  authorize([ROLE.ADMIN]),
   asyncHandler(UserController.viewUserDetail)
 );
 
 router.put(
   '/:id',
   authenticate(),
-  authorize(['admin']),
+  authorize([ROLE.ADMIN]),
   parseFormData,
   validate(updateUserRequestSchema.shape),
   asyncHandler(UserController.updateUser)
@@ -64,7 +86,7 @@ router.put(
 router.delete(
   '/:id',
   authenticate(),
-  authorize(['admin']),
+  authorize([ROLE.ADMIN]),
   asyncHandler(UserController.deleteUser)
 );
 

@@ -5,15 +5,17 @@ import mongoose, {
 } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
+import { ACTIVITY_LEVEL } from '~/shared/constants/activity-level';
 import { ALLERGEN } from '~/shared/constants/allergen';
 import { AVAILABLE_TIME } from '~/shared/constants/available-time';
 import { BODYFAT } from '~/shared/constants/bodyfat';
 import { COOKING_PREFERENCE } from '~/shared/constants/cooking-preference';
 import { DIET } from '~/shared/constants/diet';
-import { MEAL_TYPE } from '~/shared/constants/food-type';
+import { DISH_CATEGORY } from '~/shared/constants/dish-category';
 import { GENDER } from '~/shared/constants/gender';
 import { MEAL_COMPLEXITY } from '~/shared/constants/meal-complexity';
 import { MEAL_SIZE } from '~/shared/constants/meal-size';
+import { MEAL_TYPE } from '~/shared/constants/meal-type';
 import { ROLE } from '~/shared/constants/role';
 import { USER_TARGET } from '~/shared/constants/user-target';
 
@@ -49,9 +51,9 @@ const nutritionTargetSchema = new Schema(
 
 const mealSettingSchema = new Schema(
   {
-    title: { type: String, required: true },
+    name: { type: String, required: true },
     mealSize: { type: String, enum: Object.values(MEAL_SIZE), required: true },
-    preferredFoodTypes: [
+    preferredTypes: [
       { type: String, enum: Object.values(MEAL_TYPE), required: true }
     ],
     cookingPreference: {
@@ -69,7 +71,7 @@ const mealSettingSchema = new Schema(
       enum: Object.values(MEAL_COMPLEXITY),
       required: true
     },
-    foodCategories: [{ type: String, required: true }],
+    dishCategories: [{ type: String, enum: Object.values(DISH_CATEGORY) }],
     ruleOverrides: { type: Map, of: Schema.Types.Mixed, default: {} }
   },
   { _id: false }
@@ -121,8 +123,11 @@ const userSchema = new Schema(
       targetWeightChange: { type: Number }
     },
     allergens: [{ type: String, enum: Object.values(ALLERGEN) }],
+    activityLevel: { type: String, enum: Object.values(ACTIVITY_LEVEL) },
+    medicalHistory: { type: [String], default: [] },
     setting: { type: Map, of: Schema.Types.Mixed, default: {} },
     aiConfig: { type: Map, of: Schema.Types.Mixed, default: {} },
+    hasOnboarded: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true }
   },
   {
