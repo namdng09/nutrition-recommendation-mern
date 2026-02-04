@@ -11,5 +11,6 @@ export const QUERY_KEYS = {
   SCHEDULES: ['schedules'],
   POSTS: ['posts'],
   POST: id => ['post', id],
-  SCHEDULE: id => ['schedules', id]
+  SCHEDULE: id => ['schedules', id],
+  DISH_NUTRITION_DETAIL: id => ['dish_nutrition_detail', id]
 };
