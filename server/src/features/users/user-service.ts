@@ -124,6 +124,225 @@ const calculateMacros = (calories: number, ratios: MacroRatios) => {
 };
 
 export const UserService = {
+  addFavoriteDish: async (userId: string, dishId: string) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Invalid user ID format');
+    }
+
+    if (!validateObjectId(dishId)) {
+      throw createHttpError(400, 'Invalid dish ID format');
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { $addToSet: { favoriteDishes: dishId } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw createHttpError(404, 'User not found');
+    }
+
+    return updatedUser;
+  },
+
+  removeFavoriteDish: async (userId: string, dishId: string) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Invalid user ID format');
+    }
+
+    if (!validateObjectId(dishId)) {
+      throw createHttpError(400, 'Invalid dish ID format');
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { $pull: { favoriteDishes: dishId } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw createHttpError(404, 'User not found');
+    }
+
+    return updatedUser;
+  },
+
+  addFavoriteIngredient: async (userId: string, ingredientId: string) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Invalid user ID format');
+    }
+
+    if (!validateObjectId(ingredientId)) {
+      throw createHttpError(400, 'Invalid ingredient ID format');
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { $addToSet: { favoriteIngredients: ingredientId } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw createHttpError(404, 'User not found');
+    }
+
+    return updatedUser;
+  },
+
+  removeFavoriteIngredient: async (userId: string, ingredientId: string) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Invalid user ID format');
+    }
+
+    if (!validateObjectId(ingredientId)) {
+      throw createHttpError(400, 'Invalid ingredient ID format');
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { $pull: { favoriteIngredients: ingredientId } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw createHttpError(404, 'User not found');
+    }
+
+    return updatedUser;
+  },
+
+  addFavoriteCollection: async (userId: string, collectionId: string) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Invalid user ID format');
+    }
+
+    if (!validateObjectId(collectionId)) {
+      throw createHttpError(400, 'Invalid collection ID format');
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { $addToSet: { favoriteCollections: collectionId } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw createHttpError(404, 'User not found');
+    }
+
+    return updatedUser;
+  },
+
+  removeFavoriteCollection: async (userId: string, collectionId: string) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Invalid user ID format');
+    }
+
+    if (!validateObjectId(collectionId)) {
+      throw createHttpError(400, 'Invalid collection ID format');
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { $pull: { favoriteCollections: collectionId } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw createHttpError(404, 'User not found');
+    }
+
+    return updatedUser;
+  },
+
+  addBlockDish: async (userId: string, dishId: string) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Invalid user ID format');
+    }
+
+    if (!validateObjectId(dishId)) {
+      throw createHttpError(400, 'Invalid dish ID format');
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { $addToSet: { blockDishes: dishId } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw createHttpError(404, 'User not found');
+    }
+
+    return updatedUser;
+  },
+
+  removeBlockDish: async (userId: string, dishId: string) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Invalid user ID format');
+    }
+
+    if (!validateObjectId(dishId)) {
+      throw createHttpError(400, 'Invalid dish ID format');
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { $pull: { blockDishes: dishId } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw createHttpError(404, 'User not found');
+    }
+
+    return updatedUser;
+  },
+
+  addBlockIngredient: async (userId: string, ingredientId: string) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Invalid user ID format');
+    }
+
+    if (!validateObjectId(ingredientId)) {
+      throw createHttpError(400, 'Invalid ingredient ID format');
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { $addToSet: { blockIngredients: ingredientId } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw createHttpError(404, 'User not found');
+    }
+
+    return updatedUser;
+  },
+
+  removeBlockIngredient: async (userId: string, ingredientId: string) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Invalid user ID format');
+    }
+
+    if (!validateObjectId(ingredientId)) {
+      throw createHttpError(400, 'Invalid ingredient ID format');
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { $pull: { blockIngredients: ingredientId } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw createHttpError(404, 'User not found');
+    }
+
+    return updatedUser;
+  },
   createUser: async (data: CreateUserRequest) => {
     const newUser = await UserModel.create(data);
     if (!newUser) {
