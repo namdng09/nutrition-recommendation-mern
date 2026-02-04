@@ -32,15 +32,10 @@ export function StepTwoTwoGoal({ control }) {
 
   const handleModeChange = newMode => {
     setValue('goal.mode', newMode);
-    if (newMode === 'generic') {
-      setValue('goal.weightGoal', undefined);
-      setValue('goal.targetWeightChange', undefined);
-    } else {
-      setValue('goal.target', undefined);
-    }
+    // Don't clear values when switching modes to persist data
   };
 
-  // Inference Logic for Exact Mode
+  // Inference Logic for Exact Mode - only run when values change
   useEffect(() => {
     if (mode === 'exact' && weightGoal && currentWeight) {
       let target;
@@ -57,7 +52,10 @@ export function StepTwoTwoGoal({ control }) {
         setValue('goal.target', target);
       }
     }
-  }, [mode, weightGoal, currentWeight, setValue]);
+  }, [mode, weightGoal, currentWeight, setValue, goalTarget]);
+
+  // Clean up exact mode values when switching to generic is NOT desired behavior anymore based on user request (implied by "lost target value" when switching).
+  // However, we might want to "clean" data before submission, not during UI toggling.
 
   return (
     <div className='space-y-6'>
@@ -84,14 +82,14 @@ export function StepTwoTwoGoal({ control }) {
         {/* Right Column - Form */}
         <div className='w-full lg:w-3/5 space-y-6'>
           {/* Mode Toggle */}
-          <div className='flex items-center justify-between'>
+          <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0'>
             <FormLabel className='text-lg'>Thiết lập mục tiêu</FormLabel>
-            <div className='flex items-center gap-2'>
+            <div className='flex items-center gap-2 w-full sm:w-auto'>
               <button
                 type='button'
                 onClick={() => handleModeChange('generic')}
                 className={cn(
-                  'px-4 py-2 rounded-lg border text-base font-medium transition-all duration-200',
+                  'flex-1 sm:flex-none px-4 py-2 rounded-lg border text-base font-medium transition-all duration-200',
                   mode === 'generic'
                     ? 'border-primary bg-primary/5 text-primary shadow-sm'
                     : 'border-transparent bg-secondary/50 text-foreground hover:bg-secondary/80 hover:border-border/50'
@@ -103,7 +101,7 @@ export function StepTwoTwoGoal({ control }) {
                 type='button'
                 onClick={() => handleModeChange('exact')}
                 className={cn(
-                  'px-4 py-2 rounded-lg border text-base font-medium transition-all duration-200',
+                  'flex-1 sm:flex-none px-4 py-2 rounded-lg border text-base font-medium transition-all duration-200',
                   mode === 'exact'
                     ? 'border-primary bg-primary/5 text-primary shadow-sm'
                     : 'border-transparent bg-secondary/50 text-foreground hover:bg-secondary/80 hover:border-border/50'
@@ -120,19 +118,19 @@ export function StepTwoTwoGoal({ control }) {
               control={control}
               name='goal.target'
               render={({ field }) => (
-                <FormItem className='flex flex-row items-center justify-between space-y-0'>
+                <FormItem className='flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-2 lg:space-y-0'>
                   <FormLabel className='text-lg'>
                     Tôi muốn <span className='text-destructive'>*</span>
                   </FormLabel>
                   <FormControl>
-                    <div className='flex flex-wrap gap-2'>
+                    <div className='flex flex-wrap gap-2 w-full lg:w-auto justify-start lg:justify-end'>
                       {USER_TARGET_OPTIONS.map(option => (
                         <button
                           key={option.value}
                           type='button'
                           onClick={() => field.onChange(option.value)}
                           className={cn(
-                            'px-4 py-2 rounded-lg border text-base font-medium transition-all duration-200',
+                            'px-4 py-2 rounded-lg border text-base font-medium transition-all duration-200 flex-1 sm:flex-none whitespace-nowrap',
                             field.value === option.value
                               ? 'border-primary bg-primary/5 text-primary shadow-sm'
                               : 'border-transparent bg-secondary/50 text-foreground hover:bg-secondary/80 hover:border-border/50'
@@ -157,20 +155,20 @@ export function StepTwoTwoGoal({ control }) {
                 control={control}
                 name='goal.weightGoal'
                 render={({ field }) => (
-                  <FormItem className='flex flex-row items-center justify-between space-y-0'>
-                    <div className='flex flex-col gap-1 min-w-[140px]'>
+                  <FormItem className='flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-2 lg:space-y-0'>
+                    <div className='flex flex-col gap-1 lg:min-w-[140px]'>
                       <FormLabel className='text-lg'>
                         Cân nặng mục tiêu{' '}
                         <span className='text-destructive'>*</span>
                       </FormLabel>
                       <FormMessage className='text-xs text-destructive' />
                     </div>
-                    <div className='w-[200px] flex justify-end'>
-                      <div className='flex items-center gap-2'>
+                    <div className='w-full lg:w-[200px] flex justify-start lg:justify-end'>
+                      <div className='flex items-center gap-2 w-full'>
                         <FormControl>
                           <Input
                             type='text'
-                            className='w-24 text-center text-base h-11'
+                            className='flex-1 lg:w-24 lg:flex-none text-center text-base h-11'
                             {...field}
                             value={field.value ?? ''}
                             onChange={e => {
@@ -194,20 +192,20 @@ export function StepTwoTwoGoal({ control }) {
                 control={control}
                 name='goal.targetWeightChange'
                 render={({ field }) => (
-                  <FormItem className='flex flex-row items-center justify-between space-y-0'>
-                    <div className='flex flex-col gap-1 min-w-[140px]'>
+                  <FormItem className='flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-2 lg:space-y-0'>
+                    <div className='flex flex-col gap-1 lg:min-w-[140px]'>
                       <FormLabel className='text-lg'>
                         Tốc độ thay đổi{' '}
                         <span className='text-destructive'>*</span>
                       </FormLabel>
                       <FormMessage className='text-xs text-destructive' />
                     </div>
-                    <div className='w-[200px] flex justify-end'>
-                      <div className='flex items-center gap-2'>
+                    <div className='w-full lg:w-[200px] flex justify-start lg:justify-end'>
+                      <div className='flex items-center gap-2 w-full'>
                         <FormControl>
                           <Input
                             type='text'
-                            className='w-24 text-center text-base h-11'
+                            className='flex-1 lg:w-24 lg:flex-none text-center text-base h-11'
                             {...field}
                             value={field.value ?? ''}
                             onChange={e => {

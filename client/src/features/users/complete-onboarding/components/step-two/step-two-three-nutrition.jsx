@@ -152,9 +152,13 @@ export function StepTwoThreeNutrition({ control, watch, setValue }) {
                             type='text'
                             className='w-24 h-10 text-center text-lg font-bold rounded-xl border-border bg-muted/30 focus-visible:ring-primary'
                             {...field}
-                            onChange={e =>
-                              field.onChange(parseFloat(e.target.value) || 0)
-                            }
+                            value={field.value ?? 0}
+                            onChange={e => {
+                              const val = e.target.value;
+                              if (val === '' || /^\d+$/.test(val)) {
+                                field.onChange(val === '' ? 0 : parseInt(val));
+                              }
+                            }}
                           />
                           <span className='text-muted-foreground font-semibold'>
                             kcal
@@ -206,28 +210,34 @@ export function StepTwoThreeNutrition({ control, watch, setValue }) {
                       </div>
                       <div className='flex items-center gap-3'>
                         <Input
-                          type='number'
+                          type='text'
                           value={watch('nutritionTarget.macros.carbs.min') || 0}
-                          onChange={e =>
-                            setValue(
-                              'nutritionTarget.macros.carbs.min',
-                              parseInt(e.target.value) || 0
-                            )
-                          }
+                          onChange={e => {
+                            const val = e.target.value;
+                            if (val === '' || /^\d+$/.test(val)) {
+                              setValue(
+                                'nutritionTarget.macros.carbs.min',
+                                val === '' ? 0 : parseInt(val)
+                              );
+                            }
+                          }}
                           className='w-16 h-9 text-center text-sm font-bold rounded-lg border-border bg-muted/30'
                         />
                         <span className='text-muted-foreground text-xs font-medium'>
                           đến
                         </span>
                         <Input
-                          type='number'
+                          type='text'
                           value={watch('nutritionTarget.macros.carbs.max') || 0}
-                          onChange={e =>
-                            setValue(
-                              'nutritionTarget.macros.carbs.max',
-                              parseInt(e.target.value) || 0
-                            )
-                          }
+                          onChange={e => {
+                            const val = e.target.value;
+                            if (val === '' || /^\d+$/.test(val)) {
+                              setValue(
+                                'nutritionTarget.macros.carbs.max',
+                                val === '' ? 0 : parseInt(val)
+                              );
+                            }
+                          }}
                           className='w-16 h-9 text-center text-sm font-bold rounded-lg border-border bg-muted/30'
                         />
                         <span className='font-bold text-[17px]'>g</span>
@@ -260,28 +270,34 @@ export function StepTwoThreeNutrition({ control, watch, setValue }) {
                       </div>
                       <div className='flex items-center gap-3'>
                         <Input
-                          type='number'
+                          type='text'
                           value={watch('nutritionTarget.macros.fat.min') || 0}
-                          onChange={e =>
-                            setValue(
-                              'nutritionTarget.macros.fat.min',
-                              parseInt(e.target.value) || 0
-                            )
-                          }
+                          onChange={e => {
+                            const val = e.target.value;
+                            if (val === '' || /^\d+$/.test(val)) {
+                              setValue(
+                                'nutritionTarget.macros.fat.min',
+                                val === '' ? 0 : parseInt(val)
+                              );
+                            }
+                          }}
                           className='w-16 h-9 text-center text-sm font-bold rounded-lg border-border bg-muted/30'
                         />
                         <span className='text-muted-foreground text-xs font-medium'>
                           đến
                         </span>
                         <Input
-                          type='number'
+                          type='text'
                           value={watch('nutritionTarget.macros.fat.max') || 0}
-                          onChange={e =>
-                            setValue(
-                              'nutritionTarget.macros.fat.max',
-                              parseInt(e.target.value) || 0
-                            )
-                          }
+                          onChange={e => {
+                            const val = e.target.value;
+                            if (val === '' || /^\d+$/.test(val)) {
+                              setValue(
+                                'nutritionTarget.macros.fat.max',
+                                val === '' ? 0 : parseInt(val)
+                              );
+                            }
+                          }}
                           className='w-16 h-9 text-center text-sm font-bold rounded-lg border-border bg-muted/30'
                         />
                         <span className='font-bold text-[17px]'>g</span>
@@ -314,32 +330,38 @@ export function StepTwoThreeNutrition({ control, watch, setValue }) {
                       </div>
                       <div className='flex items-center gap-3'>
                         <Input
-                          type='number'
+                          type='text'
                           value={
                             watch('nutritionTarget.macros.protein.min') || 0
                           }
-                          onChange={e =>
-                            setValue(
-                              'nutritionTarget.macros.protein.min',
-                              parseInt(e.target.value) || 0
-                            )
-                          }
+                          onChange={e => {
+                            const val = e.target.value;
+                            if (val === '' || /^\d+$/.test(val)) {
+                              setValue(
+                                'nutritionTarget.macros.protein.min',
+                                val === '' ? 0 : parseInt(val)
+                              );
+                            }
+                          }}
                           className='w-16 h-9 text-center text-sm font-bold rounded-lg border-border bg-muted/30'
                         />
                         <span className='text-muted-foreground text-xs font-medium'>
                           đến
                         </span>
                         <Input
-                          type='number'
+                          type='text'
                           value={
                             watch('nutritionTarget.macros.protein.max') || 0
                           }
-                          onChange={e =>
-                            setValue(
-                              'nutritionTarget.macros.protein.max',
-                              parseInt(e.target.value) || 0
-                            )
-                          }
+                          onChange={e => {
+                            const val = e.target.value;
+                            if (val === '' || /^\d+$/.test(val)) {
+                              setValue(
+                                'nutritionTarget.macros.protein.max',
+                                val === '' ? 0 : parseInt(val)
+                              );
+                            }
+                          }}
                           className='w-16 h-9 text-center text-sm font-bold rounded-lg border-border bg-muted/30'
                         />
                         <span className='font-bold text-[17px]'>g</span>
