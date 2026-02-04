@@ -9,6 +9,7 @@ import {
   FormLabel,
   FormMessage
 } from '~/components/ui/form';
+import { Input } from '~/components/ui/input';
 import {
   MultiSelect,
   MultiSelectContent,
@@ -48,31 +49,19 @@ export function StepThreeXMealDetail({ control, mealIndex, onBack }) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Loại bữa ăn <span className='text-destructive'>*</span>
+                Tên bữa ăn <span className='text-destructive'>*</span>
               </FormLabel>
               <FormControl>
-                <Select
-                  key={`meal-name-${mealIndex}`}
-                  onValueChange={field.onChange}
+                <Input
+                  placeholder='Nhập tên bữa ăn'
+                  {...field}
                   value={field.value || ''}
-                >
-                  <SelectTrigger className='w-full'>
-                    <SelectValue placeholder='Chọn loại bữa ăn' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {MEAL_TYPE_OPTIONS.map(option => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-
         <FormField
           control={control}
           name={`mealSettings.${mealIndex}.mealSize`}

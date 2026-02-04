@@ -42,10 +42,7 @@ const nutritionTargetSchema = yup.object({
 });
 
 const mealSettingSchema = yup.object({
-  name: yup
-    .string()
-    .oneOf(getEnumValues(MEAL_TYPE), 'Loại bữa ăn không hợp lệ')
-    .required('Loại bữa ăn là bắt buộc'),
+  name: yup.string().required('Tên bữa ăn là bắt buộc'),
   dishCategories: yup
     .array()
     .of(

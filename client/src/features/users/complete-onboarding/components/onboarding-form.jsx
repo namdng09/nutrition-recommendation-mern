@@ -212,10 +212,6 @@ export function OnboardingForm() {
             control={form.control}
             currentSubStep={currentSubStep}
             selectedMealIndex={selectedMealIndex}
-            onEditMeal={index => {
-              setSelectedMealIndex(index);
-              setSubSteps(prev => ({ ...prev, 3: 2 }));
-            }}
             onBackToList={() => {
               setSubSteps(prev => ({ ...prev, 3: 1 }));
             }}

@@ -7,12 +7,11 @@ export function StepThreeContainer({
   control,
   currentSubStep,
   selectedMealIndex,
-  onEditMeal,
   onBackToList
 }) {
   const renderSubStep = () => {
     if (currentSubStep === 1) {
-      return <StepThreeOneSchedule control={control} onEditMeal={onEditMeal} />;
+      return <StepThreeOneSchedule control={control} />;
     }
 
     // Calculate meal index from substep if not explicitly set

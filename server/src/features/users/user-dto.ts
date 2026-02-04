@@ -33,7 +33,7 @@ const nutritionTargetSchema = z.object({
 });
 
 const mealSettingSchema = z.object({
-  name: z.enum(Object.values(MEAL_TYPE), { message: 'Invalid meal type' }),
+  name: z.string().min(1, { message: 'Meal name is required' }),
   dishCategories: z.array(
     z.enum(Object.values(DISH_CATEGORY), {
       message: 'Invalid dish category'
