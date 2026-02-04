@@ -1,5 +1,6 @@
 import { format, isToday } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import { HiOutlineTrash } from 'react-icons/hi';
 import {
   IoCafe,
   IoFastFood,
@@ -10,6 +11,7 @@ import {
 
 import { cn } from '~/lib/utils';
 
+import DeleteScheduleModal from '../../delete-schedule/components/delete-schedule-modal';
 import DayScheduleContent from './day-schedule-content';
 
 const getSmallMealIcon = (type = '') => {
@@ -58,6 +60,29 @@ export default function ScheduleWeekCard({
         `
       )}
     >
+      {schedule && (
+        <DeleteScheduleModal scheduleId={schedule._id}>
+          <button
+            className='
+        absolute top-3 right-3
+        flex h-9 w-9 items-center justify-center
+        rounded-xl
+        border border-border
+        bg-background/80 backdrop-blur
+        text-destructive
+        shadow-sm
+        hover:bg-destructive/10
+        hover:border-destructive/30
+        hover:shadow-md
+        active:scale-95
+        transition-all
+      '
+          >
+            <HiOutlineTrash size={18} />
+          </button>
+        </DeleteScheduleModal>
+      )}
+
       {isDayToday && (
         <div
           className='absolute -top-3.5 left-1/2 -translate-x-1/2 z-20

@@ -5,6 +5,7 @@ import {
   HiOutlineClipboardList,
   HiOutlineCog,
   HiOutlineDotsVertical,
+  HiOutlineTrash,
   HiOutlineUserGroup
 } from 'react-icons/hi';
 import { IoCafe, IoFastFood, IoLeaf, IoMoon, IoSunny } from 'react-icons/io5';
@@ -13,6 +14,7 @@ import { Link } from 'react-router';
 import { useProfileForPage } from '~/features/users/view-profile/api/view-profile';
 import { formatDateVI } from '~/lib/utils';
 
+import DeleteScheduleModal from '../../delete-schedule/components/delete-schedule-modal';
 import AddFoodModal from './add-food-modal';
 import DeleteDishModal from './delete-dish-modal';
 
@@ -70,6 +72,21 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
               </Link>
             </div>
           )}
+
+          <DeleteScheduleModal scheduleId={schedule._id}>
+            <button
+              className='
+        flex h-10 w-10 items-center justify-center
+        rounded-xl border border-destructive/30
+        text-destructive
+        hover:bg-destructive hover:text-white
+        transition-all
+      '
+              title='Xoá toàn bộ lịch ăn'
+            >
+              <HiOutlineTrash size={18} />
+            </button>
+          </DeleteScheduleModal>
 
           <div className='flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#2D6A4F] text-white shadow-inner border-2 border-[#F0F7F4]'>
             <HiOutlineClipboardList size={24} />
