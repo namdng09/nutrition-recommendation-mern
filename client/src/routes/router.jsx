@@ -211,6 +211,26 @@ const router = createBrowserRouter([
             Component: lazy(
               () => import('~/app/nutritionist/manage-collections/[id]/page')
             )
+          },
+
+          //Manage posts
+          {
+            path: 'manage-posts/',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-posts/page')
+            )
+          },
+          {
+            path: 'manage-posts/create-post',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-posts/create-post/page')
+            )
+          },
+          {
+            path: 'manage-posts/:id',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-posts/[id]/page')
+            )
           }
         ]
       },
