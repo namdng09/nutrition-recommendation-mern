@@ -6,7 +6,7 @@ import {
   Trash2
 } from 'lucide-react';
 import React, { useEffect } from 'react';
-import { Controller, useFieldArray } from 'react-hook-form';
+import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
@@ -49,19 +49,13 @@ function getMealDefaults(mealType) {
 }
 
 export function StepThreeOneSchedule({ control }) {
-  const { fields, append, remove, replace, move } = useFieldArray({
+  const { fields, append, remove, move } = useFieldArray({
     control,
     name: 'mealSettings'
   });
-
-  useEffect(() => {
-    if (fields.length === 0) {
-      const defaultMeals = MEAL_TYPE_OPTIONS.map(option =>
-        getMealDefaults(option.value)
-      );
-      replace(defaultMeals);
-    }
-  }, [fields.length, replace]);
+  const {
+    formState: { errors }
+  } = useFormContext();
 
   return (
     <div className='space-y-6'>
@@ -150,6 +144,7 @@ export function StepThreeOneSchedule({ control }) {
               variant='outline'
               size='sm'
               className='w-full'
+              disabled={fields.length >= 10}
               onClick={() =>
                 append({
                   name: '',
@@ -164,6 +159,11 @@ export function StepThreeOneSchedule({ control }) {
               <PlusIcon />
               Thêm bữa ăn
             </Button>
+            {errors.mealSettings && (
+              <p className='text-destructive text-sm font-medium'>
+                {errors.mealSettings.message}
+              </p>
+            )}
           </div>
         </div>
       </div>

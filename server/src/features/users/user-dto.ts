@@ -136,7 +136,10 @@ export const onboardingRequestSchema = z.object({
     .optional(),
   medicalHistory: z.array(z.string().trim()).optional(),
   nutritionTarget: nutritionTargetSchema.optional(),
-  mealSettings: z.array(mealSettingSchema).optional(),
+  mealSettings: z
+    .array(mealSettingSchema)
+    .min(1, { message: 'Must have at least one meal' })
+    .max(10, { message: 'Must have at most 10 meals' }),
   activityLevel: z.enum(Object.values(ACTIVITY_LEVEL), {
     message: 'Invalid Activity Level'
   }),
