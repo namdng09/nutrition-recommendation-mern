@@ -41,7 +41,7 @@ export const NAV_LINKS = [
   { to: '/schedules/day', label: 'Thời khoá biểu' },
   { to: '/collections', label: 'Gợi ý bữa ăn' },
   { to: '/dishes', label: 'Danh sách món ăn' },
-  { to: '/ingredients', label: 'Danh sách nguyên liệu' },
+  { to: '/ingredients', label: 'Nguyên liệu' },
   { to: '/posts', label: 'Blogs' }
 ];
 

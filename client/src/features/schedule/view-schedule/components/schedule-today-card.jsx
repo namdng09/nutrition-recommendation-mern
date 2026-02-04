@@ -53,7 +53,8 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
                 Mục tiêu ngày
               </span>
 
-              <div
+              <Link
+                to={`/profile/nutrition-target`}
                 className='
         flex items-center gap-1.5 
         rounded-full border border-[#2D6A4F]/20 
@@ -66,7 +67,7 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
                   {targetCalories}{' '}
                   <span className='text-[9px] font-bold opacity-60'>kcal</span>
                 </span>
-              </div>
+              </Link>
             </div>
           )}
 
