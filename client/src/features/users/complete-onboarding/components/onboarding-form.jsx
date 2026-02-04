@@ -83,18 +83,37 @@ export function OnboardingForm() {
   const totalSubSteps = getTotalSubSteps(currentStep);
   const mealCount = form.watch('mealSettings')?.length || 0;
 
+  const validateCurrentSubStep = async () => {
+    if (currentStep === 2) {
+      if (currentSubStep === 1) {
+        const fields = Object.keys(stepTwoOneSchema.fields);
+        return await form.trigger(fields);
+      }
+      if (currentSubStep === 2) {
+        const fields = Object.keys(stepTwoTwoSchema.fields);
+        return await form.trigger(fields);
+      }
+    }
+
+    if (currentStep === 3 && currentSubStep > 1) {
+      const mealIndex = currentSubStep - 2;
+      const baseFn = `mealSettings.${mealIndex}`;
+      const fields = [
+        `${baseFn}.name`,
+        `${baseFn}.dishCategories`,
+        `${baseFn}.cookingPreference`,
+        `${baseFn}.mealSize`,
+        `${baseFn}.availableTime`,
+        `${baseFn}.complexity`
+      ];
+      return await form.trigger(fields);
+    }
+
+    return true;
+  };
+
   const handleSubStepNext = async () => {
-    let isValid = true;
-
-    if (currentStep === 2 && currentSubStep === 1) {
-      const fields = Object.keys(stepTwoOneSchema.fields);
-      isValid = await form.trigger(fields);
-    }
-
-    if (currentStep === 2 && currentSubStep === 2) {
-      const fields = Object.keys(stepTwoTwoSchema.fields);
-      isValid = await form.trigger(fields);
-    }
+    const isValid = await validateCurrentSubStep();
 
     if (!isValid) {
       toast.error('Vui lòng điền đầy đủ thông tin bắt buộc');
@@ -224,7 +243,17 @@ export function OnboardingForm() {
 
   const handleNextClick = () => {
     if (currentStep === 3 && currentSubStep === totalSubSteps) {
-      form.handleSubmit(onFinalSubmit)();
+      form.handleSubmit(onFinalSubmit, errors => {
+        if (errors.mealSettings) {
+          if (typeof errors.mealSettings.message === 'string') {
+            toast.error(errors.mealSettings.message);
+          } else {
+            toast.error('Vui lòng kiểm tra lại thông tin chi tiết các bữa ăn');
+          }
+        } else {
+          toast.error('Vui lòng kiểm tra lại thông tin');
+        }
+      })();
     } else {
       handleSubStepNext();
     }

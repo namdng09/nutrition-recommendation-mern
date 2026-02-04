@@ -158,7 +158,12 @@ export const stepTwoSchema = stepTwoOneSchema.concat(stepTwoTwoSchema);
 export const stepThreeSchema = yup.object({
   goal: goalSchema,
   nutritionTarget: nutritionTargetSchema.optional(),
-  mealSettings: yup.array().of(mealSettingSchema).optional()
+  mealSettings: yup
+    .array()
+    .of(mealSettingSchema)
+    .min(1, 'Phải có ít nhất một bữa ăn')
+    .max(10, 'Tối đa 10 bữa ăn')
+    .required('Cài đặt bữa ăn là bắt buộc')
 });
 
 export const stepFourSchema = yup.object({});
