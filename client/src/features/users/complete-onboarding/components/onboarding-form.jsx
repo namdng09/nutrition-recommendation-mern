@@ -241,7 +241,10 @@ export function OnboardingForm() {
     }
   };
 
-  const handleNextClick = () => {
+  const handleNextClick = e => {
+    if (e && e.preventDefault) {
+      e.preventDefault();
+    }
     if (currentStep === 3 && currentSubStep === totalSubSteps) {
       form.handleSubmit(onFinalSubmit, errors => {
         if (errors.mealSettings) {
