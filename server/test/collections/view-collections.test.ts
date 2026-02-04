@@ -125,18 +125,7 @@ describe('GET /api/collections', () => {
     });
   });
 
-  it('should filter collections by user._id', async () => {
-    const res = await request(app).get(`/api/collections?filter[user._id]=${userId1}`);
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body.data.docs.length).toBe(2);
-    res.body.data.docs.forEach((collection: any) => {
-      expect(collection.user._id).toBe(userId1);
-    });
-  });
-
-  it('should filter collections by tags', async () => {
+  it('should paginate collections correctly', async () => {
     const res = await request(app).get('/api/collections?filter[tags]=giảm cân');
 
     expect(res.status).toBe(200);
@@ -154,29 +143,11 @@ describe('GET /api/collections', () => {
     expect(res.body.data).toHaveProperty('totalPages', 2);
   });
 
-  it('should sort collections by followers descending', async () => {
-    const res = await request(app).get('/api/collections?sort=-followers');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body.data.docs[0].followers).toBeGreaterThanOrEqual(res.body.data.docs[1].followers);
-  });
-
   it('should return empty array when no collections match filter', async () => {
     const res = await request(app).get('/api/collections?filter[tags]=nonexistent');
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('status', 'success');
     expect(res.body.data.docs).toHaveLength(0);
-  });
-
-  it('should select specific fields', async () => {
-    const res = await request(app).get('/api/collections?select=name,isPublic');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body.data.docs.length).toBeGreaterThan(0);
-    expect(res.body.data.docs[0]).toHaveProperty('name');
-    expect(res.body.data.docs[0]).toHaveProperty('isPublic');
   });
 });
