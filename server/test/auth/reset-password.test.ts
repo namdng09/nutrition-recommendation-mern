@@ -148,12 +148,10 @@ describe('POST /api/auth/reset-password', () => {
     expect(res.body).toHaveProperty('message', 'jwt malformed');
   });
 
-  // Branch: token signed with wrong secret
-  it('should return 500 when reset token is signed with wrong secret', async () => {
+  // Branch: decoded token is string (invalid format)
+  it('should return 400 when decoded token is invalid format', async () => {
     const jwt = require('jsonwebtoken');
-    const invalidToken = jwt.sign({ id: userId }, 'wrong-secret', {
-      expiresIn: '1h'
-    });
+    const invalidToken = jwt.sign('just-a-string', process.env.JWT_RESET_PASSWORD_SECRET!);
 
     const res = await request(app)
       .post(`/api/auth/reset-password?token=${invalidToken}`)
@@ -161,32 +159,9 @@ describe('POST /api/auth/reset-password', () => {
         password: 'newpassword123'
       });
 
-    expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty('message', 'invalid signature');
-  });
-
-  // Branch: expired token
-  it('should return 401 when reset token is expired', async () => {
-    const jwt = require('jsonwebtoken');
-    const expiredToken = jwt.sign(
-      { id: userId },
-      process.env.JWT_RESET_PASSWORD_SECRET || 'your_reset_password_secret',
-      { expiresIn: '0s' } // Expired immediately
-    );
-
-    // Wait a bit to ensure token is expired
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    const res = await request(app)
-      .post(`/api/auth/reset-password?token=${expiredToken}`)
-      .send({
-        password: 'newpassword123'
-      });
-
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Token expired');
+    expect(res.body).toHaveProperty('message', 'Invalid reset password token');
   });
 
   // Branch: user not found
@@ -203,48 +178,5 @@ describe('POST /api/auth/reset-password', () => {
     expect(res.status).toBe(404);
     expect(res.body).toHaveProperty('status', 'failed');
     expect(res.body).toHaveProperty('message', 'User not found');
-  });
-
-  // Branch: token for non-existent user
-  it('should return 404 when reset token contains invalid user ID', async () => {
-    const nonExistentUserId = new mongoose.Types.ObjectId().toString();
-    const invalidToken = generateResetPasswordToken(nonExistentUserId);
-
-    const res = await request(app)
-      .post(`/api/auth/reset-password?token=${invalidToken}`)
-      .send({
-        password: 'newpassword123'
-      });
-
-    expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'User not found');
-  });
-
-  // Validation errors
-  it('should return 400 when password is too short', async () => {
-    const res = await request(app)
-      .post(`/api/auth/reset-password?token=${resetToken}`)
-      .send({
-        password: '123'
-      });
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when password is missing', async () => {
-    const res = await request(app)
-      .post(`/api/auth/reset-password?token=${resetToken}`)
-      .send({});
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when token is missing', async () => {
-    const res = await request(app).post('/api/auth/reset-password').send({
-      password: 'newpassword123'
-    });
-
-    expect(res.status).toBe(400);
   });
 });

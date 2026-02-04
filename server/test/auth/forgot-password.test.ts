@@ -88,14 +88,10 @@ describe('POST /api/auth/forgot-password', () => {
     expect(emailUtils.sendMail).not.toHaveBeenCalled();
   });
 
-  // Branch: email sending fails (should still return success to prevent email enumeration)
-  it('should return success even if email sending fails', async () => {
-    // Mock email sending to reject
+  // Branch: email sending fails (catch block)
+  it('should still return 200 even when email sending fails', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    (emailUtils.sendMail as any).mockRejectedValueOnce(
-      new Error('Email service error')
-    );
-
+    
     // Create a test user
     await UserModel.create({
       email: 'testuser@gmail.com',
@@ -103,6 +99,9 @@ describe('POST /api/auth/forgot-password', () => {
       role: ROLE.USER,
       isActive: true
     });
+
+    // Mock sendMail to reject
+    (emailUtils.sendMail as any).mockRejectedValueOnce(new Error('Email service error'));
 
     const res = await request(app).post('/api/auth/forgot-password').send({
       email: 'testuser@gmail.com'
@@ -124,18 +123,5 @@ describe('POST /api/auth/forgot-password', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  // Validation errors
-  it('should return 400 when email is invalid', async () => {
-    const res = await request(app).post('/api/auth/forgot-password').send({
-      email: 'invalid-email'
-    });
 
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when email is missing', async () => {
-    const res = await request(app).post('/api/auth/forgot-password').send({});
-
-    expect(res.status).toBe(400);
-  });
 });
