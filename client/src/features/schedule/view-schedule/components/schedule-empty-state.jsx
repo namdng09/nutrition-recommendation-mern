@@ -2,7 +2,7 @@ import { HiOutlineCalendarDays } from 'react-icons/hi2';
 
 export default function ScheduleEmptyState({ onCreate, isCreating }) {
   return (
-    <div className='flex flex-col items-center justify-center rounded-3xl border border-border bg-card p-16 text-center shadow-inner'>
+    <div className='flex flex-col items-center justify-center rounded-3xl bg-card p-16 text-center'>
       <div className='relative mb-6 flex h-24 w-24 items-center justify-center'>
         <div className='relative flex h-20 w-20 items-center justify-center rounded-full bg-background shadow'>
           <HiOutlineCalendarDays className='text-muted-foreground' size={40} />

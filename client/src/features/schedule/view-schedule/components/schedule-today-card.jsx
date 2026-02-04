@@ -1,10 +1,9 @@
 import {
-  HiChevronRight,
   HiFire,
   HiOutlineChevronRight,
   HiOutlineClipboardList,
-  HiOutlineCog,
   HiOutlineDotsVertical,
+  HiOutlinePhotograph,
   HiOutlineTrash,
   HiOutlineUserGroup
 } from 'react-icons/hi';
@@ -15,6 +14,8 @@ import { useProfileForPage } from '~/features/users/view-profile/api/view-profil
 import { formatDateVI } from '~/lib/utils';
 
 import DeleteScheduleModal from '../../delete-schedule/components/delete-schedule-modal';
+import DishCheckin from '../../update-dish-status-in-schedule/components/dish-check-in';
+import ScheduleProgress from '../../update-dish-status-in-schedule/components/schedule-progress';
 import AddFoodModal from './add-food-modal';
 import DeleteDishModal from './delete-dish-modal';
 
@@ -38,7 +39,7 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
 
   return (
     <div className='rounded-[32px] border border-border bg-card p-6 shadow-sm'>
-      <div className='mb-8 flex items-center justify-between px-1'>
+      <div className='mb-4 flex items-center justify-between px-1'>
         <div>
           <h2 className='text-2xl font-black tracking-tight text-foreground'>
             {formatDateVI(selectedDate)}
@@ -57,12 +58,7 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
 
               <Link
                 to={`/profile/nutrition-target`}
-                className='
-        flex items-center gap-1.5 
-        rounded-full border border-[#2D6A4F]/20 
-        bg-[#F0F7F4] px-3 py-1 
-        shadow-sm
-      '
+                className='flex items-center gap-1.5 rounded-full border border-[#2D6A4F]/20 bg-[#F0F7F4] px-3 py-1 shadow-sm'
               >
                 <HiFire className='text-[#2D6A4F]' size={14} />
                 <span className='text-[12px] font-black tracking-tight text-[#1B4332]'>
@@ -75,24 +71,16 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
 
           <DeleteScheduleModal scheduleId={schedule._id}>
             <button
-              className='
-        flex h-10 w-10 items-center justify-center
-        rounded-xl border border-destructive/30
-        text-destructive
-        hover:bg-destructive hover:text-white
-        transition-all
-      '
+              className='flex h-10 w-10 items-center justify-center rounded-xl border border-destructive/30 text-destructive hover:bg-destructive hover:text-white transition-all'
               title='Xoá toàn bộ lịch ăn'
             >
               <HiOutlineTrash size={18} />
             </button>
           </DeleteScheduleModal>
-
-          <div className='flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#2D6A4F] text-white shadow-inner border-2 border-[#F0F7F4]'>
-            <HiOutlineClipboardList size={24} />
-          </div>
         </div>
       </div>
+
+      <ScheduleProgress schedule={schedule} />
 
       <div className='space-y-8'>
         {schedule.meals.map(meal => (
@@ -121,16 +109,19 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
             <div className='space-y-3'>
               {meal.dishes.length > 0 ? (
                 meal.dishes.map(dish => (
-                  <div key={dish._id} className='relative group'>
+                  <div
+                    key={dish._id}
+                    className='relative group flex items-center gap-3'
+                  >
+                    <DishCheckin
+                      scheduleId={schedule._id}
+                      mealType={meal.mealType}
+                      dish={dish}
+                    />
+
                     <Link
                       to={`/dishes/${dish.dishId}`}
-                      className='
-        flex items-center gap-4 p-3
-        rounded-2xl border border-border/50
-        bg-background/50
-        hover:bg-card hover:border-primary/30 hover:shadow-sm
-        transition-all duration-200
-      '
+                      className='flex-1 flex items-center gap-4 p-3 rounded-2xl border border-border/50 bg-background/50 hover:bg-card hover:border-primary/30 hover:shadow-sm transition-all duration-200'
                     >
                       <div className='h-14 w-14 shrink-0 overflow-hidden rounded-[16px] border border-border bg-muted'>
                         {dish.image ? (
@@ -180,8 +171,13 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
                         mealType={meal.mealType}
                         dishId={dish.dishId}
                       >
-                        <button className='p-1.5 rounded-full bg-white shadow'>
-                          <HiOutlineCog size={16} />
+                        <button
+                          className='flex h-7 w-7 items-center justify-center rounded-full 
+             bg-destructive text-white shadow 
+             hover:scale-110 hover:bg-destructive/90 transition'
+                          title='Xoá món'
+                        >
+                          <HiOutlineTrash size={14} />
                         </button>
                       </DeleteDishModal>
                     </div>
