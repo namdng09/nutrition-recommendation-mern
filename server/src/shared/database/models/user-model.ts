@@ -95,22 +95,11 @@ const userSchema = new Schema(
     diet: { type: String, enum: Object.values(DIET) },
     nutritionTarget: { type: nutritionTargetSchema },
     mealSettings: { type: [mealSettingSchema], default: [] },
-    favouriteDishes: [{ type: Schema.Types.ObjectId, ref: 'Dish' }],
-    favouriteIngredients: [{ type: Schema.Types.ObjectId, ref: 'Ingredient' }],
-    blockDishes: [
-      {
-        dishId: { type: Schema.Types.ObjectId, ref: 'Dish' },
-        name: { type: String },
-        image: { type: String }
-      }
-    ],
-    blockIngredients: [
-      {
-        ingredientId: { type: Schema.Types.ObjectId, ref: 'Ingredient' },
-        name: { type: String },
-        image: { type: String }
-      }
-    ],
+    favoriteDishes: [{ type: Schema.Types.ObjectId, ref: 'Dish' }],
+    favoriteIngredients: [{ type: Schema.Types.ObjectId, ref: 'Ingredient' }],
+    favoriteCollections: [{ type: Schema.Types.ObjectId, ref: 'Collection' }],
+    blockDishes: [{ type: Schema.Types.ObjectId, ref: 'Dish' }],
+    blockIngredients: [{ type: Schema.Types.ObjectId, ref: 'Ingredient' }],
     weightRecord: [
       {
         weight: { type: Number },
