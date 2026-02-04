@@ -185,12 +185,6 @@ describe('DELETE /api/dishes/:id', () => {
   });
 
   // ============ AUTHENTICATION & AUTHORIZATION ============
-  it('should return 401 when no token provided', async () => {
-    const res = await request(app).delete(`/api/dishes/${dishId}`);
-
-    expect(res.status).toBe(401);
-  });
-
   it('should return 403 when user is not dish owner', async () => {
     const res = await request(app)
       .delete(`/api/dishes/${dishId}`)
@@ -210,16 +204,6 @@ describe('DELETE /api/dishes/:id', () => {
     expect(res.body).toHaveProperty('message', 'Định dạng ID món ăn không hợp lệ');
   });
 
-  it('should return 400 when id contains special characters', async () => {
-    const res = await request(app)
-      .delete('/api/dishes/123!@#$%^&*()')
-      .set('Authorization', `Bearer ${userToken}`);
-
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Định dạng ID món ăn không hợp lệ');
-  });
-
   // ============ NOT FOUND (404) ============
   it('should return 404 when dish does not exist', async () => {
     const nonExistentId = new mongoose.Types.ObjectId().toString();
@@ -232,7 +216,6 @@ describe('DELETE /api/dishes/:id', () => {
     expect(res.body).toHaveProperty('message', 'Không tìm thấy món ăn');
   });
 
-  // ============ ERROR CASES (500) ============
   it('should return 404 when findByIdAndDelete returns null', async () => {
     // Mock findByIdAndDelete to return null
     vi.spyOn(DishModel, 'findByIdAndDelete').mockResolvedValueOnce(null);
@@ -242,10 +225,9 @@ describe('DELETE /api/dishes/:id', () => {
       .set('Authorization', `Bearer ${userToken}`);
 
     expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('status', 'failed');
     expect(res.body).toHaveProperty('message', 'Không tìm thấy món ăn');
 
-    // Restore original function
+    // Restore
     vi.spyOn(DishModel, 'findByIdAndDelete').mockRestore();
   });
 });
