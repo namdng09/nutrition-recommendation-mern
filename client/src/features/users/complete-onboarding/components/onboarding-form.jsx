@@ -21,13 +21,15 @@ import {
   stepTwoTwoSchema
 } from '../schemas/onboarding-schema';
 import { cleanGoalData } from '../utils/clean-goal-data';
+import { StepFourSuccess } from './step-four/step-four-success';
 import { StepOneContainer } from './step-one/step-one-container';
 import { StepProgress } from './step-progress';
 import { StepThreeContainer } from './step-three/step-three-container';
 import { StepTwoContainer } from './step-two/step-two-container';
+import { StepZeroIntro } from './step-zero/step-zero-intro';
 
 export function OnboardingForm() {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0);
   const [subSteps, setSubSteps] = useState({ 1: 1, 2: 1, 3: 1 });
   const [selectedMealIndex, setSelectedMealIndex] = useState(null);
 
@@ -67,6 +69,8 @@ export function OnboardingForm() {
 
   const getTotalSubSteps = step => {
     switch (step) {
+      case 0:
+        return 1;
       case 1:
       case 2:
         return 3;
@@ -152,6 +156,11 @@ export function OnboardingForm() {
   };
 
   const handleNext = async () => {
+    if (currentStep === 0) {
+      setCurrentStep(1);
+      return;
+    }
+
     const stepSchema = getStepSchema(currentStep);
     const currentValues = form.getValues();
 
@@ -172,7 +181,7 @@ export function OnboardingForm() {
   };
 
   const handlePrevious = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
+    setCurrentStep(prev => Math.max(prev - 1, 0));
   };
 
   const onFinalSubmit = async data => {
@@ -195,8 +204,8 @@ export function OnboardingForm() {
       onSuccess: response => {
         const successMessage =
           response?.message || 'Hoàn thành onboarding thành công!';
-        toast.success(successMessage);
-        navigate('/');
+        // toast.success(successMessage);
+        setCurrentStep(4);
       },
       onError: error => {
         const errorMessage =
@@ -209,6 +218,8 @@ export function OnboardingForm() {
 
   const renderStep = () => {
     switch (currentStep) {
+      case 0:
+        return <StepZeroIntro />;
       case 1:
         return (
           <StepOneContainer
@@ -236,6 +247,8 @@ export function OnboardingForm() {
             }}
           />
         );
+      case 4:
+        return <StepFourSuccess />;
       default:
         return null;
     }

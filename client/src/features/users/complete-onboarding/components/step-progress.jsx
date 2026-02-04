@@ -13,8 +13,12 @@ export function StepProgress({
   isPending,
   isLastStep
 }) {
+  if (currentStep === 4) return null;
+
   const getTotalSubStepsForStep = step => {
     switch (step) {
+      case 0:
+        return 1;
       case 1:
       case 2:
         return 3;
@@ -27,10 +31,12 @@ export function StepProgress({
 
   const calculateProgress = () => {
     const sectionSize = 100 / totalSteps;
-    const currentStepProgress = (currentStep - 1) * sectionSize;
+    const currentStepProgress = Math.max(0, (currentStep - 1) * sectionSize);
     const currentSubStepProgress =
-      ((currentSubStep - 1) / getTotalSubStepsForStep(currentStep)) *
-      sectionSize;
+      currentStep === 0
+        ? 0
+        : ((currentSubStep - 1) / getTotalSubStepsForStep(currentStep)) *
+          sectionSize;
 
     return currentStepProgress + currentSubStepProgress;
   };
@@ -72,8 +78,12 @@ export function StepProgress({
             type='button'
             variant='outline'
             onClick={onPrevious}
-            disabled={(currentStep === 1 && currentSubStep === 1) || isPending}
-            className='text-base'
+            disabled={
+              (currentStep === 1 && currentSubStep === 1) ||
+              currentStep === 0 ||
+              isPending
+            }
+            className={`text-base ${currentStep === 0 ? 'invisible' : ''}`}
           >
             <ArrowLeftIcon />
             Quay lại
@@ -86,7 +96,7 @@ export function StepProgress({
               disabled={isPending}
               className='text-base'
             >
-              Tiếp theo
+              {currentStep === 0 ? 'Bắt đầu ngay' : 'Tiếp theo'}
               <ArrowRightIcon />
             </Button>
           ) : (
