@@ -1,6 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
@@ -10,6 +11,7 @@ import { BODYFAT } from '~/constants/bodyfat';
 import { DIET, DIET_OPTIONS } from '~/constants/diet';
 import { GENDER } from '~/constants/gender';
 import { USER_TARGET } from '~/constants/user-target';
+import { loadUser } from '~/store/features/auth-slice';
 
 import { useCompleteOnboarding } from '../api/use-complete-onboarding';
 import {
@@ -34,6 +36,7 @@ export function OnboardingForm() {
   const [selectedMealIndex, setSelectedMealIndex] = useState(null);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { mutate: completeOnboarding, isPending } = useCompleteOnboarding();
 
   const form = useForm({
@@ -204,7 +207,11 @@ export function OnboardingForm() {
       onSuccess: response => {
         const successMessage =
           response?.message || 'Hoàn thành onboarding thành công!';
-        // toast.success(successMessage);
+        const { accessToken } = response.data;
+        if (accessToken) {
+          dispatch(loadUser({ accessToken, isRemember: true }));
+        }
+
         setCurrentStep(4);
       },
       onError: error => {
