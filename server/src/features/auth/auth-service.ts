@@ -47,7 +47,8 @@ export const AuthService = {
 
     const { accessToken, refreshToken } = generateToken({
       id: user._id.toString(),
-      role: user.role
+      role: user.role,
+      hasOnboarded: user.hasOnboarded
     });
 
     return {
@@ -82,7 +83,8 @@ export const AuthService = {
 
     const { accessToken, refreshToken } = generateToken({
       id: user._id.toString(),
-      role: user.role
+      role: user.role,
+      hasOnboarded: user.hasOnboarded
     });
 
     return {
@@ -122,7 +124,8 @@ export const AuthService = {
 
     const { accessToken, refreshToken } = generateToken({
       id: newUser._id.toString(),
-      role: newUser.role
+      role: newUser.role,
+      hasOnboarded: newUser.hasOnboarded
     });
 
     return {
@@ -154,7 +157,8 @@ export const AuthService = {
 
     const { accessToken } = generateToken({
       id: user._id.toString(),
-      role: user.role
+      role: user.role,
+      hasOnboarded: user.hasOnboarded
     });
 
     return accessToken;
@@ -215,6 +219,7 @@ export const AuthService = {
         provider: 'local',
         providerId: user.email,
         localPassword: hashedPassword,
+        verifyAt: new Date(),
         lastResetPasswordToken: token
       });
       return;

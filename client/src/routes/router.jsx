@@ -158,6 +158,10 @@ const router = createBrowserRouter([
             )
           }
         ]
+      },
+      {
+        path: '*',
+        Component: ErrorComponent
       }
     ]
   }
