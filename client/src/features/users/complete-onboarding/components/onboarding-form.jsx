@@ -11,6 +11,7 @@ import { BODYFAT } from '~/constants/bodyfat';
 import { DIET, DIET_OPTIONS } from '~/constants/diet';
 import { GENDER } from '~/constants/gender';
 import { USER_TARGET } from '~/constants/user-target';
+import { getStoredAccessToken, saveAccessToken } from '~/lib/auth-tokens';
 import { loadUser } from '~/store/features/auth-slice';
 
 import { useCompleteOnboarding } from '../api/use-complete-onboarding';
@@ -209,7 +210,7 @@ export function OnboardingForm() {
           response?.message || 'Hoàn thành onboarding thành công!';
         const { accessToken } = response.data;
         if (accessToken) {
-          dispatch(loadUser({ accessToken, isRemember: true }));
+          saveAccessToken(accessToken, true);
         }
 
         setCurrentStep(4);
@@ -221,6 +222,14 @@ export function OnboardingForm() {
         toast.error(errorMessage);
       }
     });
+  };
+
+  const handleFinishOnboarding = () => {
+    const accessToken = getStoredAccessToken();
+    if (accessToken) {
+      dispatch(loadUser({ accessToken, isRemember: true }));
+    }
+    navigate('/');
   };
 
   const renderStep = () => {
@@ -255,7 +264,7 @@ export function OnboardingForm() {
           />
         );
       case 4:
-        return <StepFourSuccess />;
+        return <StepFourSuccess onFinish={handleFinishOnboarding} />;
       default:
         return null;
     }
