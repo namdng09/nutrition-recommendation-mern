@@ -32,6 +32,15 @@ export function StepThreeXMealDetail({ control, mealIndex, onBack }) {
 
   return (
     <div key={`meal-detail-${mealIndex}`} className='space-y-6'>
+      <title>{mealName ? mealName : 'Chi tiết bữa ăn'}</title>
+      <meta
+        name='description'
+        content={
+          mealName
+            ? 'Chi tiết ' + mealName + ' và sở thích.'
+            : 'Chi tiết món ăn và sở thích cho từng bữa ăn.'
+        }
+      />
       <div className='space-y-4'>
         <h3 className='text-3xl font-bold'>Chi tiết {mealName}</h3>
       </div>

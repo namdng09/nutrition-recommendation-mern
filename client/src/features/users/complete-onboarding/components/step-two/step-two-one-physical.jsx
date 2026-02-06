@@ -102,6 +102,11 @@ export function StepTwoOnePhysical({ control }) {
 
   return (
     <div className='space-y-6'>
+      <title>Chỉ số cơ thể</title>
+      <meta
+        name='description'
+        content='Nhập chiều cao, cân nặng và các chỉ số cơ thể khác.'
+      />
       <div className='space-y-4'>
         <h3 className='text-3xl font-bold'>Thông tin cơ thể</h3>
         <p className='text-muted-foreground text-base'>

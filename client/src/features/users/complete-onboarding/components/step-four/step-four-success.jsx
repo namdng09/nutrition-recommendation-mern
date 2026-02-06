@@ -9,6 +9,11 @@ export function StepFourSuccess() {
 
   return (
     <div className='flex flex-col items-center justify-center py-10 text-center space-y-8 animate-in fade-in zoom-in duration-500'>
+      <title>Hoàn thành</title>
+      <meta
+        name='description'
+        content='Chúc mừng bạn đã hoàn thành thiết lập hồ sơ.'
+      />
       <div>
         <CheckCircle2 className='size-24 text-green-500' />
       </div>

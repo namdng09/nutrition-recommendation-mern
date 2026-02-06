@@ -8,6 +8,8 @@ import { cn } from '~/lib/utils';
 export function StepOneOneDiet({ control }) {
   return (
     <div className='space-y-6'>
+      <title>Chế độ ăn</title>
+      <meta name='description' content='Chọn chế độ ăn uống phù hợp với bạn.' />
       <div className='space-y-4'>
         <h3 className='text-3xl font-bold'>Bạn muốn ăn gì?</h3>
         <p className='text-muted-foreground'>

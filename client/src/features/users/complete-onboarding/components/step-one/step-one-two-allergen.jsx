@@ -23,6 +23,11 @@ export function StepOneTwoAllergen({ control }) {
 
   return (
     <div className='space-y-6'>
+      <title>Dị ứng</title>
+      <meta
+        name='description'
+        content='Chọn các loại thực phẩm bạn bị dị ứng nếu có.'
+      />
       <div className='space-y-4'>
         <h3 className='text-3xl font-bold'>Kiêng thực phẩm</h3>
         <p className='text-muted-foreground'>
