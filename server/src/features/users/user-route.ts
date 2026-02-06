@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import { ROLE } from '~/shared/constants/role';
 import {
   authenticate,
   authorize,
@@ -15,7 +16,6 @@ import {
   onboardingRequestSchema,
   updateUserRequestSchema
 } from './user-dto';
-import { ROLE } from '~/shared/constants/role';
 
 const router = Router();
 

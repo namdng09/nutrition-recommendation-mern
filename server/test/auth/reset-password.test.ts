@@ -150,6 +150,7 @@ describe('POST /api/auth/reset-password', () => {
 
   // Branch: token signed with wrong secret
   it('should return 500 when reset token is signed with wrong secret', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
     const invalidToken = jwt.sign({ id: userId }, 'wrong-secret', {
       expiresIn: '1h'
@@ -168,6 +169,7 @@ describe('POST /api/auth/reset-password', () => {
 
   // Branch: expired token
   it('should return 401 when reset token is expired', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
     const expiredToken = jwt.sign(
       { id: userId },

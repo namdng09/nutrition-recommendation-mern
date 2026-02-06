@@ -90,6 +90,7 @@ describe('POST /api/auth/refresh-access-token', () => {
 
   // Branch: refresh token with wrong secret
   it('should return 500 when refresh token is signed with wrong secret', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
     const invalidToken = jwt.sign(
       { id: userId, role: ROLE.USER },
@@ -109,6 +110,7 @@ describe('POST /api/auth/refresh-access-token', () => {
 
   // Branch: expired refresh token
   it('should return 401 when refresh token is expired', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
     const expiredToken = jwt.sign(
       { id: userId, role: ROLE.USER },
@@ -146,6 +148,7 @@ describe('POST /api/auth/refresh-access-token', () => {
 
   // Branch: refresh token with non-existent user ID
   it('should return 404 when refresh token contains invalid user ID', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
     const nonExistentUserId = new mongoose.Types.ObjectId().toString();
     const tokenWithInvalidUser = jwt.sign(
