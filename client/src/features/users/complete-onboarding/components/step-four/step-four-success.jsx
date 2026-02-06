@@ -1,12 +1,9 @@
 import { CheckCircle2, Home } from 'lucide-react';
 import React from 'react';
-import { useNavigate } from 'react-router';
 
 import { Button } from '~/components/ui/button';
 
-export function StepFourSuccess() {
-  const navigate = useNavigate();
-
+export function StepFourSuccess({ onFinish }) {
   return (
     <div className='flex flex-col items-center justify-center py-10 text-center space-y-8 animate-in fade-in zoom-in duration-500'>
       <title>Hoàn thành</title>
@@ -15,7 +12,7 @@ export function StepFourSuccess() {
         content='Chúc mừng bạn đã hoàn thành thiết lập hồ sơ.'
       />
       <div>
-        <CheckCircle2 className='size-24 text-green-500' />
+        <CheckCircle2 className='size-24 text-primary' />
       </div>
 
       <div className='space-y-4 max-w-md'>
@@ -28,7 +25,7 @@ export function StepFourSuccess() {
         </p>
       </div>
 
-      <Button size='lg' onClick={() => navigate('/')} className='gap-2'>
+      <Button size='lg' onClick={onFinish} className='gap-2'>
         <Home className='size-5' />
         Về trang chủ
       </Button>
