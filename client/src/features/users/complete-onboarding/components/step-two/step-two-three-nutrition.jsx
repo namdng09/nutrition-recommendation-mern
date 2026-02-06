@@ -68,6 +68,11 @@ export function StepTwoThreeNutrition({ control, watch, setValue }) {
 
   return (
     <div className='space-y-6'>
+      <title>Dinh dưỡng</title>
+      <meta
+        name='description'
+        content='Xem và điều chỉnh mục tiêu dinh dưỡng hàng ngày.'
+      />
       <div className='space-y-4'>
         <h3 className='text-3xl font-bold'>Mục tiêu dinh dưỡng</h3>
         <p className='text-muted-foreground'>

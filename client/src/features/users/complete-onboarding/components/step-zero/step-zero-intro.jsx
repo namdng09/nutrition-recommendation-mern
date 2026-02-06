@@ -4,6 +4,11 @@ import React from 'react';
 export function StepZeroIntro() {
   return (
     <div className='space-y-6 max-w-2xl mx-auto pt-4'>
+      <title>Chào mừng</title>
+      <meta
+        name='description'
+        content='Chào mừng bạn đến với website Eatdee. Bắt đầu hành trình sức khỏe của bạn.'
+      />
       <div className='space-y-2 text-center sm:text-left'>
         <h3 className='text-3xl font-bold'>Thiết lập tài khoản của bạn</h3>
         <p className='text-muted-foreground text-lg'>

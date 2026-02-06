@@ -83,6 +83,11 @@ export function StepThreeOneSchedule({ control }) {
 
   return (
     <div className='space-y-6'>
+      <title>Lịch trình ăn</title>
+      <meta
+        name='description'
+        content='Thiết lập số lượng và thời gian các bữa ăn trong ngày.'
+      />
       <div className='space-y-4'>
         <h3 className='text-3xl font-bold'>Lịch bữa ăn</h3>
         <p className='text-muted-foreground'>

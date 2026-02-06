@@ -15,6 +15,11 @@ import { cn } from '~/lib/utils';
 export function StepOneThreeMedical({ control }) {
   return (
     <div className='space-y-6'>
+      <title>Tiền sử bệnh</title>
+      <meta
+        name='description'
+        content='Cung cấp thông tin về tiền sử bệnh lý của bạn.'
+      />
       <div className='space-y-4'>
         <h3 className='text-3xl font-bold'>Tiền sử bệnh lý</h3>
         <p className='text-muted-foreground'>

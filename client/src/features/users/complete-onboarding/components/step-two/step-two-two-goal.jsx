@@ -59,6 +59,11 @@ export function StepTwoTwoGoal({ control }) {
 
   return (
     <div className='space-y-6'>
+      <title>Mục tiêu</title>
+      <meta
+        name='description'
+        content='Đặt mục tiêu sức khỏe và cân nặng của bạn.'
+      />
       <div className='space-y-4'>
         <h3 className='text-3xl font-bold'>Mục tiêu của bạn</h3>
         <p className='text-muted-foreground'>
