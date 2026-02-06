@@ -219,12 +219,33 @@ const IngredientDetail = ({ id }) => {
   };
 
   const handleSave = data => {
-    const processedData = {
-      ...data,
-      isActive: data.isActive === 'true' || data.isActive === true
-    };
-    updateIngredient({ id, data: processedData, image: selectedImage });
+  // Hàm helper để loại bỏ các trường rỗng
+  const removeEmptyValues = (arr) => {
+    return arr
+      .map(item => ({
+        ...item,
+        value: item.value || item.value === 0 ? item.value : undefined
+      }))
+      .filter(item => item.value !== undefined && item.value !== '' && item.value !== 0);
   };
+
+  const cleanedData = {
+    ...data,
+    isActive: data.isActive === 'true' || data.isActive === true,
+    nutrition: {
+      nutrients: data.nutrition.nutrients,
+      minerals: removeEmptyValues(data.nutrition.minerals || []),
+      vitamins: removeEmptyValues(data.nutrition.vitamins || []),
+      sugars: removeEmptyValues(data.nutrition.sugars || []),
+      fats: removeEmptyValues(data.nutrition.fats || []),
+      fattyAcids: removeEmptyValues(data.nutrition.fattyAcids || []),
+      aminoAcids: removeEmptyValues(data.nutrition.aminoAcids || [])
+    }
+  };
+
+  console.log('Submitting cleaned data:', cleanedData);
+  updateIngredient({ id, data: cleanedData, image: selectedImage });
+};
 
   const handleToggleActive = () => {
     updateIngredient({
@@ -971,6 +992,96 @@ const IngredientDetail = ({ id }) => {
                     </FormItem>
                   )}
                 />
+
+                 {/* Fiber */}
+    <FormField
+      control={form.control}
+      name='nutrition.nutrients.fiber.value'
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel className='text-xs'>Fiber (Chất xơ)</FormLabel>
+          <div className='flex gap-2'>
+            <FormControl>
+              <Input
+                type='number'
+                step='0.1'
+                min='0'
+                placeholder='0'
+                className='h-9'
+                {...field}
+                onChange={e =>
+                  field.onChange(parseFloat(e.target.value) || 0)
+                }
+              />
+            </FormControl>
+            <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+              g
+            </div>
+          </div>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+
+    {/* Sodium */}
+    <FormField
+      control={form.control}
+      name='nutrition.nutrients.sodium.value'
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel className='text-xs'>Sodium (Natri)</FormLabel>
+          <div className='flex gap-2'>
+            <FormControl>
+              <Input
+                type='number'
+                step='0.1'
+                min='0'
+                placeholder='0'
+                className='h-9'
+                {...field}
+                onChange={e =>
+                  field.onChange(parseFloat(e.target.value) || 0)
+                }
+              />
+            </FormControl>
+            <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+              mg
+            </div>
+          </div>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+
+    {/* Cholesterol */}
+    <FormField
+      control={form.control}
+      name='nutrition.nutrients.cholesterol.value'
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel className='text-xs'>Cholesterol</FormLabel>
+          <div className='flex gap-2'>
+            <FormControl>
+              <Input
+                type='number'
+                step='0.1'
+                min='0'
+                placeholder='0'
+                className='h-9'
+                {...field}
+                onChange={e =>
+                  field.onChange(parseFloat(e.target.value) || 0)
+                }
+              />
+            </FormControl>
+            <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+              mg
+            </div>
+          </div>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
               </div>
 
               {/* Optional Nutrition */}
@@ -996,744 +1107,256 @@ const IngredientDetail = ({ id }) => {
                 </CollapsibleTrigger>
 
                 <CollapsibleContent className='space-y-6 pt-4'>
-                  {/* Fiber, Sodium, Cholesterol */}
-                  <div className='grid grid-cols-2 gap-4'>
-                    <FormField
-                      control={form.control}
-                      name='nutrition.nutrients.fiber.value'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className='text-xs'>Fiber</FormLabel>
-                          <div className='flex gap-2'>
-                            <FormControl>
-                              <Input
-                                type='number'
-                                step='0.1'
-                                min='0'
-                                placeholder='0'
-                                className='h-9'
-                                {...field}
-                                onChange={e =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0
-                                  )
-                                }
-                              />
-                            </FormControl>
-                            <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
-                              g
-                            </div>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+  {/* Minerals */}
+  <div className='space-y-4'>
+    <h4 className='text-sm font-medium'>Khoáng chất</h4>
 
-                    <FormField
-                      control={form.control}
-                      name='nutrition.nutrients.sodium.value'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className='text-xs'>Sodium</FormLabel>
-                          <div className='flex gap-2'>
-                            <FormControl>
-                              <Input
-                                type='number'
-                                step='0.1'
-                                min='0'
-                                placeholder='0'
-                                className='h-9'
-                                {...field}
-                                onChange={e =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0
-                                  )
-                                }
-                              />
-                            </FormControl>
-                            <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
-                              mg
-                            </div>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+    <div className='grid grid-cols-2 gap-4'>
+      {mineralFields.map((field, index) => (
+        <div key={field.id} className='flex items-end gap-2'>
+          <FormField
+            control={form.control}
+            name={`nutrition.minerals.${index}.value`}
+            render={({ field }) => (
+              <FormItem className='flex-1'>
+                <FormLabel className='text-xs'>
+                  {form.watch(`nutrition.minerals.${index}.label`)}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type='number'
+                    step='0.001'
+                    min='0'
+                    placeholder='0'
+                    className='h-9'
+                    {...field}
+                    onChange={e =>
+                      field.onChange(parseFloat(e.target.value) || 0)
+                    }
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-                    <FormField
-                      control={form.control}
-                      name='nutrition.nutrients.cholesterol.value'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className='text-xs'>Cholesterol</FormLabel>
-                          <div className='flex gap-2'>
-                            <FormControl>
-                              <Input
-                                type='number'
-                                step='0.1'
-                                min='0'
-                                placeholder='0'
-                                className='h-9'
-                                {...field}
-                                onChange={e =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0
-                                  )
-                                }
-                              />
-                            </FormControl>
-                            <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
-                              mg
-                            </div>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+            {form.watch(`nutrition.minerals.${index}.unit`)}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
 
-                  <Separator />
+  <Separator />
 
-                  {/* Minerals */}
-                  <div className='space-y-4'>
-                    <div className='flex items-center justify-between'>
-                      <h4 className='text-sm font-medium'>Khoáng chất</h4>
-                      <Select
-                        onValueChange={label =>
-                          appendMineral({ label, value: 0, unit: 'mg' })
-                        }
-                      >
-                        <SelectTrigger className='w-[200px] h-8'>
-                          <SelectValue placeholder='Thêm khoáng chất' />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {MINERAL_OPTIONS.map(option => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+  {/* Vitamins */}
+  <div className='space-y-4'>
+    <h4 className='text-sm font-medium'>Vitamin</h4>
 
-                    {mineralFields.map((field, index) => (
-                      <div key={field.id} className='flex items-end gap-2'>
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.minerals.${index}.label`}
-                          render={({ field }) => (
-                            <FormItem className='flex-1'>
-                              <FormLabel className='text-xs'>
-                                {field.value}
-                              </FormLabel>
-                              <FormControl>
-                                <input type='hidden' {...field} />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
+    <div className='grid grid-cols-2 gap-4'>
+      {vitaminFields.map((field, index) => (
+        <div key={field.id} className='flex items-end gap-2'>
+          <FormField
+            control={form.control}
+            name={`nutrition.vitamins.${index}.value`}
+            render={({ field }) => (
+              <FormItem className='flex-1'>
+                <FormLabel className='text-xs'>
+                  {form.watch(`nutrition.vitamins.${index}.label`)}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type='number'
+                    step='0.01'
+                    min='0'
+                    placeholder='0'
+                    className='h-9'
+                    {...field}
+                    onChange={e =>
+                      field.onChange(parseFloat(e.target.value) || 0)
+                    }
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.minerals.${index}.value`}
-                          render={({ field }) => (
-                            <FormItem className='flex-1'>
-                              <FormControl>
-                                <Input
-                                  type='number'
-                                  step='0.001'
-                                  min='0'
-                                  placeholder='0'
-                                  className='h-9'
-                                  {...field}
-                                  onChange={e =>
-                                    field.onChange(
-                                      parseFloat(e.target.value) || 0
-                                    )
-                                  }
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
+          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+            {form.watch(`nutrition.vitamins.${index}.unit`)}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
 
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.minerals.${index}.unit`}
-                          render={({ field }) => (
-                            <FormItem className='w-24'>
-                              <FormControl>
-                                <Select
-                                  value={field.value}
-                                  onValueChange={field.onChange}
-                                >
-                                  <SelectTrigger className='h-9'>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {UNIT_OPTIONS.map(option => (
-                                      <SelectItem
-                                        key={option.value}
-                                        value={option.value}
-                                      >
-                                        {option.value}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
+  <Separator />
 
-                        <Button
-                          type='button'
-                          variant='ghost'
-                          size='icon'
-                          className='h-9 w-9'
-                          onClick={() => removeMineral(index)}
-                        >
-                          <Trash2 className='h-4 w-4' />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
+  {/* Sugars */}
+  <div className='space-y-4'>
+    <h4 className='text-sm font-medium'>Đường (Sugars)</h4>
 
-                  <Separator />
+    <div className='grid grid-cols-2 gap-4'>
+      {sugarFields.map((field, index) => (
+        <div key={field.id} className='flex items-end gap-2'>
+          <FormField
+            control={form.control}
+            name={`nutrition.sugars.${index}.value`}
+            render={({ field }) => (
+              <FormItem className='flex-1'>
+                <FormLabel className='text-xs'>
+                  {form.watch(`nutrition.sugars.${index}.label`)}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type='number'
+                    step='0.1'
+                    min='0'
+                    placeholder='0'
+                    className='h-9'
+                    {...field}
+                    onChange={e =>
+                      field.onChange(parseFloat(e.target.value) || 0)
+                    }
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-                  {/* Vitamins */}
-                  <div className='space-y-4'>
-                    <div className='flex items-center justify-between'>
-                      <h4 className='text-sm font-medium'>Vitamin</h4>
-                      <Select
-                        onValueChange={label =>
-                          appendVitamin({ label, value: 0, unit: 'μg' })
-                        }
-                      >
-                        <SelectTrigger className='w-[200px] h-8'>
-                          <SelectValue placeholder='Thêm vitamin' />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {VITAMIN_OPTIONS.map(option => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+            g
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
 
-                    {vitaminFields.map((field, index) => (
-                      <div key={field.id} className='flex items-end gap-2'>
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.vitamins.${index}.label`}
-                          render={({ field }) => (
-                            <FormItem className='flex-1'>
-                              <FormLabel className='text-xs'>
-                                {field.value}
-                              </FormLabel>
-                              <FormControl>
-                                <input type='hidden' {...field} />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
+  <Separator />
 
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.vitamins.${index}.value`}
-                          render={({ field }) => (
-                            <FormItem className='flex-1'>
-                              <FormControl>
-                                <Input
-                                  type='number'
-                                  step='0.01'
-                                  min='0'
-                                  placeholder='0'
-                                  className='h-9'
-                                  {...field}
-                                  onChange={e =>
-                                    field.onChange(
-                                      parseFloat(e.target.value) || 0
-                                    )
-                                  }
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
+  {/* Fats */}
+  <div className='space-y-4'>
+    <h4 className='text-sm font-medium'>Chi tiết chất béo</h4>
 
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.vitamins.${index}.unit`}
-                          render={({ field }) => (
-                            <FormItem className='w-24'>
-                              <FormControl>
-                                <Select
-                                  value={field.value}
-                                  onValueChange={field.onChange}
-                                >
-                                  <SelectTrigger className='h-9'>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {UNIT_OPTIONS.map(option => (
-                                      <SelectItem
-                                        key={option.value}
-                                        value={option.value}
-                                      >
-                                        {option.value}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
+    <div className='grid grid-cols-2 gap-4'>
+      {fatFields.map((field, index) => (
+        <div key={field.id} className='flex items-end gap-2'>
+          <FormField
+            control={form.control}
+            name={`nutrition.fats.${index}.value`}
+            render={({ field }) => (
+              <FormItem className='flex-1'>
+                <FormLabel className='text-xs'>
+                  {form.watch(`nutrition.fats.${index}.label`)}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type='number'
+                    step='0.1'
+                    min='0'
+                    placeholder='0'
+                    className='h-9'
+                    {...field}
+                    onChange={e =>
+                      field.onChange(parseFloat(e.target.value) || 0)
+                    }
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-                        <Button
-                          type='button'
-                          variant='ghost'
-                          size='icon'
-                          className='h-9 w-9'
-                          onClick={() => removeVitamin(index)}
-                        >
-                          <Trash2 className='h-4 w-4' />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
+          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+            g
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
 
-                  <Separator />
+  <Separator />
 
-                  {/* Sugars */}
-                  <div className='space-y-4'>
-                    <div className='flex items-center justify-between'>
-                      <h4 className='text-sm font-medium'>Đường (Sugars)</h4>
-                      <Select
-                        onValueChange={label =>
-                          appendSugar({ label, value: 0, unit: 'g' })
-                        }
-                      >
-                        <SelectTrigger className='w-[200px] h-8'>
-                          <SelectValue placeholder='Thêm loại đường' />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {SUGAR_OPTIONS.map(option => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+  {/* Fatty Acids */}
+  <div className='space-y-4'>
+    <h4 className='text-sm font-medium'>Axit béo</h4>
 
-                    {sugarFields.map((field, index) => (
-                      <div key={field.id} className='flex items-end gap-2'>
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.sugars.${index}.label`}
-                          render={({ field }) => (
-                            <FormItem className='flex-1'>
-                              <FormLabel className='text-xs'>
-                                {field.value}
-                              </FormLabel>
-                              <FormControl>
-                                <input type='hidden' {...field} />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
+    <div className='grid grid-cols-2 gap-4'>
+      {fattyAcidFields.map((field, index) => (
+        <div key={field.id} className='flex items-end gap-2'>
+          <FormField
+            control={form.control}
+            name={`nutrition.fattyAcids.${index}.value`}
+            render={({ field }) => (
+              <FormItem className='flex-1'>
+                <FormLabel className='text-xs'>
+                  {form.watch(`nutrition.fattyAcids.${index}.label`)}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type='number'
+                    step='0.001'
+                    min='0'
+                    placeholder='0'
+                    className='h-9'
+                    {...field}
+                    onChange={e =>
+                      field.onChange(parseFloat(e.target.value) || 0)
+                    }
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.sugars.${index}.value`}
-                          render={({ field }) => (
-                            <FormItem className='flex-1'>
-                              <FormControl>
-                                <Input
-                                  type='number'
-                                  step='0.1'
-                                  min='0'
-                                  placeholder='0'
-                                  className='h-9'
-                                  {...field}
-                                  onChange={e =>
-                                    field.onChange(
-                                      parseFloat(e.target.value) || 0
-                                    )
-                                  }
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
+          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+            g
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
 
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.sugars.${index}.unit`}
-                          render={({ field }) => (
-                            <FormItem className='w-24'>
-                              <FormControl>
-                                <Select
-                                  value={field.value}
-                                  onValueChange={field.onChange}
-                                >
-                                  <SelectTrigger className='h-9'>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {UNIT_OPTIONS.map(option => (
-                                      <SelectItem
-                                        key={option.value}
-                                        value={option.value}
-                                      >
-                                        {option.value}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
+  <Separator />
 
-                        <Button
-                          type='button'
-                          variant='ghost'
-                          size='icon'
-                          className='h-9 w-9'
-                          onClick={() => removeSugar(index)}
-                        >
-                          <Trash2 className='h-4 w-4' />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
+  {/* Amino Acids */}
+  <div className='space-y-4'>
+    <h4 className='text-sm font-medium'>Amino Acids</h4>
 
-                  <Separator />
+    <div className='grid grid-cols-2 gap-4'>
+      {aminoAcidFields.map((field, index) => (
+        <div key={field.id} className='flex items-end gap-2'>
+          <FormField
+            control={form.control}
+            name={`nutrition.aminoAcids.${index}.value`}
+            render={({ field }) => (
+              <FormItem className='flex-1'>
+                <FormLabel className='text-xs'>
+                  {form.watch(`nutrition.aminoAcids.${index}.label`)}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type='number'
+                    step='0.001'
+                    min='0'
+                    placeholder='0'
+                    className='h-9'
+                    {...field}
+                    onChange={e =>
+                      field.onChange(parseFloat(e.target.value) || 0)
+                    }
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-                  {/* Fats */}
-                  <div className='space-y-4'>
-                    <div className='flex items-center justify-between'>
-                      <h4 className='text-sm font-medium'>Chi tiết chất béo</h4>
-                      <Select
-                        onValueChange={label =>
-                          appendFat({ label, value: 0, unit: 'g' })
-                        }
-                      >
-                        <SelectTrigger className='w-[280px] h-8'>
-                          <SelectValue placeholder='Thêm loại chất béo' />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {FAT_OPTIONS.map(option => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {fatFields.map((field, index) => (
-                      <div key={field.id} className='flex items-end gap-2'>
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.fats.${index}.label`}
-                          render={({ field }) => (
-                            <FormItem className='flex-1'>
-                              <FormLabel className='text-xs'>
-                                {field.value}
-                              </FormLabel>
-                              <FormControl>
-                                <input type='hidden' {...field} />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.fats.${index}.value`}
-                          render={({ field }) => (
-                            <FormItem className='flex-1'>
-                              <FormControl>
-                                <Input
-                                  type='number'
-                                  step='0.1'
-                                  min='0'
-                                  placeholder='0'
-                                  className='h-9'
-                                  {...field}
-                                  onChange={e =>
-                                    field.onChange(
-                                      parseFloat(e.target.value) || 0
-                                    )
-                                  }
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.fats.${index}.unit`}
-                          render={({ field }) => (
-                            <FormItem className='w-24'>
-                              <FormControl>
-                                <Select
-                                  value={field.value}
-                                  onValueChange={field.onChange}
-                                >
-                                  <SelectTrigger className='h-9'>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {UNIT_OPTIONS.map(option => (
-                                      <SelectItem
-                                        key={option.value}
-                                        value={option.value}
-                                      >
-                                        {option.value}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-
-                        <Button
-                          type='button'
-                          variant='ghost'
-                          size='icon'
-                          className='h-9 w-9'
-                          onClick={() => removeFat(index)}
-                        >
-                          <Trash2 className='h-4 w-4' />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <Separator />
-
-                  {/* Fatty Acids */}
-                  <div className='space-y-4'>
-                    <div className='flex items-center justify-between'>
-                      <h4 className='text-sm font-medium'>Axit béo</h4>
-                      <Select
-                        onValueChange={label =>
-                          appendFattyAcid({ label, value: 0, unit: 'g' })
-                        }
-                      >
-                        <SelectTrigger className='w-[280px] h-8'>
-                          <SelectValue placeholder='Thêm axit béo' />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {FATTY_ACID_OPTIONS.map(option => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {fattyAcidFields.map((field, index) => (
-                      <div key={field.id} className='flex items-end gap-2'>
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.fattyAcids.${index}.label`}
-                          render={({ field }) => (
-                            <FormItem className='flex-1'>
-                              <FormLabel className='text-xs'>
-                                {field.value}
-                              </FormLabel>
-                              <FormControl>
-                                <input type='hidden' {...field} />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.fattyAcids.${index}.value`}
-                          render={({ field }) => (
-                            <FormItem className='flex-1'>
-                              <FormControl>
-                                <Input
-                                  type='number'
-                                  step='0.001'
-                                  min='0'
-                                  placeholder='0'
-                                  className='h-9'
-                                  {...field}
-                                  onChange={e =>
-                                    field.onChange(
-                                      parseFloat(e.target.value) || 0
-                                    )
-                                  }
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.fattyAcids.${index}.unit`}
-                          render={({ field }) => (
-                            <FormItem className='w-24'>
-                              <FormControl>
-                                <Select
-                                  value={field.value}
-                                  onValueChange={field.onChange}
-                                >
-                                  <SelectTrigger className='h-9'>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {UNIT_OPTIONS.map(option => (
-                                      <SelectItem
-                                        key={option.value}
-                                        value={option.value}
-                                      >
-                                        {option.value}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-
-                        <Button
-                          type='button'
-                          variant='ghost'
-                          size='icon'
-                          className='h-9 w-9'
-                          onClick={() => removeFattyAcid(index)}
-                        >
-                          <Trash2 className='h-4 w-4' />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <Separator />
-
-                  {/* Amino Acids */}
-                  <div className='space-y-4'>
-                    <div className='flex items-center justify-between'>
-                      <h4 className='text-sm font-medium'>Amino Acids</h4>
-                      <Select
-                        onValueChange={label =>
-                          appendAminoAcid({ label, value: 0, unit: 'g' })
-                        }
-                      >
-                        <SelectTrigger className='w-[200px] h-8'>
-                          <SelectValue placeholder='Thêm amino acid' />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {AMINO_ACID_OPTIONS.map(option => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {aminoAcidFields.map((field, index) => (
-                      <div key={field.id} className='flex items-end gap-2'>
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.aminoAcids.${index}.label`}
-                          render={({ field }) => (
-                            <FormItem className='flex-1'>
-                              <FormLabel className='text-xs'>
-                                {field.value}
-                              </FormLabel>
-                              <FormControl>
-                                <input type='hidden' {...field} />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.aminoAcids.${index}.value`}
-                          render={({ field }) => (
-                            <FormItem className='flex-1'>
-                              <FormControl>
-                                <Input
-                                  type='number'
-                                  step='0.001'
-                                  min='0'
-                                  placeholder='0'
-                                  className='h-9'
-                                  {...field}
-                                  onChange={e =>
-                                    field.onChange(
-                                      parseFloat(e.target.value) || 0
-                                    )
-                                  }
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name={`nutrition.aminoAcids.${index}.unit`}
-                          render={({ field }) => (
-                            <FormItem className='w-24'>
-                              <FormControl>
-                                <Select
-                                  value={field.value}
-                                  onValueChange={field.onChange}
-                                >
-                                  <SelectTrigger className='h-9'>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {UNIT_OPTIONS.map(option => (
-                                      <SelectItem
-                                        key={option.value}
-                                        value={option.value}
-                                      >
-                                        {option.value}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-
-                        <Button
-                          type='button'
-                          variant='ghost'
-                          size='icon'
-                          className='h-9 w-9'
-                          onClick={() => removeAminoAcid(index)}
-                        >
-                          <Trash2 className='h-4 w-4' />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </CollapsibleContent>
+          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+            g
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</CollapsibleContent>
               </Collapsible>
             </div>
           </form>
