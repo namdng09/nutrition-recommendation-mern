@@ -156,9 +156,9 @@ const nutrientsSchema = yup.object({
   carbs: nutrientValueSchema.required('Carbs là bắt buộc'),
   fat: nutrientValueSchema.required('Fat là bắt buộc'),
   protein: nutrientValueSchema.required('Protein là bắt buộc'),
-  fiber: nutrientValueSchema.optional(),
-  sodium: nutrientValueSchema.optional(),
-  cholesterol: nutrientValueSchema.optional()
+  fiber: nutrientValueSchema.required('Fiber là bắt buộc'),
+  sodium: nutrientValueSchema.required('Sodium là bắt buộc'),
+  cholesterol: nutrientValueSchema.required('Cholesterol là bắt buộc')
 });
 
 const unitSchema = yup.object({
