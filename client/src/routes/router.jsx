@@ -54,14 +54,6 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/dishes/[id]/page'))
           },
           {
-            path: 'onboarding',
-            Component: () => (
-              <PrivateRoute allowedRoles={[ROLE.USER]}>
-                <OnboardingPage />
-              </PrivateRoute>
-            )
-          },
-          {
             path: 'schedules/day',
             Component: lazy(() => import('~/app/schedules/[day]/page'))
           },
