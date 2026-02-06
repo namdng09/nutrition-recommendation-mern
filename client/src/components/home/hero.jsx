@@ -19,7 +19,7 @@ const Hero = () => {
         <h1 className='text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight text-foreground'>
           Ăn <span className='text-primary'>thông minh</span>
           <br />
-          Sống khỏe hơn
+          Sống khỏe mạnh
         </h1>
 
         <p className='mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-lg'>
