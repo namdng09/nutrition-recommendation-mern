@@ -38,9 +38,9 @@ export const getRoleLabel = value => {
 
 export const NAV_LINKS = [
   { to: '/', label: 'Trang Chủ' },
-  { to: '/schedules/day', label: 'Thời khoá biểu' },
+  { to: '/schedules/day', label: 'Thời gian biểu' },
   { to: '/collections', label: 'Gợi ý bữa ăn' },
-  { to: '/dishes', label: 'Danh sách món ăn' },
+  { to: '/dishes', label: 'Món ăn' },
   { to: '/ingredients', label: 'Nguyên liệu' },
   { to: '/posts', label: 'Blogs' }
 ];
