@@ -1,4 +1,13 @@
 import { clsx } from 'clsx';
+import {
+  eachDayOfInterval,
+  endOfWeek,
+  format,
+  isSameDay,
+  parseISO,
+  startOfWeek
+} from 'date-fns';
+import { vi } from 'date-fns/locale';
 import { twMerge } from 'tailwind-merge';
 
 import { GENDER_OPTIONS } from '~/constants/gender';
@@ -29,9 +38,11 @@ export const getRoleLabel = value => {
 
 export const NAV_LINKS = [
   { to: '/', label: 'Trang Chủ' },
+  { to: '/schedules/day', label: 'Thời khoá biểu' },
   { to: '/collections', label: 'Gợi ý bữa ăn' },
   { to: '/dishes', label: 'Danh sách món ăn' },
-  { to: '/ingredients', label: 'Danh sách nguyên liệu' }
+  { to: '/ingredients', label: 'Nguyên liệu' },
+  { to: '/posts', label: 'Blogs' }
 ];
 
 // ingredients pie chart
@@ -77,5 +88,69 @@ export const buildNutritionPieData = nutrients => {
 };
 
 export const EMPTY_PIE_DATA = [
+  { name: 'Trống', value: 1, fill: 'hsl(var(--muted))' }
+];
+
+// format date in schedule
+export const formatDateVI = (date, pattern = 'EEEE, dd/MM') => {
+  if (!date) return '';
+  return format(new Date(date), pattern, { locale: vi });
+};
+
+// format shedule in header
+export const formatScheduleTitle = (view, selectedDate) => {
+  if (!selectedDate) return '...';
+
+  if (view === 'day') {
+    return format(selectedDate, 'EEEE, dd/MM', { locale: vi });
+  }
+
+  // week
+  return `Tháng ${format(selectedDate, 'MM, yyyy', { locale: vi })}`;
+};
+
+// format week
+export const buildWeekDaysWithSchedules = (startOfSelectedWeek, docs = []) => {
+  const start =
+    startOfSelectedWeek || startOfWeek(new Date(), { weekStartsOn: 1 });
+
+  const end = endOfWeek(start, { weekStartsOn: 1 });
+
+  return eachDayOfInterval({ start, end }).map(day => {
+    const schedule = docs.find(doc => isSameDay(parseISO(doc.date), day));
+
+    return {
+      date: day,
+      schedule: schedule || null
+    };
+  });
+};
+
+// SCHEDULE PIE CHART
+export const buildScheduleNutritionPieData = nutrients => {
+  const protein = Number(nutrients?.protein?.value ?? 0);
+  const fat = Number(nutrients?.fat?.value ?? 0);
+  const carbs = Number(nutrients?.carbs?.value ?? 0);
+
+  return [
+    {
+      name: 'Chất đạm',
+      value: protein,
+      fill: 'var(--chart-1)'
+    },
+    {
+      name: 'Chất béo',
+      value: fat,
+      fill: 'var(--chart-2)'
+    },
+    {
+      name: 'Tinh bột',
+      value: carbs,
+      fill: 'var(--chart-3)'
+    }
+  ].filter(d => d.value > 0);
+};
+
+export const EMPTY_SCHEDULE_PIE_DATA = [
   { name: 'Trống', value: 1, fill: 'hsl(var(--muted))' }
 ];

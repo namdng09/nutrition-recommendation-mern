@@ -54,6 +54,30 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/dishes/[id]/page'))
           },
           {
+            path: 'onboarding',
+            Component: lazy(() => import('~/app/onboarding/page'))
+          },
+          {
+            path: 'schedules/day',
+            Component: lazy(() => import('~/app/schedules/[day]/page'))
+          },
+          {
+            path: 'schedules/week',
+            Component: lazy(() => import('~/app/schedules/[week]/page'))
+          },
+          {
+            path: 'posts',
+            Component: lazy(() => import('~/app/posts/page'))
+          },
+          {
+            path: 'posts/:id',
+            Component: lazy(() => import('~/app/posts/[id]/page'))
+          },
+          {
+            path: 'dishes/:id/nutrition',
+            Component: lazy(() => import('~/app/dishes/[id]/nutrition/page'))
+          },
+          {
             path: 'profile',
             Component: () => (
               <PrivateRoute allowedRoles={[ROLE.USER, ROLE.ADMIN]}>
@@ -132,12 +156,94 @@ const router = createBrowserRouter([
         ]
       },
       {
-        path: '/admin/',
+        path: '/nutritionist/',
         Component: () => (
-          <PrivateRoute allowedRoles={['admin']}>
+          <PrivateRoute allowedRoles={[ROLE.NUTRITIONIST]}>
             <AdminLayout />
           </PrivateRoute>
         ),
+        // Component: AdminLayout,
+        children: [
+          {
+            path: '',
+            Component: lazy(() => import('~/app/nutritionist/page'))
+          },
+
+          //Manage ingredients
+          {
+            path: 'manage-ingredients/',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-ingredients/page')
+            )
+          },
+          {
+            path: 'manage-ingredients/:id',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-ingredients/[id]/page')
+            )
+          },
+          {
+            path: 'manage-ingredients/create-ingredient',
+            Component: lazy(
+              () =>
+                import(
+                  '~/app/nutritionist/manage-ingredients/create-ingredient/page'
+                )
+            )
+          },
+
+          // Manage dishes
+          {
+            path: 'manage-dishes/',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-dishes/page')
+            )
+          },
+          {
+            path: 'manage-dishes/create-dish',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-dishes/create-dish/page')
+            )
+          },
+          {
+            path: 'manage-dishes/:id',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-dishes/[id]/page')
+            )
+          },
+
+          // Manage collections
+          {
+            path: 'manage-collections/',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-collections/page')
+            )
+          },
+          {
+            path: 'manage-collections/create-collection',
+            Component: lazy(
+              () =>
+                import(
+                  '~/app/nutritionist/manage-collections/create-collections/page'
+                )
+            )
+          },
+          {
+            path: 'manage-collections/:id',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-collections/[id]/page')
+            )
+          }
+        ]
+      },
+      {
+        path: '/admin/',
+        Component: () => (
+          <PrivateRoute allowedRoles={[ROLE.ADMIN]}>
+            <AdminLayout />
+          </PrivateRoute>
+        ),
+        // Component: AdminLayout,
         children: [
           {
             path: '',

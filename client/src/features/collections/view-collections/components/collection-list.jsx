@@ -17,14 +17,11 @@ import CollectionPagination from './collection-pagination';
 
 export default function CollectionsList() {
   const [page, setPage] = useState(1);
-  const { data } = useCollections({
-    page,
-    limit: 6
-  });
+  const { data } = useCollections();
   const collections = data?.docs ?? [];
 
   return (
-    <div className='mx-auto w-full max-w-7xl space-y-3 px-4 py-10 animate-in fade-in duration-700'>
+    <div className='mx-auto w-full max-w-7xl space-y-3 animate-in fade-in duration-700'>
       <div className='flex flex-col md:flex-row md:items-end justify-between gap-6 border-border pb-8'>
         <div className='space-y-2'>
           <div className='flex items-center gap-3'>

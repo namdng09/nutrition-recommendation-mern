@@ -20,12 +20,17 @@ router.post(
 
 router.get('/', asyncHandler(DishController.viewDishes));
 
+router.get(
+  '/:id/detail-nutrition',
+  asyncHandler(DishController.viewDishDetailNutrition)
+);
+
 router.get('/:id', asyncHandler(DishController.viewDishDetail));
 
 router.put(
   '/:id',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
+  authorize([ROLE.USER, ROLE.NUTRITIONIST, ROLE.ADMIN]),
   handleSingleImageUpload('image'),
   validate(updateDishRequestSchema.shape),
   asyncHandler(DishController.updateDish)
@@ -34,7 +39,7 @@ router.put(
 router.delete(
   '/:id',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
+  authorize([ROLE.USER, ROLE.NUTRITIONIST, ROLE.ADMIN]),
   asyncHandler(DishController.deleteDish)
 );
 

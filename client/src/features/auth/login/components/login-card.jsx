@@ -12,10 +12,28 @@ import {
   CardHeader,
   CardTitle
 } from '~/components/ui/card';
+import { ROLE } from '~/constants/role';
 import { loadUser } from '~/store/features/auth-slice';
 
 import { useLogin } from '../api/login';
 import LoginForm from './login-form';
+
+const decodeToken = token => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return null;
+  }
+};
 
 const LoginCard = () => {
   const dispatch = useDispatch();
@@ -24,8 +42,20 @@ const LoginCard = () => {
   const loginMutation = useLogin({
     onSuccess: (data, variables) => {
       const { accessToken, hasOnboarded } = data.data;
+
+      const decodedToken = decodeToken(accessToken);
+      const role = decodedToken?.role;
+
       dispatch(loadUser({ accessToken, isRemember: variables.isRemember }));
-      navigate(hasOnboarded ? '/' : '/onboarding');
+
+      if (role === ROLE.ADMIN) {
+        navigate('/admin');
+      } else if (role === ROLE.NUTRITIONIST) {
+        navigate('/nutritionist');
+      } else {
+        navigate(hasOnboarded ? '/' : '/onboarding');
+      }
+
       toast.success(data.message || 'Đăng nhập thành công');
     },
     onError: error => {
