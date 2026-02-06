@@ -1,6 +1,7 @@
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
 
+import { ROLE } from '~/shared/constants/role';
 import { UNIT } from '~/shared/constants/unit';
 import { DishModel, IngredientModel } from '~/shared/database/models';
 import type { Dish } from '~/shared/database/models/dish-model';
@@ -160,6 +161,7 @@ export const DishService = {
       name: data.name,
       description: data.description,
       categories: data.categories,
+      nutritionFocus: data.nutritionFocus,
       ingredients: ingredientDetails,
       instructions: data.instructions,
       preparationTime: data.preparationTime,
