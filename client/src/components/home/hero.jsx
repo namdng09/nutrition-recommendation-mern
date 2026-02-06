@@ -58,7 +58,12 @@ const Hero = () => {
           <img
             src={food}
             alt='EatDee Healthy Meal'
-            className='relative z-10 rounded-3xl md:rounded-[3rem] shadow-2xl shadow-primary/10 object-cover w-full h-auto border-8 md:border-[12px] border-card'
+            className='relative z-10
+           rounded-3xl md:rounded-[3rem]
+           shadow-2xl shadow-primary/10
+           object-cover
+           w-full h-auto
+           border-4 md:border-6 border-card'
           />
 
           <div className='absolute -bottom-5 -left-2 md:-bottom-8 md:-left-8 z-20 bg-card p-3 md:p-4 rounded-xl md:rounded-2xl shadow-xl border border-border flex items-center gap-3 animate-bounce-slow'>
