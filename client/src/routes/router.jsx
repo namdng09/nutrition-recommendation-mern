@@ -54,6 +54,22 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/onboarding/page'))
           },
           {
+            path: 'schedules/day',
+            Component: lazy(() => import('~/app/schedules/[day]/page'))
+          },
+          {
+            path: 'schedules/week',
+            Component: lazy(() => import('~/app/schedules/[week]/page'))
+          },
+          {
+            path: 'posts',
+            Component: lazy(() => import('~/app/posts/page'))
+          },
+          {
+            path: 'posts/:id',
+            Component: lazy(() => import('~/app/posts/[id]/page'))
+          },
+          {
             path: 'profile',
             Component: () => (
               <PrivateRoute allowedRoles={[ROLE.USER, ROLE.ADMIN]}>
@@ -194,6 +210,26 @@ const router = createBrowserRouter([
             path: 'manage-collections/:id',
             Component: lazy(
               () => import('~/app/nutritionist/manage-collections/[id]/page')
+            )
+          },
+
+          //Manage posts
+          {
+            path: 'manage-posts/',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-posts/page')
+            )
+          },
+          {
+            path: 'manage-posts/create-post',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-posts/create-post/page')
+            )
+          },
+          {
+            path: 'manage-posts/:id',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-posts/[id]/page')
             )
           }
         ]
