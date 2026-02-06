@@ -5,7 +5,7 @@ import {
   HiSparkles
 } from 'react-icons/hi2';
 
-import food from '../../../public/food.webp';
+import food from '../../../public/food.png';
 
 const Hero = () => {
   return (
