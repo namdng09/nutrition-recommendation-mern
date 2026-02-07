@@ -89,7 +89,7 @@ describe('POST /api/auth/refresh-access-token', () => {
   });
 
   // Branch: refresh token with wrong secret
-  it('should return 500 when refresh token is signed with wrong secret', async () => {
+  it('should return 400 when refresh token is signed with wrong secret', async () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
     const invalidToken = jwt.sign(
@@ -102,9 +102,9 @@ describe('POST /api/auth/refresh-access-token', () => {
       .set('Cookie', [`refreshToken=${invalidToken}`])
       .send();
 
-    expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty('message', 'invalid signature');
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('status', 'failed');
+    expect(res.body).toHaveProperty('message', 'Invalid refresh token');
   });
 
   // Branch: expired refresh token
@@ -127,7 +127,7 @@ describe('POST /api/auth/refresh-access-token', () => {
 
     expect(res.status).toBe(401);
     expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Invalid refresh token');
+    expect(res.body).toHaveProperty('message', 'Token expired');
   });
 
   // Branch: user not found

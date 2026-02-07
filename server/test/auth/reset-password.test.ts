@@ -149,7 +149,7 @@ describe('POST /api/auth/reset-password', () => {
   });
 
   // Branch: token signed with wrong secret
-  it('should return 500 when reset token is signed with wrong secret', async () => {
+  it('should return 400 when reset token is signed with wrong secret', async () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
     const invalidToken = jwt.sign(
@@ -163,9 +163,9 @@ describe('POST /api/auth/reset-password', () => {
         password: 'newpassword123'
       });
 
-    expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty('message', 'invalid signature');
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('status', 'failed');
+    expect(res.body).toHaveProperty('message', 'Invalid reset password token');
   });
 
   // Branch: expired token
@@ -189,7 +189,7 @@ describe('POST /api/auth/reset-password', () => {
 
     expect(res.status).toBe(401);
     expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Invalid reset password token');
+    expect(res.body).toHaveProperty('message', 'Token expired');
   });
 
   // Branch: user not found
