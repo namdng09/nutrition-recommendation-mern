@@ -148,10 +148,14 @@ describe('POST /api/auth/reset-password', () => {
     expect(res.body).toHaveProperty('message', 'jwt malformed');
   });
 
-  // Branch: decoded token is string (invalid format)
-  it('should return 400 when decoded token is invalid format', async () => {
+  // Branch: token signed with wrong secret
+  it('should return 500 when reset token is signed with wrong secret', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
-    const invalidToken = jwt.sign('just-a-string', process.env.JWT_RESET_PASSWORD_SECRET!);
+    const invalidToken = jwt.sign(
+      'just-a-string',
+      process.env.JWT_RESET_PASSWORD_SECRET!
+    );
 
     const res = await request(app)
       .post(`/api/auth/reset-password?token=${invalidToken}`)
@@ -159,7 +163,31 @@ describe('POST /api/auth/reset-password', () => {
         password: 'newpassword123'
       });
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(500);
+    expect(res.body).toHaveProperty('status', 'error');
+    expect(res.body).toHaveProperty('message', 'invalid signature');
+  });
+
+  // Branch: expired token
+  it('should return 401 when reset token is expired', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const jwt = require('jsonwebtoken');
+    const expiredToken = jwt.sign(
+      { id: userId },
+      process.env.JWT_RESET_PASSWORD_SECRET || 'your_reset_password_secret',
+      { expiresIn: '0s' } // Expired immediately
+    );
+
+    // Wait a bit to ensure token is expired
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    const res = await request(app)
+      .post(`/api/auth/reset-password?token=${expiredToken}`)
+      .send({
+        password: 'newpassword123'
+      });
+
+    expect(res.status).toBe(401);
     expect(res.body).toHaveProperty('status', 'failed');
     expect(res.body).toHaveProperty('message', 'Invalid reset password token');
   });

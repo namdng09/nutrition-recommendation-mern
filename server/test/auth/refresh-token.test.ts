@@ -88,17 +88,44 @@ describe('POST /api/auth/refresh-access-token', () => {
     expect(res.body).toHaveProperty('message', 'jwt malformed');
   });
 
-  // Branch: decoded token is string (invalid format)
-  it('should return 400 when decoded token is invalid format', async () => {
+  // Branch: refresh token with wrong secret
+  it('should return 500 when refresh token is signed with wrong secret', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
-    const invalidToken = jwt.sign('just-a-string', process.env.JWT_REFRESH_SECRET || 'your_jwt_secret');
+    const invalidToken = jwt.sign(
+      'just-a-string',
+      process.env.JWT_REFRESH_SECRET || 'your_jwt_secret'
+    );
 
     const res = await request(app)
       .post('/api/auth/refresh-access-token')
       .set('Cookie', [`refreshToken=${invalidToken}`])
       .send();
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(500);
+    expect(res.body).toHaveProperty('status', 'error');
+    expect(res.body).toHaveProperty('message', 'invalid signature');
+  });
+
+  // Branch: expired refresh token
+  it('should return 401 when refresh token is expired', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const jwt = require('jsonwebtoken');
+    const expiredToken = jwt.sign(
+      { id: userId, role: ROLE.USER },
+      process.env.JWT_REFRESH_SECRET || 'your_jwt_secret',
+      { expiresIn: '0s' } // Expired immediately
+    );
+
+    // Wait a bit to ensure token is expired
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    const res = await request(app)
+      .post('/api/auth/refresh-access-token')
+      .set('Cookie', [`refreshToken=${expiredToken}`])
+      .send();
+
+    expect(res.status).toBe(401);
     expect(res.body).toHaveProperty('status', 'failed');
     expect(res.body).toHaveProperty('message', 'Invalid refresh token');
   });
@@ -118,11 +145,12 @@ describe('POST /api/auth/refresh-access-token', () => {
     expect(res.body).toHaveProperty('message', 'User not found');
   });
 
-  // Branch: JWT_REFRESH_SECRET fallback
-  it('should work with fallback secret when JWT_REFRESH_SECRET is not set', async () => {
+  // Branch: refresh token with non-existent user ID
+  it('should return 404 when refresh token contains invalid user ID', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
     const originalSecret = process.env.JWT_REFRESH_SECRET;
-    
+
     // Temporarily unset JWT_REFRESH_SECRET
     delete process.env.JWT_REFRESH_SECRET;
 

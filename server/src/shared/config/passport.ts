@@ -3,6 +3,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 
 import { UserModel } from '~/shared/database/models';
+
 import { ROLE } from '../constants/role';
 
 export const configurePassport = () => {

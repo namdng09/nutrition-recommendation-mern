@@ -118,8 +118,9 @@ export default function CollectionDetail() {
 
         <div className='grid grid-cols-1 gap-6 sm:grid-cols-2'>
           {collection.dishes.map(dish => (
-            <div
+            <Link
               key={dish._id}
+              to={`/dishes/${dish.dishId}`}
               className='group flex items-center gap-5 rounded-[1.5rem] border border-border bg-background p-4 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-900/5'
             >
               <div className='relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl'>
@@ -143,13 +144,10 @@ export default function CollectionDetail() {
                 </div>
               </div>
 
-              <Link
-                to={`/dishes/${dish.dishId}`}
-                className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-all group-hover:bg-emerald-600 group-hover:text-white group-hover:rotate-[-45deg]'
-              >
+              <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-all group-hover:bg-emerald-600 group-hover:text-white group-hover:rotate-[-45deg]'>
                 <FaChevronRight size={14} />
-              </Link>
-            </div>
+              </div>
+            </Link>
           ))}
         </div>
       </div>

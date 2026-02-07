@@ -12,6 +12,7 @@ import { asyncHandler } from '~/shared/utils';
 import { ScheduleController } from './schedule-controller';
 import {
   createScheduleRequestSchema,
+  updateScheduleDishStatusRequestSchema,
   updateScheduleMealsRequestSchema,
   updateScheduleRequestSchema
 } from './schedule-dto';
@@ -51,6 +52,15 @@ router.put(
   parseFormData,
   validate(updateScheduleMealsRequestSchema.shape),
   asyncHandler(ScheduleController.updateScheduleMeals)
+);
+
+router.put(
+  '/:id/meals/:mealType/dishes/:dishId/is-eaten',
+  authenticate(),
+  authorize([ROLE.USER]),
+  parseFormData,
+  validate(updateScheduleDishStatusRequestSchema.shape),
+  asyncHandler(ScheduleController.updateScheduleDishStatus)
 );
 
 router.delete(
