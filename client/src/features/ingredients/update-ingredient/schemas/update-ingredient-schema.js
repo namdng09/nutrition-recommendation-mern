@@ -137,8 +137,14 @@ export const FATTY_ACID_OPTIONS = [
 ];
 
 const nutrientValueSchema = yup.object({
-  value: yup.number().min(0, 'Giá trị không được âm'),
-  unit: yup.string()
+  value: yup
+    .number()
+    .transform((value, originalValue) => {
+      return originalValue === '' ? undefined : value;
+    })
+    .min(0, 'Giá trị không được âm')
+    .optional(),
+  unit: yup.string().optional()
 });
 
 const nutrientsSchema = yup.object({
@@ -152,17 +158,29 @@ const nutrientsSchema = yup.object({
 });
 
 const unitSchema = yup.object({
-  value: yup.number().min(0, 'Giá trị không được âm'),
-  unit: yup.string(),
-  isDefault: yup.boolean()
+  value: yup
+    .number()
+    .transform((value, originalValue) => {
+      return originalValue === '' ? undefined : value;
+    })
+    .min(0, 'Giá trị không được âm')
+    .optional(),
+  unit: yup.string().min(1, 'Đơn vị là bắt buộc').optional(),
+  isDefault: yup.boolean().default(false)
 });
 
 const detailedNutrientSchema = yup.object({
-  label: yup.string(),
-  value: yup.number().min(0, 'Giá trị không được âm'),
-  unit: yup.string()
+  label: yup.string().optional(),
+  value: yup
+    .number()
+    .transform((value, originalValue) => {
+      return originalValue === '' ? undefined : value;
+    })
+    .min(0, 'Giá trị không được âm')
+    .nullable()
+    .optional(),
+  unit: yup.string().optional()
 });
-
 export const updateIngredientSchema = yup.object({
   name: yup
     .string()
@@ -180,8 +198,14 @@ export const updateIngredientSchema = yup.object({
     .optional(),
   baseUnit: yup
     .object({
-      amount: yup.number().min(0, 'Số lượng không được âm'),
-      unit: yup.string()
+      amount: yup
+        .number()
+        .transform((value, originalValue) => {
+          return originalValue === '' ? undefined : value;
+        })
+        .min(0, 'Số lượng không được âm')
+        .optional(),
+      unit: yup.string().optional()
     })
     .optional(),
   units: yup.array().of(unitSchema).optional(),
