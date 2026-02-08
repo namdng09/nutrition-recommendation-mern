@@ -1,12 +1,24 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest';
 
 import app from '~/app';
 import { INGREDIENT_CATEGORY } from '~/shared/constants/ingredient-category';
 import { ROLE } from '~/shared/constants/role';
 import { UNIT } from '~/shared/constants/unit';
-import { AuthModel, IngredientModel, UserModel } from '~/shared/database/models';
+import {
+  AuthModel,
+  IngredientModel,
+  UserModel
+} from '~/shared/database/models';
 import { hashPassword } from '~/shared/utils/bcrypt';
 import { generateToken } from '~/shared/utils/jwt';
 
@@ -15,7 +27,8 @@ vi.mock('~/shared/utils/cloudinary', () => ({
   uploadImage: vi.fn().mockResolvedValue({
     success: true,
     data: {
-      secure_url: 'https://res.cloudinary.com/test/image/upload/v1234567890/test-image.jpg',
+      secure_url:
+        'https://res.cloudinary.com/test/image/upload/v1234567890/test-image.jpg',
       public_id: 'test-image',
       format: 'jpg'
     }
@@ -49,7 +62,8 @@ describe('POST /api/ingredients', () => {
     vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValue({
       success: true,
       data: {
-        secure_url: 'https://res.cloudinary.com/test/image/upload/v1234567890/test-image.jpg',
+        secure_url:
+          'https://res.cloudinary.com/test/image/upload/v1234567890/test-image.jpg',
         public_id: 'test-image',
         format: 'jpg'
       } as any
@@ -116,9 +130,7 @@ describe('POST /api/ingredients', () => {
       description: 'Cà chua tươi',
       categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES]),
       baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM }),
-      units: JSON.stringify([
-        { value: 1, unit: 'quả', isDefault: true }
-      ]),
+      units: JSON.stringify([{ value: 1, unit: 'quả', isDefault: true }]),
       allergens: JSON.stringify([]),
       isActive: 'true'
     };

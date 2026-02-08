@@ -11,6 +11,7 @@ import type { User } from '~/shared/database/models/user-model';
 import {
   buildPaginateOptions,
   deleteAvatar,
+  generateToken,
   hashPassword,
   type PaginateResponse,
   sendMail,
@@ -212,7 +213,18 @@ export const UserService = {
 
     await user.save();
 
-    return user;
+    const { accessToken, refreshToken } = generateToken({
+      id: user._id.toString(),
+      role: user.role,
+      hasOnboarded: true
+    });
+
+    return {
+      user,
+      accessToken,
+      refreshToken,
+      hasOnboarded: true
+    };
   },
 
   calculateNutritionTarget: async (data: NutritionTargetRequest) => {

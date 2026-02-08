@@ -26,6 +26,7 @@ if (!JWT_RESET_PASSWORD_SECRET) {
 type JwtPayload = {
   id: string | number;
   role?: string;
+  hasOnboarded?: boolean;
 };
 
 export const generateToken = (
@@ -49,9 +50,9 @@ export const generateResetPasswordToken = (id: string): string => {
 export const verifyToken = (
   token: string,
   secret: string
-): string | jwt.JwtPayload => {
+): string | JwtPayload => {
   try {
-    return jwt.verify(token, secret);
+    return jwt.verify(token, secret) as string | JwtPayload;
   } catch (error: unknown) {
     if (error instanceof jwt.TokenExpiredError) {
       throw createHttpError(401, 'Token expired');
