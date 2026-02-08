@@ -3,6 +3,7 @@ import * as yup from 'yup';
 import { ACTIVITY_LEVEL } from '~/constants/activity-level';
 import { BODYFAT } from '~/constants/bodyfat';
 import { GENDER } from '~/constants/gender';
+import { MEDICAL_HISTORY } from '~/constants/medical';
 
 export const updatePhysicalStatsSchema = yup.object({
   gender: yup
@@ -32,5 +33,6 @@ export const updatePhysicalStatsSchema = yup.object({
   activityLevel: yup
     .string()
     .oneOf(Object.values(ACTIVITY_LEVEL), 'Mức độ hoạt động không hợp lệ')
-    .required('Mức độ hoạt động là bắt buộc')
+    .required('Mức độ hoạt động là bắt buộc'),
+  medicalHistory: yup.array().of(yup.string()).optional()
 });
