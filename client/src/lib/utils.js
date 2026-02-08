@@ -41,7 +41,7 @@ export const NAV_LINKS = [
   { to: '/schedules/day', label: 'Thời khoá biểu' },
   { to: '/collections', label: 'Gợi ý bữa ăn' },
   { to: '/dishes', label: 'Danh sách món ăn' },
-  { to: '/ingredients', label: 'Danh sách nguyên liệu' },
+  { to: '/ingredients', label: 'Nguyên liệu' },
   { to: '/posts', label: 'Blogs' }
 ];
 
@@ -125,3 +125,32 @@ export const buildWeekDaysWithSchedules = (startOfSelectedWeek, docs = []) => {
     };
   });
 };
+
+// SCHEDULE PIE CHART
+export const buildScheduleNutritionPieData = nutrients => {
+  const protein = Number(nutrients?.protein?.value ?? 0);
+  const fat = Number(nutrients?.fat?.value ?? 0);
+  const carbs = Number(nutrients?.carbs?.value ?? 0);
+
+  return [
+    {
+      name: 'Chất đạm',
+      value: protein,
+      fill: 'var(--chart-1)'
+    },
+    {
+      name: 'Chất béo',
+      value: fat,
+      fill: 'var(--chart-2)'
+    },
+    {
+      name: 'Tinh bột',
+      value: carbs,
+      fill: 'var(--chart-3)'
+    }
+  ].filter(d => d.value > 0);
+};
+
+export const EMPTY_SCHEDULE_PIE_DATA = [
+  { name: 'Trống', value: 1, fill: 'hsl(var(--muted))' }
+];

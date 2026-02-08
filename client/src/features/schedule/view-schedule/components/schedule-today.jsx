@@ -1,37 +1,39 @@
-import { isSameDay } from 'date-fns';
-import { HiOutlineClipboardList } from 'react-icons/hi';
+import { format, isSameDay, startOfDay } from 'date-fns';
+import { vi } from 'date-fns/locale';
 
+import { useCreateSchedule } from '../../create-schedule/api/create-schedule';
+import ScheduleTodayDetail from '../../view-schedule-detail/components/schedule-today-detail';
 import { useSchedules } from '../api/view-schedule';
+import ScheduleEmptyState from './schedule-empty-state';
 import ScheduleTodayCard from './schedule-today-card';
 
 export default function ScheduleToday({ selectedDate = new Date() }) {
   const { data } = useSchedules({ limit: 1000 });
-  const docs = Array.isArray(data?.docs) ? data.docs : [];
+  const { mutate: createSchedule, isPending } = useCreateSchedule();
 
+  const docs = Array.isArray(data?.docs) ? data.docs : [];
   const todaySchedules = docs.filter(s =>
     isSameDay(new Date(s.date), selectedDate)
   );
+  const schedule = todaySchedules[0];
 
-  if (todaySchedules.length === 0) {
+  const handleCreateToday = () => {
+    createSchedule({
+      date: startOfDay(selectedDate),
+      dayOfWeek: format(selectedDate, 'EEEE', { locale: vi })
+    });
+  };
+
+  if (!schedule) {
     return (
-      <div className='flex flex-col items-center justify-center rounded-[32px] border border-dashed border-slate-200 bg-white p-12 text-center max-w-md mx-auto'>
-        <HiOutlineClipboardList className='text-slate-300 mb-2' size={32} />
-        <p className='text-[11px] font-black text-slate-400 uppercase tracking-widest'>
-          Trống lịch ăn
-        </p>
-      </div>
+      <ScheduleEmptyState onCreate={handleCreateToday} isCreating={isPending} />
     );
   }
 
   return (
-    <div className='w-full max-w-md mx-auto'>
-      {todaySchedules.map(schedule => (
-        <ScheduleTodayCard
-          key={schedule._id}
-          schedule={schedule}
-          selectedDate={selectedDate}
-        />
-      ))}
+    <div className='w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10'>
+      <ScheduleTodayCard schedule={schedule} selectedDate={selectedDate} />
+      <ScheduleTodayDetail scheduleId={schedule._id} />
     </div>
   );
 }

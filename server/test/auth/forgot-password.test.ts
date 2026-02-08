@@ -1,6 +1,14 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest';
 
 import app from '~/app';
 import { ROLE } from '~/shared/constants/role';
@@ -91,7 +99,9 @@ describe('POST /api/auth/forgot-password', () => {
   // Branch: email sending fails (should still return success to prevent email enumeration)
   it('should return success even if email sending fails', async () => {
     // Mock email sending to reject
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
     (emailUtils.sendMail as any).mockRejectedValueOnce(
       new Error('Email service error')
     );

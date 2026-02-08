@@ -2,8 +2,8 @@ import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
 
 import { ROLE } from '~/shared/constants/role';
-import { PostModel } from '~/shared/database/models/post-model';
 import type { Post } from '~/shared/database/models/post-model';
+import { PostModel } from '~/shared/database/models/post-model';
 import {
   buildPaginateOptions,
   deleteImage,
@@ -12,7 +12,11 @@ import {
   validateObjectId
 } from '~/shared/utils';
 
-import { CreateCommentRequest, CreatePostRequest, UpdatePostRequest } from './post-dto';
+import {
+  CreateCommentRequest,
+  CreatePostRequest,
+  UpdatePostRequest
+} from './post-dto';
 
 const generateSlug = (title: string): string => {
   return title
@@ -36,7 +40,7 @@ export const PostService = {
     images?: Express.Multer.File[]
   ) => {
     const slug = generateSlug(data.title);
-    
+
     // Check if slug already exists
     const existingPost = await PostModel.findOne({ slug });
     if (existingPost) {
@@ -65,20 +69,20 @@ export const PostService = {
 
     if (images && images.length > 0) {
       const imageUrls: string[] = [];
-      
+
       for (let i = 0; i < images.length; i++) {
         const uploadResult = await uploadImage(
           images[i].buffer,
           `${newPost._id.toString()}-${i}`
         );
-        
+
         if (uploadResult.success && uploadResult.data) {
           imageUrls.push(uploadResult.data.secure_url);
         } else {
           throw createHttpError(500, 'Tải ảnh lên thất bại');
         }
       }
-      
+
       newPost.images = imageUrls;
       await newPost.save();
     }
@@ -155,7 +159,10 @@ export const PostService = {
     // Update slug if title changed
     if (data.title && data.title !== post.title) {
       const newSlug = generateSlug(data.title);
-      const existingPost = await PostModel.findOne({ slug: newSlug, _id: { $ne: id } });
+      const existingPost = await PostModel.findOne({
+        slug: newSlug,
+        _id: { $ne: id }
+      });
       if (existingPost) {
         throw createHttpError(400, 'Bài viết với tiêu đề này đã tồn tại');
       }
@@ -167,7 +174,7 @@ export const PostService = {
     if (data.content) post.content = data.content;
     if (data.tags !== undefined) post.tags = data.tags;
     if (data.category) post.category = data.category;
-    
+
     // Update publish status
     if (data.isPublished !== undefined) {
       post.isPublished = data.isPublished;
@@ -186,20 +193,20 @@ export const PostService = {
 
       // Upload new images
       const imageUrls: string[] = [];
-      
+
       for (let i = 0; i < images.length; i++) {
         const uploadResult = await uploadImage(
           images[i].buffer,
           `${post._id.toString()}-${i}`
         );
-        
+
         if (uploadResult.success && uploadResult.data) {
           imageUrls.push(uploadResult.data.secure_url);
         } else {
           throw createHttpError(500, 'Tải ảnh lên thất bại');
         }
       }
-      
+
       post.images = imageUrls;
     }
 
@@ -249,9 +256,7 @@ export const PostService = {
     }
 
     const userIdObj = userId as any;
-    const likeIndex = post.likes.findIndex(
-      like => like.toString() === userId
-    );
+    const likeIndex = post.likes.findIndex(like => like.toString() === userId);
 
     if (likeIndex > -1) {
       // Unlike

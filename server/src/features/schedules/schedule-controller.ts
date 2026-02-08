@@ -65,6 +65,28 @@ export const ScheduleController = {
       .json(ApiResponse.success('Cập nhật bữa ăn thành công', result));
   },
 
+  updateScheduleDishStatus: async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const dishId = req.params.dishId;
+    const mealType = req.params.mealType;
+    const data = req.body;
+    const userId = req.user!._id.toString();
+
+    const result = await ScheduleService.updateScheduleDishStatus(
+      id,
+      userId,
+      mealType,
+      dishId,
+      data
+    );
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Cập nhật trạng thái món ăn thành công', result)
+      );
+  },
+
   deleteSchedule: async (req: Request, res: Response) => {
     const id = req.params.id;
     const userId = req.user!._id.toString();

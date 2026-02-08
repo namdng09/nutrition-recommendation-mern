@@ -24,7 +24,7 @@ export default function DishesList() {
   const dishes = data?.docs || [];
 
   return (
-    <div className='mx-auto w-full max-w-7xl space-y-10 px-4 py-8 animate-in fade-in duration-500'>
+    <div className='mx-auto w-full max-w-7xl space-y-10 animate-in fade-in duration-500'>
       <div className='flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-8'>
         <div className='space-y-2'>
           <div className='flex items-center gap-3'>

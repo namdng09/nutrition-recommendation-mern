@@ -33,7 +33,7 @@ const nutritionTargetSchema = z.object({
 });
 
 const mealSettingSchema = z.object({
-  name: z.enum(Object.values(MEAL_TYPE), { message: 'Invalid meal type' }),
+  name: z.string().min(1, { message: 'Meal name is required' }),
   dishCategories: z.array(
     z.enum(Object.values(DISH_CATEGORY), {
       message: 'Invalid dish category'
@@ -136,7 +136,10 @@ export const onboardingRequestSchema = z.object({
     .optional(),
   medicalHistory: z.array(z.string().trim()).optional(),
   nutritionTarget: nutritionTargetSchema.optional(),
-  mealSettings: z.array(mealSettingSchema).optional(),
+  mealSettings: z
+    .array(mealSettingSchema)
+    .min(1, { message: 'Must have at least one meal' })
+    .max(10, { message: 'Must have at most 10 meals' }),
   activityLevel: z.enum(Object.values(ACTIVITY_LEVEL), {
     message: 'Invalid Activity Level'
   }),

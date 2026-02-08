@@ -1,12 +1,25 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest';
 
 import app from '~/app';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
 import { ROLE } from '~/shared/constants/role';
 import { UNIT } from '~/shared/constants/unit';
-import { AuthModel, DishModel, IngredientModel, UserModel } from '~/shared/database/models';
+import {
+  AuthModel,
+  DishModel,
+  IngredientModel,
+  UserModel
+} from '~/shared/database/models';
 import { hashPassword } from '~/shared/utils/bcrypt';
 import { generateToken } from '~/shared/utils/jwt';
 
@@ -15,7 +28,8 @@ vi.mock('~/shared/utils/cloudinary', () => ({
   uploadImage: vi.fn().mockResolvedValue({
     success: true,
     data: {
-      secure_url: 'https://res.cloudinary.com/test/image/upload/v1234567890/updated-dish.jpg',
+      secure_url:
+        'https://res.cloudinary.com/test/image/upload/v1234567890/updated-dish.jpg',
       public_id: 'updated-dish',
       format: 'jpg'
     }
@@ -54,7 +68,8 @@ describe('PUT /api/dishes/:id', () => {
     vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValue({
       success: true,
       data: {
-        secure_url: 'https://res.cloudinary.com/test/image/upload/v1234567890/updated-dish.jpg',
+        secure_url:
+          'https://res.cloudinary.com/test/image/upload/v1234567890/updated-dish.jpg',
         public_id: 'updated-dish',
         format: 'jpg'
       } as any
@@ -166,7 +181,10 @@ describe('PUT /api/dishes/:id', () => {
     const updateData = {
       name: 'Phở bò Hà Nội',
       description: 'Phở bò truyền thống Hà Nội',
-      categories: JSON.stringify([DISH_CATEGORY.MAIN_COURSE, DISH_CATEGORY.SOUP])
+      categories: JSON.stringify([
+        DISH_CATEGORY.MAIN_COURSE,
+        DISH_CATEGORY.SOUP
+      ])
     };
 
     const res = await request(app)
@@ -181,7 +199,10 @@ describe('PUT /api/dishes/:id', () => {
     expect(res.body).toHaveProperty('message', 'Cập nhật món ăn thành công');
     expect(res.body.data).toHaveProperty('_id', dishId);
     expect(res.body.data).toHaveProperty('name', 'Phở bò Hà Nội');
-    expect(res.body.data).toHaveProperty('description', 'Phở bò truyền thống Hà Nội');
+    expect(res.body.data).toHaveProperty(
+      'description',
+      'Phở bò truyền thống Hà Nội'
+    );
     expect(res.body.data.categories).toContain(DISH_CATEGORY.MAIN_COURSE);
     expect(res.body.data.categories).toContain(DISH_CATEGORY.SOUP);
   });
@@ -243,7 +264,10 @@ describe('PUT /api/dishes/:id', () => {
 
     expect(res.status).toBe(403);
     expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Admin không có quyền sửa món ăn');
+    expect(res.body).toHaveProperty(
+      'message',
+      'Admin không có quyền sửa món ăn'
+    );
   });
 
   // ============ VALIDATION (400) ============
@@ -259,7 +283,10 @@ describe('PUT /api/dishes/:id', () => {
 
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Định dạng ID món ăn không hợp lệ');
+    expect(res.body).toHaveProperty(
+      'message',
+      'Định dạng ID món ăn không hợp lệ'
+    );
   });
 
   it('should return 400 when name is too short', async () => {
