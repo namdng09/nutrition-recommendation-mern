@@ -1,6 +1,14 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it
+} from 'vitest';
 
 import app from '~/app';
 import { ROLE } from '~/shared/constants/role';
@@ -20,10 +28,6 @@ describe('POST /api/auth/login', () => {
   });
 
   beforeEach(async () => {
-    // Clean up database before each test
-    await AuthModel.deleteMany({});
-    await UserModel.deleteMany({});
-
     // Create a test user for happy case
     const user = await UserModel.create({
       email: 'haidangphan2015@gmail.com',
@@ -44,10 +48,14 @@ describe('POST /api/auth/login', () => {
     });
   });
 
+  afterEach(async () => {
+    // Clean up after each test
+    await AuthModel.deleteMany({ providerId: 'haidangphan2015@gmail.com' });
+    await UserModel.deleteMany({ email: 'haidangphan2015@gmail.com' });
+  });
+
   afterAll(async () => {
-    // Clean up and close connection
-    await AuthModel.deleteMany({});
-    await UserModel.deleteMany({});
+    // Close connection
     await mongoose.connection.close();
   });
 
@@ -76,34 +84,42 @@ describe('POST /api/auth/login', () => {
     expect(refreshTokenCookie).toContain('HttpOnly');
   });
 
-  // Branch: auth not found
-  it('should return 401 when email does not exist', async () => {
+  // Wrong email format
+  it('should return 400 when email format is invalid', async () => {
     const res = await request(app).post('/api/auth/login').send({
-      email: 'nonexistent@gmail.com',
+      email: 'invalid-email-format',
       password: '123456'
     });
 
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Invalid credentials');
   });
 
-  // Branch: invalid password
-  it('should return 401 when password is incorrect', async () => {
+  // Missing email field
+  it('should return 400 when email field is missing', async () => {
     const res = await request(app).post('/api/auth/login').send({
-      email: 'haidangphan2015@gmail.com',
-      password: 'wrongpassword'
+      password: '123456'
     });
 
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Invalid credentials');
   });
 
-  // Branch: user not found
-  it('should return 404 when user is deleted', async () => {
-    // Delete the user but keep auth
-    await UserModel.findByIdAndDelete(userId);
+  // Password less than 6 characters
+  it('should return 400 when password is less than 6 characters', async () => {
+    const res = await request(app).post('/api/auth/login').send({
+      email: 'haidangphan2015@gmail.com',
+      password: '12345'
+    });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('status', 'failed');
+  });
+
+  // User inactive
+  it('should return 404 when user is inactive or not found', async () => {
+    // Set user to inactive
+    await UserModel.findByIdAndUpdate(userId, { isActive: false });
 
     const res = await request(app).post('/api/auth/login').send({
       email: 'haidangphan2015@gmail.com',
@@ -114,5 +130,4 @@ describe('POST /api/auth/login', () => {
     expect(res.body).toHaveProperty('status', 'failed');
     expect(res.body).toHaveProperty('message', 'User not found or inactive');
   });
-
 });

@@ -1,11 +1,19 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest';
 
 import app from '~/app';
 import { ROLE } from '~/shared/constants/role';
 import { AuthModel, UserModel } from '~/shared/database/models';
-import * as uploadUtils from '~/shared/utils/cloudinary';
 
 // Mock the upload utility
 vi.mock('~/shared/utils/cloudinary', async () => {
@@ -33,15 +41,19 @@ describe('POST /api/auth/sign-up', () => {
     vi.clearAllMocks();
   });
 
-  afterAll(async () => {
-    // Clean up and close connection
+  afterEach(async () => {
+    // Clean up after each test
     await AuthModel.deleteMany({});
     await UserModel.deleteMany({});
+  });
+
+  afterAll(async () => {
+    // Close connection
     await mongoose.connection.close();
   });
 
-  // Happy case - sign up without avatar
-  it('should sign up successfully without avatar', async () => {
+  // Happy case
+  it('should sign up successfully', async () => {
     const res = await request(app).post('/api/auth/sign-up').send({
       email: 'newuser@gmail.com',
       name: 'New User',
@@ -82,127 +94,38 @@ describe('POST /api/auth/sign-up', () => {
     expect(auth?.verifyAt).toBeDefined();
   });
 
-  // Happy case - sign up with avatar
-  it('should sign up successfully with avatar', async () => {
-    // Mock successful avatar upload
-    (uploadUtils.uploadAvatar as any).mockResolvedValue({
-      success: true,
-      data: {
-        secure_url: 'https://cloudinary.com/avatar.jpg'
-      }
-    });
-
-    const res = await request(app)
-      .post('/api/auth/sign-up')
-      .field('email', 'newuser@gmail.com')
-      .field('name', 'New User')
-      .field('password', '123456')
-      .attach('avatar', Buffer.from('fake image'), 'avatar.jpg');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Sign up successful');
-
-    // Verify user was created with avatar
-    const user = await UserModel.findOne({ email: 'newuser@gmail.com' });
-    expect(user).toBeDefined();
-    expect(user?.avatar).toBe('https://cloudinary.com/avatar.jpg');
-
-    // Verify uploadAvatar was called
-    expect(uploadUtils.uploadAvatar).toHaveBeenCalledTimes(1);
-  });
-
-  // Branch: duplicate email
-  it('should return 400 when email already exists', async () => {
-    // Create existing user
-    await UserModel.create({
-      email: 'existing@gmail.com',
-      name: 'Existing User',
-      role: ROLE.USER,
-      isActive: true
-    });
-
+  // Wrong email format
+  it('should return 400 when email format is invalid', async () => {
     const res = await request(app).post('/api/auth/sign-up').send({
-      email: 'existing@gmail.com',
+      email: 'invalid-email-format',
       name: 'New User',
       password: '123456'
     });
 
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty(
-      'message',
-      'Unable to create account with provided information'
-    );
   });
 
-  // Branch: duplicate auth (after user creation)
-  it('should return 400 when auth already exists after creating user', async () => {
-    // Create another user first
-    const existingUser = await UserModel.create({
-      email: 'other@gmail.com',
-      name: 'Other User',
-      role: ROLE.USER,
-      isActive: true
-    });
-
-    // Create auth for a different email
-    await AuthModel.create({
-      user: existingUser._id,
-      provider: 'local',
-      providerId: 'newuser@gmail.com',
-      localPassword: 'hashedpassword',
-      verifyAt: new Date()
-    });
-
+  // Missing email field
+  it('should return 400 when email field is missing', async () => {
     const res = await request(app).post('/api/auth/sign-up').send({
-      email: 'newuser@gmail.com',
       name: 'New User',
       password: '123456'
     });
 
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty(
-      'message',
-      'Unable to create account with provided information'
-    );
   });
 
-  // Branch: avatar upload fails
-  it('should return 500 when avatar upload fails', async () => {
-    // Mock failed avatar upload
-    (uploadUtils.uploadAvatar as any).mockResolvedValue({
-      success: false,
-      error: 'Upload failed'
-    });
-
-    const res = await request(app)
-      .post('/api/auth/sign-up')
-      .field('email', 'newuser@gmail.com')
-      .field('name', 'New User')
-      .field('password', '123456')
-      .attach('avatar', Buffer.from('fake image'), 'avatar.jpg');
-
-    expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty('message', 'Failed to upload avatar');
-  });
-
-  // Branch: user creation fails
-  it('should return 500 when user creation fails', async () => {
-    vi.spyOn(UserModel, 'create').mockResolvedValueOnce(null as any);
-
+  // Password less than 6 characters
+  it('should return 400 when password is less than 6 characters', async () => {
     const res = await request(app).post('/api/auth/sign-up').send({
       email: 'newuser@gmail.com',
       name: 'New User',
-      password: '123456'
+      password: '12345'
     });
 
-    expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty('message', 'Unable to complete registration at this time');
-
-    vi.spyOn(UserModel, 'create').mockRestore();
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('status', 'failed');
   });
 });

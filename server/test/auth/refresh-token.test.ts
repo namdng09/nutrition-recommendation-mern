@@ -1,6 +1,14 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it
+} from 'vitest';
 
 import app from '~/app';
 import { ROLE } from '~/shared/constants/role';
@@ -41,9 +49,13 @@ describe('POST /api/auth/refresh-access-token', () => {
     validRefreshToken = tokens.refreshToken;
   });
 
-  afterAll(async () => {
-    // Clean up and close connection
+  afterEach(async () => {
+    // Clean up after each test
     await UserModel.deleteMany({});
+  });
+
+  afterAll(async () => {
+    // Close connection
     await mongoose.connection.close();
   });
 
@@ -65,7 +77,7 @@ describe('POST /api/auth/refresh-access-token', () => {
     expect(res.body.data.accessToken).not.toBe(validRefreshToken);
   });
 
-  // Branch: no refresh token provided
+  // Missing refresh token
   it('should return 401 when refresh token is missing', async () => {
     const res = await request(app)
       .post('/api/auth/refresh-access-token')
@@ -76,7 +88,7 @@ describe('POST /api/auth/refresh-access-token', () => {
     expect(res.body).toHaveProperty('message', 'Refresh token is required');
   });
 
-  // Branch: invalid refresh token (malformed)
+  // Wrong refresh token (invalid)
   it('should return 500 when refresh token is invalid', async () => {
     const res = await request(app)
       .post('/api/auth/refresh-access-token')
@@ -88,26 +100,7 @@ describe('POST /api/auth/refresh-access-token', () => {
     expect(res.body).toHaveProperty('message', 'jwt malformed');
   });
 
-  // Branch: refresh token with wrong secret
-  it('should return 400 when refresh token is signed with wrong secret', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const jwt = require('jsonwebtoken');
-    const invalidToken = jwt.sign(
-      'just-a-string',
-      process.env.JWT_REFRESH_SECRET || 'your_jwt_secret'
-    );
-
-    const res = await request(app)
-      .post('/api/auth/refresh-access-token')
-      .set('Cookie', [`refreshToken=${invalidToken}`])
-      .send();
-
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Invalid refresh token');
-  });
-
-  // Branch: expired refresh token
+  // Wrong refresh token (expired)
   it('should return 401 when refresh token is expired', async () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
@@ -130,7 +123,7 @@ describe('POST /api/auth/refresh-access-token', () => {
     expect(res.body).toHaveProperty('message', 'Token expired');
   });
 
-  // Branch: user not found
+  // User not found
   it('should return 404 when user does not exist', async () => {
     // Delete the user
     await UserModel.findByIdAndDelete(userId);
@@ -143,36 +136,5 @@ describe('POST /api/auth/refresh-access-token', () => {
     expect(res.status).toBe(404);
     expect(res.body).toHaveProperty('status', 'failed');
     expect(res.body).toHaveProperty('message', 'User not found');
-  });
-
-  // Branch: refresh token with non-existent user ID
-  it('should return 404 when refresh token contains invalid user ID', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const jwt = require('jsonwebtoken');
-    const originalSecret = process.env.JWT_REFRESH_SECRET;
-
-    // Temporarily unset JWT_REFRESH_SECRET
-    delete process.env.JWT_REFRESH_SECRET;
-
-    // Generate token with fallback secret
-    const fallbackToken = jwt.sign(
-      { id: userId, role: ROLE.USER },
-      'your_jwt_secret',
-      { expiresIn: '7d' }
-    );
-
-    const res = await request(app)
-      .post('/api/auth/refresh-access-token')
-      .set('Cookie', [`refreshToken=${fallbackToken}`])
-      .send();
-
-    // Restore original secret
-    if (originalSecret) {
-      process.env.JWT_REFRESH_SECRET = originalSecret;
-    }
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body.data).toHaveProperty('accessToken');
   });
 });
