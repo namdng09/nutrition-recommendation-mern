@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaHome, FaUserPlus } from 'react-icons/fa';
+import { FaHome } from 'react-icons/fa';
 import { Link } from 'react-router';
 
 const Footer = () => {
