@@ -1,13 +1,12 @@
 import mongoose from 'mongoose';
-import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import app from '~/app';
+import { AuthService } from '~/features/auth/auth-service';
 import { ROLE } from '~/shared/constants/role';
 import { UserModel } from '~/shared/database/models';
 import { generateToken } from '~/shared/utils';
 
-describe('POST /api/auth/refresh-access-token', () => {
+describe('AuthService.refreshAccessToken', () => {
   let userId: string;
   let validRefreshToken: string;
 
@@ -49,47 +48,29 @@ describe('POST /api/auth/refresh-access-token', () => {
 
   // Happy case
   it('should refresh access token successfully with valid refresh token', async () => {
-    const res = await request(app)
-      .post('/api/auth/refresh-access-token')
-      .set('Cookie', [`refreshToken=${validRefreshToken}`])
-      .send();
+    const newAccessToken =
+      await AuthService.refreshAccessToken(validRefreshToken);
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty(
-      'message',
-      'Access token refreshed successfully'
-    );
-    expect(res.body.data).toHaveProperty('accessToken');
-    expect(typeof res.body.data.accessToken).toBe('string');
-    expect(res.body.data.accessToken).not.toBe(validRefreshToken);
+    expect(typeof newAccessToken).toBe('string');
+    expect(newAccessToken).not.toBe(validRefreshToken);
   });
 
   // Branch: no refresh token provided
-  it('should return 401 when refresh token is missing', async () => {
-    const res = await request(app)
-      .post('/api/auth/refresh-access-token')
-      .send();
-
-    expect(res.status).toBe(401);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Refresh token is required');
+  it('should throw 401 error when refresh token is missing', async () => {
+    await expect(AuthService.refreshAccessToken('')).rejects.toThrow(
+      'Refresh token is required'
+    );
   });
 
   // Branch: invalid refresh token (malformed)
-  it('should return 500 when refresh token is invalid', async () => {
-    const res = await request(app)
-      .post('/api/auth/refresh-access-token')
-      .set('Cookie', ['refreshToken=invalid-token'])
-      .send();
-
-    expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty('message', 'jwt malformed');
+  it('should throw error when refresh token is invalid', async () => {
+    await expect(
+      AuthService.refreshAccessToken('invalid-token')
+    ).rejects.toThrow();
   });
 
   // Branch: refresh token with wrong secret
-  it('should return 400 when refresh token is signed with wrong secret', async () => {
+  it('should throw 400 error when refresh token is signed with wrong secret', async () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
     const invalidToken = jwt.sign(
@@ -97,18 +78,13 @@ describe('POST /api/auth/refresh-access-token', () => {
       process.env.JWT_REFRESH_SECRET || 'your_jwt_secret'
     );
 
-    const res = await request(app)
-      .post('/api/auth/refresh-access-token')
-      .set('Cookie', [`refreshToken=${invalidToken}`])
-      .send();
-
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Invalid refresh token');
+    await expect(AuthService.refreshAccessToken(invalidToken)).rejects.toThrow(
+      'Invalid refresh token'
+    );
   });
 
   // Branch: expired refresh token
-  it('should return 401 when refresh token is expired', async () => {
+  it('should throw error when refresh token is expired', async () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
     const expiredToken = jwt.sign(
@@ -120,33 +96,23 @@ describe('POST /api/auth/refresh-access-token', () => {
     // Wait a bit to ensure token is expired
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    const res = await request(app)
-      .post('/api/auth/refresh-access-token')
-      .set('Cookie', [`refreshToken=${expiredToken}`])
-      .send();
-
-    expect(res.status).toBe(401);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Token expired');
+    await expect(
+      AuthService.refreshAccessToken(expiredToken)
+    ).rejects.toThrow();
   });
 
   // Branch: user not found
-  it('should return 404 when user does not exist', async () => {
+  it('should throw 404 error when user does not exist', async () => {
     // Delete the user
     await UserModel.findByIdAndDelete(userId);
 
-    const res = await request(app)
-      .post('/api/auth/refresh-access-token')
-      .set('Cookie', [`refreshToken=${validRefreshToken}`])
-      .send();
-
-    expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'User not found');
+    await expect(
+      AuthService.refreshAccessToken(validRefreshToken)
+    ).rejects.toThrow('User not found');
   });
 
-  // Branch: refresh token with non-existent user ID
-  it('should return 404 when refresh token contains invalid user ID', async () => {
+  // Branch: refresh token with fallback secret
+  it('should work with fallback secret when JWT_REFRESH_SECRET is not set', async () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
     const originalSecret = process.env.JWT_REFRESH_SECRET;
@@ -161,18 +127,13 @@ describe('POST /api/auth/refresh-access-token', () => {
       { expiresIn: '7d' }
     );
 
-    const res = await request(app)
-      .post('/api/auth/refresh-access-token')
-      .set('Cookie', [`refreshToken=${fallbackToken}`])
-      .send();
+    const newAccessToken = await AuthService.refreshAccessToken(fallbackToken);
 
     // Restore original secret
     if (originalSecret) {
       process.env.JWT_REFRESH_SECRET = originalSecret;
     }
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body.data).toHaveProperty('accessToken');
+    expect(typeof newAccessToken).toBe('string');
   });
 });

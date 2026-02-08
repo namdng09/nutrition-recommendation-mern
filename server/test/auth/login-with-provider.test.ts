@@ -1,12 +1,11 @@
 import mongoose from 'mongoose';
-import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import app from '~/app';
+import { AuthService } from '~/features/auth/auth-service';
 import { ROLE } from '~/shared/constants/role';
 import { AuthModel, UserModel } from '~/shared/database/models';
 
-describe('GET /api/auth/google/callback', () => {
+describe('AuthService.loginWithProvider', () => {
   let userId: string;
 
   beforeAll(async () => {
@@ -41,66 +40,25 @@ describe('GET /api/auth/google/callback', () => {
   });
 
   // Branch: user is null or undefined
-  it('should return 400 when user is not provided', async () => {
-    const mockReq: any = {
-      user: null,
-      authInfo: {
-        provider: 'google',
-        providerId: 'google-user-123'
-      }
-    };
-
-    const mockRes: any = {
-      cookie: () => mockRes,
-      redirect: (url: string) => {
-        mockRes.redirectUrl = url;
-      },
-      status: (code: number) => {
-        mockRes.statusCode = code;
-        return mockRes;
-      },
-      json: (data: any) => {
-        mockRes.jsonData = data;
-      },
-      statusCode: 0,
-      jsonData: null,
-      redirectUrl: ''
-    };
-
-    const { AuthController } = await import('~/features/auth/auth-controller');
-    
-    try {
-      await AuthController.loginWithProvider(mockReq, mockRes);
-    } catch (error: any) {
-      expect(error.status).toBe(400);
-      expect(error.message).toBe('User not found');
-    }
+  it('should throw 400 error when user is not provided', async () => {
+    await expect(
+      AuthService.loginWithProvider('google', 'google-user-123', null as any)
+    ).rejects.toThrow('User not found');
   });
 
   // Branch: auth does not exist - create new auth
   it('should create new auth record when auth does not exist', async () => {
-    // Mock the OAuth callback to set user and authInfo
-    const agent = request.agent(app);
+    const user = await UserModel.findById(userId);
 
-    // Simulate successful OAuth by directly calling the controller with mocked request
-    const mockReq: any = {
-      user: await UserModel.findById(userId),
-      authInfo: {
-        provider: 'google',
-        providerId: 'google-user-123'
-      }
-    };
+    const result = await AuthService.loginWithProvider(
+      'google',
+      'google-user-123',
+      user!
+    );
 
-    const mockRes: any = {
-      cookie: () => mockRes,
-      redirect: (url: string) => {
-        mockRes.redirectUrl = url;
-      },
-      redirectUrl: ''
-    };
-
-    const { AuthController } = await import('~/features/auth/auth-controller');
-    await AuthController.loginWithProvider(mockReq, mockRes);
+    expect(result).toHaveProperty('accessToken');
+    expect(result).toHaveProperty('refreshToken');
+    expect(result).toHaveProperty('hasOnboarded', false);
 
     // Verify auth was created
     const auth = await AuthModel.findOne({
@@ -109,10 +67,6 @@ describe('GET /api/auth/google/callback', () => {
     });
     expect(auth).toBeDefined();
     expect(auth?.user.toString()).toBe(userId);
-
-    // Verify redirect URL contains tokens
-    expect(mockRes.redirectUrl).toContain('accessToken=');
-    expect(mockRes.redirectUrl).toContain('hasOnboarded=');
   });
 
   // Branch: auth exists - update verifyAt
@@ -127,25 +81,17 @@ describe('GET /api/auth/google/callback', () => {
 
     const oldVerifyAt = existingAuth.verifyAt;
 
-    // Mock the OAuth callback
-    const mockReq: any = {
-      user: await UserModel.findById(userId),
-      authInfo: {
-        provider: 'google',
-        providerId: 'google-user-123'
-      }
-    };
+    const user = await UserModel.findById(userId);
 
-    const mockRes: any = {
-      cookie: () => mockRes,
-      redirect: (url: string) => {
-        mockRes.redirectUrl = url;
-      },
-      redirectUrl: ''
-    };
+    const result = await AuthService.loginWithProvider(
+      'google',
+      'google-user-123',
+      user!
+    );
 
-    const { AuthController } = await import('~/features/auth/auth-controller');
-    await AuthController.loginWithProvider(mockReq, mockRes);
+    expect(result).toHaveProperty('accessToken');
+    expect(result).toHaveProperty('refreshToken');
+    expect(result).toHaveProperty('hasOnboarded', false);
 
     // Verify auth was updated
     const updatedAuth = await AuthModel.findById(existingAuth._id);
@@ -153,9 +99,5 @@ describe('GET /api/auth/google/callback', () => {
     expect(updatedAuth?.verifyAt.getTime()).toBeGreaterThan(
       oldVerifyAt.getTime()
     );
-
-    // Verify redirect URL contains tokens
-    expect(mockRes.redirectUrl).toContain('accessToken=');
-    expect(mockRes.redirectUrl).toContain('hasOnboarded=');
   });
 });
