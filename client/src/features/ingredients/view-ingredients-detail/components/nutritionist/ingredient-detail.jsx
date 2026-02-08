@@ -219,33 +219,62 @@ const IngredientDetail = ({ id }) => {
   };
 
   const handleSave = data => {
-  // Hàm helper để loại bỏ các trường rỗng
-  const removeEmptyValues = (arr) => {
-    return arr
-      .map(item => ({
-        ...item,
-        value: item.value || item.value === 0 ? item.value : undefined
-      }))
-      .filter(item => item.value !== undefined && item.value !== '' && item.value !== 0);
-  };
+    // Hàm helper để parse number từ input
+    const parseNumberValue = value => {
+      if (value === '' || value === null || value === undefined) {
+        return undefined;
+      }
+      const parsed = parseFloat(value);
+      return isNaN(parsed) ? undefined : parsed;
+    };
 
-  const cleanedData = {
-    ...data,
-    isActive: data.isActive === 'true' || data.isActive === true,
-    nutrition: {
-      nutrients: data.nutrition.nutrients,
-      minerals: removeEmptyValues(data.nutrition.minerals || []),
-      vitamins: removeEmptyValues(data.nutrition.vitamins || []),
-      sugars: removeEmptyValues(data.nutrition.sugars || []),
-      fats: removeEmptyValues(data.nutrition.fats || []),
-      fattyAcids: removeEmptyValues(data.nutrition.fattyAcids || []),
-      aminoAcids: removeEmptyValues(data.nutrition.aminoAcids || [])
-    }
-  };
+    // Hàm helper để loại bỏ các trường optional rỗng
+    const removeEmptyValues = arr => {
+      return arr
+        .map(item => {
+          const parsedValue = parseNumberValue(item.value);
+          return {
+            ...item,
+            value: parsedValue
+          };
+        })
+        .filter(item => {
+          return (
+            item.value !== undefined && item.value !== null && item.value > 0
+          );
+        });
+    };
 
-  console.log('Submitting cleaned data:', cleanedData);
-  updateIngredient({ id, data: cleanedData, image: selectedImage });
-};
+    // Xử lý required nutrients
+    const processRequiredNutrients = nutrients => {
+      const processed = {};
+      Object.keys(nutrients).forEach(key => {
+        const parsedValue = parseNumberValue(nutrients[key].value);
+        processed[key] = {
+          value: parsedValue !== undefined ? parsedValue : 0,
+          unit: nutrients[key].unit
+        };
+      });
+      return processed;
+    };
+
+    const cleanedData = {
+      ...data,
+      isActive: data.isActive === 'true' || data.isActive === true,
+      nutrition: {
+        nutrients: processRequiredNutrients(data.nutrition.nutrients),
+        minerals: removeEmptyValues(data.nutrition.minerals || []),
+        vitamins: removeEmptyValues(data.nutrition.vitamins || []),
+        sugars: removeEmptyValues(data.nutrition.sugars || []),
+        fats: removeEmptyValues(data.nutrition.fats || []),
+        fattyAcids: removeEmptyValues(data.nutrition.fattyAcids || []),
+        aminoAcids: removeEmptyValues(data.nutrition.aminoAcids || [])
+      }
+    };
+
+    console.log('Submitting cleaned data:', cleanedData);
+    updateIngredient({ id, data: cleanedData, image: selectedImage });
+  };
 
   const handleToggleActive = () => {
     updateIngredient({
@@ -280,7 +309,7 @@ const IngredientDetail = ({ id }) => {
   };
 
   const handleAddServingSize = () => {
-    appendUnit({ value: 0, unit: 'whole', isDefault: false });
+    appendUnit({ value: 0, unit: '', isDefault: false });
   };
 
   const handleSetDefaultServing = index => {
@@ -717,129 +746,89 @@ const IngredientDetail = ({ id }) => {
 
             <Separator />
 
-            {/* Serving Sizes */}
+            {/* Serving Sizes - updated without radio */}
             <div className='space-y-4'>
               <div>
                 <h3 className='text-sm font-semibold mb-1'>
                   Đơn vị chuyển đổi
                 </h3>
                 <p className='text-xs text-muted-foreground'>
-                  Nhập số lượng tương đương với khối lượng cơ sở. Ví dụ: 1 quả
-                  trứng = 50g, để bằng 100g base cần 2 quả
+                  Thêm các đơn vị đo lường khác nhau cho nguyên liệu này
                 </p>
               </div>
 
-              <FormLabel className='text-sm font-medium'>Mặc định</FormLabel>
-              <RadioGroup
-                value={unitFields
-                  .findIndex(u =>
-                    form.getValues(`units.${unitFields.indexOf(u)}.isDefault`)
-                  )
-                  .toString()}
-                onValueChange={value =>
-                  handleSetDefaultServing(parseInt(value))
-                }
-              >
-                <div className='space-y-2'>
-                  {unitFields.map((field, index) => (
-                    <div
-                      key={field.id}
-                      className='flex items-center gap-2 p-3 border rounded-lg bg-accent/5'
-                    >
-                      <FormField
-                        control={form.control}
-                        name={`units.${index}.isDefault`}
-                        render={({ field: radioField }) => (
-                          <FormItem className='flex items-center space-y-0'>
-                            <FormControl>
-                              <RadioGroupItem
-                                value={index.toString()}
-                                checked={radioField.value}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-
-                      <div className='flex-1 flex gap-2 items-end'>
-                        <FormField
-                          control={form.control}
-                          name={`units.${index}.value`}
-                          render={({ field }) => (
-                            <FormItem className='flex-1'>
-                              <FormLabel className='text-xs'>
-                                Số lượng
-                              </FormLabel>
-                              <FormControl>
-                                <Input
-                                  type='number'
-                                  step='0.01'
-                                  min='0'
-                                  placeholder='0'
-                                  className='h-9'
-                                  {...field}
-                                  onChange={e =>
-                                    field.onChange(
-                                      parseFloat(e.target.value) || 0
-                                    )
-                                  }
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name={`units.${index}.unit`}
-                          render={({ field }) => (
-                            <FormItem className='w-40'>
-                              <FormLabel className='text-xs'>Đơn vị</FormLabel>
-                              <Select
-                                value={field.value}
-                                onValueChange={field.onChange}
-                              >
-                                <FormControl>
-                                  <SelectTrigger className='h-9'>
-                                    <SelectValue placeholder='Chọn' />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {UNIT_OPTIONS.map(option => (
-                                    <SelectItem
-                                      key={option.value}
-                                      value={option.value}
-                                    >
-                                      {option.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormItem>
-                          )}
-                        />
-
-                        <div className='text-xs text-muted-foreground pb-2'>
-                          = {form.watch('baseUnit.amount') || 100}
-                          {form.watch('baseUnit.unit') || 'g'}
-                        </div>
-                      </div>
-
-                      {unitFields.length > 1 && (
-                        <Button
-                          type='button'
-                          variant='ghost'
-                          size='icon'
-                          className='h-9 w-9'
-                          onClick={() => removeUnit(index)}
-                        >
-                          <Trash2 className='h-4 w-4' />
-                        </Button>
+              <div className='space-y-3'>
+                {unitFields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className='flex items-end gap-2 p-3 border rounded-lg bg-accent/5'
+                  >
+                    <FormField
+                      control={form.control}
+                      name={`units.${index}.value`}
+                      render={({ field }) => (
+                        <FormItem className='flex-1'>
+                          <FormLabel className='text-xs'>Số lượng</FormLabel>
+                          <FormControl>
+                            <Input
+                              type='number'
+                              step='0.01'
+                              min='0'
+                              placeholder='0'
+                              className='h-9'
+                              {...field}
+                              value={field.value ?? ''}
+                              onChange={e => {
+                                const value = e.target.value;
+                                field.onChange(
+                                  value === '' ? '' : parseFloat(value) || ''
+                                );
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
                       )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`units.${index}.unit`}
+                      render={({ field }) => (
+                        <FormItem className='flex-1'>
+                          <FormLabel className='text-xs'>Đơn vị</FormLabel>
+                          <FormControl>
+                            <Input
+                              type='text'
+                              placeholder='Ví dụ: cup, tbsp, whole'
+                              className='h-9'
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className='text-xs text-muted-foreground pb-2 whitespace-nowrap'>
+                      = {form.watch('baseUnit.amount') || 100}
+                      {form.watch('baseUnit.unit') || 'g'}
                     </div>
-                  ))}
-                </div>
-              </RadioGroup>
+
+                    {unitFields.length > 1 && (
+                      <Button
+                        type='button'
+                        variant='ghost'
+                        size='icon'
+                        className='h-9 w-9 flex-shrink-0'
+                        onClick={() => removeUnit(index)}
+                      >
+                        <Trash2 className='h-4 w-4' />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
 
               <Button
                 type='button'
@@ -855,7 +844,7 @@ const IngredientDetail = ({ id }) => {
 
             <Separator />
 
-            {/* Nutrition Values */}
+            {/* Nutrition Values - update all inputs like create form */}
             <div className='space-y-4'>
               <div>
                 <h3 className='text-sm font-semibold mb-1'>
@@ -883,9 +872,13 @@ const IngredientDetail = ({ id }) => {
                             placeholder='0'
                             className='h-9'
                             {...field}
-                            onChange={e =>
-                              field.onChange(parseFloat(e.target.value) || 0)
-                            }
+                            value={field.value ?? ''}
+                            onChange={e => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === '' ? '' : parseFloat(value) || ''
+                              );
+                            }}
                           />
                         </FormControl>
                         <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
@@ -915,9 +908,13 @@ const IngredientDetail = ({ id }) => {
                             placeholder='0'
                             className='h-9'
                             {...field}
-                            onChange={e =>
-                              field.onChange(parseFloat(e.target.value) || 0)
-                            }
+                            value={field.value ?? ''}
+                            onChange={e => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === '' ? '' : parseFloat(value) || ''
+                              );
+                            }}
                           />
                         </FormControl>
                         <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
@@ -947,9 +944,13 @@ const IngredientDetail = ({ id }) => {
                             placeholder='0'
                             className='h-9'
                             {...field}
-                            onChange={e =>
-                              field.onChange(parseFloat(e.target.value) || 0)
-                            }
+                            value={field.value ?? ''}
+                            onChange={e => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === '' ? '' : parseFloat(value) || ''
+                              );
+                            }}
                           />
                         </FormControl>
                         <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
@@ -979,9 +980,13 @@ const IngredientDetail = ({ id }) => {
                             placeholder='0'
                             className='h-9'
                             {...field}
-                            onChange={e =>
-                              field.onChange(parseFloat(e.target.value) || 0)
-                            }
+                            value={field.value ?? ''}
+                            onChange={e => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === '' ? '' : parseFloat(value) || ''
+                              );
+                            }}
                           />
                         </FormControl>
                         <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
@@ -993,98 +998,107 @@ const IngredientDetail = ({ id }) => {
                   )}
                 />
 
-                 {/* Fiber */}
-    <FormField
-      control={form.control}
-      name='nutrition.nutrients.fiber.value'
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel className='text-xs'>Fiber (Chất xơ)</FormLabel>
-          <div className='flex gap-2'>
-            <FormControl>
-              <Input
-                type='number'
-                step='0.1'
-                min='0'
-                placeholder='0'
-                className='h-9'
-                {...field}
-                onChange={e =>
-                  field.onChange(parseFloat(e.target.value) || 0)
-                }
-              />
-            </FormControl>
-            <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
-              g
-            </div>
-          </div>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+                <FormField
+                  control={form.control}
+                  name='nutrition.nutrients.fiber.value'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='text-xs'>Fiber</FormLabel>
+                      <div className='flex gap-2'>
+                        <FormControl>
+                          <Input
+                            type='number'
+                            step='0.1'
+                            min='0'
+                            placeholder='0'
+                            className='h-9'
+                            {...field}
+                            value={field.value ?? ''}
+                            onChange={e => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === '' ? '' : parseFloat(value) || ''
+                              );
+                            }}
+                          />
+                        </FormControl>
+                        <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
+                          g
+                        </div>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-    {/* Sodium */}
-    <FormField
-      control={form.control}
-      name='nutrition.nutrients.sodium.value'
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel className='text-xs'>Sodium (Natri)</FormLabel>
-          <div className='flex gap-2'>
-            <FormControl>
-              <Input
-                type='number'
-                step='0.1'
-                min='0'
-                placeholder='0'
-                className='h-9'
-                {...field}
-                onChange={e =>
-                  field.onChange(parseFloat(e.target.value) || 0)
-                }
-              />
-            </FormControl>
-            <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
-              mg
-            </div>
-          </div>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+                <FormField
+                  control={form.control}
+                  name='nutrition.nutrients.sodium.value'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='text-xs'>Sodium</FormLabel>
+                      <div className='flex gap-2'>
+                        <FormControl>
+                          <Input
+                            type='number'
+                            step='0.1'
+                            min='0'
+                            placeholder='0'
+                            className='h-9'
+                            {...field}
+                            value={field.value ?? ''}
+                            onChange={e => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === '' ? '' : parseFloat(value) || ''
+                              );
+                            }}
+                          />
+                        </FormControl>
+                        <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
+                          mg
+                        </div>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-    {/* Cholesterol */}
-    <FormField
-      control={form.control}
-      name='nutrition.nutrients.cholesterol.value'
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel className='text-xs'>Cholesterol</FormLabel>
-          <div className='flex gap-2'>
-            <FormControl>
-              <Input
-                type='number'
-                step='0.1'
-                min='0'
-                placeholder='0'
-                className='h-9'
-                {...field}
-                onChange={e =>
-                  field.onChange(parseFloat(e.target.value) || 0)
-                }
-              />
-            </FormControl>
-            <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
-              mg
-            </div>
-          </div>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+                <FormField
+                  control={form.control}
+                  name='nutrition.nutrients.cholesterol.value'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='text-xs'>Cholesterol</FormLabel>
+                      <div className='flex gap-2'>
+                        <FormControl>
+                          <Input
+                            type='number'
+                            step='0.1'
+                            min='0'
+                            placeholder='0'
+                            className='h-9'
+                            {...field}
+                            value={field.value ?? ''}
+                            onChange={e => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === '' ? '' : parseFloat(value) || ''
+                              );
+                            }}
+                          />
+                        </FormControl>
+                        <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
+                          mg
+                        </div>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
-              {/* Optional Nutrition */}
+              {/* Optional Nutrition - update all sections */}
               <Collapsible
                 open={isOptionalNutritionOpen}
                 onOpenChange={setIsOptionalNutritionOpen}
@@ -1107,256 +1121,302 @@ const IngredientDetail = ({ id }) => {
                 </CollapsibleTrigger>
 
                 <CollapsibleContent className='space-y-6 pt-4'>
-  {/* Minerals */}
-  <div className='space-y-4'>
-    <h4 className='text-sm font-medium'>Khoáng chất</h4>
+                  {/* Minerals */}
+                  <div className='space-y-4'>
+                    <h4 className='text-sm font-medium'>Khoáng chất</h4>
 
-    <div className='grid grid-cols-2 gap-4'>
-      {mineralFields.map((field, index) => (
-        <div key={field.id} className='flex items-end gap-2'>
-          <FormField
-            control={form.control}
-            name={`nutrition.minerals.${index}.value`}
-            render={({ field }) => (
-              <FormItem className='flex-1'>
-                <FormLabel className='text-xs'>
-                  {form.watch(`nutrition.minerals.${index}.label`)}
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type='number'
-                    step='0.001'
-                    min='0'
-                    placeholder='0'
-                    className='h-9'
-                    {...field}
-                    onChange={e =>
-                      field.onChange(parseFloat(e.target.value) || 0)
-                    }
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+                    <div className='grid grid-cols-2 gap-4'>
+                      {mineralFields.map((field, index) => (
+                        <div key={field.id} className='flex items-end gap-2'>
+                          <FormField
+                            control={form.control}
+                            name={`nutrition.minerals.${index}.value`}
+                            render={({ field }) => (
+                              <FormItem className='flex-1'>
+                                <FormLabel className='text-xs'>
+                                  {form.watch(
+                                    `nutrition.minerals.${index}.label`
+                                  )}
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type='number'
+                                    step='0.001'
+                                    min='0'
+                                    placeholder='Để trống nếu không có'
+                                    className='h-9'
+                                    {...field}
+                                    value={field.value ?? ''}
+                                    onChange={e => {
+                                      const value = e.target.value;
+                                      field.onChange(
+                                        value === ''
+                                          ? ''
+                                          : parseFloat(value) || ''
+                                      );
+                                    }}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
 
-          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
-            {form.watch(`nutrition.minerals.${index}.unit`)}
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
+                          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+                            {form.watch(`nutrition.minerals.${index}.unit`)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-  <Separator />
+                  <Separator />
 
-  {/* Vitamins */}
-  <div className='space-y-4'>
-    <h4 className='text-sm font-medium'>Vitamin</h4>
+                  {/* Vitamins */}
+                  <div className='space-y-4'>
+                    <h4 className='text-sm font-medium'>Vitamin</h4>
 
-    <div className='grid grid-cols-2 gap-4'>
-      {vitaminFields.map((field, index) => (
-        <div key={field.id} className='flex items-end gap-2'>
-          <FormField
-            control={form.control}
-            name={`nutrition.vitamins.${index}.value`}
-            render={({ field }) => (
-              <FormItem className='flex-1'>
-                <FormLabel className='text-xs'>
-                  {form.watch(`nutrition.vitamins.${index}.label`)}
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type='number'
-                    step='0.01'
-                    min='0'
-                    placeholder='0'
-                    className='h-9'
-                    {...field}
-                    onChange={e =>
-                      field.onChange(parseFloat(e.target.value) || 0)
-                    }
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+                    <div className='grid grid-cols-2 gap-4'>
+                      {vitaminFields.map((field, index) => (
+                        <div key={field.id} className='flex items-end gap-2'>
+                          <FormField
+                            control={form.control}
+                            name={`nutrition.vitamins.${index}.value`}
+                            render={({ field }) => (
+                              <FormItem className='flex-1'>
+                                <FormLabel className='text-xs'>
+                                  {form.watch(
+                                    `nutrition.vitamins.${index}.label`
+                                  )}
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type='number'
+                                    step='0.01'
+                                    min='0'
+                                    placeholder='Để trống nếu không có'
+                                    className='h-9'
+                                    {...field}
+                                    value={field.value ?? ''}
+                                    onChange={e => {
+                                      const value = e.target.value;
+                                      field.onChange(
+                                        value === ''
+                                          ? ''
+                                          : parseFloat(value) || ''
+                                      );
+                                    }}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
 
-          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
-            {form.watch(`nutrition.vitamins.${index}.unit`)}
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
+                          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+                            {form.watch(`nutrition.vitamins.${index}.unit`)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-  <Separator />
+                  <Separator />
 
-  {/* Sugars */}
-  <div className='space-y-4'>
-    <h4 className='text-sm font-medium'>Đường (Sugars)</h4>
+                  {/* Sugars */}
+                  <div className='space-y-4'>
+                    <h4 className='text-sm font-medium'>Đường (Sugars)</h4>
 
-    <div className='grid grid-cols-2 gap-4'>
-      {sugarFields.map((field, index) => (
-        <div key={field.id} className='flex items-end gap-2'>
-          <FormField
-            control={form.control}
-            name={`nutrition.sugars.${index}.value`}
-            render={({ field }) => (
-              <FormItem className='flex-1'>
-                <FormLabel className='text-xs'>
-                  {form.watch(`nutrition.sugars.${index}.label`)}
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type='number'
-                    step='0.1'
-                    min='0'
-                    placeholder='0'
-                    className='h-9'
-                    {...field}
-                    onChange={e =>
-                      field.onChange(parseFloat(e.target.value) || 0)
-                    }
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+                    <div className='grid grid-cols-2 gap-4'>
+                      {sugarFields.map((field, index) => (
+                        <div key={field.id} className='flex items-end gap-2'>
+                          <FormField
+                            control={form.control}
+                            name={`nutrition.sugars.${index}.value`}
+                            render={({ field }) => (
+                              <FormItem className='flex-1'>
+                                <FormLabel className='text-xs'>
+                                  {form.watch(
+                                    `nutrition.sugars.${index}.label`
+                                  )}
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type='number'
+                                    step='0.1'
+                                    min='0'
+                                    placeholder='Để trống nếu không có'
+                                    className='h-9'
+                                    {...field}
+                                    value={field.value ?? ''}
+                                    onChange={e => {
+                                      const value = e.target.value;
+                                      field.onChange(
+                                        value === ''
+                                          ? ''
+                                          : parseFloat(value) || ''
+                                      );
+                                    }}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
 
-          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
-            g
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
+                          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+                            g
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-  <Separator />
+                  <Separator />
 
-  {/* Fats */}
-  <div className='space-y-4'>
-    <h4 className='text-sm font-medium'>Chi tiết chất béo</h4>
+                  {/* Fats */}
+                  <div className='space-y-4'>
+                    <h4 className='text-sm font-medium'>Chi tiết chất béo</h4>
 
-    <div className='grid grid-cols-2 gap-4'>
-      {fatFields.map((field, index) => (
-        <div key={field.id} className='flex items-end gap-2'>
-          <FormField
-            control={form.control}
-            name={`nutrition.fats.${index}.value`}
-            render={({ field }) => (
-              <FormItem className='flex-1'>
-                <FormLabel className='text-xs'>
-                  {form.watch(`nutrition.fats.${index}.label`)}
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type='number'
-                    step='0.1'
-                    min='0'
-                    placeholder='0'
-                    className='h-9'
-                    {...field}
-                    onChange={e =>
-                      field.onChange(parseFloat(e.target.value) || 0)
-                    }
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+                    <div className='grid grid-cols-2 gap-4'>
+                      {fatFields.map((field, index) => (
+                        <div key={field.id} className='flex items-end gap-2'>
+                          <FormField
+                            control={form.control}
+                            name={`nutrition.fats.${index}.value`}
+                            render={({ field }) => (
+                              <FormItem className='flex-1'>
+                                <FormLabel className='text-xs'>
+                                  {form.watch(`nutrition.fats.${index}.label`)}
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type='number'
+                                    step='0.1'
+                                    min='0'
+                                    placeholder='Để trống nếu không có'
+                                    className='h-9'
+                                    {...field}
+                                    value={field.value ?? ''}
+                                    onChange={e => {
+                                      const value = e.target.value;
+                                      field.onChange(
+                                        value === ''
+                                          ? ''
+                                          : parseFloat(value) || ''
+                                      );
+                                    }}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
 
-          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
-            g
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
+                          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+                            g
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-  <Separator />
+                  <Separator />
 
-  {/* Fatty Acids */}
-  <div className='space-y-4'>
-    <h4 className='text-sm font-medium'>Axit béo</h4>
+                  {/* Fatty Acids */}
+                  <div className='space-y-4'>
+                    <h4 className='text-sm font-medium'>Axit béo</h4>
 
-    <div className='grid grid-cols-2 gap-4'>
-      {fattyAcidFields.map((field, index) => (
-        <div key={field.id} className='flex items-end gap-2'>
-          <FormField
-            control={form.control}
-            name={`nutrition.fattyAcids.${index}.value`}
-            render={({ field }) => (
-              <FormItem className='flex-1'>
-                <FormLabel className='text-xs'>
-                  {form.watch(`nutrition.fattyAcids.${index}.label`)}
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type='number'
-                    step='0.001'
-                    min='0'
-                    placeholder='0'
-                    className='h-9'
-                    {...field}
-                    onChange={e =>
-                      field.onChange(parseFloat(e.target.value) || 0)
-                    }
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+                    <div className='grid grid-cols-2 gap-4'>
+                      {fattyAcidFields.map((field, index) => (
+                        <div key={field.id} className='flex items-end gap-2'>
+                          <FormField
+                            control={form.control}
+                            name={`nutrition.fattyAcids.${index}.value`}
+                            render={({ field }) => (
+                              <FormItem className='flex-1'>
+                                <FormLabel className='text-xs'>
+                                  {form.watch(
+                                    `nutrition.fattyAcids.${index}.label`
+                                  )}
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type='number'
+                                    step='0.001'
+                                    min='0'
+                                    placeholder='Để trống nếu không có'
+                                    className='h-9'
+                                    {...field}
+                                    value={field.value ?? ''}
+                                    onChange={e => {
+                                      const value = e.target.value;
+                                      field.onChange(
+                                        value === ''
+                                          ? ''
+                                          : parseFloat(value) || ''
+                                      );
+                                    }}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
 
-          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
-            g
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
+                          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+                            g
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-  <Separator />
+                  <Separator />
 
-  {/* Amino Acids */}
-  <div className='space-y-4'>
-    <h4 className='text-sm font-medium'>Amino Acids</h4>
+                  {/* Amino Acids */}
+                  <div className='space-y-4'>
+                    <h4 className='text-sm font-medium'>Amino Acids</h4>
 
-    <div className='grid grid-cols-2 gap-4'>
-      {aminoAcidFields.map((field, index) => (
-        <div key={field.id} className='flex items-end gap-2'>
-          <FormField
-            control={form.control}
-            name={`nutrition.aminoAcids.${index}.value`}
-            render={({ field }) => (
-              <FormItem className='flex-1'>
-                <FormLabel className='text-xs'>
-                  {form.watch(`nutrition.aminoAcids.${index}.label`)}
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type='number'
-                    step='0.001'
-                    min='0'
-                    placeholder='0'
-                    className='h-9'
-                    {...field}
-                    onChange={e =>
-                      field.onChange(parseFloat(e.target.value) || 0)
-                    }
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+                    <div className='grid grid-cols-2 gap-4'>
+                      {aminoAcidFields.map((field, index) => (
+                        <div key={field.id} className='flex items-end gap-2'>
+                          <FormField
+                            control={form.control}
+                            name={`nutrition.aminoAcids.${index}.value`}
+                            render={({ field }) => (
+                              <FormItem className='flex-1'>
+                                <FormLabel className='text-xs'>
+                                  {form.watch(
+                                    `nutrition.aminoAcids.${index}.label`
+                                  )}
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type='number'
+                                    step='0.001'
+                                    min='0'
+                                    placeholder='Để trống nếu không có'
+                                    className='h-9'
+                                    {...field}
+                                    value={field.value ?? ''}
+                                    onChange={e => {
+                                      const value = e.target.value;
+                                      field.onChange(
+                                        value === ''
+                                          ? ''
+                                          : parseFloat(value) || ''
+                                      );
+                                    }}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
 
-          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
-            g
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-</CollapsibleContent>
+                          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+                            g
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CollapsibleContent>
               </Collapsible>
             </div>
           </form>
