@@ -70,9 +70,7 @@ describe('GET /api/dishes/:id', () => {
           },
           allergens: [ALLERGEN.GLUTEN],
           baseUnit: { amount: 100, unit: UNIT.GRAM },
-          units: [
-            { value: 300, quantity: 1, unit: UNIT.GRAM, isDefault: true }
-          ]
+          units: [{ value: 300, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ],
       instructions: [
@@ -104,7 +102,10 @@ describe('GET /api/dishes/:id', () => {
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Lấy thông tin món ăn thành công');
+    expect(res.body).toHaveProperty(
+      'message',
+      'Lấy thông tin món ăn thành công'
+    );
     expect(res.body.data).toHaveProperty('_id', dishId);
     expect(res.body.data).toHaveProperty('name', 'Phở bò');
     expect(res.body.data).toHaveProperty('description');

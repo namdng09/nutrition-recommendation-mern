@@ -23,7 +23,9 @@ export const PostController = {
       images
     );
 
-    res.status(201).json(ApiResponse.success('Tạo bài viết thành công', result));
+    res
+      .status(201)
+      .json(ApiResponse.success('Tạo bài viết thành công', result));
   },
 
   viewPosts: async (req: Request, res: Response) => {
@@ -63,7 +65,13 @@ export const PostController = {
     const userId = req.user!._id.toString();
     const userRole = req.user!.role;
 
-    const result = await PostService.updatePost(id, userId, userRole, data, images);
+    const result = await PostService.updatePost(
+      id,
+      userId,
+      userRole,
+      data,
+      images
+    );
 
     res
       .status(200)
@@ -111,7 +119,9 @@ export const PostController = {
       data
     );
 
-    res.status(201).json(ApiResponse.success('Thêm bình luận thành công', result));
+    res
+      .status(201)
+      .json(ApiResponse.success('Thêm bình luận thành công', result));
   },
 
   deleteComment: async (req: Request, res: Response) => {

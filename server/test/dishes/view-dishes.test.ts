@@ -103,7 +103,10 @@ describe('GET /api/dishes', () => {
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Lấy danh sách món ăn thành công');
+    expect(res.body).toHaveProperty(
+      'message',
+      'Lấy danh sách món ăn thành công'
+    );
     expect(res.body.data).toHaveProperty('docs');
     expect(res.body.data).toHaveProperty('totalDocs');
     expect(res.body.data).toHaveProperty('page');
@@ -128,9 +131,9 @@ describe('GET /api/dishes', () => {
 
     expect(res.status).toBe(200);
     expect(res.body.data.docs.length).toBe(3);
-    expect(res.body.data.docs.every((item: any) => item.isActive === true)).toBe(
-      true
-    );
+    expect(
+      res.body.data.docs.every((item: any) => item.isActive === true)
+    ).toBe(true);
   });
 
   it('should get dishes by category', async () => {

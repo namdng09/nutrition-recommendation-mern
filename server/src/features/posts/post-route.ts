@@ -1,7 +1,12 @@
 import { Router } from 'express';
 
 import { ROLE } from '~/shared/constants/role';
-import { authenticate, authorize, parseFormData, validate } from '~/shared/middlewares';
+import {
+  authenticate,
+  authorize,
+  parseFormData,
+  validate
+} from '~/shared/middlewares';
 import { asyncHandler, handleMultipleImagesUpload } from '~/shared/utils';
 
 import { PostController } from './post-controller';

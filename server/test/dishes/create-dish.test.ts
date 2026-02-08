@@ -1,12 +1,25 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest';
 
 import app from '~/app';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
 import { ROLE } from '~/shared/constants/role';
 import { UNIT } from '~/shared/constants/unit';
-import { AuthModel, DishModel, IngredientModel, UserModel } from '~/shared/database/models';
+import {
+  AuthModel,
+  DishModel,
+  IngredientModel,
+  UserModel
+} from '~/shared/database/models';
 import { hashPassword } from '~/shared/utils/bcrypt';
 import { generateToken } from '~/shared/utils/jwt';
 
@@ -15,7 +28,8 @@ vi.mock('~/shared/utils/cloudinary', () => ({
   uploadImage: vi.fn().mockResolvedValue({
     success: true,
     data: {
-      secure_url: 'https://res.cloudinary.com/test/image/upload/v1234567890/test-dish.jpg',
+      secure_url:
+        'https://res.cloudinary.com/test/image/upload/v1234567890/test-dish.jpg',
       public_id: 'test-dish',
       format: 'jpg'
     }
@@ -51,7 +65,8 @@ describe('POST /api/dishes', () => {
     vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValue({
       success: true,
       data: {
-        secure_url: 'https://res.cloudinary.com/test/image/upload/v1234567890/test-dish.jpg',
+        secure_url:
+          'https://res.cloudinary.com/test/image/upload/v1234567890/test-dish.jpg',
         public_id: 'test-dish',
         format: 'jpg'
       } as any
@@ -114,9 +129,7 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([
-        { step: 1, description: 'Luộc xương' }
-      ]),
+      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }]),
       isActive: 'true'
     };
 
@@ -151,9 +164,7 @@ describe('POST /api/dishes', () => {
           units: [{ value: 150, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([
-        { step: 1, description: 'Ướp thịt' }
-      ])
+      instructions: JSON.stringify([{ step: 1, description: 'Ướp thịt' }])
     };
 
     const res = await request(app)
@@ -182,9 +193,7 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([
-        { step: 1, description: 'Luộc xương' }
-      ])
+      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
     };
 
     const res = await request(app)
@@ -228,9 +237,7 @@ describe('POST /api/dishes', () => {
           units: [{ value: 100, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([
-        { step: 1, description: 'Bào cà rốt' }
-      ])
+      instructions: JSON.stringify([{ step: 1, description: 'Bào cà rốt' }])
     };
 
     const res = await request(app)
@@ -258,9 +265,7 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([
-        { step: 1, description: 'Luộc xương' }
-      ])
+      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
     };
 
     const res = await request(app)
@@ -283,9 +288,7 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([
-        { step: 1, description: 'Luộc xương' }
-      ])
+      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
     };
 
     const res = await request(app)
@@ -307,9 +310,7 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([
-        { step: 1, description: 'Luộc xương' }
-      ])
+      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
     };
 
     const res = await request(app)
@@ -326,9 +327,7 @@ describe('POST /api/dishes', () => {
     const dishData = {
       name: 'Phở bò',
       categories: JSON.stringify([DISH_CATEGORY.MAIN_COURSE]),
-      instructions: JSON.stringify([
-        { step: 1, description: 'Luộc xương' }
-      ])
+      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
     };
 
     const res = await request(app)
@@ -373,9 +372,7 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([
-        { step: 1, description: 'Luộc xương' }
-      ])
+      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
     };
 
     const res = await request(app)
@@ -398,9 +395,7 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([
-        { step: 1, description: 'Luộc xương' }
-      ])
+      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
     };
 
     const res = await request(app)
@@ -424,9 +419,7 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([
-        { step: 1, description: 'Luộc xương' }
-      ])
+      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
     };
 
     const res = await request(app)
@@ -452,9 +445,7 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([
-        { step: 1, description: 'Luộc xương' }
-      ])
+      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
     };
 
     const res = await request(app)
@@ -487,9 +478,7 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([
-        { step: 1, description: 'Luộc xương' }
-      ])
+      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
     };
 
     const res = await request(app)
@@ -521,9 +510,7 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([
-        { step: 1, description: 'Luộc xương' }
-      ])
+      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
     };
 
     const res = await request(app)
@@ -553,9 +540,7 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([
-        { step: 1, description: 'Luộc xương' }
-      ])
+      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
     };
 
     const res = await request(app)
@@ -574,9 +559,7 @@ describe('POST /api/dishes', () => {
       name: 'Phở bò',
       categories: JSON.stringify([DISH_CATEGORY.MAIN_COURSE]),
       ingredients: '{invalid json',
-      instructions: JSON.stringify([
-        { step: 1, description: 'Luộc xương' }
-      ])
+      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
     };
 
     const res = await request(app)
@@ -624,9 +607,7 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([
-        { step: 1, description: 'Luộc xương' }
-      ]),
+      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }]),
       tags: '{invalid json'
     };
 

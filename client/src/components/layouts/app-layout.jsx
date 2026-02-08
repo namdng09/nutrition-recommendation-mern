@@ -1,19 +1,21 @@
 import { useTheme } from 'next-themes';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Outlet } from 'react-router';
+import { Navigate, Outlet, useLocation } from 'react-router';
 
 import { Toaster } from '~/components/ui/sonner';
 import { Spinner } from '~/components/ui/spinner';
+import { ROLE } from '~/constants/role';
 import {
   initializeAuth,
   setupSessionExpiredListener
 } from '~/store/features/auth-slice';
 
 const AppLayout = () => {
-  const { loading } = useSelector(state => state.auth);
+  const { user, loading } = useSelector(state => state.auth);
   const { theme } = useTheme();
   const dispatch = useDispatch();
+  const location = useLocation();
 
   useEffect(() => {
     dispatch(initializeAuth());
@@ -27,6 +29,19 @@ const AppLayout = () => {
         <Spinner size='lg' />
       </div>
     );
+  }
+
+  if (
+    user &&
+    !user.hasOnboarded &&
+    location.pathname !== '/onboarding' &&
+    user.role !== ROLE.ADMIN
+  ) {
+    return <Navigate to='/onboarding' replace />;
+  }
+
+  if (user && user.hasOnboarded && location.pathname === '/onboarding') {
+    return <Navigate to='/' replace />;
   }
 
   return (
