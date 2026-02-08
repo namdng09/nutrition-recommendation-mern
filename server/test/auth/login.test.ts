@@ -1,5 +1,13 @@
 import mongoose from 'mongoose';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it
+} from 'vitest';
 
 import { AuthService } from '~/features/auth/auth-service';
 import { ROLE } from '~/shared/constants/role';
@@ -19,10 +27,6 @@ describe('AuthService.login', () => {
   });
 
   beforeEach(async () => {
-    // Clean up database before each test
-    await AuthModel.deleteMany({});
-    await UserModel.deleteMany({});
-
     // Create a test user for happy case
     const user = await UserModel.create({
       email: 'haidangphan2015@gmail.com',
@@ -43,10 +47,14 @@ describe('AuthService.login', () => {
     });
   });
 
+  afterEach(async () => {
+    // Clean up after each test
+    await AuthModel.deleteMany({ providerId: 'haidangphan2015@gmail.com' });
+    await UserModel.deleteMany({ email: 'haidangphan2015@gmail.com' });
+  });
+
   afterAll(async () => {
-    // Clean up and close connection
-    await AuthModel.deleteMany({});
-    await UserModel.deleteMany({});
+    // Close connection
     await mongoose.connection.close();
   });
 

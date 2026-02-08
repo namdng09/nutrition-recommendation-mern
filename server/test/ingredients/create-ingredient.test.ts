@@ -124,7 +124,7 @@ describe('POST /api/ingredients', () => {
   });
 
   // ============ HAPPY CASES ============
-  it('should create ingredient successfully without image', async () => {
+  it('UC01 - should create ingredient successfully', async () => {
     const ingredientData = {
       name: 'Cà chua',
       description: 'Cà chua tươi',
@@ -156,7 +156,7 @@ describe('POST /api/ingredients', () => {
     expect(res.body.data).toHaveProperty('isActive', true);
   });
 
-  it('should create ingredient successfully with image', async () => {
+  it('UC02 - should create ingredient successfully with image', async () => {
     const ingredientData = {
       name: 'Thịt bò',
       description: 'Thịt bò Úc',
@@ -180,18 +180,11 @@ describe('POST /api/ingredients', () => {
     expect(res.body.data).toHaveProperty('name', 'Thịt bò');
   });
 
-  // ============ ERROR CASES (500) ============
-  it('should return 500 when image upload fails', async () => {
-    // Mock upload to fail
-    vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValueOnce({
-      success: false,
-      error: 'Upload failed'
-    });
-
+  // ============ VALIDATION (400) ============
+  it('UC03 - should return 400 when name is missing', async () => {
     const ingredientData = {
-      name: 'Thịt bò',
-      description: 'Thịt bò Úc',
-      categories: JSON.stringify([INGREDIENT_CATEGORY.MEAT]),
+      description: 'Cà chua tươi',
+      categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES]),
       baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM }),
       allergens: JSON.stringify([])
     };
@@ -199,24 +192,38 @@ describe('POST /api/ingredients', () => {
     const res = await request(app)
       .post('/api/ingredients')
       .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', ingredientData.name)
       .field('description', ingredientData.description)
       .field('categories', ingredientData.categories)
       .field('baseUnit', ingredientData.baseUnit)
-      .field('allergens', ingredientData.allergens)
-      .attach('image', Buffer.from('fake-image-data'), 'test-image.jpg');
+      .field('allergens', ingredientData.allergens);
 
-    expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty('message', 'Tải ảnh lên thất bại');
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('status', 'failed');
+    expect(res.body).toHaveProperty('message', 'Tên nguyên liệu không hợp lệ');
   });
 
-  it('should return 500 when ingredient creation fails', async () => {
-    // Mock IngredientModel.create to return null
-    vi.spyOn(IngredientModel, 'create').mockResolvedValueOnce(null as any);
-
+  it('UC04 - should return 400 when name is number', async () => {
     const ingredientData = {
-      name: 'Cà chua',
+      name: 1234,
+      description: 'Cà chua tươi',
+      categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES]),
+      baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM }),
+      allergens: JSON.stringify([])
+    };
+
+    const res = await request(app)
+      .post('/api/ingredients')
+      .set('Authorization', `Bearer ${nutritionistToken}`)
+      .send(ingredientData);
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('status', 'failed');
+    expect(res.body).toHaveProperty('message', 'Tên nguyên liệu không hợp lệ');
+  });
+
+  it('UC05 - should return 400 when name is too short', async () => {
+    const ingredientData = {
+      name: 'A',
       description: 'Cà chua tươi',
       categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES]),
       baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM }),
@@ -232,11 +239,11 @@ describe('POST /api/ingredients', () => {
       .field('baseUnit', ingredientData.baseUnit)
       .field('allergens', ingredientData.allergens);
 
-    expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty('message', 'Tạo nguyên liệu thất bại');
-
-    // Restore original function
-    vi.spyOn(IngredientModel, 'create').mockRestore();
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('status', 'failed');
+    expect(res.body).toHaveProperty(
+      'message',
+      'Tên nguyên liệu phải có ít nhất 2 ký tự'
+    );
   });
 });
