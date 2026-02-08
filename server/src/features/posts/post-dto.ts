@@ -28,9 +28,7 @@ export const createPostRequestSchema = z.object({
   title: z.string().trim().min(5, 'Tiêu đề phải có ít nhất 5 ký tự'),
   content: z.string().trim().min(10, 'Nội dung phải có ít nhất 10 ký tự'),
   tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
-  category: z
-    .enum(Object.values(POST_CATEGORY))
-    .optional(),
+  category: z.enum(Object.values(POST_CATEGORY)).optional(),
   images: z.array(z.file()).optional(),
   isPublished: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
 });
@@ -39,11 +37,13 @@ export type CreatePostRequest = z.infer<typeof createPostRequestSchema>;
 
 export const updatePostRequestSchema = z.object({
   title: z.string().trim().min(5, 'Tiêu đề phải có ít nhất 5 ký tự').optional(),
-  content: z.string().trim().min(10, 'Nội dung phải có ít nhất 10 ký tự').optional(),
-  tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
-  category: z
-    .enum(Object.values(POST_CATEGORY))
+  content: z
+    .string()
+    .trim()
+    .min(10, 'Nội dung phải có ít nhất 10 ký tự')
     .optional(),
+  tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
+  category: z.enum(Object.values(POST_CATEGORY)).optional(),
   images: z.array(z.file()).optional(),
   isPublished: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
 });

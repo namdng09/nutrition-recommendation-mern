@@ -1,6 +1,14 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest';
 
 import app from '~/app';
 import { ROLE } from '~/shared/constants/role';
@@ -90,8 +98,10 @@ describe('POST /api/auth/forgot-password', () => {
 
   // Branch: email sending fails (catch block)
   it('should still return 200 even when email sending fails', async () => {
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
     // Create a test user
     await UserModel.create({
       email: 'testuser@gmail.com',
@@ -101,7 +111,9 @@ describe('POST /api/auth/forgot-password', () => {
     });
 
     // Mock sendMail to reject
-    (emailUtils.sendMail as any).mockRejectedValueOnce(new Error('Email service error'));
+    (emailUtils.sendMail as any).mockRejectedValueOnce(
+      new Error('Email service error')
+    );
 
     const res = await request(app).post('/api/auth/forgot-password').send({
       email: 'testuser@gmail.com'
@@ -122,6 +134,4 @@ describe('POST /api/auth/forgot-password', () => {
 
     consoleErrorSpy.mockRestore();
   });
-
-
 });

@@ -1,6 +1,14 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest';
 
 import app from '~/app';
 import { ROLE } from '~/shared/constants/role';
@@ -201,7 +209,10 @@ describe('POST /api/auth/sign-up', () => {
 
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty('message', 'Unable to complete registration at this time');
+    expect(res.body).toHaveProperty(
+      'message',
+      'Unable to complete registration at this time'
+    );
 
     vi.spyOn(UserModel, 'create').mockRestore();
   });
