@@ -59,8 +59,8 @@ const CreateIngredientForm = () => {
       name: '',
       description: '',
       categories: [],
-      baseUnit: { amount: 100, unit: 'g' }, // Base là 100g
-      units: [{ value: 100, unit: 'g', isDefault: true }],
+      baseUnit: { amount: 100, unit: 'g' },
+      units: [{ value: 100, unit: 'g', isDefault: false }],
       allergens: [],
       nutrition: {
         nutrients: {
@@ -76,19 +76,16 @@ const CreateIngredientForm = () => {
           { label: 'Alpha carotene', value: '', unit: 'μg' },
           { label: 'Beta carotene', value: '', unit: 'μg' },
           { label: 'Caffeine', value: '', unit: 'mg' },
-
           { label: 'Choline', value: '', unit: 'mg' },
           { label: 'Copper', value: '', unit: 'mg' },
           { label: 'Fluoride', value: '', unit: 'μg' },
           { label: 'Folate (B9)', value: '', unit: 'μg' },
-
           { label: 'Lycopene', value: '', unit: 'μg' },
           { label: 'Magnesium', value: '', unit: 'mg' },
           { label: 'Manganese', value: '', unit: 'mg' },
           { label: 'Niacin', value: '', unit: 'mg' },
           { label: 'Pantothenic acid', value: '', unit: 'mg' },
           { label: 'Phosphorus', value: '', unit: 'mg' },
-
           { label: 'Retinol', value: '', unit: 'μg' },
           { label: 'Riboflavin (B2)', value: '', unit: 'mg' },
           { label: 'Selenium', value: '', unit: 'μg' },
@@ -167,60 +164,6 @@ const CreateIngredientForm = () => {
     name: 'units'
   });
 
-  const {
-    fields: mineralFields,
-    append: appendMineral,
-    remove: removeMineral
-  } = useFieldArray({
-    control: form.control,
-    name: 'nutrition.minerals'
-  });
-
-  const {
-    fields: vitaminFields,
-    append: appendVitamin,
-    remove: removeVitamin
-  } = useFieldArray({
-    control: form.control,
-    name: 'nutrition.vitamins'
-  });
-
-  const {
-    fields: aminoAcidFields,
-    append: appendAminoAcid,
-    remove: removeAminoAcid
-  } = useFieldArray({
-    control: form.control,
-    name: 'nutrition.aminoAcids'
-  });
-
-  const {
-    fields: sugarFields,
-    append: appendSugar,
-    remove: removeSugar
-  } = useFieldArray({
-    control: form.control,
-    name: 'nutrition.sugars'
-  });
-
-  const {
-    fields: fatFields,
-    append: appendFat,
-    remove: removeFat
-  } = useFieldArray({
-    control: form.control,
-    name: 'nutrition.fats'
-  });
-
-  const {
-    fields: fattyAcidFields,
-    append: appendFattyAcid,
-    remove: removeFattyAcid
-  } = useFieldArray({
-    control: form.control,
-    name: 'nutrition.fattyAcids'
-  });
-
   const { mutate: createIngredient, isPending } = useCreateIngredient({
     onSuccess: response => {
       form.reset();
@@ -285,7 +228,7 @@ const CreateIngredientForm = () => {
   };
 
   const handleAddServingSize = () => {
-    appendUnit({ value: 0, unit: 'whole', isDefault: false });
+    appendUnit({ value: '', unit: '', isDefault: false });
   };
 
   const handleSetDefaultServing = index => {
@@ -298,29 +241,56 @@ const CreateIngredientForm = () => {
   };
 
   const onSubmit = data => {
-    // Hàm helper để loại bỏ các trường rỗng
+    // Hàm helper để parse number từ input
+    const parseNumberValue = value => {
+      if (value === '' || value === null || value === undefined) {
+        return undefined;
+      }
+      const parsed = parseFloat(value);
+      return isNaN(parsed) ? undefined : parsed;
+    };
+
+    // Hàm helper để loại bỏ các trường optional rỗng
     const removeEmptyValues = arr => {
       return arr
-        .map(item => ({
-          ...item,
-          value: item.value || item.value === 0 ? item.value : undefined
-        }))
-        .filter(
-          item =>
-            item.value !== undefined && item.value !== '' && item.value !== 0
-        );
+        .map(item => {
+          const parsedValue = parseNumberValue(item.value);
+          return {
+            ...item,
+            value: parsedValue
+          };
+        })
+        .filter(item => {
+          // Chỉ giữ lại những item có value > 0
+          return (
+            item.value !== undefined && item.value !== null && item.value > 0
+          );
+        });
+    };
+
+    // Xử lý required nutrients - đảm bảo có giá trị hợp lệ
+    const processRequiredNutrients = nutrients => {
+      const processed = {};
+      Object.keys(nutrients).forEach(key => {
+        const parsedValue = parseNumberValue(nutrients[key].value);
+        processed[key] = {
+          value: parsedValue !== undefined ? parsedValue : 0,
+          unit: nutrients[key].unit
+        };
+      });
+      return processed;
     };
 
     const cleanedData = {
       ...data,
       nutrition: {
-        nutrients: data.nutrition.nutrients,
-        minerals: removeEmptyValues(data.nutrition.minerals),
-        vitamins: removeEmptyValues(data.nutrition.vitamins),
-        sugars: removeEmptyValues(data.nutrition.sugars),
-        fats: removeEmptyValues(data.nutrition.fats),
-        fattyAcids: removeEmptyValues(data.nutrition.fattyAcids),
-        aminoAcids: removeEmptyValues(data.nutrition.aminoAcids)
+        nutrients: processRequiredNutrients(data.nutrition.nutrients),
+        minerals: removeEmptyValues(data.nutrition.minerals || []),
+        vitamins: removeEmptyValues(data.nutrition.vitamins || []),
+        sugars: removeEmptyValues(data.nutrition.sugars || []),
+        fats: removeEmptyValues(data.nutrition.fats || []),
+        fattyAcids: removeEmptyValues(data.nutrition.fattyAcids || []),
+        aminoAcids: removeEmptyValues(data.nutrition.aminoAcids || [])
       }
     };
 
@@ -337,6 +307,7 @@ const CreateIngredientForm = () => {
   const availableAllergens = ALLERGEN_OPTIONS.filter(
     allergen => !selectedAllergens.includes(allergen.value)
   );
+
   return (
     <div className='max-w-4xl mx-auto p-6'>
       <Button
@@ -432,9 +403,8 @@ const CreateIngredientForm = () => {
 
             <Separator />
 
-            {/* Food Group & Allergens - Cùng 1 dòng */}
+            {/* Food Group & Allergens */}
             <div className='grid grid-cols-2 gap-4'>
-              {/* Food Group */}
               <FormField
                 control={form.control}
                 name='categories'
@@ -486,7 +456,6 @@ const CreateIngredientForm = () => {
                 )}
               />
 
-              {/* Allergens */}
               <FormField
                 control={form.control}
                 name='allergens'
@@ -555,12 +524,10 @@ const CreateIngredientForm = () => {
               />
             </div>
 
-            {/* Base Unit - Khối lượng cơ sở */}
+            {/* Base Unit */}
             <div className='space-y-4'>
               <div>
-                <h3 className='text-sm font-semibold mb-1'>
-                  Khối lượng cơ sở (Base Unit)
-                </h3>
+                <h3 className='text-sm font-semibold mb-1'>Khối lượng cơ sở</h3>
                 <p className='text-xs text-muted-foreground'>
                   Giá trị dinh dưỡng sẽ được tính cho khối lượng này
                 </p>
@@ -581,9 +548,13 @@ const CreateIngredientForm = () => {
                           placeholder='100'
                           className='h-9'
                           {...field}
-                          onChange={e =>
-                            field.onChange(parseFloat(e.target.value) || 0)
-                          }
+                          value={field.value ?? ''}
+                          onChange={e => {
+                            const value = e.target.value;
+                            field.onChange(
+                              value === '' ? '' : parseFloat(value) || ''
+                            );
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -620,129 +591,89 @@ const CreateIngredientForm = () => {
 
             <Separator />
 
-            {/* Serving Sizes - Các đơn vị chuyển đổi */}
+            {/* Serving Sizes */}
             <div className='space-y-4'>
               <div>
                 <h3 className='text-sm font-semibold mb-1'>
                   Đơn vị chuyển đổi
                 </h3>
-                {/* <p className='text-xs text-muted-foreground'>
-                  Nhập số lượng tương đương với khối lượng cơ sở. Ví dụ: 1 quả
-                  trứng = 50g, để bằng 100g base cần 2 quả
-                </p> */}
+                <p className='text-xs text-muted-foreground'>
+                  Thêm các đơn vị đo lường khác nhau cho nguyên liệu này
+                </p>
               </div>
 
-              <FormLabel className='text-sm font-medium'>Mặc định</FormLabel>
-              <RadioGroup
-                value={unitFields
-                  .findIndex(u =>
-                    form.getValues(`units.${unitFields.indexOf(u)}.isDefault`)
-                  )
-                  .toString()}
-                onValueChange={value =>
-                  handleSetDefaultServing(parseInt(value))
-                }
-              >
-                <div className='space-y-2'>
-                  {unitFields.map((field, index) => (
-                    <div
-                      key={field.id}
-                      className='flex items-center gap-2 p-3 border rounded-lg bg-accent/5'
-                    >
-                      <FormField
-                        control={form.control}
-                        name={`units.${index}.isDefault`}
-                        render={({ field: radioField }) => (
-                          <FormItem className='flex items-center space-y-0'>
-                            <FormControl>
-                              <RadioGroupItem
-                                value={index.toString()}
-                                checked={radioField.value}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-
-                      <div className='flex-1 flex gap-2 items-end'>
-                        <FormField
-                          control={form.control}
-                          name={`units.${index}.value`}
-                          render={({ field }) => (
-                            <FormItem className='flex-1'>
-                              <FormLabel className='text-xs'>
-                                Số lượng
-                              </FormLabel>
-                              <FormControl>
-                                <Input
-                                  type='number'
-                                  step='0.01'
-                                  min='0'
-                                  placeholder='0'
-                                  className='h-9'
-                                  {...field}
-                                  onChange={e =>
-                                    field.onChange(
-                                      parseFloat(e.target.value) || 0
-                                    )
-                                  }
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name={`units.${index}.unit`}
-                          render={({ field }) => (
-                            <FormItem className='w-40'>
-                              <FormLabel className='text-xs'>Đơn vị</FormLabel>
-                              <Select
-                                value={field.value}
-                                onValueChange={field.onChange}
-                              >
-                                <FormControl>
-                                  <SelectTrigger className='h-9'>
-                                    <SelectValue placeholder='Chọn' />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {UNIT_OPTIONS.map(option => (
-                                    <SelectItem
-                                      key={option.value}
-                                      value={option.value}
-                                    >
-                                      {option.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormItem>
-                          )}
-                        />
-
-                        <div className='text-xs text-muted-foreground pb-2'>
-                          = {form.watch('baseUnit.amount')}
-                          {form.watch('baseUnit.unit') || 'g'}
-                        </div>
-                      </div>
-
-                      {unitFields.length > 1 && (
-                        <Button
-                          type='button'
-                          variant='ghost'
-                          size='icon'
-                          className='h-9 w-9'
-                          onClick={() => removeUnit(index)}
-                        >
-                          <Trash2 className='h-4 w-4' />
-                        </Button>
+              <div className='space-y-3'>
+                {unitFields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className='flex items-end gap-2 p-3 border rounded-lg bg-accent/5'
+                  >
+                    <FormField
+                      control={form.control}
+                      name={`units.${index}.value`}
+                      render={({ field }) => (
+                        <FormItem className='flex-1'>
+                          <FormLabel className='text-xs'>Số lượng</FormLabel>
+                          <FormControl>
+                            <Input
+                              type='number'
+                              step='0.01'
+                              min='0'
+                              placeholder='0'
+                              className='h-9'
+                              {...field}
+                              value={field.value ?? ''}
+                              onChange={e => {
+                                const value = e.target.value;
+                                field.onChange(
+                                  value === '' ? '' : parseFloat(value) || ''
+                                );
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
                       )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`units.${index}.unit`}
+                      render={({ field }) => (
+                        <FormItem className='flex-1'>
+                          <FormLabel className='text-xs'>Đơn vị</FormLabel>
+                          <FormControl>
+                            <Input
+                              type='text'
+                              placeholder='Ví dụ: cup, tbsp, whole'
+                              className='h-9'
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className='text-xs text-muted-foreground pb-2 whitespace-nowrap'>
+                      = {form.watch('baseUnit.amount')}
+                      {form.watch('baseUnit.unit') || 'g'}
                     </div>
-                  ))}
-                </div>
-              </RadioGroup>
+
+                    {unitFields.length > 1 && (
+                      <Button
+                        type='button'
+                        variant='ghost'
+                        size='icon'
+                        className='h-9 w-9 flex-shrink-0'
+                        onClick={() => removeUnit(index)}
+                      >
+                        <Trash2 className='h-4 w-4' />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
 
               <Button
                 type='button'
@@ -777,12 +708,16 @@ const CreateIngredientForm = () => {
                             type='number'
                             step='0.1'
                             min='0'
-                            placeholder=''
+                            placeholder='0'
                             className='h-9'
                             {...field}
-                            onChange={e =>
-                              field.onChange(parseFloat(e.target.value) || 0)
-                            }
+                            value={field.value ?? ''}
+                            onChange={e => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === '' ? '' : parseFloat(value) || ''
+                              );
+                            }}
                           />
                         </FormControl>
                         <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
@@ -809,12 +744,16 @@ const CreateIngredientForm = () => {
                             type='number'
                             step='0.1'
                             min='0'
-                            placeholder=''
+                            placeholder='0'
                             className='h-9'
                             {...field}
-                            onChange={e =>
-                              field.onChange(parseFloat(e.target.value) || 0)
-                            }
+                            value={field.value ?? ''}
+                            onChange={e => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === '' ? '' : parseFloat(value) || ''
+                              );
+                            }}
                           />
                         </FormControl>
                         <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
@@ -841,12 +780,16 @@ const CreateIngredientForm = () => {
                             type='number'
                             step='0.1'
                             min='0'
-                            placeholder=''
+                            placeholder='0'
                             className='h-9'
                             {...field}
-                            onChange={e =>
-                              field.onChange(parseFloat(e.target.value) || 0)
-                            }
+                            value={field.value ?? ''}
+                            onChange={e => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === '' ? '' : parseFloat(value) || ''
+                              );
+                            }}
                           />
                         </FormControl>
                         <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
@@ -873,12 +816,16 @@ const CreateIngredientForm = () => {
                             type='number'
                             step='0.1'
                             min='0'
-                            placeholder=''
+                            placeholder='0'
                             className='h-9'
                             {...field}
-                            onChange={e =>
-                              field.onChange(parseFloat(e.target.value) || 0)
-                            }
+                            value={field.value ?? ''}
+                            onChange={e => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === '' ? '' : parseFloat(value) || ''
+                              );
+                            }}
                           />
                         </FormControl>
                         <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
@@ -890,7 +837,6 @@ const CreateIngredientForm = () => {
                   )}
                 />
 
-                {/* Thêm Fiber, Sodium, Cholesterol */}
                 <FormField
                   control={form.control}
                   name='nutrition.nutrients.fiber.value'
@@ -903,12 +849,16 @@ const CreateIngredientForm = () => {
                             type='number'
                             step='0.1'
                             min='0'
-                            placeholder=''
+                            placeholder='0'
                             className='h-9'
                             {...field}
-                            onChange={e =>
-                              field.onChange(parseFloat(e.target.value) || 0)
-                            }
+                            value={field.value ?? ''}
+                            onChange={e => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === '' ? '' : parseFloat(value) || ''
+                              );
+                            }}
                           />
                         </FormControl>
                         <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
@@ -932,12 +882,16 @@ const CreateIngredientForm = () => {
                             type='number'
                             step='0.1'
                             min='0'
-                            placeholder=''
+                            placeholder='0'
                             className='h-9'
                             {...field}
-                            onChange={e =>
-                              field.onChange(parseFloat(e.target.value) || 0)
-                            }
+                            value={field.value ?? ''}
+                            onChange={e => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === '' ? '' : parseFloat(value) || ''
+                              );
+                            }}
                           />
                         </FormControl>
                         <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
@@ -961,12 +915,16 @@ const CreateIngredientForm = () => {
                             type='number'
                             step='0.1'
                             min='0'
-                            placeholder=''
+                            placeholder='0'
                             className='h-9'
                             {...field}
-                            onChange={e =>
-                              field.onChange(parseFloat(e.target.value) || 0)
-                            }
+                            value={field.value ?? ''}
+                            onChange={e => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === '' ? '' : parseFloat(value) || ''
+                              );
+                            }}
                           />
                         </FormControl>
                         <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted'>
@@ -1027,11 +985,15 @@ const CreateIngredientForm = () => {
                                       placeholder=''
                                       className='h-9'
                                       {...field}
-                                      onChange={e =>
+                                      value={field.value ?? ''}
+                                      onChange={e => {
+                                        const value = e.target.value;
                                         field.onChange(
-                                          parseFloat(e.target.value) || 0
-                                        )
-                                      }
+                                          value === ''
+                                            ? ''
+                                            : parseFloat(value) || ''
+                                        );
+                                      }}
                                     />
                                   </FormControl>
                                 </FormItem>
@@ -1073,11 +1035,15 @@ const CreateIngredientForm = () => {
                                       placeholder=''
                                       className='h-9'
                                       {...field}
-                                      onChange={e =>
+                                      value={field.value ?? ''}
+                                      onChange={e => {
+                                        const value = e.target.value;
                                         field.onChange(
-                                          parseFloat(e.target.value) || 0
-                                        )
-                                      }
+                                          value === ''
+                                            ? ''
+                                            : parseFloat(value) || ''
+                                        );
+                                      }}
                                     />
                                   </FormControl>
                                 </FormItem>
@@ -1117,11 +1083,15 @@ const CreateIngredientForm = () => {
                                     placeholder=''
                                     className='h-9'
                                     {...field}
-                                    onChange={e =>
+                                    value={field.value ?? ''}
+                                    onChange={e => {
+                                      const value = e.target.value;
                                       field.onChange(
-                                        parseFloat(e.target.value) || 0
-                                      )
-                                    }
+                                        value === ''
+                                          ? ''
+                                          : parseFloat(value) || ''
+                                      );
+                                    }}
                                   />
                                 </FormControl>
                               </FormItem>
@@ -1161,11 +1131,15 @@ const CreateIngredientForm = () => {
                                     placeholder=''
                                     className='h-9'
                                     {...field}
-                                    onChange={e =>
+                                    value={field.value ?? ''}
+                                    onChange={e => {
+                                      const value = e.target.value;
                                       field.onChange(
-                                        parseFloat(e.target.value) || 0
-                                      )
-                                    }
+                                        value === ''
+                                          ? ''
+                                          : parseFloat(value) || ''
+                                      );
+                                    }}
                                   />
                                 </FormControl>
                               </FormItem>
@@ -1207,11 +1181,15 @@ const CreateIngredientForm = () => {
                                       placeholder=''
                                       className='h-9'
                                       {...field}
-                                      onChange={e =>
+                                      value={field.value ?? ''}
+                                      onChange={e => {
+                                        const value = e.target.value;
                                         field.onChange(
-                                          parseFloat(e.target.value) || 0
-                                        )
-                                      }
+                                          value === ''
+                                            ? ''
+                                            : parseFloat(value) || ''
+                                        );
+                                      }}
                                     />
                                   </FormControl>
                                 </FormItem>
@@ -1253,11 +1231,15 @@ const CreateIngredientForm = () => {
                                       placeholder=''
                                       className='h-9'
                                       {...field}
-                                      onChange={e =>
+                                      value={field.value ?? ''}
+                                      onChange={e => {
+                                        const value = e.target.value;
                                         field.onChange(
-                                          parseFloat(e.target.value) || 0
-                                        )
-                                      }
+                                          value === ''
+                                            ? ''
+                                            : parseFloat(value) || ''
+                                        );
+                                      }}
                                     />
                                   </FormControl>
                                 </FormItem>
@@ -1283,10 +1265,10 @@ const CreateIngredientForm = () => {
                 onClick={() => navigate('/nutritionist/manage-ingredients')}
                 disabled={isPending}
               >
-                Cancel
+                Hủy
               </Button>
               <Button type='submit' disabled={isPending}>
-                {isPending ? 'Đang lưu...' : 'Save'}
+                {isPending ? 'Đang lưu...' : 'Tạo nguyên liệu'}
               </Button>
             </div>
           </form>
