@@ -95,7 +95,7 @@ const GroceryReceipt = ({ list }) => {
                   </div>
 
                   {item.notes && (
-                    <div className='text-xs text-muted-foreground italic mt-1'>
+                    <div className='text-l text-muted-foreground italic mt-1'>
                       # {item.notes}
                     </div>
                   )}
