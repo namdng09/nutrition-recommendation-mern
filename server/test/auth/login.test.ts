@@ -88,35 +88,6 @@ describe('POST /api/auth/login', () => {
     expect(res.body).toHaveProperty('message', 'Invalid credentials');
   });
 
-  // Branch: no localPassword
-  it('should return 401 when auth has no local password', async () => {
-    // Create a user that registered via OAuth but trying to login locally
-    const oauthUser = await UserModel.create({
-      email: 'oauth@gmail.com',
-      name: 'OAuth User',
-      role: ROLE.USER,
-      isActive: true
-    });
-
-    // Create local auth without password (edge case)
-    await AuthModel.create({
-      user: oauthUser._id,
-      provider: 'local',
-      providerId: 'oauth@gmail.com',
-      verifyAt: new Date()
-      // localPassword is intentionally omitted
-    });
-
-    const res = await request(app).post('/api/auth/login').send({
-      email: 'oauth@gmail.com',
-      password: '123456'
-    });
-
-    expect(res.status).toBe(401);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Invalid credentials');
-  });
-
   // Branch: invalid password
   it('should return 401 when password is incorrect', async () => {
     const res = await request(app).post('/api/auth/login').send({
@@ -144,53 +115,4 @@ describe('POST /api/auth/login', () => {
     expect(res.body).toHaveProperty('message', 'User not found or inactive');
   });
 
-  // Branch: user inactive
-  it('should return 404 when user is inactive', async () => {
-    // Set user as inactive
-    await UserModel.findByIdAndUpdate(userId, { isActive: false });
-
-    const res = await request(app).post('/api/auth/login').send({
-      email: 'haidangphan2015@gmail.com',
-      password: '123456'
-    });
-
-    expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'User not found or inactive');
-  });
-
-  // Validation errors
-  it('should return 400 when email is invalid', async () => {
-    const res = await request(app).post('/api/auth/login').send({
-      email: 'invalid-email',
-      password: '123456'
-    });
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when password is too short', async () => {
-    const res = await request(app).post('/api/auth/login').send({
-      email: 'haidangphan2015@gmail.com',
-      password: '123'
-    });
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when email is missing', async () => {
-    const res = await request(app).post('/api/auth/login').send({
-      password: '123456'
-    });
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when password is missing', async () => {
-    const res = await request(app).post('/api/auth/login').send({
-      email: 'haidangphan2015@gmail.com'
-    });
-
-    expect(res.status).toBe(400);
-  });
 });

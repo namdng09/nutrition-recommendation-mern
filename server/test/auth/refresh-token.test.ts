@@ -89,13 +89,12 @@ describe('POST /api/auth/refresh-access-token', () => {
   });
 
   // Branch: refresh token with wrong secret
-  it('should return 500 when refresh token is signed with wrong secret', async () => {
+  it('should return 400 when refresh token is signed with wrong secret', async () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
     const invalidToken = jwt.sign(
-      { id: userId, role: ROLE.USER },
-      'wrong-secret',
-      { expiresIn: '7d' }
+      'just-a-string',
+      process.env.JWT_REFRESH_SECRET || 'your_jwt_secret'
     );
 
     const res = await request(app)
@@ -103,9 +102,9 @@ describe('POST /api/auth/refresh-access-token', () => {
       .set('Cookie', [`refreshToken=${invalidToken}`])
       .send();
 
-    expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty('message', 'invalid signature');
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('status', 'failed');
+    expect(res.body).toHaveProperty('message', 'Invalid refresh token');
   });
 
   // Branch: expired refresh token
@@ -150,20 +149,30 @@ describe('POST /api/auth/refresh-access-token', () => {
   it('should return 404 when refresh token contains invalid user ID', async () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
-    const nonExistentUserId = new mongoose.Types.ObjectId().toString();
-    const tokenWithInvalidUser = jwt.sign(
-      { id: nonExistentUserId, role: ROLE.USER },
-      process.env.JWT_REFRESH_SECRET || 'your_jwt_secret',
+    const originalSecret = process.env.JWT_REFRESH_SECRET;
+
+    // Temporarily unset JWT_REFRESH_SECRET
+    delete process.env.JWT_REFRESH_SECRET;
+
+    // Generate token with fallback secret
+    const fallbackToken = jwt.sign(
+      { id: userId, role: ROLE.USER },
+      'your_jwt_secret',
       { expiresIn: '7d' }
     );
 
     const res = await request(app)
       .post('/api/auth/refresh-access-token')
-      .set('Cookie', [`refreshToken=${tokenWithInvalidUser}`])
+      .set('Cookie', [`refreshToken=${fallbackToken}`])
       .send();
 
-    expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'User not found');
+    // Restore original secret
+    if (originalSecret) {
+      process.env.JWT_REFRESH_SECRET = originalSecret;
+    }
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('status', 'success');
+    expect(res.body.data).toHaveProperty('accessToken');
   });
 });

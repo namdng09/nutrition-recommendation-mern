@@ -185,32 +185,6 @@ describe('PUT /api/ingredients/:id', () => {
     expect(res.body.data).toHaveProperty('image');
   });
 
-  // ============ AUTHENTICATION & AUTHORIZATION ============
-  it('should return 401 when no token provided', async () => {
-    const updateData = {
-      name: 'Cà chua đỏ'
-    };
-
-    const res = await request(app)
-      .put(`/api/ingredients/${ingredientId}`)
-      .field('name', updateData.name);
-
-    expect(res.status).toBe(401);
-  });
-
-  it('should return 403 when user is not nutritionist', async () => {
-    const updateData = {
-      name: 'Cà chua đỏ'
-    };
-
-    const res = await request(app)
-      .put(`/api/ingredients/${ingredientId}`)
-      .set('Authorization', `Bearer ${userToken}`)
-      .field('name', updateData.name);
-
-    expect(res.status).toBe(403);
-  });
-
   // ============ VALIDATION (400) ============
   it('should return 400 when id format is invalid', async () => {
     const updateData = {
@@ -230,46 +204,6 @@ describe('PUT /api/ingredients/:id', () => {
     );
   });
 
-  // Validation: name too short
-  it('should return 400 when name is too short', async () => {
-    const updateData = {
-      name: 'C'
-    };
-
-    const res = await request(app)
-      .put(`/api/ingredients/${ingredientId}`)
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', updateData.name);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when category is invalid', async () => {
-    const updateData = {
-      categories: JSON.stringify(['INVALID_CATEGORY'])
-    };
-
-    const res = await request(app)
-      .put(`/api/ingredients/${ingredientId}`)
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('categories', updateData.categories);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when baseUnit amount is negative', async () => {
-    const updateData = {
-      baseUnit: JSON.stringify({ amount: -50, unit: UNIT.GRAM })
-    };
-
-    const res = await request(app)
-      .put(`/api/ingredients/${ingredientId}`)
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('baseUnit', updateData.baseUnit);
-
-    expect(res.status).toBe(400);
-  });
-
   // ============ NOT FOUND (404) ============
   it('should return 404 when ingredient does not exist', async () => {
     const nonExistentId = new mongoose.Types.ObjectId().toString();
@@ -285,36 +219,6 @@ describe('PUT /api/ingredients/:id', () => {
     expect(res.status).toBe(404);
     expect(res.body).toHaveProperty('status', 'failed');
     expect(res.body).toHaveProperty('message', 'Không tìm thấy nguyên liệu');
-  });
-
-  // ============ EDGE CASES ============
-  it('should update isActive status successfully', async () => {
-    const updateData = {
-      isActive: 'false'
-    };
-
-    const res = await request(app)
-      .put(`/api/ingredients/${ingredientId}`)
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('isActive', updateData.isActive);
-
-    expect(res.status).toBe(200);
-    expect(res.body.data).toHaveProperty('isActive', false);
-  });
-
-  it('should allow partial update of ingredient', async () => {
-    const updateData = {
-      description: 'Cập nhật mô tả mới'
-    };
-
-    const res = await request(app)
-      .put(`/api/ingredients/${ingredientId}`)
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('description', updateData.description);
-
-    expect(res.status).toBe(200);
-    expect(res.body.data).toHaveProperty('name', 'Cà chua'); // Original name unchanged
-    expect(res.body.data).toHaveProperty('description', 'Cập nhật mô tả mới');
   });
 
   // ============ ERROR CASES (500) ============

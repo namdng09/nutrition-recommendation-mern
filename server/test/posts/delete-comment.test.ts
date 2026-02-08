@@ -1,33 +1,22 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import app from '~/app';
-import { DISH_CATEGORY } from '~/shared/constants/dish-category';
 import { ROLE } from '~/shared/constants/role';
-import { AuthModel, DishModel, UserModel } from '~/shared/database/models';
+import { AuthModel, PostModel, UserModel } from '~/shared/database/models';
 import { hashPassword } from '~/shared/utils/bcrypt';
 import { generateToken } from '~/shared/utils/jwt';
 
-// Mock Cloudinary delete
-vi.mock('~/shared/utils/cloudinary', () => ({
-  uploadImage: vi.fn().mockResolvedValue({
-    success: true,
-    data: {
-      secure_url: 'https://res.cloudinary.com/test/image/upload/v1234567890/test-dish.jpg',
-      public_id: 'test-dish',
-      format: 'jpg'
-    }
-  }),
-  deleteImage: vi.fn().mockResolvedValue({ success: true })
-}));
-
-describe('DELETE /api/dishes/:id', () => {
+describe('DELETE /api/posts/:postId/comments/:commentId', () => {
   let userToken: string;
   let otherUserToken: string;
+  let postAuthorToken: string;
   let adminToken: string;
   let userId: string;
-  let dishId: string;
+  let postAuthorId: string;
+  let postId: string;
+  let commentId: string;
 
   beforeAll(async () => {
     // Connect to test database if not already connected
@@ -40,11 +29,13 @@ describe('DELETE /api/dishes/:id', () => {
 
   beforeEach(async () => {
     // Clean up database before each test
-    await DishModel.deleteMany({});
+    await PostModel.deleteMany({});
     await UserModel.deleteMany({});
     await AuthModel.deleteMany({});
 
-    // Create user
+    const hashedPassword = await hashPassword('123456');
+
+    // Create comment author (user)
     const user = await UserModel.create({
       email: 'user@test.com',
       name: 'Test User',
@@ -53,7 +44,6 @@ describe('DELETE /api/dishes/:id', () => {
     });
     userId = user._id.toString();
 
-    const hashedPassword = await hashPassword('123456');
     await AuthModel.create({
       user: user._id,
       provider: 'local',
@@ -90,10 +80,33 @@ describe('DELETE /api/dishes/:id', () => {
     });
     otherUserToken = otherUserTokens.accessToken;
 
+    // Create post author (nutritionist)
+    const postAuthor = await UserModel.create({
+      email: 'nutritionist@test.com',
+      name: 'Test Nutritionist',
+      role: ROLE.NUTRITIONIST,
+      isActive: true
+    });
+    postAuthorId = postAuthor._id.toString();
+
+    await AuthModel.create({
+      user: postAuthor._id,
+      provider: 'local',
+      providerId: 'nutritionist@test.com',
+      localPassword: hashedPassword,
+      verifyAt: new Date()
+    });
+
+    const postAuthorTokens = generateToken({
+      id: postAuthor._id.toString(),
+      role: ROLE.NUTRITIONIST
+    });
+    postAuthorToken = postAuthorTokens.accessToken;
+
     // Create admin
     const admin = await UserModel.create({
       email: 'admin@test.com',
-      name: 'Admin User',
+      name: 'Admin',
       role: ROLE.ADMIN,
       isActive: true
     });
@@ -112,122 +125,118 @@ describe('DELETE /api/dishes/:id', () => {
     });
     adminToken = adminTokens.accessToken;
 
-    // Create test dish
-    const dish = await DishModel.create({
-      user: { _id: userId, name: 'Test User' },
-      name: 'Phở bò',
-      description: 'Phở bò truyền thống',
-      categories: [DISH_CATEGORY.MAIN_COURSE],
-      ingredients: [],
-      instructions: [{ step: 1, description: 'Luộc xương' }],
-      isActive: true
+    // Create test post with comment
+    const post = await PostModel.create({
+      author: {
+        _id: postAuthorId,
+        name: 'Test Nutritionist',
+        role: ROLE.NUTRITIONIST
+      },
+      title: 'Bài viết test',
+      content: 'Nội dung bài viết test...',
+      slug: 'bai-viet-test',
+      isPublished: true,
+      comments: [
+        {
+          author: {
+            _id: userId,
+            name: 'Test User',
+            avatar: ''
+          },
+          content: 'Bình luận test',
+          createdAt: new Date()
+        }
+      ]
     });
-    dishId = dish._id.toString();
+    postId = post._id.toString();
+    commentId = (post.comments[0] as any)._id.toString();
   });
 
   afterAll(async () => {
     // Clean up and close connection
-    await DishModel.deleteMany({});
+    await PostModel.deleteMany({});
     await UserModel.deleteMany({});
     await AuthModel.deleteMany({});
     await mongoose.connection.close();
   });
 
   // ============ HAPPY CASES ============
-  it('should delete dish successfully by owner', async () => {
+  it('should delete comment as comment author successfully', async () => {
     const res = await request(app)
-      .delete(`/api/dishes/${dishId}`)
+      .delete(`/api/posts/${postId}/comments/${commentId}`)
       .set('Authorization', `Bearer ${userToken}`);
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Xóa món ăn thành công');
+    expect(res.body).toHaveProperty('message', 'Xóa bình luận thành công');
 
-    // Verify dish is deleted from database
-    const deletedDish = await DishModel.findById(dishId);
-    expect(deletedDish).toBeNull();
+    // Verify comment is deleted
+    const updatedPost = await PostModel.findById(postId);
+    expect(updatedPost?.comments.length).toBe(0);
   });
 
-  it('should allow admin to delete any dish', async () => {
+  it('should delete comment as post author successfully', async () => {
     const res = await request(app)
-      .delete(`/api/dishes/${dishId}`)
+      .delete(`/api/posts/${postId}/comments/${commentId}`)
+      .set('Authorization', `Bearer ${postAuthorToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('status', 'success');
+    expect(res.body).toHaveProperty('message', 'Xóa bình luận thành công');
+  });
+
+  it('should delete comment as admin successfully', async () => {
+    const res = await request(app)
+      .delete(`/api/posts/${postId}/comments/${commentId}`)
       .set('Authorization', `Bearer ${adminToken}`);
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Xóa món ăn thành công');
-
-    // Verify dish is deleted from database
-    const deletedDish = await DishModel.findById(dishId);
-    expect(deletedDish).toBeNull();
-  });
-
-  it('should delete dish with image successfully', async () => {
-    // Create dish with image
-    const dishWithImage = await DishModel.create({
-      user: { _id: userId, name: 'Test User' },
-      name: 'Bún chả',
-      description: 'Bún chả Hà Nội',
-      categories: [DISH_CATEGORY.MAIN_COURSE],
-      ingredients: [],
-      instructions: [{ step: 1, description: 'Ướp thịt' }],
-      image: 'https://example.com/image.jpg',
-      isActive: true
-    });
-
-    const res = await request(app)
-      .delete(`/api/dishes/${dishWithImage._id}`)
-      .set('Authorization', `Bearer ${userToken}`);
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Xóa món ăn thành công');
+    expect(res.body).toHaveProperty('message', 'Xóa bình luận thành công');
   });
 
   // ============ AUTHENTICATION & AUTHORIZATION ============
-  it('should return 403 when user is not dish owner', async () => {
+  it('should return 403 when deleting comment of another user', async () => {
     const res = await request(app)
-      .delete(`/api/dishes/${dishId}`)
+      .delete(`/api/posts/${postId}/comments/${commentId}`)
       .set('Authorization', `Bearer ${otherUserToken}`);
 
     expect(res.status).toBe(403);
+    expect(res.body).toHaveProperty('status', 'failed');
+    expect(res.body).toHaveProperty('message', 'Bạn không có quyền xóa bình luận này');
   });
 
   // ============ VALIDATION (400) ============
-  it('should return 400 when id format is invalid', async () => {
+  it('should return 400 when post id format is invalid', async () => {
     const res = await request(app)
-      .delete('/api/dishes/invalid-id')
+      .delete(`/api/posts/invalid-id/comments/${commentId}`)
       .set('Authorization', `Bearer ${userToken}`);
 
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Định dạng ID món ăn không hợp lệ');
+    expect(res.body).toHaveProperty('message', 'ID bài viết không hợp lệ');
   });
 
   // ============ NOT FOUND (404) ============
-  it('should return 404 when dish does not exist', async () => {
+  it('should return 404 when post does not exist', async () => {
     const nonExistentId = new mongoose.Types.ObjectId().toString();
     const res = await request(app)
-      .delete(`/api/dishes/${nonExistentId}`)
+      .delete(`/api/posts/${nonExistentId}/comments/${commentId}`)
       .set('Authorization', `Bearer ${userToken}`);
 
     expect(res.status).toBe(404);
     expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Không tìm thấy món ăn');
+    expect(res.body).toHaveProperty('message', 'Không tìm thấy bài viết');
   });
 
-  it('should return 404 when findByIdAndDelete returns null', async () => {
-    // Mock findByIdAndDelete to return null
-    vi.spyOn(DishModel, 'findByIdAndDelete').mockResolvedValueOnce(null);
-
+  it('should return 404 when comment does not exist', async () => {
+    const nonExistentCommentId = new mongoose.Types.ObjectId().toString();
     const res = await request(app)
-      .delete(`/api/dishes/${dishId}`)
+      .delete(`/api/posts/${postId}/comments/${nonExistentCommentId}`)
       .set('Authorization', `Bearer ${userToken}`);
 
     expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('message', 'Không tìm thấy món ăn');
-
-    // Restore
-    vi.spyOn(DishModel, 'findByIdAndDelete').mockRestore();
+    expect(res.body).toHaveProperty('status', 'failed');
+    expect(res.body).toHaveProperty('message', 'Không tìm thấy bình luận');
   });
 });

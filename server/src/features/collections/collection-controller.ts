@@ -12,10 +12,6 @@ export const CollectionController = {
     const userId = req.user?._id.toString();
     const userName = req.user?.name;
 
-    if (!userId || !userName) {
-      return res.status(401).json(ApiResponse.failed('Chưa đăng nhập'));
-    }
-
     const result = await CollectionService.createCollection(
       userId,
       userName,
@@ -54,10 +50,6 @@ export const CollectionController = {
     const image = req.file;
     const userId = req.user?._id.toString();
 
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
-
     const result = await CollectionService.updateCollection(
       id,
       userId,
@@ -74,10 +66,6 @@ export const CollectionController = {
     const id = req.params.id;
     const userId = req.user?._id.toString();
 
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
-
     await CollectionService.deleteCollection(id, userId);
 
     res.status(200).json(ApiResponse.success('Xóa bộ sưu tập thành công'));
@@ -87,10 +75,6 @@ export const CollectionController = {
     const id = req.params.id;
     const data = req.body;
     const userId = req.user?._id.toString();
-
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
 
     const result = await CollectionService.addDishToCollection(
       id,
@@ -109,10 +93,6 @@ export const CollectionController = {
     const id = req.params.id;
     const data = req.body;
     const userId = req.user?._id.toString();
-
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
 
     const result = await CollectionService.removeDishFromCollection(
       id,
