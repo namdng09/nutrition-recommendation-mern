@@ -160,9 +160,6 @@ export function UpdateAllergens() {
               Thực phẩm dị ứng
             </h1>
           </div>
-          <p className='text-sm text-muted-foreground sm:text-base'>
-            Chọn các loại thực phẩm bạn muốn loại bỏ khỏi thực đơn
-          </p>
         </div>
 
         {/* Form Card */}
