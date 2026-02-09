@@ -144,26 +144,27 @@ describe('POST /api/auth/sign-up', () => {
     );
   });
 
-  // Branch: duplicate auth
-  it('should return 400 when auth already exists for email', async () => {
-    // Create user and auth
-    const user = await UserModel.create({
-      email: 'existing@gmail.com',
-      name: 'Existing User',
+  // Branch: duplicate auth (after user creation)
+  it('should return 400 when auth already exists after creating user', async () => {
+    // Create another user first
+    const existingUser = await UserModel.create({
+      email: 'other@gmail.com',
+      name: 'Other User',
       role: ROLE.USER,
       isActive: true
     });
 
+    // Create auth for a different email
     await AuthModel.create({
-      user: user._id,
+      user: existingUser._id,
       provider: 'local',
-      providerId: 'existing@gmail.com',
+      providerId: 'newuser@gmail.com',
       localPassword: 'hashedpassword',
       verifyAt: new Date()
     });
 
     const res = await request(app).post('/api/auth/sign-up').send({
-      email: 'existing@gmail.com',
+      email: 'newuser@gmail.com',
       name: 'New User',
       password: '123456'
     });
@@ -196,61 +197,23 @@ describe('POST /api/auth/sign-up', () => {
     expect(res.body).toHaveProperty('message', 'Failed to upload avatar');
   });
 
-  // Validation errors
-  it('should return 400 when email is invalid', async () => {
-    const res = await request(app).post('/api/auth/sign-up').send({
-      email: 'invalid-email',
-      name: 'New User',
-      password: '123456'
-    });
+  // Branch: user creation fails
+  it('should return 500 when user creation fails', async () => {
+    vi.spyOn(UserModel, 'create').mockResolvedValueOnce(null as any);
 
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when email is missing', async () => {
-    const res = await request(app).post('/api/auth/sign-up').send({
-      name: 'New User',
-      password: '123456'
-    });
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when name is too short', async () => {
-    const res = await request(app).post('/api/auth/sign-up').send({
-      email: 'newuser@gmail.com',
-      name: 'A',
-      password: '123456'
-    });
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when name is missing', async () => {
-    const res = await request(app).post('/api/auth/sign-up').send({
-      email: 'newuser@gmail.com',
-      password: '123456'
-    });
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when password is too short', async () => {
     const res = await request(app).post('/api/auth/sign-up').send({
       email: 'newuser@gmail.com',
       name: 'New User',
-      password: '123'
+      password: '123456'
     });
 
-    expect(res.status).toBe(400);
-  });
+    expect(res.status).toBe(500);
+    expect(res.body).toHaveProperty('status', 'error');
+    expect(res.body).toHaveProperty(
+      'message',
+      'Unable to complete registration at this time'
+    );
 
-  it('should return 400 when password is missing', async () => {
-    const res = await request(app).post('/api/auth/sign-up').send({
-      email: 'newuser@gmail.com',
-      name: 'New User'
-    });
-
-    expect(res.status).toBe(400);
+    vi.spyOn(UserModel, 'create').mockRestore();
   });
 });

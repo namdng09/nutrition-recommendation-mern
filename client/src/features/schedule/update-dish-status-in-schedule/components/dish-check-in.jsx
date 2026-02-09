@@ -9,7 +9,8 @@ export default function DishCheckin({ scheduleId, mealType, dish }) {
     mutate({
       scheduleId,
       mealType,
-      dishId: dish.dishId
+      dishId: dish.dishId,
+      isEaten: !dish.isEaten
     });
   };
 

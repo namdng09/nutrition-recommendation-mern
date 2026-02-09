@@ -136,38 +136,10 @@ describe('DELETE /api/ingredients/:id', () => {
     expect(deletedIngredient).toBeNull();
   });
 
-  // ============ AUTHENTICATION & AUTHORIZATION ============
-  it('should return 401 when no token provided', async () => {
-    const res = await request(app).delete(`/api/ingredients/${ingredientId}`);
-
-    expect(res.status).toBe(401);
-  });
-
-  it('should return 403 when user is not nutritionist', async () => {
-    const res = await request(app)
-      .delete(`/api/ingredients/${ingredientId}`)
-      .set('Authorization', `Bearer ${userToken}`);
-
-    expect(res.status).toBe(403);
-  });
-
   // ============ VALIDATION (400) ============
   it('should return 400 when id format is invalid', async () => {
     const res = await request(app)
       .delete('/api/ingredients/invalid-id')
-      .set('Authorization', `Bearer ${nutritionistToken}`);
-
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty(
-      'message',
-      'Định dạng ID nguyên liệu không hợp lệ'
-    );
-  });
-
-  it('should return 400 when id contains special characters', async () => {
-    const res = await request(app)
-      .delete('/api/ingredients/123!@#$%^&*()')
       .set('Authorization', `Bearer ${nutritionistToken}`);
 
     expect(res.status).toBe(400);

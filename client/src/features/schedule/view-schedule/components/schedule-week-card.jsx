@@ -51,7 +51,6 @@ export default function ScheduleWeekCard({
           border-[#2D6A4F] 
           bg-[#F0F7F4] 
           shadow-[0_20px_50px_rgba(45,106,79,0.12)] 
-          scale-[1.01]
           z-10
         `
           : `

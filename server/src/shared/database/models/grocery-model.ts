@@ -26,7 +26,7 @@ const grocerySchema = new Schema(
         ingredientId: { type: Schema.Types.ObjectId, ref: 'Ingredient' },
         name: { type: String, required: true },
         baseUnit: {
-          value: { type: Number, required: true },
+          amount: { type: Number, required: true },
           unit: { type: String, default: UNIT.GRAM, required: true }
         },
         units: [
