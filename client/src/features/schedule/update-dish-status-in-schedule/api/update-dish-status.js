@@ -4,10 +4,10 @@ import { toast } from 'sonner';
 import apiClient from '~/lib/api-client';
 import { QUERY_KEYS } from '~/lib/query-keys';
 
-const updateDishStatus = async ({ scheduleId, mealType, dishId }) => {
+const updateDishStatus = async ({ scheduleId, mealType, dishId, isEaten }) => {
   const res = await apiClient.put(
     `/api/schedules/${scheduleId}/meals/${mealType}/dishes/${dishId}/is-eaten`,
-    { isEaten: true }
+    { isEaten }
   );
   return res.data;
 };
@@ -17,13 +17,16 @@ export const useUpdateDishStatus = ({ onSuccess } = {}) => {
 
   return useMutation({
     mutationFn: updateDishStatus,
+
     onSuccess: res => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.SCHEDULES
       });
+
       toast.success(res.message || 'Đã cập nhật trạng thái món ăn');
       onSuccess?.(res.data);
     },
+
     onError: err => {
       toast.error(
         err.response?.data?.message || 'Cập nhật trạng thái món ăn thất bại'

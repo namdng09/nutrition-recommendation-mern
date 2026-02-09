@@ -74,6 +74,10 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/dishes/[id]/nutrition/page'))
           },
           {
+            path: 'groceries',
+            Component: lazy(() => import('~/app/groceries/page'))
+          },
+          {
             path: 'profile',
             Component: () => (
               <PrivateRoute allowedRoles={[ROLE.USER, ROLE.ADMIN]}>
@@ -106,6 +110,10 @@ const router = createBrowserRouter([
                 Component: lazy(
                   () => import('~/app/profile/schedule-settings/page')
                 )
+              },
+              {
+                path: 'food-allergies',
+                Component: lazy(() => import('~/app/profile/allergens/page'))
               }
             ]
           }
@@ -228,6 +236,26 @@ const router = createBrowserRouter([
             path: 'manage-collections/:id',
             Component: lazy(
               () => import('~/app/nutritionist/manage-collections/[id]/page')
+            )
+          },
+
+          //Manage posts
+          {
+            path: 'manage-posts/',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-posts/page')
+            )
+          },
+          {
+            path: 'manage-posts/create-post',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-posts/create-post/page')
+            )
+          },
+          {
+            path: 'manage-posts/:id',
+            Component: lazy(
+              () => import('~/app/nutritionist/manage-posts/[id]/page')
             )
           }
         ]

@@ -1,6 +1,7 @@
 import {
   Activity,
   Calendar,
+  CircleOff,
   LogOut,
   Target,
   User,
@@ -36,9 +37,14 @@ export function ProfileSidebar({ ...props }) {
       icon: User
     },
     {
-      title: 'Chế độ ăn & Dị ứng',
+      title: 'Chế độ ăn',
       url: '/profile/diet',
       icon: Utensils
+    },
+    {
+      title: 'Dị ứng thực phẩm',
+      url: '/profile/food-allergies',
+      icon: CircleOff
     },
     {
       title: 'Mục tiêu dinh dưỡng',

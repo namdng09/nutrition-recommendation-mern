@@ -7,7 +7,8 @@ export const UNIT = {
   LITER: 'l',
   OUNCE: 'oz',
   POUND: 'lb',
-  KILOCALORIE: 'kcal'
+  KILOCALORIE: 'kcal',
+  IU: 'IU'
 } as const;
 
 export type Unit = (typeof UNIT)[keyof typeof UNIT];

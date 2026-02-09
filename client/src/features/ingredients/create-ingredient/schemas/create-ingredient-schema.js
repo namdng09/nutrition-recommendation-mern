@@ -146,6 +146,9 @@ export const FATTY_ACID_OPTIONS = [
 const nutrientValueSchema = yup.object({
   value: yup
     .number()
+    .transform((value, originalValue) => {
+      return originalValue === '' ? undefined : value;
+    })
     .min(0, 'Giá trị không được âm')
     .required('Giá trị là bắt buộc'),
   unit: yup.string().required('Đơn vị là bắt buộc')
@@ -156,23 +159,37 @@ const nutrientsSchema = yup.object({
   carbs: nutrientValueSchema.required('Carbs là bắt buộc'),
   fat: nutrientValueSchema.required('Fat là bắt buộc'),
   protein: nutrientValueSchema.required('Protein là bắt buộc'),
-  fiber: nutrientValueSchema.optional(),
-  sodium: nutrientValueSchema.optional(),
-  cholesterol: nutrientValueSchema.optional()
+  fiber: nutrientValueSchema.required('Fiber là bắt buộc'),
+  sodium: nutrientValueSchema.required('Sodium là bắt buộc'),
+  cholesterol: nutrientValueSchema.required('Cholesterol là bắt buộc')
 });
 
 const unitSchema = yup.object({
   value: yup
     .number()
+    .transform((value, originalValue) => {
+      return originalValue === '' ? undefined : value;
+    })
     .min(0, 'Giá trị không được âm')
     .required('Giá trị là bắt buộc'),
-  unit: yup.string().required('Đơn vị là bắt buộc'),
-  isDefault: yup.boolean().required('isDefault là bắt buộc')
+  unit: yup
+    .string()
+    .min(1, 'Đơn vị là bắt buộc')
+    .required('Đơn vị là bắt buộc'),
+  isDefault: yup.boolean().default(false)
 });
 
 const detailedNutrientSchema = yup.object({
   label: yup.string().required(),
-  value: yup.number().min(0, 'Giá trị không được âm'),
+  value: yup
+    .number()
+    .transform((value, originalValue) => {
+      // Chuyển đổi empty string thành undefined
+      return originalValue === '' ? undefined : value;
+    })
+    .min(0, 'Giá trị không được âm')
+    .nullable()
+    .optional(),
   unit: yup.string().required('Đơn vị là bắt buộc')
 });
 
@@ -196,6 +213,9 @@ export const createIngredientSchema = yup.object({
     .object({
       amount: yup
         .number()
+        .transform((value, originalValue) => {
+          return originalValue === '' ? undefined : value;
+        })
         .min(0, 'Số lượng không được âm')
         .required('Số lượng là bắt buộc'),
       unit: yup.string().required('Đơn vị là bắt buộc')
@@ -204,15 +224,8 @@ export const createIngredientSchema = yup.object({
   units: yup
     .array()
     .of(unitSchema)
-    .min(1, 'Phải có ít nhất 1 kích thước phần ăn')
-    .test(
-      'has-default',
-      'Phải chọn 1 kích thước phần ăn làm mặc định',
-      function (value) {
-        return value && value.some(unit => unit.isDefault === true);
-      }
-    )
-    .required('Kích thước phần ăn là bắt buộc'),
+    .min(1, 'Phải có ít nhất 1 đơn vị chuyển đổi')
+    .required('Đơn vị chuyển đổi là bắt buộc'),
   allergens: yup.array().of(yup.string()).optional(),
   nutrition: yup
     .object({
