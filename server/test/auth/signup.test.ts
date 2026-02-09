@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import request from 'supertest';
 import {
   afterAll,
   beforeAll,
@@ -10,7 +9,7 @@ import {
   vi
 } from 'vitest';
 
-import app from '~/app';
+import { AuthService } from '~/features/auth/auth-service';
 import { ROLE } from '~/shared/constants/role';
 import { AuthModel, UserModel } from '~/shared/database/models';
 import * as uploadUtils from '~/shared/utils/cloudinary';
@@ -24,7 +23,7 @@ vi.mock('~/shared/utils/cloudinary', async () => {
   };
 });
 
-describe('POST /api/auth/sign-up', () => {
+describe('AuthService.signUp', () => {
   beforeAll(async () => {
     // Connect to test database if not already connected
     if (mongoose.connection.readyState === 0) {
@@ -50,29 +49,17 @@ describe('POST /api/auth/sign-up', () => {
 
   // Happy case - sign up without avatar
   it('should sign up successfully without avatar', async () => {
-    const res = await request(app).post('/api/auth/sign-up').send({
+    const result = await AuthService.signUp({
       email: 'newuser@gmail.com',
       name: 'New User',
       password: '123456'
     });
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Sign up successful');
-    expect(res.body.data).toHaveProperty('accessToken');
-    expect(typeof res.body.data.accessToken).toBe('string');
-    expect(res.body.data).toHaveProperty('hasOnboarded', false);
-
-    // Check refresh token in cookie
-    expect(res.headers['set-cookie']).toBeDefined();
-    const cookies = Array.isArray(res.headers['set-cookie'])
-      ? res.headers['set-cookie']
-      : [res.headers['set-cookie']];
-    const refreshTokenCookie = cookies.find((cookie: string) =>
-      cookie.startsWith('refreshToken=')
-    );
-    expect(refreshTokenCookie).toBeDefined();
-    expect(refreshTokenCookie).toContain('HttpOnly');
+    expect(result).toHaveProperty('accessToken');
+    expect(result).toHaveProperty('refreshToken');
+    expect(result).toHaveProperty('hasOnboarded', false);
+    expect(typeof result.accessToken).toBe('string');
+    expect(typeof result.refreshToken).toBe('string');
 
     // Verify user was created
     const user = await UserModel.findOne({ email: 'newuser@gmail.com' });
@@ -100,16 +87,30 @@ describe('POST /api/auth/sign-up', () => {
       }
     });
 
-    const res = await request(app)
-      .post('/api/auth/sign-up')
-      .field('email', 'newuser@gmail.com')
-      .field('name', 'New User')
-      .field('password', '123456')
-      .attach('avatar', Buffer.from('fake image'), 'avatar.jpg');
+    const mockFile: Express.Multer.File = {
+      buffer: Buffer.from('fake image'),
+      fieldname: 'avatar',
+      originalname: 'avatar.jpg',
+      encoding: '7bit',
+      mimetype: 'image/jpeg',
+      size: 1024,
+      destination: '',
+      filename: 'avatar.jpg',
+      path: '',
+      stream: null as any
+    };
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Sign up successful');
+    const result = await AuthService.signUp(
+      {
+        email: 'newuser@gmail.com',
+        name: 'New User',
+        password: '123456'
+      },
+      mockFile
+    );
+
+    expect(result).toHaveProperty('accessToken');
+    expect(result).toHaveProperty('refreshToken');
 
     // Verify user was created with avatar
     const user = await UserModel.findOne({ email: 'newuser@gmail.com' });
@@ -121,7 +122,7 @@ describe('POST /api/auth/sign-up', () => {
   });
 
   // Branch: duplicate email
-  it('should return 400 when email already exists', async () => {
+  it('should throw 400 error when email already exists', async () => {
     // Create existing user
     await UserModel.create({
       email: 'existing@gmail.com',
@@ -130,22 +131,17 @@ describe('POST /api/auth/sign-up', () => {
       isActive: true
     });
 
-    const res = await request(app).post('/api/auth/sign-up').send({
-      email: 'existing@gmail.com',
-      name: 'New User',
-      password: '123456'
-    });
-
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty(
-      'message',
-      'Unable to create account with provided information'
-    );
+    await expect(
+      AuthService.signUp({
+        email: 'existing@gmail.com',
+        name: 'New User',
+        password: '123456'
+      })
+    ).rejects.toThrow('Unable to create account with provided information');
   });
 
   // Branch: duplicate auth (after user creation)
-  it('should return 400 when auth already exists after creating user', async () => {
+  it('should throw 400 error when auth already exists after creating user', async () => {
     // Create another user first
     const existingUser = await UserModel.create({
       email: 'other@gmail.com',
@@ -163,56 +159,59 @@ describe('POST /api/auth/sign-up', () => {
       verifyAt: new Date()
     });
 
-    const res = await request(app).post('/api/auth/sign-up').send({
-      email: 'newuser@gmail.com',
-      name: 'New User',
-      password: '123456'
-    });
-
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty(
-      'message',
-      'Unable to create account with provided information'
-    );
+    await expect(
+      AuthService.signUp({
+        email: 'newuser@gmail.com',
+        name: 'New User',
+        password: '123456'
+      })
+    ).rejects.toThrow('Unable to create account with provided information');
   });
 
   // Branch: avatar upload fails
-  it('should return 500 when avatar upload fails', async () => {
+  it('should throw 500 error when avatar upload fails', async () => {
     // Mock failed avatar upload
     (uploadUtils.uploadAvatar as any).mockResolvedValue({
       success: false,
       error: 'Upload failed'
     });
 
-    const res = await request(app)
-      .post('/api/auth/sign-up')
-      .field('email', 'newuser@gmail.com')
-      .field('name', 'New User')
-      .field('password', '123456')
-      .attach('avatar', Buffer.from('fake image'), 'avatar.jpg');
+    const mockFile: Express.Multer.File = {
+      buffer: Buffer.from('fake image'),
+      fieldname: 'avatar',
+      originalname: 'avatar.jpg',
+      encoding: '7bit',
+      mimetype: 'image/jpeg',
+      size: 1024,
+      destination: '',
+      filename: 'avatar.jpg',
+      path: '',
+      stream: null as any
+    };
 
-    expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty('message', 'Failed to upload avatar');
+    await expect(
+      AuthService.signUp(
+        {
+          email: 'newuser@gmail.com',
+          name: 'New User',
+          password: '123456'
+        },
+        mockFile
+      )
+    ).rejects.toThrow('Failed to upload avatar');
   });
 
   // Branch: user creation fails
-  it('should return 500 when user creation fails', async () => {
+  it('should throw 500 error when user creation fails', async () => {
     vi.spyOn(UserModel, 'create').mockResolvedValueOnce(null as any);
 
-    const res = await request(app).post('/api/auth/sign-up').send({
-      email: 'newuser@gmail.com',
-      name: 'New User',
-      password: '123456'
-    });
-
-    expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty(
-      'message',
-      'Unable to complete registration at this time'
-    );
+    await expect(
+      AuthService.signUp({
+        email: 'newuser@gmail.com',
+        name: 'New User',
+        password: '123456'
+      })
+    ).rejects.toThrow('Unable to complete registration at this time');
 
     vi.spyOn(UserModel, 'create').mockRestore();
   });

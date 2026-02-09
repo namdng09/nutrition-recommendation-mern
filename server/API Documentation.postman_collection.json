@@ -1,0 +1,3487 @@
+{
+  "info": {
+    "_postman_id": "076295bd-635b-4369-ada8-768d79f391bc",
+    "name": "API Documentation",
+    "description": "API Documentation collection.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51830864",
+    "_collection_link": "https://go.postman.co/collection/51829783-076295bd-635b-4369-ada8-768d79f391bc?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Get users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}/api/users",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "select",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "populate",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Gets information about the authenticated user."
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://api.getpostman.com/me",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "getpostman",
+                    "com"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "name": "Content-Type",
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  }
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"user\": {\n        \"id\": 12345678,\n        \"username\": \"taylor-lee\",\n        \"email\": \"taylor.lee@example.com\",\n        \"fullName\": \"Taylor Lee\",\n        \"avatar\": \"https://example.com/user/r5u9qpvmujfjf6lbqmga.jpg\",\n        \"isPublic\": true\n    },\n    \"operations\": [\n        {\n            \"name\": \"mock_usage\",\n            \"limit\": 1000000,\n            \"usage\": 110276,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"monitor_request_runs\",\n            \"limit\": 10000000,\n            \"usage\": 1141750,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"api_usage\",\n            \"limit\": 1000000,\n            \"usage\": 16240,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"custom_domains\",\n            \"limit\": 25,\n            \"usage\": 25,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"serverless_requests\",\n            \"limit\": 10000,\n            \"usage\": 0,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"integrations\",\n            \"limit\": 5000,\n            \"usage\": 1018,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"cloud_agent_requests\",\n            \"limit\": 1000000,\n            \"usage\": 1615,\n            \"overage\": 0\n        }\n    ]\n}"
+            },
+            {
+              "name": "Rate Limit Exceeded",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://api.getpostman.com/me",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "getpostman",
+                    "com"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  }
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get user detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}/api/users/:userId",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                ":userId"
+              ],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Gets information about the authenticated user."
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://api.getpostman.com/me",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "getpostman",
+                    "com"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "name": "Content-Type",
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  }
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"user\": {\n        \"id\": 12345678,\n        \"username\": \"taylor-lee\",\n        \"email\": \"taylor.lee@example.com\",\n        \"fullName\": \"Taylor Lee\",\n        \"avatar\": \"https://example.com/user/r5u9qpvmujfjf6lbqmga.jpg\",\n        \"isPublic\": true\n    },\n    \"operations\": [\n        {\n            \"name\": \"mock_usage\",\n            \"limit\": 1000000,\n            \"usage\": 110276,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"monitor_request_runs\",\n            \"limit\": 10000000,\n            \"usage\": 1141750,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"api_usage\",\n            \"limit\": 1000000,\n            \"usage\": 16240,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"custom_domains\",\n            \"limit\": 25,\n            \"usage\": 25,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"serverless_requests\",\n            \"limit\": 10000,\n            \"usage\": 0,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"integrations\",\n            \"limit\": 5000,\n            \"usage\": 1018,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"cloud_agent_requests\",\n            \"limit\": 1000000,\n            \"usage\": 1615,\n            \"overage\": 0\n        }\n    ]\n}"
+            },
+            {
+              "name": "Rate Limit Exceeded",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://api.getpostman.com/me",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "getpostman",
+                    "com"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  }
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get user profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}/api/users/me",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "description": "Gets information about the authenticated user."
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://api.getpostman.com/me",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "getpostman",
+                    "com"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "name": "Content-Type",
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  }
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"user\": {\n        \"id\": 12345678,\n        \"username\": \"taylor-lee\",\n        \"email\": \"taylor.lee@example.com\",\n        \"fullName\": \"Taylor Lee\",\n        \"avatar\": \"https://example.com/user/r5u9qpvmujfjf6lbqmga.jpg\",\n        \"isPublic\": true\n    },\n    \"operations\": [\n        {\n            \"name\": \"mock_usage\",\n            \"limit\": 1000000,\n            \"usage\": 110276,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"monitor_request_runs\",\n            \"limit\": 10000000,\n            \"usage\": 1141750,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"api_usage\",\n            \"limit\": 1000000,\n            \"usage\": 16240,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"custom_domains\",\n            \"limit\": 25,\n            \"usage\": 25,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"serverless_requests\",\n            \"limit\": 10000,\n            \"usage\": 0,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"integrations\",\n            \"limit\": 5000,\n            \"usage\": 1018,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"cloud_agent_requests\",\n            \"limit\": 1000000,\n            \"usage\": 1615,\n            \"overage\": 0\n        }\n    ]\n}"
+            },
+            {
+              "name": "Rate Limit Exceeded",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://api.getpostman.com/me",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "getpostman",
+                    "com"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  }
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "On boarding",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"gender\": \"Nam\",\n    \"dob\": \"1998-04-10\",\n    \"height\": 170,\n    \"weight\": 65,\n    \"bodyfat\": \"Thấp\",\n    \"diet\": \"Keto\",\n    \"allergens\": [\n        \"Sữa\",\n        \"Cá\"\n    ],\n    \"medicalHistory\": [\n        \"Không có bệnh nền\"\n    ],\n    \"nutritionTarget\": {\n        \"caloriesTarget\": 2000,\n        \"macros\": {\n            \"carbs\": {\n                \"min\": 50,\n                \"max\": 100\n            },\n            \"protein\": {\n                \"min\": 90,\n                \"max\": 140\n            },\n            \"fat\": {\n                \"min\": 90,\n                \"max\": 130\n            }\n        }\n    },\n    \"mealSettings\": [\n        {\n            \"name\": \"Bữa sáng\",\n            \"mealSize\": \"Nhỏ\",\n            \"preferredTypes\": [\n                \"Bữa sáng\"\n            ],\n            \"cookingPreference\": \"Có thể nấu\",\n            \"availableTime\": \"Ít thời gian (<15 phút)\",\n            \"complexity\": \"Đơn giản\",\n            \"dishCategories\": [\n                \"Bữa sáng\"\n            ],\n            \"ruleOverrides\": {}\n        },\n        {\n            \"name\": \"Bữa trưa\",\n            \"mealSize\": \"Vừa\",\n            \"preferredTypes\": [\n                \"Bữa trưa\"\n            ],\n            \"cookingPreference\": \"Phải nấu\",\n            \"availableTime\": \"Có thời gian (<30 phút)\",\n            \"complexity\": \"Trung bình\",\n            \"dishCategories\": [\n                \"Món chính\"\n            ]\n        },\n        {\n            \"name\": \"Bữa tối\",\n            \"mealSize\": \"Lớn\",\n            \"preferredTypes\": [\n                \"Bữa tối\"\n            ],\n            \"cookingPreference\": \"Có thể nấu\",\n            \"availableTime\": \"Nhiều thời gian (<60 phút)\",\n            \"complexity\": \"Trung bình\",\n            \"dishCategories\": [\n                \"Món chính\"\n            ],\n            \"ruleOverrides\": {}\n        },\n        {\n            \"name\": \"Ăn nhẹ\",\n            \"mealSize\": \"Nhỏ\",\n            \"preferredTypes\": [\n                \"Ăn nhẹ\"\n            ],\n            \"cookingPreference\": \"Không thể nấu\",\n            \"availableTime\": \"Không có thời gian (<5 phút)\",\n            \"complexity\": \"Rất đơn giản\",\n            \"dishCategories\": [\n                \"Ăn nhẹ\"\n            ]\n        }\n    ],\n    \"activityLevel\": \"Công việc bàn giấy, vận động nhẹ\",\n    \"goal\": {\n        \"target\": \"Giảm mỡ\",\n        \"weightGoal\": 60,\n        \"targetWeightChange\": -0.5\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/users/me/onboarding",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me",
+                "onboarding"
+              ]
+            },
+            "description": "Gets information about the authenticated user."
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://api.getpostman.com/me",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "getpostman",
+                    "com"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "name": "Content-Type",
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  }
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"user\": {\n        \"id\": 12345678,\n        \"username\": \"taylor-lee\",\n        \"email\": \"taylor.lee@example.com\",\n        \"fullName\": \"Taylor Lee\",\n        \"avatar\": \"https://example.com/user/r5u9qpvmujfjf6lbqmga.jpg\",\n        \"isPublic\": true\n    },\n    \"operations\": [\n        {\n            \"name\": \"mock_usage\",\n            \"limit\": 1000000,\n            \"usage\": 110276,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"monitor_request_runs\",\n            \"limit\": 10000000,\n            \"usage\": 1141750,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"api_usage\",\n            \"limit\": 1000000,\n            \"usage\": 16240,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"custom_domains\",\n            \"limit\": 25,\n            \"usage\": 25,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"serverless_requests\",\n            \"limit\": 10000,\n            \"usage\": 0,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"integrations\",\n            \"limit\": 5000,\n            \"usage\": 1018,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"cloud_agent_requests\",\n            \"limit\": 1000000,\n            \"usage\": 1615,\n            \"overage\": 0\n        }\n    ]\n}"
+            },
+            {
+              "name": "Rate Limit Exceeded",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://api.getpostman.com/me",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "getpostman",
+                    "com"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  }
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create nutrition target",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "diet",
+                  "value": "Keto",
+                  "type": "text"
+                },
+                {
+                  "key": "allergens[0]",
+                  "value": "milk",
+                  "type": "text"
+                },
+                {
+                  "key": "gender",
+                  "value": "Nam",
+                  "type": "text"
+                },
+                {
+                  "key": "height",
+                  "value": "170",
+                  "type": "text"
+                },
+                {
+                  "key": "weight",
+                  "value": "65",
+                  "type": "text"
+                },
+                {
+                  "key": "dob",
+                  "value": "1998-04-10",
+                  "type": "text"
+                },
+                {
+                  "key": "age",
+                  "value": "26",
+                  "type": "text"
+                },
+                {
+                  "key": "bodyfat",
+                  "value": "Thấp",
+                  "type": "text"
+                },
+                {
+                  "key": "activityLevel",
+                  "value": "Công việc bàn giấy, vận động nhẹ",
+                  "type": "text"
+                },
+                {
+                  "key": "goal.target",
+                  "value": "Giảm mỡ",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/users/me/nutrition-target",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me",
+                "nutrition-target"
+              ]
+            },
+            "description": "Gets information about the authenticated user."
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://api.getpostman.com/me",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "getpostman",
+                    "com"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "name": "Content-Type",
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  }
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"user\": {\n        \"id\": 12345678,\n        \"username\": \"taylor-lee\",\n        \"email\": \"taylor.lee@example.com\",\n        \"fullName\": \"Taylor Lee\",\n        \"avatar\": \"https://example.com/user/r5u9qpvmujfjf6lbqmga.jpg\",\n        \"isPublic\": true\n    },\n    \"operations\": [\n        {\n            \"name\": \"mock_usage\",\n            \"limit\": 1000000,\n            \"usage\": 110276,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"monitor_request_runs\",\n            \"limit\": 10000000,\n            \"usage\": 1141750,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"api_usage\",\n            \"limit\": 1000000,\n            \"usage\": 16240,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"custom_domains\",\n            \"limit\": 25,\n            \"usage\": 25,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"serverless_requests\",\n            \"limit\": 10000,\n            \"usage\": 0,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"integrations\",\n            \"limit\": 5000,\n            \"usage\": 1018,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"cloud_agent_requests\",\n            \"limit\": 1000000,\n            \"usage\": 1615,\n            \"overage\": 0\n        }\n    ]\n}"
+            },
+            {
+              "name": "Rate Limit Exceeded",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://api.getpostman.com/me",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "getpostman",
+                    "com"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  }
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Add dish to favorites",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "type": "text",
+                  "key": "dishId",
+                  "value": "697af279fb1ede566b2a2de4"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/users/me/favorites/dishes",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me",
+                "favorites",
+                "dishes"
+              ]
+            },
+            "description": "Generated from cURL: curl --location '{{host}}/api/users/me/favorites/dishes' --header 'Authorization: Bearer {{token}}' --form 'dishId=\"{{dishId}}\"'"
+          },
+          "response": []
+        },
+        {
+          "name": "Remove dish from favorites",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "type": "text",
+                  "key": "dishId",
+                  "value": "697af279fb1ede566b2a2de4"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/users/me/favorites/dishes",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me",
+                "favorites",
+                "dishes"
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request DELETE '{{host}}/api/users/me/favorites/dishes' --header 'Authorization: Bearer {{token}}' --form 'dishId=\"{{dishId}}\"'"
+          },
+          "response": []
+        },
+        {
+          "name": "Add ingredient to favorites",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "type": "text",
+                  "key": "ingredientId",
+                  "value": "{{ingredientId}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/users/me/favorites/ingredients",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me",
+                "favorites",
+                "ingredients"
+              ]
+            },
+            "description": "Generated from cURL: curl --location '{{host}}/api/users/me/favorites/ingredients' --header 'Authorization: Bearer {{token}}' --form 'ingredientId=\"{{ingredientId}}\"'"
+          },
+          "response": []
+        },
+        {
+          "name": "Remove ingredient from favorites",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "type": "text",
+                  "key": "ingredientId",
+                  "value": "{{ingredientId}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/users/me/favorites/ingredients",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me",
+                "favorites",
+                "ingredients"
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request DELETE '{{host}}/api/users/me/favorites/ingredients' --header 'Authorization: Bearer {{token}}' --form 'ingredientId=\"{{ingredientId}}\"'"
+          },
+          "response": []
+        },
+        {
+          "name": "Add collection to favorites",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "type": "text",
+                  "key": "collectionId",
+                  "value": "{{collectionId}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/users/me/favorites/collections",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me",
+                "favorites",
+                "collections"
+              ]
+            },
+            "description": "Generated from cURL: curl --location '{{host}}/api/users/me/favorites/collections' --header 'Authorization: Bearer {{token}}' --form 'collectionId=\"{{collectionId}}\"'"
+          },
+          "response": []
+        },
+        {
+          "name": "Remove collection from favorites",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "type": "text",
+                  "key": "collectionId",
+                  "value": "{{collectionId}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/users/me/favorites/collections",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me",
+                "favorites",
+                "collections"
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request DELETE '{{host}}/api/users/me/favorites/collections' --header 'Authorization: Bearer {{token}}' --form 'collectionId=\"{{collectionId}}\"'"
+          },
+          "response": []
+        },
+        {
+          "name": "Block dish",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "type": "text",
+                  "key": "dishId",
+                  "value": "{{dishId}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/users/me/blocks/dishes",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me",
+                "blocks",
+                "dishes"
+              ]
+            },
+            "description": "Generated from cURL: curl --location '{{host}}/api/users/me/blocks/dishes' --header 'Authorization: Bearer {{token}}' --form 'dishId=\"{{dishId}}\"'"
+          },
+          "response": []
+        },
+        {
+          "name": "Unblock dish",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "type": "text",
+                  "key": "dishId",
+                  "value": "{{dishId}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/users/me/blocks/dishes",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me",
+                "blocks",
+                "dishes"
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request DELETE '{{host}}/api/users/me/blocks/dishes' --header 'Authorization: Bearer {{token}}' --form 'dishId=\"{{dishId}}\"'"
+          },
+          "response": []
+        },
+        {
+          "name": "Block ingredient",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "type": "text",
+                  "key": "ingredientId",
+                  "value": "{{ingredientId}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/users/me/blocks/ingredients",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me",
+                "blocks",
+                "ingredients"
+              ]
+            },
+            "description": "Generated from cURL: curl --location '{{host}}/api/users/me/blocks/ingredients' --header 'Authorization: Bearer {{token}}' --form 'ingredientId=\"{{ingredientId}}\"'"
+          },
+          "response": []
+        },
+        {
+          "name": "Unblock ingredient",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "type": "text",
+                  "key": "ingredientId",
+                  "value": "{{ingredientId}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/users/me/blocks/ingredients",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me",
+                "blocks",
+                "ingredients"
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request DELETE '{{host}}/api/users/me/blocks/ingredients' --header 'Authorization: Bearer {{token}}' --form 'ingredientId=\"{{ingredientId}}\"'"
+          },
+          "response": []
+        }
+      ],
+      "description": "The `/me` endpoints let you manage information about the authenticated user."
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "",
+                  "// Check login success",
+                  "pm.test(\"Login successful\", function () {",
+                  "    pm.expect(response.status).to.eql(\"success\");",
+                  "    pm.expect(response.data).to.have.property(\"accessToken\");",
+                  "});",
+                  "",
+                  "// Store accessToken in environment variable \"token\"",
+                  "pm.environment.set(\"token\", response.data.accessToken);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "dubo01689@gmail.com",
+                  "type": "text",
+                  "uuid": "65c9a93f-3e9d-4f0d-8b40-bf5c3cb3faf0"
+                },
+                {
+                  "key": "password",
+                  "value": "123456",
+                  "type": "text",
+                  "uuid": "617ac3eb-27d3-4194-bfe6-00c205248709"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/auth/login",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Gets information about the authenticated user."
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://api.getpostman.com/me",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "getpostman",
+                    "com"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "name": "Content-Type",
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  }
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"user\": {\n        \"id\": 12345678,\n        \"username\": \"taylor-lee\",\n        \"email\": \"taylor.lee@example.com\",\n        \"fullName\": \"Taylor Lee\",\n        \"avatar\": \"https://example.com/user/r5u9qpvmujfjf6lbqmga.jpg\",\n        \"isPublic\": true\n    },\n    \"operations\": [\n        {\n            \"name\": \"mock_usage\",\n            \"limit\": 1000000,\n            \"usage\": 110276,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"monitor_request_runs\",\n            \"limit\": 10000000,\n            \"usage\": 1141750,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"api_usage\",\n            \"limit\": 1000000,\n            \"usage\": 16240,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"custom_domains\",\n            \"limit\": 25,\n            \"usage\": 25,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"serverless_requests\",\n            \"limit\": 10000,\n            \"usage\": 0,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"integrations\",\n            \"limit\": 5000,\n            \"usage\": 1018,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"cloud_agent_requests\",\n            \"limit\": 1000000,\n            \"usage\": 1615,\n            \"overage\": 0\n        }\n    ]\n}"
+            },
+            {
+              "name": "Rate Limit Exceeded",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://api.getpostman.com/me",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "getpostman",
+                    "com"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  }
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Sign-up",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "",
+                  "// Check login success",
+                  "pm.test(\"Login successful\", function () {",
+                  "    pm.expect(response.status).to.eql(\"success\");",
+                  "    pm.expect(response.data).to.have.property(\"accessToken\");",
+                  "});",
+                  "",
+                  "// Store accessToken in environment variable \"token\"",
+                  "pm.environment.set(\"token\", response.data.accessToken);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "dubo01689@gmail.com",
+                  "type": "text",
+                  "uuid": "d9ad2f17-eb28-466f-b5b8-361031c88428"
+                },
+                {
+                  "key": "name",
+                  "value": "dubo01689",
+                  "type": "text",
+                  "uuid": "43fb0d4f-ebe4-432c-837a-9043998c5d89"
+                },
+                {
+                  "key": "password",
+                  "value": "123456",
+                  "type": "text",
+                  "uuid": "33c50005-7d17-4c0f-a061-7331c39b7f8e"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/auth/sign-up",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "sign-up"
+              ]
+            },
+            "description": "Gets information about the authenticated user."
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://api.getpostman.com/me",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "getpostman",
+                    "com"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "name": "Content-Type",
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  }
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"user\": {\n        \"id\": 12345678,\n        \"username\": \"taylor-lee\",\n        \"email\": \"taylor.lee@example.com\",\n        \"fullName\": \"Taylor Lee\",\n        \"avatar\": \"https://example.com/user/r5u9qpvmujfjf6lbqmga.jpg\",\n        \"isPublic\": true\n    },\n    \"operations\": [\n        {\n            \"name\": \"mock_usage\",\n            \"limit\": 1000000,\n            \"usage\": 110276,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"monitor_request_runs\",\n            \"limit\": 10000000,\n            \"usage\": 1141750,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"api_usage\",\n            \"limit\": 1000000,\n            \"usage\": 16240,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"custom_domains\",\n            \"limit\": 25,\n            \"usage\": 25,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"serverless_requests\",\n            \"limit\": 10000,\n            \"usage\": 0,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"integrations\",\n            \"limit\": 5000,\n            \"usage\": 1018,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"cloud_agent_requests\",\n            \"limit\": 1000000,\n            \"usage\": 1615,\n            \"overage\": 0\n        }\n    ]\n}"
+            },
+            {
+              "name": "Rate Limit Exceeded",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://api.getpostman.com/me",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "getpostman",
+                    "com"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  }
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{host}}/api/sign-up",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "sign-up"
+              ]
+            },
+            "description": "Gets information about the authenticated user."
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://api.getpostman.com/me",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "getpostman",
+                    "com"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "name": "Content-Type",
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  }
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"user\": {\n        \"id\": 12345678,\n        \"username\": \"taylor-lee\",\n        \"email\": \"taylor.lee@example.com\",\n        \"fullName\": \"Taylor Lee\",\n        \"avatar\": \"https://example.com/user/r5u9qpvmujfjf6lbqmga.jpg\",\n        \"isPublic\": true\n    },\n    \"operations\": [\n        {\n            \"name\": \"mock_usage\",\n            \"limit\": 1000000,\n            \"usage\": 110276,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"monitor_request_runs\",\n            \"limit\": 10000000,\n            \"usage\": 1141750,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"api_usage\",\n            \"limit\": 1000000,\n            \"usage\": 16240,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"custom_domains\",\n            \"limit\": 25,\n            \"usage\": 25,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"serverless_requests\",\n            \"limit\": 10000,\n            \"usage\": 0,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"integrations\",\n            \"limit\": 5000,\n            \"usage\": 1018,\n            \"overage\": 0\n        },\n        {\n            \"name\": \"cloud_agent_requests\",\n            \"limit\": 1000000,\n            \"usage\": 1615,\n            \"overage\": 0\n        }\n    ]\n}"
+            },
+            {
+              "name": "Rate Limit Exceeded",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://api.getpostman.com/me",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "getpostman",
+                    "com"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  }
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"error\": \"rateLimited\",\n    \"message\": \"Rate limit exceeded. Please retry after 1669048687\"\n}"
+            }
+          ]
+        }
+      ],
+      "description": "The `/me` endpoints let you manage information about the authenticated user."
+    },
+    {
+      "name": "Schedule",
+      "item": [
+        {
+          "name": "Get schedules",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{host}}/api/schedules/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "schedules",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "select",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "populate",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Gets information about the authenticated user."
+          },
+          "response": []
+        },
+        {
+          "name": "Get schedule detail",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}/api/schedules/:id",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "schedules",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "697eff1fe6ad80f45d35be18"
+                }
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request GET '{{host}}/api/schedules/:id/' --header 'Authorization: Bearer {{token}}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Create schedule",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "date",
+                  "value": "2026-02-05",
+                  "type": "text"
+                },
+                {
+                  "key": "dayOfWeek",
+                  "value": "Thứ Ba",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/schedules/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "schedules",
+                ""
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request POST '{{host}}/api/schedules/' --header 'Authorization: Bearer {{token}}' --header 'Content-Type: application/json' --data-raw '{\"title\": \"Sample schedule title\",\"description\": \"Sample schedule description\",\"startTime\": \"2025-01-01T09:00:00Z\",\"endTime\": \"2025-01-01T10:00:00Z\",\"status\": \"active\"}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Update schedule",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "notes",
+                  "value": "updated notes",
+                  "type": "text",
+                  "uuid": "2f57575e-22f8-4de9-a6b9-97be8bdf5e45"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/schedules/:id/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "schedules",
+                ":id",
+                ""
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "697eff1fe6ad80f45d35be18"
+                }
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request PUT '{{host}}/api/schedules/:id/' --header 'Authorization: Bearer {{token}}' --header 'Content-Type: application/json' --data-raw '{\"title\": \"Updated schedule title\",\"description\": \"Updated schedule description\",\"startTime\": \"2025-01-01T11:00:00Z\",\"endTime\": \"2025-01-01T12:00:00Z\",\"status\": \"active\"}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Update meal in schedule",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"meals\": [\n    {\n      \"mealType\": \"Ăn nhẹ\",\n      \"notes\": \"\",\n      \"dishes\": [\n        {\n          \"dishId\": \"697af279fb1ede566b2a2de5\",\n          \"servings\": 1\n        }\n      ]\n    }\n  ]\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/schedules/:id/meals",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "schedules",
+                ":id",
+                "meals"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "697eff1fe6ad80f45d35be18"
+                }
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request PUT '{{host}}/api/schedules/:id/' --header 'Authorization: Bearer {{token}}' --header 'Content-Type: application/json' --data-raw '{\"title\": \"Updated schedule title\",\"description\": \"Updated schedule description\",\"startTime\": \"2025-01-01T11:00:00Z\",\"endTime\": \"2025-01-01T12:00:00Z\",\"status\": \"active\"}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Update dish status in schedule",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "isEaten",
+                  "value": "true",
+                  "type": "text",
+                  "uuid": "106baf30-0552-4bcb-b747-6d48e3c0253d"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/schedules/:id/meals/:mealType/dishes/:dishId/is-eaten",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "schedules",
+                ":id",
+                "meals",
+                ":mealType",
+                "dishes",
+                ":dishId",
+                "is-eaten"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "697eff1fe6ad80f45d35be18"
+                },
+                {
+                  "key": "mealType",
+                  "value": "Ăn nhẹ"
+                },
+                {
+                  "key": "dishId",
+                  "value": "697af279fb1ede566b2a2de5"
+                }
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request PUT '{{host}}/api/schedules/:id/' --header 'Authorization: Bearer {{token}}' --header 'Content-Type: application/json' --data-raw '{\"title\": \"Updated schedule title\",\"description\": \"Updated schedule description\",\"startTime\": \"2025-01-01T11:00:00Z\",\"endTime\": \"2025-01-01T12:00:00Z\",\"status\": \"active\"}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete schedule",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/api/schedules/:id/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "schedules",
+                ":id",
+                ""
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request DELETE '{{host}}/api/schedules/:id/' --header 'Authorization: Bearer {{token}}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete dish schedule",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/api/schedules/697eff1fe6ad80f45d35be18/meals/Bữa trưa/dishes/697af279fb1ede566b2a2de5",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "schedules",
+                "697eff1fe6ad80f45d35be18",
+                "meals",
+                "Bữa trưa",
+                "dishes",
+                "697af279fb1ede566b2a2de5"
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request DELETE '{{host}}/api/schedules/:id/' --header 'Authorization: Bearer {{token}}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Clear dishes schedule",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/api/schedules/697eff1fe6ad80f45d35be18/meals/Bữa sáng/dishes",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "schedules",
+                "697eff1fe6ad80f45d35be18",
+                "meals",
+                "Bữa sáng",
+                "dishes"
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request DELETE '{{host}}/api/schedules/:id/' --header 'Authorization: Bearer {{token}}'"
+          },
+          "response": []
+        }
+      ],
+      "description": "The `/me` endpoints let you manage information about the authenticated user."
+    },
+    {
+      "name": "Dish",
+      "item": [
+        {
+          "name": "Get dishes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/api/dishes/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "dishes",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "select",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "populate",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "categories",
+                  "value": "Món chính,Bữa sáng",
+                  "description": "multiple value",
+                  "disabled": true
+                },
+                {
+                  "key": "name",
+                  "value": "Cơm gà",
+                  "disabled": true
+                },
+                {
+                  "key": "nutritionFocus",
+                  "value": "Giàu đạm,Ít béo",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get dishes Summary Returns a list of dishes available in the system.\n\nRequest\n\n- Method: GET\n    \n- URL: {{host}}/api/dishes/\n    \n- Auth: Bearer token (Authorization header)\n    \n    - Header example: Authorization: Bearer {{token}}\n        \n- Content type: application/json (response)\n    \n\nDescription Fetches all dishes. The endpoint returns an array of dish objects, optionally paginated or filtered depending on server implementation. Use with a valid Bearer token in the Authorization header. This endpoint does not require a request body.\n\nQuery parameters (common options — confirm with backend)\n\n- page (integer, optional) — page number for paginated responses (default: 1).\n    \n- limit (integer, optional) — number of items per page (default: server-defined, e.g. 10 or 20).\n    \n- search (string, optional) — search term to filter dishes by name or description.\n    \n- category (string or id, optional) — filter by category.\n    \n- sort (string, optional) — sort key (e.g., \"name\", \"-price\" where \"-\" indicates descending).\n    \n\nHeaders\n\n- Authorization: Bearer {{token}} (required)\n    \n- Accept: application/json (recommended)\n    \n\nSuccessful response (200 OK) A typical successful response returns JSON with an array of dishes and optionally pagination metadata."
+          },
+          "response": []
+        },
+        {
+          "name": "Get dish detail",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}/api/dishes/:id/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "dishes",
+                ":id",
+                ""
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "697af279fb1ede566b2a2de4"
+                }
+              ]
+            },
+            "description": "## Get dish detail\n\nRetrieve the detailed information for a single dish by its identifier.\n\n- **Method:** `GET`\n    \n- **URL:** `{{host}}/api/dishes/:id/`\n    \n- **Purpose:** Return all available details for a specific dish (e.g., name, description, price, nutritional info, tags, etc.).\n    \n\n---\n\n### Authentication\n\nThis endpoint requires authentication.\n\n- Typically sent as a Bearer token:\n    \n    - Header: `Authorization: Bearer {{token}}`\n        \n- The `{{token}}` variable is expected to be defined in the active environment (e.g., **Production**).\n    \n\nIf no valid token is provided, the API is expected to return an authentication error (commonly `401 Unauthorized` or `403 Forbidden`).\n\n---\n\n### Path variables\n\n- `id` (required, string or number)  \n    The unique identifier of the dish to retrieve.\n    \n\nIn Postman, this is configured as a path variable:\n\n- `:id` in the URL is mapped to the `id` variable.\n    \n- You can set it in the **Path Variables** section or in the URL field where `:id` appears.\n    \n\nExample:\n\n- `id = 123`\n    \n- Final URL: `{{host}}/api/dishes/123/`\n    \n\n---\n\n### Variables\n\n- `{{host}}`  \n    Base URL of the API (e.g., `https://api.example.com`).  \n    Usually configured as a global or environment variable.\n    \n- `{{id}}`  \n    The value used for the `:id` path variable.  \n    Set this to the dish ID you want to fetch.\n    \n- `{{token}}`  \n    Authentication token used in the `Authorization` header.  \n    Should be stored in the active environment for security.\n    \n\n---\n\n### Request headers (typical)\n\nGET {{host}}/api/dishes/:id/ HTTP/1.1  \nAuthorization: Bearer {token}  \nAccept: application/json"
+          },
+          "response": []
+        },
+        {
+          "name": "Get dish nutrition detail",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}/api/dishes/:id/detail-nutrition",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "dishes",
+                ":id",
+                "detail-nutrition"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "697af279fb1ede566b2a2de4"
+                }
+              ]
+            },
+            "description": "## Get dish detail\n\nRetrieve the detailed information for a single dish by its identifier.\n\n- **Method:** `GET`\n    \n- **URL:** `{{host}}/api/dishes/:id/`\n    \n- **Purpose:** Return all available details for a specific dish (e.g., name, description, price, nutritional info, tags, etc.).\n    \n\n---\n\n### Authentication\n\nThis endpoint requires authentication.\n\n- Typically sent as a Bearer token:\n    \n    - Header: `Authorization: Bearer {{token}}`\n        \n- The `{{token}}` variable is expected to be defined in the active environment (e.g., **Production**).\n    \n\nIf no valid token is provided, the API is expected to return an authentication error (commonly `401 Unauthorized` or `403 Forbidden`).\n\n---\n\n### Path variables\n\n- `id` (required, string or number)  \n    The unique identifier of the dish to retrieve.\n    \n\nIn Postman, this is configured as a path variable:\n\n- `:id` in the URL is mapped to the `id` variable.\n    \n- You can set it in the **Path Variables** section or in the URL field where `:id` appears.\n    \n\nExample:\n\n- `id = 123`\n    \n- Final URL: `{{host}}/api/dishes/123/`\n    \n\n---\n\n### Variables\n\n- `{{host}}`  \n    Base URL of the API (e.g., `https://api.example.com`).  \n    Usually configured as a global or environment variable.\n    \n- `{{id}}`  \n    The value used for the `:id` path variable.  \n    Set this to the dish ID you want to fetch.\n    \n- `{{token}}`  \n    Authentication token used in the `Authorization` header.  \n    Should be stored in the active environment for security.\n    \n\n---\n\n### Request headers (typical)\n\nGET {{host}}/api/dishes/:id/ HTTP/1.1  \nAuthorization: Bearer {token}  \nAccept: application/json"
+          },
+          "response": []
+        },
+        {
+          "name": "Create dish",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": " Cơm gà test create",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": " Món chính dễ làm",
+                  "type": "text"
+                },
+                {
+                  "key": "categories",
+                  "value": " [\"Món chính\",\"Bữa sáng\"]",
+                  "type": "text"
+                },
+                {
+                  "key": "ingredients",
+                  "value": " [{\"ingredientId\":\"69870c61f68911d201229a35\",\"units\":[{\"value\":100,\"quantity\":1,\"unit\":\"g\",\"isDefault\":true}]},{\"ingredientId\":\"69870c61f68911d201229a35\",\"units\":[{\"value\":100,\"quantity\":1,\"unit\":\"g\",\"isDefault\":true}]},{\"ingredientId\":\"69870c61f68911d201229a35\",\"units\":[{\"value\":100,\"quantity\":1,\"unit\":\"g\",\"isDefault\":true}]}]",
+                  "type": "text"
+                },
+                {
+                  "key": "instructions",
+                  "value": "[{\"step\":1,\"description\":\"Chuẩn bị nguyên liệu: gạo, thịt gà (đùi/ức), gừng, hành tím/tỏi (tuỳ chọn), hành lá. Rửa gừng, hành lá; gừng thái lát, hành lá cắt khúc.\"},{\"step\":2,\"description\":\"Sơ chế gà: chà muối lên gà rồi rửa lại, để ráo. Ướp gà với muối + tiêu (có thể thêm chút nước mắm/hành tỏi băm) trong 15–20 phút.\"},{\"step\":3,\"description\":\"Vo và để ráo gạo: vo 1–2 lần cho sạch, để ráo 5 phút. (Tuỳ chọn) rang/đảo gạo với chút dầu cho hạt gạo bóng thơm.\"},{\"step\":4,\"description\":\"Xào gà và gạo: phi thơm hành tỏi (tuỳ chọn), cho gà vào đảo/áp chảo đến khi săn. Cho gạo vào đảo cùng 1–2 phút, thêm gừng để dậy mùi.\"},{\"step\":5,\"description\":\"Nấu cơm: đổ tất cả vào nồi cơm điện, thêm nước hoặc nước luộc gà theo tỉ lệ 1 gạo : 1–1.2 nước (tuỳ loại gạo). Bấm nấu đến khi chín, ủ thêm 10 phút, xới tơi. Rắc hành lá và tiêu trước khi ăn.\"}]",
+                  "type": "text"
+                },
+                {
+                  "key": "preparationTime",
+                  "value": "10",
+                  "type": "text"
+                },
+                {
+                  "key": "cookTime",
+                  "value": " 20",
+                  "type": "text"
+                },
+                {
+                  "key": "servings",
+                  "value": " 2",
+                  "type": "text"
+                },
+                {
+                  "key": "tags",
+                  "value": " [\"nhanh\",\"dễ làm\"]",
+                  "type": "text"
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "isPublic",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "nutritionFocus",
+                  "value": "nutritionFocus",
+                  "type": "text",
+                  "uuid": "5bfb2b5c-ff7a-47cc-8743-68ea63d2c64f"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "acff2656-3644-4fdf-b15f-017236a1bd57",
+                  "src": "postman-cloud:///1f0fcd51-e943-4b70-b16e-9c4861d70163"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/dishes/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "dishes",
+                ""
+              ]
+            },
+            "description": "Retrieve a paginated list of dishes. Supports filtering and pagination via query parameters.\n\nMethod & URL\n\n**GET** `{{host}}/api/dishes/`\n\nAuthentication\n\nThis endpoint requires authentication with a Bearer token.\n\n**Header:** Authorization: Bearer {token}"
+          },
+          "response": []
+        },
+        {
+          "name": "Update dish",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": " Cơm gà test create",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": " Món chính dễ làm",
+                  "type": "text"
+                },
+                {
+                  "key": "categories",
+                  "value": " [\"Món chính\",\"Bữa sáng\"]",
+                  "type": "text"
+                },
+                {
+                  "key": "ingredients",
+                  "value": " [{\"ingredientId\":\"697ac674adf7bde4bd8399bf\",\"units\":[{\"value\":100,\"quantity\":1,\"unit\":\"g\",\"isDefault\":true}]},{\"ingredientId\":\"697ac9f9adf7bde4bd839a17\",\"units\":[{\"value\":100,\"quantity\":1,\"unit\":\"g\",\"isDefault\":true}]},{\"ingredientId\":\"697acaf2adf7bde4bd839a23\",\"units\":[{\"value\":100,\"quantity\":1,\"unit\":\"g\",\"isDefault\":true}]}]",
+                  "type": "text"
+                },
+                {
+                  "key": "instructions",
+                  "value": "[{\"step\":1,\"description\":\"Chuẩn bị nguyên liệu: gạo, thịt gà (đùi/ức), gừng, hành tím/tỏi (tuỳ chọn), hành lá. Rửa gừng, hành lá; gừng thái lát, hành lá cắt khúc.\"},{\"step\":2,\"description\":\"Sơ chế gà: chà muối lên gà rồi rửa lại, để ráo. Ướp gà với muối + tiêu (có thể thêm chút nước mắm/hành tỏi băm) trong 15–20 phút.\"},{\"step\":3,\"description\":\"Vo và để ráo gạo: vo 1–2 lần cho sạch, để ráo 5 phút. (Tuỳ chọn) rang/đảo gạo với chút dầu cho hạt gạo bóng thơm.\"},{\"step\":4,\"description\":\"Xào gà và gạo: phi thơm hành tỏi (tuỳ chọn), cho gà vào đảo/áp chảo đến khi săn. Cho gạo vào đảo cùng 1–2 phút, thêm gừng để dậy mùi.\"},{\"step\":5,\"description\":\"Nấu cơm: đổ tất cả vào nồi cơm điện, thêm nước hoặc nước luộc gà theo tỉ lệ 1 gạo : 1–1.2 nước (tuỳ loại gạo). Bấm nấu đến khi chín, ủ thêm 10 phút, xới tơi. Rắc hành lá và tiêu trước khi ăn.\"}]",
+                  "type": "text"
+                },
+                {
+                  "key": "preparationTime",
+                  "value": "10",
+                  "type": "text"
+                },
+                {
+                  "key": "cookTime",
+                  "value": " 20",
+                  "type": "text"
+                },
+                {
+                  "key": "servings",
+                  "value": " 2",
+                  "type": "text"
+                },
+                {
+                  "key": "tags",
+                  "value": " [\"nhanh\",\"dễ làm\"]",
+                  "type": "text"
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "isPublic",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "nutritionFocus",
+                  "value": " [\"Giàu đạm\",\"Ít béo\"]",
+                  "type": "text",
+                  "uuid": "5bfb2b5c-ff7a-47cc-8743-68ea63d2c64f"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "acff2656-3644-4fdf-b15f-017236a1bd57",
+                  "src": "postman-cloud:///1f0fcd51-e943-4b70-b16e-9c4861d70163"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/dishes/:id",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "dishes",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "69856ac604e12fbe21f34adf"
+                }
+              ]
+            },
+            "description": "Retrieve a paginated list of dishes. Supports filtering and pagination via query parameters.\n\nMethod & URL\n\n**GET** `{{host}}/api/dishes/`\n\nAuthentication\n\nThis endpoint requires authentication with a Bearer token.\n\n**Header:** Authorization: Bearer {token}"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete dish",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{host}}/api/dishes/:id/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "dishes",
+                ":id",
+                ""
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "69870c77f68911d201229a43"
+                }
+              ]
+            },
+            "description": "## Delete dish\n\nDelete an existing dish resource by its unique identifier.\n\n- **Method:** `DELETE`\n    \n- **URL:** `{{host}}/api/dishes/:id/`\n    \n- **Auth:** Bearer token via `{{token}}`\n    \n- **Path variable:**\n    \n    - `id` – The unique identifier of the dish to delete.\n        \n\n---\n\n### Authentication\n\nThis endpoint requires an authenticated request.\n\nUse a Bearer token (for example a JWT) stored in the `{{token}}` variable, and send it in the `Authorization` header:\n\n```\nAuthorization: Bearer {{token}}\n\n ```\n\nIn Postman, you can either:\n\n- Set the Authorization tab to use **Bearer Token** with value `{{token}}`, or\n    \n- Manually add the header above to the request.\n    \n\n---\n\n### Path parameters\n\n- `:id` (required)\n    \n    - Type: string (or numeric, depending on your API)\n        \n    - Description: The unique ID of the dish you want to delete.\n        \n    - Example: `12345`\n        \n\nIn the URL, `:id` is mapped from the `id` path variable. Make sure the `id` variable is set before sending the request.\n\n---\n\n### Behavior\n\n- Deletes the dish identified by `:id`.\n    \n- The operation is typically **irreversible**. Once deleted, the dish cannot be recovered through this API.\n    \n- If the dish does not exist or the user is not allowed to delete it, an error status is returned.\n    \n\n---\n\n### Expected responses\n\n- **204 No Content** – Dish deleted successfully (no response body).\n    \n- **200 OK** – Dish deleted successfully with a confirmation payload (if your API returns a body, such as `{ \"success\": true }`).\n    \n- **401 Unauthorized** – Missing, invalid, or expired token.\n    \n- **403 Forbidden** – Authenticated, but not allowed to delete this dish.\n    \n- **404 Not Found** – No dish exists with the specified `id`.\n    \n\n---\n\n### Example: curl\n\n```\ncurl -X DELETE \"{{host}}/api/dishes/12345/\" \\  -H \"Authorization: Bearer {{token}}\"\n\n ```\n\nReplace `12345` with the actual dish ID you want to remove, or use a Postman variable value for `{{id}}` and keep the URL as:\n\n```\ncurl -X DELETE \"{{host}}/api/dishes/{{id}}/\" \\  -H \"Authorization: Bearer {{token}}\"\n\n ```"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Ingredient",
+      "item": [
+        {
+          "name": "Get ingredients",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}/api/ingredients/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "ingredients",
+                ""
+              ]
+            },
+            "description": "List all ingredients"
+          },
+          "response": []
+        },
+        {
+          "name": "Get ingredient detail",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}/api/ingredients/:id/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "ingredients",
+                ":id",
+                ""
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "6985f654c9ff126900bd9437"
+                }
+              ]
+            },
+            "description": "Generated from cURL: curl --location '{{host}}/api/ingredients/:id/' --header 'Authorization: Bearer {{token}}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Create ingredient",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Cà rốt",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Rau củ tươi",
+                  "type": "text"
+                },
+                {
+                  "key": "categories",
+                  "value": "[\"Rau củ\",\"Trái cây\"]",
+                  "type": "text"
+                },
+                {
+                  "key": "baseUnit",
+                  "value": "{\"amount\":100,\"unit\":\"g\"}",
+                  "type": "text"
+                },
+                {
+                  "key": "units",
+                  "value": "[{\"value\":1,\"unit\":\"củ\",\"isDefault\":true},{\"value\":0.5,\"unit\":\"cốc\",\"isDefault\":false}]",
+                  "type": "text"
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "nutrition",
+                  "value": "{\"nutrients\":{\"calories\":{\"value\":41,\"unit\":\"kcal\"},\"carbs\":{\"value\":9.6,\"unit\":\"g\"},\"fat\":{\"value\":0.2,\"unit\":\"g\"},\"protein\":{\"value\":0.9,\"unit\":\"g\"},\"fiber\":{\"value\":2.8,\"unit\":\"g\"},\"sodium\":{\"value\":69,\"unit\":\"mg\"},\"cholesterol\":{\"value\":0,\"unit\":\"mg\"}},\"minerals\":[{\"label\":\"Alpha carotene\",\"value\":\"0\",\"unit\":\"μg\"},{\"label\":\"Magnesium\",\"value\":\"6\",\"unit\":\"g\"}],\"vitamins\":[{\"label\":\"Vitamin A\",\"value\":\"80\",\"unit\":\"μg\"},{\"label\":\"Vitamin B6\",\"value\":\"0.1\",\"unit\":\"mg\"}],\"sugars\":[{\"label\":\"Sugar\",\"value\":\"0.2\",\"unit\":\"g\"},{\"label\":\"Sucrose\",\"value\":\"0\",\"unit\":\"g\"}],\"fats\":[{\"label\":\"Saturated fats\",\"value\":\"1.6\",\"unit\":\"g\"},{\"label\":\"Monounsaturated fats\",\"value\":\"1.8\",\"unit\":\"g\"}],\"fattyAcids\":[{\"label\":\"Total omega 3\",\"value\":\"1.6\",\"unit\":\"g\"},{\"label\":\"Alpha Linolenic Acid (ALA)\",\"value\":\"1.8\",\"unit\":\"g\"}],\"aminoAcids\":[{\"label\":\"Alanine\",\"value\":\"1.6\",\"unit\":\"g\"},{\"label\":\"Aspartic acid\",\"value\":\"1.8\",\"unit\":\"g\"}]}",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "a0d00a30-2859-40c3-bbd7-b4b52de302e9",
+                  "src": "/home/namdng09/SP26/image/1915_mamarouf_35617191-f11c-4d8b-840b-9a44b68d8511.jpg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/ingredients/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "ingredients",
+                ""
+              ]
+            },
+            "description": "Generated from cURL: curl --location '{{host}}/api/ingredients/' --header 'Authorization: Bearer {{token}}' --header 'Content-Type: application/json' --data '{\"name\": \"Sample Ingredient\",\"unit\": \"g\",\"caloriesPerUnit\": 50,\"status\": \"ACTIVE\"}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Update ingredient",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"Updated Ingredient\",\"unit\": \"ml\",\"caloriesPerUnit\": 45,\"status\": \"INACTIVE\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/ingredients/:id/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "ingredients",
+                ":id",
+                ""
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "6985f654c9ff126900bd9437"
+                }
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request PUT '{{host}}/api/ingredients/:id/' --header 'Authorization: Bearer {{token}}' --header 'Content-Type: application/json' --data '{\"name\": \"Updated Ingredient\",\"unit\": \"ml\",\"caloriesPerUnit\": 45,\"status\": \"INACTIVE\"}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete ingredient",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{host}}/api/ingredients/:id/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "ingredients",
+                ":id",
+                ""
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "6985f654c9ff126900bd9437"
+                }
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request DELETE '{{host}}/api/ingredients/:id/' --header 'Authorization: Bearer {{token}}'"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Collection",
+      "item": [
+        {
+          "name": "Get Collections",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/api/collections",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "collections"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Collection Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/api/collections/697cd009c59be0cb6b0c1c0a",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "collections",
+                "697cd009c59be0cb6b0c1c0a"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create collection",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Bộ sưu tập món nhanh",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Các món làm trong 30 phút",
+                  "type": "text"
+                },
+                {
+                  "key": "isPublic",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "tags",
+                  "value": " [\"nhanh\",\"dễ làm\"]",
+                  "type": "text"
+                },
+                {
+                  "key": "dishes",
+                  "value": " [{\"dishId\":\"697af279fb1ede566b2a2de4\",\"name\":\"Cơm gà\",\"calories\":550,\"image\":\"https://res.cloudinary.com/djpv3n1e2/image/upload/v1769664374/uploads/ct8gc8ytqeunihyavnnc.jpg\"}]",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "a0d00a30-2859-40c3-bbd7-b4b52de302e9",
+                  "src": "/home/namdng09/SP26/image/316253_Onigirizen_cbb7ace7-2f1c-46e8-9b96-af84cbff0d8d.jpg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/collections/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "collections",
+                ""
+              ]
+            },
+            "description": "Generated from cURL: curl --location '{{host}}/api/ingredients/' --header 'Authorization: Bearer {{token}}' --header 'Content-Type: application/json' --data '{\"name\": \"Sample Ingredient\",\"unit\": \"g\",\"caloriesPerUnit\": 50,\"status\": \"ACTIVE\"}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Update ingredient",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"Updated Ingredient\",\"unit\": \"ml\",\"caloriesPerUnit\": 45,\"status\": \"INACTIVE\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/ingredients/:id/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "ingredients",
+                ":id",
+                ""
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request PUT '{{host}}/api/ingredients/:id/' --header 'Authorization: Bearer {{token}}' --header 'Content-Type: application/json' --data '{\"name\": \"Updated Ingredient\",\"unit\": \"ml\",\"caloriesPerUnit\": 45,\"status\": \"INACTIVE\"}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete ingredient",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{host}}/api/ingredients/:id/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "ingredients",
+                ":id",
+                ""
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request DELETE '{{host}}/api/ingredients/:id/' --header 'Authorization: Bearer {{token}}'"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Post",
+      "item": [
+        {
+          "name": "Get Posts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}/api/posts",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "posts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Post Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/api/posts/6981dea6dec03f8b30adc20d",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "posts",
+                "6981dea6dec03f8b30adc20d"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Post By Slug",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/api/posts?slug=titletitle",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "posts"
+              ],
+              "query": [
+                {
+                  "key": "slug",
+                  "value": "titletitle"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Post",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "titletitle3",
+                  "type": "text",
+                  "uuid": "f1787038-4c34-4a0b-bf45-3a4cc214a2dc"
+                },
+                {
+                  "key": "content",
+                  "value": "contentcontent",
+                  "type": "text",
+                  "uuid": "930378a2-2a72-4ca9-8c4e-50dcbff5be3e"
+                },
+                {
+                  "key": "tags",
+                  "value": "[\"ta\", \"gs\"]",
+                  "type": "text",
+                  "uuid": "f718c357-1c94-42fb-8373-3feb94d43a66"
+                },
+                {
+                  "key": "category",
+                  "value": "Mẹo",
+                  "type": "text",
+                  "uuid": "d7e8324f-a3bc-4714-af6a-b2da0213e495"
+                },
+                {
+                  "key": "isPublish",
+                  "value": "true",
+                  "type": "text",
+                  "uuid": "d5931b87-dd28-4696-80ca-281aeedcab7e"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "uuid": "25e84536-94b5-44c2-8309-cd6831bc6871",
+                  "src": [
+                    "/C:/Users/os/Downloads/image1.jpg",
+                    "/C:/Users/os/Downloads/image.png"
+                  ]
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/posts",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "posts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Post",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "titletitle",
+                  "type": "text",
+                  "uuid": "f1787038-4c34-4a0b-bf45-3a4cc214a2dc"
+                },
+                {
+                  "key": "content",
+                  "value": "contentcontent",
+                  "type": "text",
+                  "uuid": "930378a2-2a72-4ca9-8c4e-50dcbff5be3e"
+                },
+                {
+                  "key": "tags",
+                  "value": "[\"ta\", \"gs\"]",
+                  "type": "text",
+                  "uuid": "f718c357-1c94-42fb-8373-3feb94d43a66"
+                },
+                {
+                  "key": "category",
+                  "value": "Mẹo",
+                  "type": "text",
+                  "uuid": "d7e8324f-a3bc-4714-af6a-b2da0213e495"
+                },
+                {
+                  "key": "isPublish",
+                  "value": "true",
+                  "type": "text",
+                  "uuid": "d5931b87-dd28-4696-80ca-281aeedcab7e"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "uuid": "25e84536-94b5-44c2-8309-cd6831bc6871",
+                  "src": "/C:/Users/os/Downloads/image.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/posts/6981dea6dec03f8b30adc20d",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "posts",
+                "6981dea6dec03f8b30adc20d"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Like/Unlike Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{host}}/api/posts/6981dea6dec03f8b30adc20d/like",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "posts",
+                "6981dea6dec03f8b30adc20d",
+                "like"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "content",
+                  "value": "comment",
+                  "type": "text",
+                  "uuid": "897fa202-9ff0-44dc-af34-4a354934d136"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/posts/6981dea6dec03f8b30adc20d/comments",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "posts",
+                "6981dea6dec03f8b30adc20d",
+                "comments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comment",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "content",
+                  "value": "comment",
+                  "type": "text",
+                  "uuid": "897fa202-9ff0-44dc-af34-4a354934d136"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/posts/6981dea6dec03f8b30adc20d/comments/6981e56617c7f92250f596e9",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "posts",
+                "6981dea6dec03f8b30adc20d",
+                "comments",
+                "6981e56617c7f92250f596e9"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Post",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "content",
+                  "value": "comment",
+                  "type": "text",
+                  "uuid": "897fa202-9ff0-44dc-af34-4a354934d136"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/posts/6981dea6dec03f8b30adc20d",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "posts",
+                "6981dea6dec03f8b30adc20d"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Grocery",
+      "item": [
+        {
+          "name": "Get groceries",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{host}}/api/groceries/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "groceries",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get grocery detail",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{host}}/api/groceries/6986ea6406033b01b692fcbc",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "groceries",
+                "6986ea6406033b01b692fcbc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create grocery",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Danh sách mua sắm tuần này",
+                  "type": "text",
+                  "uuid": "d0b1b9cd-1cab-4fd5-933a-39c3f1cf202c"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-02-10",
+                  "type": "text",
+                  "uuid": "4fda6bc4-08aa-42c6-9700-19cf94e6b14c"
+                },
+                {
+                  "key": "status",
+                  "value": "Đang hoạt động",
+                  "type": "text",
+                  "uuid": "fe018678-3962-49d9-aa61-a90c35d6ef8c"
+                },
+                {
+                  "key": "ingredients",
+                  "value": " [\n  {\n    \"ingredientId\": \"6986e7490fdc473fc4f11e6b\",\n    \"quantity\": 500,\n    \"isPurchased\": false,\n    \"notes\": \"Mua loại tươi\"\n  },\n  {\n    \"ingredientId\": \"6986e7490fdc473fc4f11e6b\",\n    \"quantity\": 300,\n    \"isPurchased\": true\n  },\n  {\n    \"ingredientId\": \"6986e7490fdc473fc4f11e6b\",\n    \"quantity\": 1000\n  }\n]",
+                  "type": "text",
+                  "uuid": "a90e2f82-735d-4b2f-9026-bb3991f848b4"
+                },
+                {
+                  "key": "notes",
+                  "value": "Mua sáng thứ 7",
+                  "type": "text",
+                  "uuid": "bb56a5f9-d606-41ad-bd95-8a717b6fe8ff"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/groceries/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "groceries",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update grocery",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Danh sách mua sắm tuần này",
+                  "type": "text",
+                  "uuid": "d0b1b9cd-1cab-4fd5-933a-39c3f1cf202c"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-02-07",
+                  "type": "text",
+                  "uuid": "4fda6bc4-08aa-42c6-9700-19cf94e6b14c"
+                },
+                {
+                  "key": "status",
+                  "value": "Đang hoạt động",
+                  "type": "text",
+                  "uuid": "fe018678-3962-49d9-aa61-a90c35d6ef8c"
+                },
+                {
+                  "key": "ingredients",
+                  "value": " [\n  {\n    \"ingredientId\": \"6986e7490fdc473fc4f11e6b\",\n    \"quantity\": 500,\n    \"isPurchased\": false,\n    \"notes\": \"Mua loại tươi\"\n  },\n  {\n    \"ingredientId\": \"6986e7490fdc473fc4f11e6b\",\n    \"quantity\": 300,\n    \"isPurchased\": true\n  },\n  {\n    \"ingredientId\": \"6986e7490fdc473fc4f11e6b\",\n    \"quantity\": 1000\n  }\n]",
+                  "type": "text",
+                  "uuid": "a90e2f82-735d-4b2f-9026-bb3991f848b4"
+                },
+                {
+                  "key": "notes",
+                  "value": "Mua sáng thứ 7",
+                  "type": "text",
+                  "uuid": "bb56a5f9-d606-41ad-bd95-8a717b6fe8ff"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/groceries/6986ea6406033b01b692fcbc",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "groceries",
+                "6986ea6406033b01b692fcbc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add ingredients to grocery",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "ingredients",
+                  "value": "[\n    {\n      \"ingredientId\": \"6986e7490fdc473fc4f11e6b\",\n      \"quantity\": 200,\n      \"isPurchased\": true,\n      \"notes\": \"Đã mua\"\n    },\n    {\n      \"ingredientId\": \"6986fc2f60eb18777fc5de6a\",\n      \"quantity\": 300,\n      \"isPurchased\": false\n    }\n  ]",
+                  "type": "text",
+                  "uuid": "747d683a-d3de-485a-aec0-4e9b41eaaba0"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/groceries/6986ea6406033b01b692fcbc/ingredients",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "groceries",
+                "6986ea6406033b01b692fcbc",
+                "ingredients"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update ingredients in grocery",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "ingredients",
+                  "value": "[\n    {\n      \"ingredientId\": \"6986e7490fdc473fc4f11e6b\",\n      \"quantity\": 200,\n      \"isPurchased\": true,\n      \"notes\": \"Đã mua\"\n    },\n    {\n      \"ingredientId\": \"6986fc2f60eb18777fc5de6a\",\n      \"quantity\": 300,\n      \"isPurchased\": false,\n      \"notes\": \"Đã mua 1\"\n    }\n  ]",
+                  "type": "text",
+                  "uuid": "747d683a-d3de-485a-aec0-4e9b41eaaba0"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/groceries/6986ea6406033b01b692fcbc/ingredients",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "groceries",
+                "6986ea6406033b01b692fcbc",
+                "ingredients"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete ingredients in grocery",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "ingredients",
+                  "value": "[\"6986e7490fdc473fc4f11e6b\", \"6986fc2f60eb18777fc5de6a\"]",
+                  "type": "text",
+                  "uuid": "747d683a-d3de-485a-aec0-4e9b41eaaba0"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/groceries/6986ea6406033b01b692fcbc/ingredients",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "groceries",
+                "6986ea6406033b01b692fcbc",
+                "ingredients"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete grocery",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{host}}/api/groceries/6986ea6406033b01b692fcbc",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "groceries",
+                "6986ea6406033b01b692fcbc"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-API-Key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://farming-simulator.pstmn.io"
+    }
+  ]
+}

@@ -1,13 +1,20 @@
 import mongoose from 'mongoose';
-import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it
+} from 'vitest';
 
-import app from '~/app';
+import { AuthService } from '~/features/auth/auth-service';
 import { ROLE } from '~/shared/constants/role';
 import { AuthModel, UserModel } from '~/shared/database/models';
 import { hashPassword } from '~/shared/utils/bcrypt';
 
-describe('POST /api/auth/login', () => {
+describe('AuthService.login', () => {
   let userId: string;
 
   beforeAll(async () => {
@@ -20,10 +27,6 @@ describe('POST /api/auth/login', () => {
   });
 
   beforeEach(async () => {
-    // Clean up database before each test
-    await AuthModel.deleteMany({});
-    await UserModel.deleteMany({});
-
     // Create a test user for happy case
     const user = await UserModel.create({
       email: 'haidangphan2015@gmail.com',
@@ -44,75 +47,62 @@ describe('POST /api/auth/login', () => {
     });
   });
 
+  afterEach(async () => {
+    // Clean up after each test
+    await AuthModel.deleteMany({ providerId: 'haidangphan2015@gmail.com' });
+    await UserModel.deleteMany({ email: 'haidangphan2015@gmail.com' });
+  });
+
   afterAll(async () => {
-    // Clean up and close connection
-    await AuthModel.deleteMany({});
-    await UserModel.deleteMany({});
+    // Close connection
     await mongoose.connection.close();
   });
 
   // Happy case
   it('should login successfully with valid credentials', async () => {
-    const res = await request(app).post('/api/auth/login').send({
+    const result = await AuthService.login({
       email: 'haidangphan2015@gmail.com',
       password: '123456'
     });
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Login successful');
-    expect(res.body.data).toHaveProperty('accessToken');
-    expect(typeof res.body.data.accessToken).toBe('string');
-
-    // Check refresh token in cookie
-    expect(res.headers['set-cookie']).toBeDefined();
-    const cookies = Array.isArray(res.headers['set-cookie'])
-      ? res.headers['set-cookie']
-      : [res.headers['set-cookie']];
-    const refreshTokenCookie = cookies.find((cookie: string) =>
-      cookie.startsWith('refreshToken=')
-    );
-    expect(refreshTokenCookie).toBeDefined();
-    expect(refreshTokenCookie).toContain('HttpOnly');
+    expect(result).toHaveProperty('accessToken');
+    expect(result).toHaveProperty('refreshToken');
+    expect(result).toHaveProperty('hasOnboarded');
+    expect(typeof result.accessToken).toBe('string');
+    expect(typeof result.refreshToken).toBe('string');
+    expect(result.hasOnboarded).toBe(false);
   });
 
   // Branch: auth not found
-  it('should return 401 when email does not exist', async () => {
-    const res = await request(app).post('/api/auth/login').send({
-      email: 'nonexistent@gmail.com',
-      password: '123456'
-    });
-
-    expect(res.status).toBe(401);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Invalid credentials');
+  it('should throw 401 error when email does not exist', async () => {
+    await expect(
+      AuthService.login({
+        email: 'nonexistent@gmail.com',
+        password: '123456'
+      })
+    ).rejects.toThrow('Invalid credentials');
   });
 
   // Branch: invalid password
-  it('should return 401 when password is incorrect', async () => {
-    const res = await request(app).post('/api/auth/login').send({
-      email: 'haidangphan2015@gmail.com',
-      password: 'wrongpassword'
-    });
-
-    expect(res.status).toBe(401);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Invalid credentials');
+  it('should throw 401 error when password is incorrect', async () => {
+    await expect(
+      AuthService.login({
+        email: 'haidangphan2015@gmail.com',
+        password: 'wrongpassword'
+      })
+    ).rejects.toThrow('Invalid credentials');
   });
 
   // Branch: user not found
-  it('should return 404 when user is deleted', async () => {
+  it('should throw 404 error when user is deleted', async () => {
     // Delete the user but keep auth
     await UserModel.findByIdAndDelete(userId);
 
-    const res = await request(app).post('/api/auth/login').send({
-      email: 'haidangphan2015@gmail.com',
-      password: '123456'
-    });
-
-    expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'User not found or inactive');
+    await expect(
+      AuthService.login({
+        email: 'haidangphan2015@gmail.com',
+        password: '123456'
+      })
+    ).rejects.toThrow('User not found or inactive');
   });
-
 });

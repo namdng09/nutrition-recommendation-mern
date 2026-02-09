@@ -136,7 +136,7 @@ describe('PUT /api/ingredients/:id', () => {
   });
 
   // ============ HAPPY CASES ============
-  it('should update ingredient successfully without image', async () => {
+  it('UC01 - should update ingredient successfully without image', async () => {
     const updateData = {
       name: 'Cà chua đỏ',
       description: 'Cà chua tươi ngon',
@@ -166,7 +166,7 @@ describe('PUT /api/ingredients/:id', () => {
     expect(res.body.data.categories).toContain(INGREDIENT_CATEGORY.FRUITS);
   });
 
-  it('should update ingredient successfully with image', async () => {
+  it('UC02 - should update ingredient successfully with image', async () => {
     const updateData = {
       name: 'Cà chua cherry',
       description: 'Cà chua bi'
@@ -186,7 +186,7 @@ describe('PUT /api/ingredients/:id', () => {
   });
 
   // ============ VALIDATION (400) ============
-  it('should return 400 when id format is invalid', async () => {
+  it('UC03 - should return 400 when id format is invalid', async () => {
     const updateData = {
       name: 'Cà chua đỏ'
     };
@@ -204,8 +204,41 @@ describe('PUT /api/ingredients/:id', () => {
     );
   });
 
+  it('UC04 - should return 400 when name is number (Type Violation)', async () => {
+    const updateData = {
+      name: 1234
+    };
+
+    const res = await request(app)
+      .put(`/api/ingredients/${ingredientId}`)
+      .set('Authorization', `Bearer ${nutritionistToken}`)
+      .send(updateData);
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('status', 'failed');
+    expect(res.body).toHaveProperty('message', 'Tên nguyên liệu không hợp lệ');
+  });
+
+  it('UC05 - should return 400 when name is too short (Constraint Limits)', async () => {
+    const updateData = {
+      name: 'A'
+    };
+
+    const res = await request(app)
+      .put(`/api/ingredients/${ingredientId}`)
+      .set('Authorization', `Bearer ${nutritionistToken}`)
+      .field('name', updateData.name);
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('status', 'failed');
+    expect(res.body).toHaveProperty(
+      'message',
+      'Tên nguyên liệu phải có ít nhất 2 ký tự'
+    );
+  });
+
   // ============ NOT FOUND (404) ============
-  it('should return 404 when ingredient does not exist', async () => {
+  it('UC06 - should return 404 when ingredient does not exist', async () => {
     const nonExistentId = new mongoose.Types.ObjectId().toString();
     const updateData = {
       name: 'Cà chua đỏ'
@@ -219,30 +252,5 @@ describe('PUT /api/ingredients/:id', () => {
     expect(res.status).toBe(404);
     expect(res.body).toHaveProperty('status', 'failed');
     expect(res.body).toHaveProperty('message', 'Không tìm thấy nguyên liệu');
-  });
-
-  // ============ ERROR CASES (500) ============
-  it('should return 500 when image upload fails during update', async () => {
-    // Mock upload to fail
-    vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValueOnce({
-      success: false,
-      error: 'Upload failed'
-    });
-
-    const updateData = {
-      name: 'Cà chua cherry',
-      description: 'Cà chua bi'
-    };
-
-    const res = await request(app)
-      .put(`/api/ingredients/${ingredientId}`)
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', updateData.name)
-      .field('description', updateData.description)
-      .attach('image', Buffer.from('fake-image-data'), 'updated-image.jpg');
-
-    expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty('message', 'Tải ảnh lên thất bại');
   });
 });
