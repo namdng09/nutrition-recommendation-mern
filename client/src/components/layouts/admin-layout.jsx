@@ -41,7 +41,9 @@ const AdminLayout = () => {
       'update-dish': 'Cập nhật món ăn',
       'manage-collections': 'Quản lý bộ sưu tập',
       'create-collection': 'Tạo bộ sưu tập',
-      'update-collection': 'Cập nhật bộ sưu tập'
+      'update-collection': 'Cập nhật bộ sưu tập',
+      'manage-posts': 'Quản lý bài viết',
+      'create-post': 'Tạo bài viết'
     };
 
     const items = [];
