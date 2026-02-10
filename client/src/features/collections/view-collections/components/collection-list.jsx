@@ -16,7 +16,7 @@ import CollectionPagination from './collection-pagination';
 
 export default function CollectionsList() {
   const [page, setPage] = useState(1);
-  const { data } = useCollections(page);
+  const { data } = useCollections();
   const collections = data?.docs ?? [];
 
   return (
