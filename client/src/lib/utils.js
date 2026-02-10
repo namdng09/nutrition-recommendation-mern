@@ -150,3 +150,32 @@ export const findByLabel = (arr, label) =>
   );
 
 export const hasValue = x => x?.value !== undefined && x?.value !== null;
+
+// dish nutrition content
+export const formatValue = (value, unit) => {
+  if (value === undefined || value === null || value === '') return '-';
+  const num = Number(value);
+  if (unit === 'g') return formatGram(num);
+  if (unit === 'kcal') return Math.round(num).toString();
+  if (['mg', 'ml', 'μg'].includes(unit))
+    return num.toLocaleString(undefined, {
+      maximumFractionDigits: 2
+    });
+
+  return num.toLocaleString();
+};
+
+// dish nutrtion detail
+export const findNutrientValue = (nutrition, label) =>
+  nutrition?.nutrients?.find(
+    n => String(n.label).toLowerCase() === String(label).toLowerCase()
+  )?.value ?? 0;
+
+export const filterNutrients = (nutrition, keywords = []) =>
+  nutrition?.nutrients?.filter(n =>
+    keywords.some(k => String(n.label).toLowerCase().includes(k.toLowerCase()))
+  ) ?? [];
+
+// dish list kcal (calories)
+export const getNutritionValue = (dish, label) =>
+  dish?.nutrition?.nutrients?.find(n => n.label === label)?.value ?? 0;
