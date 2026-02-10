@@ -5,6 +5,7 @@ import { NUTRITION_MINERAL } from '~/shared/constants/nutrition-minerals';
 import { NUTRIENTS } from '~/shared/constants/nutrition-nutrients';
 import { NUTRITION_VITAMIN } from '~/shared/constants/nutrition-vitamin';
 import { UNIT } from '~/shared/constants/unit';
+import { NUTRITION_FOCUS } from '~/shared/constants/nutrition-focus';
 
 const parseJSON = (val: any) => {
   if (val === undefined || val === null) {
@@ -103,6 +104,12 @@ export const createDishRequestSchema = z.object({
   cookTime: z.coerce.number().min(0).optional(),
   servings: z.coerce.number().min(1).optional(),
   tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
+  nutritionFocus: z.preprocess(
+    parseJSON,
+    z
+      .array(z.enum(Object.values(NUTRITION_FOCUS)))
+      .min(1, 'Phải có ít nhất 1 danh mục')
+  ),
   isActive: z.preprocess(parseBoolean, z.coerce.boolean()).optional(),
   isPublic: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
 });
@@ -138,6 +145,12 @@ export const updateDishRequestSchema = z.object({
   cookTime: z.coerce.number().min(0).optional(),
   servings: z.coerce.number().min(1).optional(),
   tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
+  nutritionFocus: z.preprocess(
+    parseJSON,
+    z
+      .array(z.enum(Object.values(NUTRITION_FOCUS)))
+      .min(1, 'Phải có ít nhất 1 danh mục')
+  ),
   isActive: z.preprocess(parseBoolean, z.coerce.boolean()).optional(),
   isPublic: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
 });
