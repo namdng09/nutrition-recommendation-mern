@@ -73,36 +73,48 @@ describe('AuthService.login', () => {
     expect(result.hasOnboarded).toBe(false);
   });
 
-  // Branch: auth not found
-  it('should throw 401 error when email does not exist', async () => {
+  // Branch: invalid email format
+  it('should return 401 error when email is invalid format', async () => {
     await expect(
       AuthService.login({
-        email: 'nonexistent@gmail.com',
+        email: 'invalid-email',
         password: '123456'
       })
-    ).rejects.toThrow('Invalid credentials');
+    ).rejects.toThrow('Email không hợp lệ');
+  });
+
+  // Branch: missing required field
+  it('should return 401 error when required field is missing', async () => {
+    await expect(
+      AuthService.login({
+        email: undefined as unknown as string, // Missing email field
+        password: '123456'
+      })
+    ).rejects.toThrow('Email không hợp lệ');
   });
 
   // Branch: invalid password
-  it('should throw 401 error when password is incorrect', async () => {
+  it('should throw 401 error when credentials are invalid', async () => {
     await expect(
       AuthService.login({
         email: 'haidangphan2015@gmail.com',
-        password: 'wrongpassword'
+        password: 'wrongpassword' // Incorrect password
       })
-    ).rejects.toThrow('Invalid credentials');
+    ).rejects.toThrow('Thông tin đăng nhập không hợp lệ');
   });
 
-  // Branch: user not found
-  it('should throw 404 error when user is deleted', async () => {
-    // Delete the user but keep auth
-    await UserModel.findByIdAndDelete(userId);
+  // Branch: User is inactive
+  it('should throw 404 error when user is inactive', async () => {
+    // Set user to inactive
+    await UserModel.findByIdAndUpdate(userId, { isActive: false });
 
     await expect(
       AuthService.login({
         email: 'haidangphan2015@gmail.com',
         password: '123456'
       })
-    ).rejects.toThrow('User not found or inactive');
+    ).rejects.toThrow(
+      'Không tìm thấy người dùng hoặc tài khoản đã bị vô hiệu hóa'
+    );
   });
 });

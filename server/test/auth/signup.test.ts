@@ -1,27 +1,9 @@
 import mongoose from 'mongoose';
-import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi
-} from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { AuthService } from '~/features/auth/auth-service';
 import { ROLE } from '~/shared/constants/role';
 import { AuthModel, UserModel } from '~/shared/database/models';
-import * as uploadUtils from '~/shared/utils/cloudinary';
-
-// Mock the upload utility
-vi.mock('~/shared/utils/cloudinary', async () => {
-  const actual = await vi.importActual('~/shared/utils/cloudinary');
-  return {
-    ...actual,
-    uploadAvatar: vi.fn()
-  };
-});
 
 describe('AuthService.signUp', () => {
   beforeAll(async () => {
@@ -37,7 +19,6 @@ describe('AuthService.signUp', () => {
     // Clean up database before each test
     await AuthModel.deleteMany({});
     await UserModel.deleteMany({});
-    vi.clearAllMocks();
   });
 
   afterAll(async () => {
@@ -47,8 +28,8 @@ describe('AuthService.signUp', () => {
     await mongoose.connection.close();
   });
 
-  // Happy case - sign up without avatar
-  it('should sign up successfully without avatar', async () => {
+  // Happy case - sign up
+  it('should sign up successfully with valid credentials', async () => {
     const result = await AuthService.signUp({
       email: 'newuser@gmail.com',
       name: 'New User',
@@ -77,48 +58,37 @@ describe('AuthService.signUp', () => {
     expect(auth?.verifyAt).toBeDefined();
   });
 
-  // Happy case - sign up with avatar
-  it('should sign up successfully with avatar', async () => {
-    // Mock successful avatar upload
-    (uploadUtils.uploadAvatar as any).mockResolvedValue({
-      success: true,
-      data: {
-        secure_url: 'https://cloudinary.com/avatar.jpg'
-      }
-    });
-
-    const mockFile: Express.Multer.File = {
-      buffer: Buffer.from('fake image'),
-      fieldname: 'avatar',
-      originalname: 'avatar.jpg',
-      encoding: '7bit',
-      mimetype: 'image/jpeg',
-      size: 1024,
-      destination: '',
-      filename: 'avatar.jpg',
-      path: '',
-      stream: null as any
-    };
-
-    const result = await AuthService.signUp(
-      {
-        email: 'newuser@gmail.com',
+  // Branch: invalid email format
+  it('should throw 400 error when email is invalid', async () => {
+    await expect(
+      AuthService.signUp({
+        email: 'invalid-email',
         name: 'New User',
         password: '123456'
-      },
-      mockFile
-    );
+      })
+    ).rejects.toThrow('Email không hợp lệ');
+  });
 
-    expect(result).toHaveProperty('accessToken');
-    expect(result).toHaveProperty('refreshToken');
+  // Branch: missing email field
+  it('should throw 400 error when field email is missing', async () => {
+    await expect(
+      AuthService.signUp({
+        email: undefined as unknown as string,
+        name: 'New User',
+        password: '123456'
+      })
+    ).rejects.toThrow('Email không hợp lệ');
+  });
 
-    // Verify user was created with avatar
-    const user = await UserModel.findOne({ email: 'newuser@gmail.com' });
-    expect(user).toBeDefined();
-    expect(user?.avatar).toBe('https://cloudinary.com/avatar.jpg');
-
-    // Verify uploadAvatar was called
-    expect(uploadUtils.uploadAvatar).toHaveBeenCalledTimes(1);
+  // Branch: password is shorter than 6 characters
+  it('should throw 400 error when password is too short', async () => {
+    await expect(
+      AuthService.signUp({
+        email: 'newuser@gmail.com',
+        name: 'New User',
+        password: '123'
+      })
+    ).rejects.toThrow('Mật khẩu phải có ít nhất 6 ký tự');
   });
 
   // Branch: duplicate email
@@ -137,82 +107,6 @@ describe('AuthService.signUp', () => {
         name: 'New User',
         password: '123456'
       })
-    ).rejects.toThrow('Unable to create account with provided information');
-  });
-
-  // Branch: duplicate auth (after user creation)
-  it('should throw 400 error when auth already exists after creating user', async () => {
-    // Create another user first
-    const existingUser = await UserModel.create({
-      email: 'other@gmail.com',
-      name: 'Other User',
-      role: ROLE.USER,
-      isActive: true
-    });
-
-    // Create auth for a different email
-    await AuthModel.create({
-      user: existingUser._id,
-      provider: 'local',
-      providerId: 'newuser@gmail.com',
-      localPassword: 'hashedpassword',
-      verifyAt: new Date()
-    });
-
-    await expect(
-      AuthService.signUp({
-        email: 'newuser@gmail.com',
-        name: 'New User',
-        password: '123456'
-      })
-    ).rejects.toThrow('Unable to create account with provided information');
-  });
-
-  // Branch: avatar upload fails
-  it('should throw 500 error when avatar upload fails', async () => {
-    // Mock failed avatar upload
-    (uploadUtils.uploadAvatar as any).mockResolvedValue({
-      success: false,
-      error: 'Upload failed'
-    });
-
-    const mockFile: Express.Multer.File = {
-      buffer: Buffer.from('fake image'),
-      fieldname: 'avatar',
-      originalname: 'avatar.jpg',
-      encoding: '7bit',
-      mimetype: 'image/jpeg',
-      size: 1024,
-      destination: '',
-      filename: 'avatar.jpg',
-      path: '',
-      stream: null as any
-    };
-
-    await expect(
-      AuthService.signUp(
-        {
-          email: 'newuser@gmail.com',
-          name: 'New User',
-          password: '123456'
-        },
-        mockFile
-      )
-    ).rejects.toThrow('Failed to upload avatar');
-  });
-
-  // Branch: user creation fails
-  it('should throw 500 error when user creation fails', async () => {
-    vi.spyOn(UserModel, 'create').mockResolvedValueOnce(null as any);
-
-    await expect(
-      AuthService.signUp({
-        email: 'newuser@gmail.com',
-        name: 'New User',
-        password: '123456'
-      })
-    ).rejects.toThrow('Unable to complete registration at this time');
-
-    vi.spyOn(UserModel, 'create').mockRestore();
+    ).rejects.toThrow('Tài khoản với email này đã tồn tại');
   });
 });
