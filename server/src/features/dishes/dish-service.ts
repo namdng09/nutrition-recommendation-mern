@@ -161,6 +161,7 @@ export const DishService = {
       name: data.name,
       description: data.description,
       categories: data.categories,
+      nutritionFocus: data.nutritionFocus,
       ingredients: ingredientDetails,
       instructions: data.instructions,
       preparationTime: data.preparationTime,

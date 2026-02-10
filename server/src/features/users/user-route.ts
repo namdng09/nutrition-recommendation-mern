@@ -11,7 +11,12 @@ import { asyncHandler, handleSingleImageUpload } from '~/shared/utils';
 
 import { UserController } from './user-controller';
 import {
+  blockDishRequestSchema,
+  blockIngredientRequestSchema,
   createUserRequestSchema,
+  favoriteCollectionRequestSchema,
+  favoriteDishRequestSchema,
+  favoriteIngredientRequestSchema,
   nutritionTargetRequestSchema,
   onboardingRequestSchema,
   updateUserRequestSchema
@@ -65,6 +70,86 @@ router.put(
   authenticate(),
   handleSingleImageUpload('avatar'),
   asyncHandler(UserController.updateProfile)
+);
+
+router.post(
+  '/me/favorites/dishes',
+  authenticate(),
+  parseFormData,
+  validate(favoriteDishRequestSchema.shape),
+  asyncHandler(UserController.addFavoriteDish)
+);
+
+router.delete(
+  '/me/favorites/dishes',
+  authenticate(),
+  parseFormData,
+  validate(favoriteDishRequestSchema.shape),
+  asyncHandler(UserController.removeFavoriteDish)
+);
+
+router.post(
+  '/me/favorites/ingredients',
+  authenticate(),
+  parseFormData,
+  validate(favoriteIngredientRequestSchema.shape),
+  asyncHandler(UserController.addFavoriteIngredient)
+);
+
+router.delete(
+  '/me/favorites/ingredients',
+  authenticate(),
+  parseFormData,
+  validate(favoriteIngredientRequestSchema.shape),
+  asyncHandler(UserController.removeFavoriteIngredient)
+);
+
+router.post(
+  '/me/favorites/collections',
+  authenticate(),
+  parseFormData,
+  validate(favoriteCollectionRequestSchema.shape),
+  asyncHandler(UserController.addFavoriteCollection)
+);
+
+router.delete(
+  '/me/favorites/collections',
+  authenticate(),
+  parseFormData,
+  validate(favoriteCollectionRequestSchema.shape),
+  asyncHandler(UserController.removeFavoriteCollection)
+);
+
+router.post(
+  '/me/blocks/dishes',
+  authenticate(),
+  parseFormData,
+  validate(blockDishRequestSchema.shape),
+  asyncHandler(UserController.addBlockDish)
+);
+
+router.delete(
+  '/me/blocks/dishes',
+  authenticate(),
+  parseFormData,
+  validate(blockDishRequestSchema.shape),
+  asyncHandler(UserController.removeBlockDish)
+);
+
+router.post(
+  '/me/blocks/ingredients',
+  authenticate(),
+  parseFormData,
+  validate(blockIngredientRequestSchema.shape),
+  asyncHandler(UserController.addBlockIngredient)
+);
+
+router.delete(
+  '/me/blocks/ingredients',
+  authenticate(),
+  parseFormData,
+  validate(blockIngredientRequestSchema.shape),
+  asyncHandler(UserController.removeBlockIngredient)
 );
 
 router.get(

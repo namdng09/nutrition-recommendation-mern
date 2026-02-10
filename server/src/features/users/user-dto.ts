@@ -167,3 +167,39 @@ export const updateUserRequestSchema = z.object({
 });
 
 export type UpdateUserRequest = z.infer<typeof updateUserRequestSchema>;
+
+export const favoriteDishRequestSchema = z.object({
+  dishId: z.string().trim().min(1, 'Dish ID is required')
+});
+
+export type FavoriteDishRequest = z.infer<typeof favoriteDishRequestSchema>;
+
+export const favoriteIngredientRequestSchema = z.object({
+  ingredientId: z.string().trim().min(1, 'Ingredient ID is required')
+});
+
+export type FavoriteIngredientRequest = z.infer<
+  typeof favoriteIngredientRequestSchema
+>;
+
+export const favoriteCollectionRequestSchema = z.object({
+  collectionId: z.string().trim().min(1, 'Collection ID is required')
+});
+
+export type FavoriteCollectionRequest = z.infer<
+  typeof favoriteCollectionRequestSchema
+>;
+
+export const blockDishRequestSchema = z.object({
+  dishId: z.string().trim().min(1, 'Dish ID is required')
+});
+
+export type BlockDishRequest = z.infer<typeof blockDishRequestSchema>;
+
+export const blockIngredientRequestSchema = z.object({
+  ingredientId: z.string().trim().min(1, 'Ingredient ID is required')
+});
+
+export type BlockIngredientRequest = z.infer<
+  typeof blockIngredientRequestSchema
+>;
