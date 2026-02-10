@@ -80,7 +80,9 @@ const router = createBrowserRouter([
           {
             path: 'profile',
             Component: () => (
-              <PrivateRoute allowedRoles={[ROLE.USER, ROLE.ADMIN]}>
+              <PrivateRoute
+                allowedRoles={[ROLE.USER, ROLE.ADMIN, ROLE.NUTRITIONIST]}
+              >
                 <ProfileLayout />
               </PrivateRoute>
             ),

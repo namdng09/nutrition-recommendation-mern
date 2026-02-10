@@ -174,10 +174,6 @@ const UpdatePhysicalStats = () => {
               Chỉ số cơ thể
             </h1>
           </div>
-          <p className='text-sm text-muted-foreground sm:text-base'>
-            Cập nhật các chỉ số cơ thể của bạn để tính toán nhu cầu dinh dưỡng
-            chính xác hơn
-          </p>
         </div>
 
         {/* Form Card */}
