@@ -1,37 +1,36 @@
 import { z } from 'zod';
 
 import { INGREDIENT_CATEGORY } from '~/shared/constants/ingredient-category';
+import { NUTRITION_MINERAL } from '~/shared/constants/nutrition-minerals';
+import { NUTRIENTS } from '~/shared/constants/nutrition-nutrients';
+import { NUTRITION_VITAMIN } from '~/shared/constants/nutrition-vitamin';
 import { UNIT } from '~/shared/constants/unit';
 
-const nutrientValueSchema = z.object({
+const enumValues = <T extends Record<string, string>>(values: T) =>
+  z.enum(Object.values(values) as [string, ...string[]]);
+
+const nutrientItemSchema = z.object({
+  label: enumValues(NUTRIENTS),
   value: z.coerce.number().min(0),
   unit: z.enum(Object.values(UNIT))
 });
 
-const nutrientsSchema = z.object({
-  calories: nutrientValueSchema,
-  carbs: nutrientValueSchema,
-  fat: nutrientValueSchema,
-  protein: nutrientValueSchema,
-  fiber: nutrientValueSchema,
-  sodium: nutrientValueSchema,
-  cholesterol: nutrientValueSchema
-});
-
-const nutritionItemSchema = z.object({
-  label: z.string().trim(),
+const mineralItemSchema = z.object({
+  label: enumValues(NUTRITION_MINERAL),
   value: z.coerce.number().min(0),
   unit: z.enum(Object.values(UNIT))
 });
 
-const detailNutritionSchema = z.object({
-  nutrients: nutrientsSchema.optional(),
-  minerals: z.array(nutritionItemSchema).optional(),
-  vitamins: z.array(nutritionItemSchema).optional(),
-  sugars: z.array(nutritionItemSchema).optional(),
-  fats: z.array(nutritionItemSchema).optional(),
-  fattyAcids: z.array(nutritionItemSchema).optional(),
-  aminoAcids: z.array(nutritionItemSchema).optional()
+const vitaminItemSchema = z.object({
+  label: enumValues(NUTRITION_VITAMIN),
+  value: z.coerce.number().min(0),
+  unit: z.enum(Object.values(UNIT))
+});
+
+const nutritionSchema = z.object({
+  nutrients: z.array(nutrientItemSchema).optional(),
+  minerals: z.array(mineralItemSchema).optional(),
+  vitamins: z.array(vitaminItemSchema).optional()
 });
 
 const baseUnitSchema = z.object({
@@ -77,7 +76,7 @@ export const createIngredientRequestSchema = z.object({
   baseUnit: z.preprocess(parseJSON, baseUnitSchema),
   units: z.preprocess(parseJSON, z.array(unitSchema)).optional(),
   allergens: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
-  nutrition: z.preprocess(parseJSON, detailNutritionSchema).optional(),
+  nutrition: z.preprocess(parseJSON, nutritionSchema).optional(),
   image: z.file().optional(),
   isActive: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
 });
@@ -99,7 +98,7 @@ export const updateIngredientRequestSchema = z.object({
   baseUnit: z.preprocess(parseJSON, baseUnitSchema).optional(),
   units: z.preprocess(parseJSON, z.array(unitSchema)).optional(),
   allergens: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
-  nutrition: z.preprocess(parseJSON, detailNutritionSchema).optional(),
+  nutrition: z.preprocess(parseJSON, nutritionSchema).optional(),
   image: z.file().optional(),
   isActive: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
 });

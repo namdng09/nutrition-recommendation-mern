@@ -46,7 +46,7 @@ const ingredientSchema = new Schema(
     description: { type: String },
     categories: [{ type: String, enum: Object.values(INGREDIENT_CATEGORY) }],
     baseUnit: {
-      amount: { type: Number, required: true },
+      amount: { type: Number, default: 100, required: true },
       unit: { type: String, default: UNIT.GRAM, required: true }
     },
     allergens: [{ type: String, enum: Object.values(ALLERGEN) }],
