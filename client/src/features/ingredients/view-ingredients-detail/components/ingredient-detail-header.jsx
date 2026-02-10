@@ -1,18 +1,17 @@
-import { ArrowLeft } from 'lucide-react';
-
-import { Button } from '~/components/ui/button';
+import { FaArrowLeft } from 'react-icons/fa';
 
 export default function IngredientDetailHeader({ navigate, item }) {
   return (
     <div className='flex items-center justify-between gap-3'>
-      <Button
-        variant='ghost'
-        className='rounded-xl'
+      <button
         onClick={() => navigate(-1)}
+        className='group inline-flex items-center gap-3 text-xs font-extrabold tracking-widest text-muted-foreground transition hover:text-primary'
       >
-        <ArrowLeft className='mr-2 h-4 w-4' />
-        Quay lại
-      </Button>
+        <span className='flex h-9 w-9 items-center justify-center rounded-full bg-secondary ring-1 ring-border group-hover:bg-primary group-hover:text-white'>
+          <FaArrowLeft className='transition-transform group-hover:-translate-x-1' />
+        </span>
+        QUAY LẠI
+      </button>
 
       <div className='flex flex-wrap gap-2 text-sm'>
         {item?.categories?.map(c => (
