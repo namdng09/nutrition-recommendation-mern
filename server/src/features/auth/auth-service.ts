@@ -18,6 +18,8 @@ import {
   loginRequestSchema,
   type LoginResponse,
   type LoginWithProviderResponse,
+  type ResetPasswordRequest,
+  resetPasswordRequestSchema,
   type SignUpRequest,
   signUpRequestSchema,
   type SignUpResponse
@@ -205,7 +207,17 @@ export const AuthService = {
     });
   },
 
-  resetPassword: async (token: string, newPassword: string): Promise<void> => {
+  resetPassword: async (
+    token: string,
+    data: ResetPasswordRequest
+  ): Promise<void> => {
+    const validation = resetPasswordRequestSchema.safeParse(data);
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0];
+      throw createHttpError(400, firstError.message);
+    }
+
     const storedLastResetToken = await AuthModel.findOne({
       lastResetPasswordToken: token
     });
@@ -226,7 +238,7 @@ export const AuthService = {
       throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
-    const hashedPassword = await hashPassword(newPassword);
+    const hashedPassword = await hashPassword(data.password);
     let auth = await AuthModel.findOne({ user: user._id, provider: 'local' });
 
     if (!auth) {
