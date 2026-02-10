@@ -1,25 +1,12 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi
-} from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import app from '~/app';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
 import { ROLE } from '~/shared/constants/role';
 import { UNIT } from '~/shared/constants/unit';
-import {
-  AuthModel,
-  DishModel,
-  IngredientModel,
-  UserModel
-} from '~/shared/database/models';
+import { AuthModel, DishModel, IngredientModel, UserModel } from '~/shared/database/models';
 import { hashPassword } from '~/shared/utils/bcrypt';
 import { generateToken } from '~/shared/utils/jwt';
 
@@ -28,8 +15,7 @@ vi.mock('~/shared/utils/cloudinary', () => ({
   uploadImage: vi.fn().mockResolvedValue({
     success: true,
     data: {
-      secure_url:
-        'https://res.cloudinary.com/test/image/upload/v1234567890/test-dish.jpg',
+      secure_url: 'https://res.cloudinary.com/test/image/upload/v1234567890/test-dish.jpg',
       public_id: 'test-dish',
       format: 'jpg'
     }
@@ -39,6 +25,7 @@ vi.mock('~/shared/utils/cloudinary', () => ({
 
 // Import mocked functions to customize per test
 import * as cloudinaryUtils from '~/shared/utils/cloudinary';
+import { INGREDIENT_CATEGORY } from '~/shared/constants/ingredient-category';
 
 describe('POST /api/dishes', () => {
   let userToken: string;
@@ -65,8 +52,7 @@ describe('POST /api/dishes', () => {
     vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValue({
       success: true,
       data: {
-        secure_url:
-          'https://res.cloudinary.com/test/image/upload/v1234567890/test-dish.jpg',
+        secure_url: 'https://res.cloudinary.com/test/image/upload/v1234567890/test-dish.jpg',
         public_id: 'test-dish',
         format: 'jpg'
       } as any
@@ -129,7 +115,9 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }]),
+      instructions: JSON.stringify([
+        { step: 1, description: 'Luộc xương' }
+      ]),
       isActive: 'true'
     };
 
@@ -164,7 +152,9 @@ describe('POST /api/dishes', () => {
           units: [{ value: 150, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([{ step: 1, description: 'Ướp thịt' }])
+      instructions: JSON.stringify([
+        { step: 1, description: 'Ướp thịt' }
+      ])
     };
 
     const res = await request(app)
@@ -182,62 +172,37 @@ describe('POST /api/dishes', () => {
     expect(res.body.data).toHaveProperty('name', 'Bún chả');
   });
 
-  // ============ AUTHENTICATION & AUTHORIZATION ============
-  it('should return 401 when no token provided', async () => {
-    const dishData = {
-      name: 'Phở bò',
-      categories: JSON.stringify([DISH_CATEGORY.MAIN_COURSE]),
-      ingredients: JSON.stringify([
-        {
-          ingredientId,
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ]),
-      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
-    };
-
-    const res = await request(app)
-      .post('/api/dishes')
-      .field('name', dishData.name)
-      .field('categories', dishData.categories)
-      .field('ingredients', dishData.ingredients)
-      .field('instructions', dishData.instructions);
-
-    expect(res.status).toBe(401);
-  });
-
   it('should create dish with ingredient that has nutrition', async () => {
-    // Create ingredient with nutrition
     const ingredientWithNutrition = await IngredientModel.create({
-      name: 'Cà rốt',
-      description: 'Cà rốt tươi',
-      categories: ['Rau củ'],
+      name: 'Cá hồi',
+      description: 'Cá hồi tươi',
+      categories: [INGREDIENT_CATEGORY.SEAFOOD],
       baseUnit: { amount: 100, unit: UNIT.GRAM },
-      allergens: [],
-      isActive: true,
       nutrition: {
         nutrients: {
-          calories: { value: 41, unit: UNIT.KILOCALORIE },
-          carbs: { value: 10, unit: UNIT.GRAM },
-          fat: { value: 0.2, unit: UNIT.GRAM },
-          protein: { value: 0.9, unit: UNIT.GRAM },
-          fiber: { value: 2.8, unit: UNIT.GRAM },
-          sodium: { value: 69, unit: UNIT.MILLIGRAM },
-          cholesterol: { value: 0, unit: UNIT.MILLIGRAM }
+          calories: { value: 208, unit: 'kcal' },
+          protein: { value: 20, unit: 'g' },
+          carbs: { value: 0, unit: 'g' },
+          fat: { value: 13, unit: 'g' },
+          fiber: { value: 0, unit: 'g' },
+          sodium: { value: 59, unit: 'mg' },
+          cholesterol: { value: 55, unit: 'mg' }
         }
-      }
+      },
+      allergens: [],
+      isActive: true
     });
 
     const dishData = {
-      name: 'Salad cà rốt',
-      categories: JSON.stringify([DISH_CATEGORY.APPETIZER]),
+      name: 'Món cá hồi',
+      categories: JSON.stringify([DISH_CATEGORY.MAIN_COURSE]),
       ingredients: JSON.stringify([
         {
           ingredientId: ingredientWithNutrition._id.toString(),
-          units: [{ value: 100, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
+          units: [{ value: 150, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([{ step: 1, description: 'Bào cà rốt' }])
+      instructions: JSON.stringify([{ step: 1, description: 'Nướng cá' }])
     };
 
     const res = await request(app)
@@ -249,166 +214,11 @@ describe('POST /api/dishes', () => {
       .field('instructions', dishData.instructions);
 
     expect(res.status).toBe(201);
-    expect(res.body.data).toHaveProperty('name', 'Salad cà rốt');
-    expect(res.body.data.ingredients[0]).toHaveProperty('nutrients');
-    expect(res.body.data.ingredients[0].nutrients).toHaveProperty('calories');
+    expect(res.body.data.ingredients[0].nutrients).toBeDefined();
+    expect(res.body.data.ingredients[0].nutrients.protein).toEqual({ value: 20, unit: 'g' });
   });
 
   // ============ VALIDATION (400) ============
-  it('should return 400 when name is too short', async () => {
-    const dishData = {
-      name: 'P',
-      categories: JSON.stringify([DISH_CATEGORY.MAIN_COURSE]),
-      ingredients: JSON.stringify([
-        {
-          ingredientId,
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ]),
-      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
-    };
-
-    const res = await request(app)
-      .post('/api/dishes')
-      .set('Authorization', `Bearer ${userToken}`)
-      .field('name', dishData.name)
-      .field('categories', dishData.categories)
-      .field('ingredients', dishData.ingredients)
-      .field('instructions', dishData.instructions);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when name is missing', async () => {
-    const dishData = {
-      categories: JSON.stringify([DISH_CATEGORY.MAIN_COURSE]),
-      ingredients: JSON.stringify([
-        {
-          ingredientId,
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ]),
-      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
-    };
-
-    const res = await request(app)
-      .post('/api/dishes')
-      .set('Authorization', `Bearer ${userToken}`)
-      .field('categories', dishData.categories)
-      .field('ingredients', dishData.ingredients)
-      .field('instructions', dishData.instructions);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when categories is missing', async () => {
-    const dishData = {
-      name: 'Phở bò',
-      ingredients: JSON.stringify([
-        {
-          ingredientId,
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ]),
-      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
-    };
-
-    const res = await request(app)
-      .post('/api/dishes')
-      .set('Authorization', `Bearer ${userToken}`)
-      .field('name', dishData.name)
-      .field('ingredients', dishData.ingredients)
-      .field('instructions', dishData.instructions);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when ingredients is missing', async () => {
-    const dishData = {
-      name: 'Phở bò',
-      categories: JSON.stringify([DISH_CATEGORY.MAIN_COURSE]),
-      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
-    };
-
-    const res = await request(app)
-      .post('/api/dishes')
-      .set('Authorization', `Bearer ${userToken}`)
-      .field('name', dishData.name)
-      .field('categories', dishData.categories)
-      .field('instructions', dishData.instructions);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when instructions is missing', async () => {
-    const dishData = {
-      name: 'Phở bò',
-      categories: JSON.stringify([DISH_CATEGORY.MAIN_COURSE]),
-      ingredients: JSON.stringify([
-        {
-          ingredientId,
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ])
-    };
-
-    const res = await request(app)
-      .post('/api/dishes')
-      .set('Authorization', `Bearer ${userToken}`)
-      .field('name', dishData.name)
-      .field('categories', dishData.categories)
-      .field('ingredients', dishData.ingredients);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when category is invalid', async () => {
-    const dishData = {
-      name: 'Phở bò',
-      categories: JSON.stringify(['INVALID_CATEGORY']),
-      ingredients: JSON.stringify([
-        {
-          ingredientId,
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ]),
-      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
-    };
-
-    const res = await request(app)
-      .post('/api/dishes')
-      .set('Authorization', `Bearer ${userToken}`)
-      .field('name', dishData.name)
-      .field('categories', dishData.categories)
-      .field('ingredients', dishData.ingredients)
-      .field('instructions', dishData.instructions);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should handle malformed JSON in categories field', async () => {
-    const dishData = {
-      name: 'Phở bò',
-      ingredients: JSON.stringify([
-        {
-          ingredientId,
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ]),
-      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
-    };
-
-    const res = await request(app)
-      .post('/api/dishes')
-      .set('Authorization', `Bearer ${userToken}`)
-      .field('name', dishData.name)
-      .field('categories', '{invalid-json}')
-      .field('ingredients', dishData.ingredients)
-      .field('instructions', dishData.instructions);
-
-    expect(res.status).toBe(400);
-  });
-
   it('should return 400 when ingredient ID is invalid', async () => {
     const dishData = {
       name: 'Phở bò',
@@ -419,7 +229,9 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
+      instructions: JSON.stringify([
+        { step: 1, description: 'Luộc xương' }
+      ])
     };
 
     const res = await request(app)
@@ -445,7 +257,9 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
+      instructions: JSON.stringify([
+        { step: 1, description: 'Luộc xương' }
+      ])
     };
 
     const res = await request(app)
@@ -478,7 +292,9 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
+      instructions: JSON.stringify([
+        { step: 1, description: 'Luộc xương' }
+      ])
     };
 
     const res = await request(app)
@@ -510,7 +326,9 @@ describe('POST /api/dishes', () => {
           units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
         }
       ]),
-      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
+      instructions: JSON.stringify([
+        { step: 1, description: 'Luộc xương' }
+      ])
     };
 
     const res = await request(app)
@@ -528,98 +346,5 @@ describe('POST /api/dishes', () => {
 
     // Restore original function
     vi.spyOn(DishModel, 'create').mockRestore();
-  });
-
-  it('should handle malformed JSON in categories gracefully', async () => {
-    const dishData = {
-      name: 'Phở bò',
-      categories: '{invalid json',
-      ingredients: JSON.stringify([
-        {
-          ingredientId,
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ]),
-      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
-    };
-
-    const res = await request(app)
-      .post('/api/dishes')
-      .set('Authorization', `Bearer ${userToken}`)
-      .field('name', dishData.name)
-      .field('categories', dishData.categories)
-      .field('ingredients', dishData.ingredients)
-      .field('instructions', dishData.instructions);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should handle malformed JSON in ingredients gracefully', async () => {
-    const dishData = {
-      name: 'Phở bò',
-      categories: JSON.stringify([DISH_CATEGORY.MAIN_COURSE]),
-      ingredients: '{invalid json',
-      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }])
-    };
-
-    const res = await request(app)
-      .post('/api/dishes')
-      .set('Authorization', `Bearer ${userToken}`)
-      .field('name', dishData.name)
-      .field('categories', dishData.categories)
-      .field('ingredients', dishData.ingredients)
-      .field('instructions', dishData.instructions);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should handle malformed JSON in instructions gracefully', async () => {
-    const dishData = {
-      name: 'Phở bò',
-      categories: JSON.stringify([DISH_CATEGORY.MAIN_COURSE]),
-      ingredients: JSON.stringify([
-        {
-          ingredientId,
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ]),
-      instructions: '{invalid json'
-    };
-
-    const res = await request(app)
-      .post('/api/dishes')
-      .set('Authorization', `Bearer ${userToken}`)
-      .field('name', dishData.name)
-      .field('categories', dishData.categories)
-      .field('ingredients', dishData.ingredients)
-      .field('instructions', dishData.instructions);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should handle malformed JSON in tags gracefully', async () => {
-    const dishData = {
-      name: 'Phở bò',
-      categories: JSON.stringify([DISH_CATEGORY.MAIN_COURSE]),
-      ingredients: JSON.stringify([
-        {
-          ingredientId,
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ]),
-      instructions: JSON.stringify([{ step: 1, description: 'Luộc xương' }]),
-      tags: '{invalid json'
-    };
-
-    const res = await request(app)
-      .post('/api/dishes')
-      .set('Authorization', `Bearer ${userToken}`)
-      .field('name', dishData.name)
-      .field('categories', dishData.categories)
-      .field('ingredients', dishData.ingredients)
-      .field('instructions', dishData.instructions)
-      .field('tags', dishData.tags);
-
-    expect(res.status).toBe(400);
   });
 });

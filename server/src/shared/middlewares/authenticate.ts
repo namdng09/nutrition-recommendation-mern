@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import createHttpError from 'http-errors';
+import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 import passport from 'passport';
 
 export const authenticate = () => {
@@ -10,10 +11,14 @@ export const authenticate = () => {
       (
         err: unknown,
         user: Express.User | false | null,
-        info: { message?: string } | undefined
+        info: JsonWebTokenError | TokenExpiredError | Error | undefined
       ) => {
         if (err) {
           return next(createHttpError(500, 'Passport authentication error'));
+        }
+
+        if (info instanceof TokenExpiredError) {
+          return next(createHttpError(401, 'Token expired'));
         }
 
         if (!user) {

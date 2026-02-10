@@ -142,5 +142,182 @@ export const UserController = {
           result
         )
       );
+  },
+
+  addFavoriteDish: async (req: Request, res: Response) => {
+    const userId = req.user?._id.toString();
+    const { dishId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json(ApiResponse.failed('Unauthorized'));
+    }
+
+    const result = await UserService.addFavoriteDish(userId, dishId);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Favorite dish added successfully', result));
+  },
+
+  removeFavoriteDish: async (req: Request, res: Response) => {
+    const userId = req.user?._id.toString();
+    const { dishId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json(ApiResponse.failed('Unauthorized'));
+    }
+
+    const result = await UserService.removeFavoriteDish(userId, dishId);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Favorite dish removed successfully', result));
+  },
+
+  addFavoriteIngredient: async (req: Request, res: Response) => {
+    const userId = req.user?._id.toString();
+    const { ingredientId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json(ApiResponse.failed('Unauthorized'));
+    }
+
+    const result = await UserService.addFavoriteIngredient(
+      userId,
+      ingredientId
+    );
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Favorite ingredient added successfully', result)
+      );
+  },
+
+  removeFavoriteIngredient: async (req: Request, res: Response) => {
+    const userId = req.user?._id.toString();
+    const { ingredientId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json(ApiResponse.failed('Unauthorized'));
+    }
+
+    const result = await UserService.removeFavoriteIngredient(
+      userId,
+      ingredientId
+    );
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Favorite ingredient removed successfully', result)
+      );
+  },
+
+  addFavoriteCollection: async (req: Request, res: Response) => {
+    const userId = req.user?._id.toString();
+    const { collectionId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json(ApiResponse.failed('Unauthorized'));
+    }
+
+    const result = await UserService.addFavoriteCollection(
+      userId,
+      collectionId
+    );
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Favorite collection added successfully', result)
+      );
+  },
+
+  removeFavoriteCollection: async (req: Request, res: Response) => {
+    const userId = req.user?._id.toString();
+    const { collectionId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json(ApiResponse.failed('Unauthorized'));
+    }
+
+    const result = await UserService.removeFavoriteCollection(
+      userId,
+      collectionId
+    );
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Favorite collection removed successfully', result)
+      );
+  },
+
+  addBlockDish: async (req: Request, res: Response) => {
+    const userId = req.user?._id.toString();
+    const { dishId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json(ApiResponse.failed('Unauthorized'));
+    }
+
+    const result = await UserService.addBlockDish(userId, dishId);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Blocked dish added successfully', result));
+  },
+
+  removeBlockDish: async (req: Request, res: Response) => {
+    const userId = req.user?._id.toString();
+    const { dishId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json(ApiResponse.failed('Unauthorized'));
+    }
+
+    const result = await UserService.removeBlockDish(userId, dishId);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Blocked dish removed successfully', result));
+  },
+
+  addBlockIngredient: async (req: Request, res: Response) => {
+    const userId = req.user?._id.toString();
+    const { ingredientId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json(ApiResponse.failed('Unauthorized'));
+    }
+
+    const result = await UserService.addBlockIngredient(userId, ingredientId);
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Blocked ingredient added successfully', result)
+      );
+  },
+
+  removeBlockIngredient: async (req: Request, res: Response) => {
+    const userId = req.user?._id.toString();
+    const { ingredientId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json(ApiResponse.failed('Unauthorized'));
+    }
+
+    const result = await UserService.removeBlockIngredient(
+      userId,
+      ingredientId
+    );
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Blocked ingredient removed successfully', result)
+      );
   }
 };

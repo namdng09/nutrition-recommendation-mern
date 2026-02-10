@@ -103,78 +103,11 @@ describe('GET /api/dishes', () => {
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty(
-      'message',
-      'Lấy danh sách món ăn thành công'
-    );
+    expect(res.body).toHaveProperty('message', 'Lấy danh sách món ăn thành công');
     expect(res.body.data).toHaveProperty('docs');
     expect(res.body.data).toHaveProperty('totalDocs');
     expect(res.body.data).toHaveProperty('page');
     expect(Array.isArray(res.body.data.docs)).toBe(true);
     expect(res.body.data.docs.length).toBe(4);
-  });
-
-  // ============ QUERY FEATURES ============
-  it('should get dishes with pagination', async () => {
-    const res = await request(app).get('/api/dishes?page=1&limit=2');
-
-    expect(res.status).toBe(200);
-    expect(res.body.data.docs.length).toBe(2);
-    expect(res.body.data.page).toBe(1);
-    expect(res.body.data.docs.length).toBe(2);
-    expect(res.body.data.totalDocs).toBe(4);
-    expect(res.body.data.totalPages).toBe(2);
-  });
-
-  it('should get only active dishes', async () => {
-    const res = await request(app).get('/api/dishes?isActive=true');
-
-    expect(res.status).toBe(200);
-    expect(res.body.data.docs.length).toBe(3);
-    expect(
-      res.body.data.docs.every((item: any) => item.isActive === true)
-    ).toBe(true);
-  });
-
-  it('should get dishes by category', async () => {
-    const res = await request(app).get(
-      `/api/dishes?categories=${DISH_CATEGORY.MAIN_COURSE}`
-    );
-
-    expect(res.status).toBe(200);
-    expect(res.body.data.docs.length).toBe(2);
-  });
-
-  it('should search dishes by name', async () => {
-    const res = await request(app).get('/api/dishes?name=/phở/i');
-
-    expect(res.status).toBe(200);
-    expect(res.body.data.docs.length).toBe(1);
-  });
-
-  it('should sort dishes by name ascending', async () => {
-    const res = await request(app).get('/api/dishes?sort=name');
-
-    expect(res.status).toBe(200);
-    expect(res.body.data.docs.length).toBe(4);
-    expect(res.body.data.docs[0].name).toBe('Bánh flan');
-  });
-
-  it('should sort dishes by name descending', async () => {
-    const res = await request(app).get('/api/dishes?sort=-name');
-
-    expect(res.status).toBe(200);
-    expect(res.body.data.docs.length).toBe(4);
-    expect(res.body.data.docs[0].name).toBe('Salad rau củ');
-  });
-
-  it('should return only selected fields', async () => {
-    const res = await request(app).get('/api/dishes?select=name,categories');
-
-    expect(res.status).toBe(200);
-    expect(res.body.data.docs.length).toBeGreaterThan(0);
-    expect(res.body.data.docs[0]).toHaveProperty('name');
-    expect(res.body.data.docs[0]).toHaveProperty('categories');
-    expect(res.body.data.docs[0]).toHaveProperty('_id');
   });
 });

@@ -5,8 +5,15 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    setupFiles: ['./test/setup.ts'],
     exclude: ['**/node_modules/**', '**/dist/**'],
-    fileParallelism: false
+    fileParallelism: false,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'clover', 'json'],
+      include: ['src/features/**/*-service.ts'],
+      all: true
+    }
   },
   plugins: [tsconfigPaths()]
 });

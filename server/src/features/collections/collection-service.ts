@@ -24,10 +24,6 @@ import {
  * @returns Total calories for the dish
  */
 const calculateDishCalories = (dish: any): number => {
-  if (!dish.ingredients || dish.ingredients.length === 0) {
-    return 0;
-  }
-  
   let totalCalories = 0;
   for (const ingredient of dish.ingredients) {
     const ingredientCalories = ingredient.nutrients?.calories?.value || 0;

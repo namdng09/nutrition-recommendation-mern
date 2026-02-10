@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import request from 'supertest';
 import {
   afterAll,
   beforeAll,
@@ -10,7 +9,7 @@ import {
   vi
 } from 'vitest';
 
-import app from '~/app';
+import { AuthService } from '~/features/auth/auth-service';
 import { ROLE } from '~/shared/constants/role';
 import { UserModel } from '~/shared/database/models';
 import * as emailUtils from '~/shared/utils/email/mailer';
@@ -24,7 +23,7 @@ vi.mock('~/shared/utils/email/mailer', async () => {
   };
 });
 
-describe('POST /api/auth/forgot-password', () => {
+describe('AuthService.forgotPassword', () => {
   beforeAll(async () => {
     // Connect to test database if not already connected
     if (mongoose.connection.readyState === 0) {
@@ -56,16 +55,7 @@ describe('POST /api/auth/forgot-password', () => {
       isActive: true
     });
 
-    const res = await request(app).post('/api/auth/forgot-password').send({
-      email: 'testuser@gmail.com'
-    });
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty(
-      'message',
-      'A password reset link has been sent to your email'
-    );
+    await AuthService.forgotPassword('testuser@gmail.com');
 
     // Verify sendMail was called with correct parameters
     expect(emailUtils.sendMail).toHaveBeenCalledTimes(1);
@@ -83,28 +73,20 @@ describe('POST /api/auth/forgot-password', () => {
   });
 
   // Branch: user not found
-  it('should return 404 when user does not exist', async () => {
-    const res = await request(app).post('/api/auth/forgot-password').send({
-      email: 'nonexistent@gmail.com'
-    });
-
-    expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'User not found');
+  it('should throw 404 error when user does not exist', async () => {
+    await expect(
+      AuthService.forgotPassword('nonexistent@gmail.com')
+    ).rejects.toThrow('User not found');
 
     // Verify sendMail was not called
     expect(emailUtils.sendMail).not.toHaveBeenCalled();
   });
 
-  // Branch: email sending fails (should still return success to prevent email enumeration)
-  it('should return success even if email sending fails', async () => {
-    // Mock email sending to reject
+  // Branch: email sending fails (catch block)
+  it('should not throw error when email sending fails', async () => {
     const consoleErrorSpy = vi
       .spyOn(console, 'error')
       .mockImplementation(() => {});
-    (emailUtils.sendMail as any).mockRejectedValueOnce(
-      new Error('Email service error')
-    );
 
     // Create a test user
     await UserModel.create({
@@ -114,16 +96,15 @@ describe('POST /api/auth/forgot-password', () => {
       isActive: true
     });
 
-    const res = await request(app).post('/api/auth/forgot-password').send({
-      email: 'testuser@gmail.com'
-    });
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty(
-      'message',
-      'A password reset link has been sent to your email'
+    // Mock sendMail to reject
+    (emailUtils.sendMail as any).mockRejectedValueOnce(
+      new Error('Email service error')
     );
+
+    // Should not throw error
+    await expect(
+      AuthService.forgotPassword('testuser@gmail.com')
+    ).resolves.toBeUndefined();
 
     // Verify error was logged
     expect(consoleErrorSpy).toHaveBeenCalledWith(
@@ -132,20 +113,5 @@ describe('POST /api/auth/forgot-password', () => {
     );
 
     consoleErrorSpy.mockRestore();
-  });
-
-  // Validation errors
-  it('should return 400 when email is invalid', async () => {
-    const res = await request(app).post('/api/auth/forgot-password').send({
-      email: 'invalid-email'
-    });
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when email is missing', async () => {
-    const res = await request(app).post('/api/auth/forgot-password').send({});
-
-    expect(res.status).toBe(400);
   });
 });

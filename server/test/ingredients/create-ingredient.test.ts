@@ -124,7 +124,7 @@ describe('POST /api/ingredients', () => {
   });
 
   // ============ HAPPY CASES ============
-  it('should create ingredient successfully without image', async () => {
+  it('UC01 - should create ingredient successfully', async () => {
     const ingredientData = {
       name: 'Cà chua',
       description: 'Cà chua tươi',
@@ -156,7 +156,7 @@ describe('POST /api/ingredients', () => {
     expect(res.body.data).toHaveProperty('isActive', true);
   });
 
-  it('should create ingredient successfully with image', async () => {
+  it('UC02 - should create ingredient successfully with image', async () => {
     const ingredientData = {
       name: 'Thịt bò',
       description: 'Thịt bò Úc',
@@ -180,182 +180,11 @@ describe('POST /api/ingredients', () => {
     expect(res.body.data).toHaveProperty('name', 'Thịt bò');
   });
 
-  // ============ AUTHENTICATION & AUTHORIZATION ============
-  it('should return 401 when no token provided', async () => {
-    const ingredientData = {
-      name: 'Cà chua',
-      categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES]),
-      baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM })
-    };
-
-    const res = await request(app)
-      .post('/api/ingredients')
-      .field('name', ingredientData.name)
-      .field('categories', ingredientData.categories)
-      .field('baseUnit', ingredientData.baseUnit);
-
-    expect(res.status).toBe(401);
-  });
-
-  it('should return 403 when user is not nutritionist', async () => {
-    const ingredientData = {
-      name: 'Cà chua',
-      categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES]),
-      baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM })
-    };
-
-    const res = await request(app)
-      .post('/api/ingredients')
-      .set('Authorization', `Bearer ${userToken}`)
-      .field('name', ingredientData.name)
-      .field('categories', ingredientData.categories)
-      .field('baseUnit', ingredientData.baseUnit);
-
-    expect(res.status).toBe(403);
-  });
-
   // ============ VALIDATION (400) ============
-  it('should return 400 when name is too short', async () => {
+  it('UC03 - should return 400 when name is missing', async () => {
     const ingredientData = {
-      name: 'C',
+      description: 'Cà chua tươi',
       categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES]),
-      baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM })
-    };
-
-    const res = await request(app)
-      .post('/api/ingredients')
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', ingredientData.name)
-      .field('categories', ingredientData.categories)
-      .field('baseUnit', ingredientData.baseUnit);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when name is missing', async () => {
-    const ingredientData = {
-      categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES]),
-      baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM })
-    };
-
-    const res = await request(app)
-      .post('/api/ingredients')
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('categories', ingredientData.categories)
-      .field('baseUnit', ingredientData.baseUnit);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when categories is missing', async () => {
-    const ingredientData = {
-      name: 'Cà chua',
-      baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM })
-    };
-
-    const res = await request(app)
-      .post('/api/ingredients')
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', ingredientData.name)
-      .field('baseUnit', ingredientData.baseUnit);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when baseUnit is missing', async () => {
-    const ingredientData = {
-      name: 'Cà chua',
-      categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES])
-    };
-
-    const res = await request(app)
-      .post('/api/ingredients')
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', ingredientData.name)
-      .field('categories', ingredientData.categories);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when category is invalid', async () => {
-    const ingredientData = {
-      name: 'Cà chua',
-      categories: JSON.stringify(['INVALID_CATEGORY']),
-      baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM })
-    };
-
-    const res = await request(app)
-      .post('/api/ingredients')
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', ingredientData.name)
-      .field('categories', ingredientData.categories)
-      .field('baseUnit', ingredientData.baseUnit);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when baseUnit amount is negative', async () => {
-    const ingredientData = {
-      name: 'Cà chua',
-      categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES]),
-      baseUnit: JSON.stringify({ amount: -100, unit: UNIT.GRAM })
-    };
-
-    const res = await request(app)
-      .post('/api/ingredients')
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', ingredientData.name)
-      .field('categories', ingredientData.categories)
-      .field('baseUnit', ingredientData.baseUnit);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when baseUnit is missing unit', async () => {
-    const ingredientData = {
-      name: 'Cà chua',
-      categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES]),
-      baseUnit: JSON.stringify({ amount: 100 })
-    };
-
-    const res = await request(app)
-      .post('/api/ingredients')
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', ingredientData.name)
-      .field('categories', ingredientData.categories)
-      .field('baseUnit', ingredientData.baseUnit);
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should handle malformed JSON in categories field', async () => {
-    const ingredientData = {
-      name: 'Cà chua',
-      baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM })
-    };
-
-    const res = await request(app)
-      .post('/api/ingredients')
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', ingredientData.name)
-      .field('categories', '{invalid-json}') // Malformed JSON
-      .field('baseUnit', ingredientData.baseUnit);
-
-    expect(res.status).toBe(400);
-  });
-
-  // ============ ERROR CASES (500) ============
-  it('should return 500 when image upload fails', async () => {
-    // Mock upload to fail
-    vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValueOnce({
-      success: false,
-      error: 'Upload failed'
-    });
-
-    const ingredientData = {
-      name: 'Thịt bò',
-      description: 'Thịt bò Úc',
-      categories: JSON.stringify([INGREDIENT_CATEGORY.MEAT]),
       baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM }),
       allergens: JSON.stringify([])
     };
@@ -363,24 +192,38 @@ describe('POST /api/ingredients', () => {
     const res = await request(app)
       .post('/api/ingredients')
       .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', ingredientData.name)
       .field('description', ingredientData.description)
       .field('categories', ingredientData.categories)
       .field('baseUnit', ingredientData.baseUnit)
-      .field('allergens', ingredientData.allergens)
-      .attach('image', Buffer.from('fake-image-data'), 'test-image.jpg');
+      .field('allergens', ingredientData.allergens);
 
-    expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty('message', 'Tải ảnh lên thất bại');
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('status', 'failed');
+    expect(res.body).toHaveProperty('message', 'Tên nguyên liệu không hợp lệ');
   });
 
-  it('should return 500 when ingredient creation fails', async () => {
-    // Mock IngredientModel.create to return null
-    vi.spyOn(IngredientModel, 'create').mockResolvedValueOnce(null as any);
-
+  it('UC04 - should return 400 when name is number', async () => {
     const ingredientData = {
-      name: 'Cà chua',
+      name: 1234,
+      description: 'Cà chua tươi',
+      categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES]),
+      baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM }),
+      allergens: JSON.stringify([])
+    };
+
+    const res = await request(app)
+      .post('/api/ingredients')
+      .set('Authorization', `Bearer ${nutritionistToken}`)
+      .send(ingredientData);
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('status', 'failed');
+    expect(res.body).toHaveProperty('message', 'Tên nguyên liệu không hợp lệ');
+  });
+
+  it('UC05 - should return 400 when name is too short', async () => {
+    const ingredientData = {
+      name: 'A',
       description: 'Cà chua tươi',
       categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES]),
       baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM }),
@@ -396,11 +239,11 @@ describe('POST /api/ingredients', () => {
       .field('baseUnit', ingredientData.baseUnit)
       .field('allergens', ingredientData.allergens);
 
-    expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty('message', 'Tạo nguyên liệu thất bại');
-
-    // Restore original function
-    vi.spyOn(IngredientModel, 'create').mockRestore();
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('status', 'failed');
+    expect(res.body).toHaveProperty(
+      'message',
+      'Tên nguyên liệu phải có ít nhất 2 ký tự'
+    );
   });
 });

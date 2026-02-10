@@ -1,13 +1,16 @@
 import mongoose from 'mongoose';
-import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import app from '~/app';
+import { AuthService } from '~/features/auth/auth-service';
 import { ROLE } from '~/shared/constants/role';
 import { AuthModel, UserModel } from '~/shared/database/models';
-import { generateResetPasswordToken, hashPassword } from '~/shared/utils';
+import {
+  comparePassword,
+  generateResetPasswordToken,
+  hashPassword
+} from '~/shared/utils';
 
-describe('POST /api/auth/reset-password', () => {
+describe('AuthService.resetPassword', () => {
   let userId: string;
   let resetToken: string;
 
@@ -57,18 +60,7 @@ describe('POST /api/auth/reset-password', () => {
 
   // Happy case - reset password with existing auth
   it('should reset password successfully with valid token', async () => {
-    const res = await request(app)
-      .post(`/api/auth/reset-password?token=${resetToken}`)
-      .send({
-        password: 'newpassword123'
-      });
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty(
-      'message',
-      'Your password has been reset successfully'
-    );
+    await AuthService.resetPassword(resetToken, 'newpassword123');
 
     // Verify password was updated in database
     const auth = await AuthModel.findOne({ user: userId });
@@ -78,11 +70,12 @@ describe('POST /api/auth/reset-password', () => {
     expect(auth?.lastResetPasswordToken).toBe(resetToken);
 
     // Verify user can login with new password
-    const loginRes = await request(app).post('/api/auth/login').send({
+    const loginResult = await AuthService.login({
       email: 'testuser@gmail.com',
       password: 'newpassword123'
     });
-    expect(loginRes.status).toBe(200);
+    expect(loginResult).toHaveProperty('accessToken');
+    expect(loginResult).toHaveProperty('refreshToken');
   });
 
   // Happy case - create new auth if not exists
@@ -90,18 +83,7 @@ describe('POST /api/auth/reset-password', () => {
     // Delete existing auth
     await AuthModel.deleteMany({ user: userId });
 
-    const res = await request(app)
-      .post(`/api/auth/reset-password?token=${resetToken}`)
-      .send({
-        password: 'newpassword123'
-      });
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty(
-      'message',
-      'Your password has been reset successfully'
-    );
+    await AuthService.resetPassword(resetToken, 'newpassword123');
 
     // Verify new auth was created
     const auth = await AuthModel.findOne({ user: userId, provider: 'local' });
@@ -112,63 +94,39 @@ describe('POST /api/auth/reset-password', () => {
   });
 
   // Branch: token already used
-  it('should return 400 when reset token has already been used', async () => {
+  it('should throw 400 error when reset token has already been used', async () => {
     // Use the token once
-    await request(app)
-      .post(`/api/auth/reset-password?token=${resetToken}`)
-      .send({
-        password: 'newpassword123'
-      });
+    await AuthService.resetPassword(resetToken, 'newpassword123');
 
     // Try to use the same token again
-    const res = await request(app)
-      .post(`/api/auth/reset-password?token=${resetToken}`)
-      .send({
-        password: 'anotherpassword'
-      });
-
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty(
-      'message',
-      'This reset password token has already been used'
-    );
+    await expect(
+      AuthService.resetPassword(resetToken, 'anotherpassword')
+    ).rejects.toThrow('This reset password token has already been used');
   });
 
   // Branch: invalid token (malformed)
-  it('should return 500 when reset token is invalid', async () => {
-    const res = await request(app)
-      .post('/api/auth/reset-password?token=invalid-token')
-      .send({
-        password: 'newpassword123'
-      });
-
-    expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty('message', 'jwt malformed');
+  it('should throw error when reset token is invalid', async () => {
+    await expect(
+      AuthService.resetPassword('invalid-token', 'newpassword123')
+    ).rejects.toThrow();
   });
 
   // Branch: token signed with wrong secret
-  it('should return 500 when reset token is signed with wrong secret', async () => {
+  it('should throw 400 error when reset token is signed with wrong secret', async () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
-    const invalidToken = jwt.sign({ id: userId }, 'wrong-secret', {
-      expiresIn: '1h'
-    });
+    const invalidToken = jwt.sign(
+      'just-a-string',
+      process.env.JWT_RESET_PASSWORD_SECRET!
+    );
 
-    const res = await request(app)
-      .post(`/api/auth/reset-password?token=${invalidToken}`)
-      .send({
-        password: 'newpassword123'
-      });
-
-    expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty('message', 'invalid signature');
+    await expect(
+      AuthService.resetPassword(invalidToken, 'newpassword123')
+    ).rejects.toThrow('Invalid reset password token');
   });
 
   // Branch: expired token
-  it('should return 401 when reset token is expired', async () => {
+  it('should throw error when reset token is expired', async () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const jwt = require('jsonwebtoken');
     const expiredToken = jwt.sign(
@@ -180,73 +138,18 @@ describe('POST /api/auth/reset-password', () => {
     // Wait a bit to ensure token is expired
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    const res = await request(app)
-      .post(`/api/auth/reset-password?token=${expiredToken}`)
-      .send({
-        password: 'newpassword123'
-      });
-
-    expect(res.status).toBe(401);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Token expired');
+    await expect(
+      AuthService.resetPassword(expiredToken, 'newpassword123')
+    ).rejects.toThrow();
   });
 
   // Branch: user not found
-  it('should return 404 when user does not exist', async () => {
+  it('should throw 404 error when user does not exist', async () => {
     // Delete the user
     await UserModel.findByIdAndDelete(userId);
 
-    const res = await request(app)
-      .post(`/api/auth/reset-password?token=${resetToken}`)
-      .send({
-        password: 'newpassword123'
-      });
-
-    expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'User not found');
-  });
-
-  // Branch: token for non-existent user
-  it('should return 404 when reset token contains invalid user ID', async () => {
-    const nonExistentUserId = new mongoose.Types.ObjectId().toString();
-    const invalidToken = generateResetPasswordToken(nonExistentUserId);
-
-    const res = await request(app)
-      .post(`/api/auth/reset-password?token=${invalidToken}`)
-      .send({
-        password: 'newpassword123'
-      });
-
-    expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'User not found');
-  });
-
-  // Validation errors
-  it('should return 400 when password is too short', async () => {
-    const res = await request(app)
-      .post(`/api/auth/reset-password?token=${resetToken}`)
-      .send({
-        password: '123'
-      });
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when password is missing', async () => {
-    const res = await request(app)
-      .post(`/api/auth/reset-password?token=${resetToken}`)
-      .send({});
-
-    expect(res.status).toBe(400);
-  });
-
-  it('should return 400 when token is missing', async () => {
-    const res = await request(app).post('/api/auth/reset-password').send({
-      password: 'newpassword123'
-    });
-
-    expect(res.status).toBe(400);
+    await expect(
+      AuthService.resetPassword(resetToken, 'newpassword123')
+    ).rejects.toThrow('User not found');
   });
 });

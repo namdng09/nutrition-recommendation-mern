@@ -1,4 +1,4 @@
-import { Apple, Ham, Home, Package, Users } from 'lucide-react';
+import { Apple, Ham, Home, Package, StickyNote, Users } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router';
 
 import {
@@ -74,6 +74,11 @@ export function AdminSidebar({ ...props }) {
           title: 'Bộ sưu tập',
           url: '/nutritionist/manage-collections',
           icon: Package
+        },
+        {
+          title: 'Bài viết',
+          url: '/nutritionist/manage-posts',
+          icon: StickyNote
         }
       ]
     }
