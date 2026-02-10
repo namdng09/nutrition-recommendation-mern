@@ -3,14 +3,16 @@ import {
   FaChevronRight,
   FaClock,
   FaFireAlt,
-  FaListUl,
-  FaTag,
   FaUser,
   FaUtensils
 } from 'react-icons/fa';
 import { Link } from 'react-router';
 
+import { getNutritionValue } from '~/lib/utils';
+
 import { useDishes } from '../api/view-dishes';
+import DishEmpty from './dish-empty';
+import DishHeader from './dish-header';
 import StatBadge from './dish-stat-badge';
 import DishesPagination from './dishes-pagination';
 
@@ -20,46 +22,13 @@ export default function DishesList() {
     page,
     limit: 6
   });
-
   const dishes = data?.docs || [];
 
   return (
     <div className='mx-auto w-full max-w-7xl space-y-10 animate-in fade-in duration-500'>
-      <div className='flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-8'>
-        <div className='space-y-2'>
-          <div className='flex items-center gap-3'>
-            <div className='flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600 shadow-lg shadow-emerald-200'>
-              <FaUtensils className='text-xl text-white' />
-            </div>
-            <h2 className='text-3xl font-extrabold tracking-tight text-foreground md:text-4xl'>
-              Danh sách <span className='text-emerald-600'>món ăn</span>
-            </h2>
-          </div>
-          <p className='text-muted-foreground font-medium'>
-            Khám phá {data?.totalDocs || 0} công thức nấu ăn ngon mỗi ngày từ
-            cộng đồng
-          </p>
-        </div>
+      <DishHeader total={data?.totalDocs} />
 
-        <div className='hidden md:block'>
-          <span className='inline-flex items-center gap-2 rounded-xl bg-secondary px-4 py-2 text-sm font-bold text-secondary-foreground'>
-            <FaListUl className='text-emerald-600' />
-            {data?.totalDocs || 0} món ăn khả dụng
-          </span>
-        </div>
-      </div>
-
-      {!dishes.length && (
-        <div className='flex flex-col items-center justify-center rounded-[2rem] border-2 border-dashed border-border bg-muted/20 py-20 text-center'>
-          <div className='mb-4 rounded-full bg-background p-6 shadow-sm'>
-            <FaUtensils className='text-4xl text-muted-foreground/40' />
-          </div>
-          <h3 className='text-xl font-bold'>Chưa có món ăn nào</h3>
-          <p className='text-muted-foreground'>
-            Hãy là người đầu tiên chia sẻ công thức của bạn!
-          </p>
-        </div>
-      )}
+      {!dishes?.length && <DishEmpty />}
 
       <div className='grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3'>
         {dishes.map(dish => (
@@ -91,7 +60,7 @@ export default function DishesList() {
               <div className='mb-4 flex flex-wrap gap-2'>
                 <StatBadge
                   icon={<FaFireAlt size={12} />}
-                  value={`${dish.ingredients?.[0]?.nutrients?.calories?.value ?? '--'} kcal`}
+                  value={`${getNutritionValue(dish, 'Năng lượng')} kcal`}
                   theme='orange'
                 />
                 <StatBadge
