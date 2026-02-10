@@ -1,9 +1,26 @@
 import mongoose from 'mongoose';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest';
 
 import { AuthService } from '~/features/auth/auth-service';
 import { ROLE } from '~/shared/constants/role';
 import { AuthModel, UserModel } from '~/shared/database/models';
+import * as authUtils from '~/shared/utils';
+
+vi.mock('~/shared/utils', async () => {
+  const actual = await vi.importActual('~/shared/utils');
+  return {
+    ...actual,
+    uploadAvatar: vi.fn()
+  };
+});
 
 describe('AuthService.signUp', () => {
   beforeAll(async () => {
@@ -13,6 +30,14 @@ describe('AuthService.signUp', () => {
         process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
       );
     }
+
+    // Mock uploadAvatar to return success
+    vi.mocked(authUtils.uploadAvatar).mockResolvedValue({
+      success: true,
+      data: {
+        secure_url: 'https://example.com/avatar/test.jpg'
+      }
+    } as any);
   });
 
   beforeEach(async () => {
@@ -30,11 +55,18 @@ describe('AuthService.signUp', () => {
 
   // Happy case - sign up
   it('should sign up successfully with valid credentials', async () => {
-    const result = await AuthService.signUp({
-      email: 'newuser@gmail.com',
-      name: 'New User',
-      password: '123456'
-    });
+    const mockFile = new File([Buffer.from('fake image data')], 'avatar.jpg', {
+      type: 'image/jpeg'
+    }) as any as Express.Multer.File;
+
+    const result = await AuthService.signUp(
+      {
+        email: 'newuser@gmail.com',
+        name: 'New User',
+        password: '123456'
+      },
+      mockFile
+    );
 
     expect(result).toHaveProperty('accessToken');
     expect(result).toHaveProperty('refreshToken');
@@ -48,6 +80,7 @@ describe('AuthService.signUp', () => {
     expect(user?.name).toBe('New User');
     expect(user?.isActive).toBe(true);
     expect(user?.role).toBe(ROLE.USER);
+    expect(user?.avatar).toBe('https://example.com/avatar/test.jpg');
 
     // Verify auth was created
     const auth = await AuthModel.findOne({ user: user?._id });
