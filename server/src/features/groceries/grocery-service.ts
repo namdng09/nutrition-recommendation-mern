@@ -58,9 +58,7 @@ export const GroceryService = {
         return {
           ingredientId: ingredient._id,
           name: ingredient.name,
-          baseUnit: ingredient.baseUnit,
-          units: ingredient.units,
-          quantity: ing.quantity,
+          image: ingredient.image ?? '',
           isPurchased: ing.isPurchased ?? false,
           notes: ing.notes
         };
@@ -139,6 +137,24 @@ export const GroceryService = {
       throw createHttpError(400, 'Định dạng ID danh sách mua sắm không hợp lệ');
     }
 
+    if (data.endDate && !data.startDate) {
+      const currentGrocery = await GroceryModel.findOne({
+        _id: id,
+        'user._id': userId
+      }).select({ startDate: 1 });
+
+      if (!currentGrocery) {
+        throw createHttpError(404, 'Không tìm thấy danh sách mua sắm');
+      }
+
+      if (data.endDate < currentGrocery.startDate) {
+        throw createHttpError(
+          400,
+          'Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu'
+        );
+      }
+    }
+
     const updateData: any = { ...data };
 
     // If ingredients are updated, fetch their details
@@ -163,9 +179,7 @@ export const GroceryService = {
           return {
             ingredientId: ingredient._id,
             name: ingredient.name,
-            baseUnit: ingredient.baseUnit,
-            units: ingredient.units,
-            quantity: ing.quantity,
+            image: ingredient.image ?? '',
             isPurchased: ing.isPurchased ?? false,
             notes: ing.notes
           };
@@ -267,9 +281,7 @@ export const GroceryService = {
         return {
           ingredientId: ingredient._id,
           name: ingredient.name,
-          baseUnit: ingredient.baseUnit,
-          units: ingredient.units,
-          quantity: ing.quantity,
+          image: ingredient.image ?? '',
           isPurchased: ing.isPurchased ?? false,
           notes: ing.notes
         };
@@ -283,11 +295,12 @@ export const GroceryService = {
       );
 
       if (existingIndex !== -1) {
-        // Ingredient already exists, merge quantity
-        grocery.ingredients[existingIndex].quantity += newIng.quantity;
-        // Update notes if provided
+        // Ingredient already exists, update notes if provided
         if (newIng.notes) {
           grocery.ingredients[existingIndex].notes = newIng.notes;
+        }
+        if (newIng.isPurchased !== undefined) {
+          grocery.ingredients[existingIndex].isPurchased = newIng.isPurchased;
         }
       } else {
         // Add new ingredient
@@ -346,9 +359,6 @@ export const GroceryService = {
       }
 
       // Update fields if provided
-      if (ing.quantity !== undefined) {
-        grocery.ingredients[ingredientIndex].quantity = ing.quantity;
-      }
       if (ing.isPurchased !== undefined) {
         grocery.ingredients[ingredientIndex].isPurchased = ing.isPurchased;
       }
