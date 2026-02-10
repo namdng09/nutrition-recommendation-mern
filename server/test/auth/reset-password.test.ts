@@ -60,7 +60,7 @@ describe('AuthService.resetPassword', () => {
 
   // Happy case - reset password successfully
   it('should reset password successfully with valid token', async () => {
-    await AuthService.resetPassword(resetToken, 'newpassword123');
+    await AuthService.resetPassword(resetToken, { password: 'newpassword123' });
 
     // Verify password was updated in database
     const auth = await AuthModel.findOne({ user: userId });
@@ -77,18 +77,18 @@ describe('AuthService.resetPassword', () => {
   // Branch: invalid token
   it('should throw error when reset token is invalid', async () => {
     await expect(
-      AuthService.resetPassword('invalid-token', 'newpassword123')
+      AuthService.resetPassword('invalid-token', { password: 'newpassword123' })
     ).rejects.toThrow('Token không hợp lệ');
   });
 
   // Branch: token already used
-  it('should throw 400 error when reset token has already been used', async () => {
+  it('should throw error when reset token has already been used', async () => {
     // Use the token once
-    await AuthService.resetPassword(resetToken, 'newpassword123');
+    await AuthService.resetPassword(resetToken, { password: 'newpassword123' });
 
     // Try to use the same token again
     await expect(
-      AuthService.resetPassword(resetToken, 'anotherpassword')
+      AuthService.resetPassword(resetToken, { password: 'anotherpassword' })
     ).rejects.toThrow('Token đã được sử dụng');
   });
 
@@ -98,22 +98,38 @@ describe('AuthService.resetPassword', () => {
     const jwt = require('jsonwebtoken');
     const expiredToken = jwt.sign(
       { id: userId },
-      process.env.JWT_RESET_PASSWORD_SECRET || 'your_reset_password_secret',
+      process.env.JWT_RESET_PASSWORD_SECRET,
       { expiresIn: '0s' } // Expired immediately
     );
 
     await expect(
-      AuthService.resetPassword(expiredToken, 'newpassword123')
+      AuthService.resetPassword(expiredToken, { password: 'newpassword123' })
     ).rejects.toThrow('Token đã hết hạn');
   });
 
+  // Branch: missing required field
+  it('should throw error when password is missing', async () => {
+    await expect(
+      AuthService.resetPassword(resetToken, {
+        password: undefined as unknown as string
+      })
+    ).rejects.toThrow('Mật khẩu là bắt buộc');
+  });
+
+  // Branch: password too short
+  it('should throw error when password is less than 6 characters', async () => {
+    await expect(
+      AuthService.resetPassword(resetToken, { password: '123' })
+    ).rejects.toThrow('Mật khẩu phải có ít nhất 6 ký tự');
+  });
+
   // Branch: user not found
-  it('should throw 404 error when user does not exist', async () => {
+  it('should throw error when user does not exist', async () => {
     // Delete the user
     await UserModel.findByIdAndDelete(userId);
 
     await expect(
-      AuthService.resetPassword(resetToken, 'newpassword123')
+      AuthService.resetPassword(resetToken, { password: 'newpassword123' })
     ).rejects.toThrow('Không tìm thấy người dùng');
   });
 });
