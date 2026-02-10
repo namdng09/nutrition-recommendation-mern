@@ -154,3 +154,11 @@ export const buildScheduleNutritionPieData = nutrients => {
 export const EMPTY_SCHEDULE_PIE_DATA = [
   { name: 'Trống', value: 1, fill: 'hsl(var(--muted))' }
 ];
+
+// ingredient list
+export const findByLabel = (arr, label) =>
+  arr?.find(
+    x => String(x?.label).toLowerCase() === String(label).toLowerCase()
+  );
+
+export const hasValue = x => x?.value !== undefined && x?.value !== null;
