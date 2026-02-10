@@ -60,7 +60,7 @@ export const formatGram = n =>
 export const getOtherNutrition = nutrients => {
   const carbs = Number(nutrients?.carbs?.value ?? 0);
   const fiber = Number(nutrients?.fiber?.value ?? 0);
-  return Math.max(0, carbs + fiber);
+  return carbs + fiber;
 };
 
 export const buildNutritionPieData = nutrients => {
@@ -69,21 +69,9 @@ export const buildNutritionPieData = nutrients => {
   const other = getOtherNutrition(nutrients);
 
   return [
-    {
-      name: 'Chất đạm',
-      value: protein,
-      fill: INGREDIENT_CHART_COLORS[0]
-    },
-    {
-      name: 'Chất béo',
-      value: fat,
-      fill: INGREDIENT_CHART_COLORS[1]
-    },
-    {
-      name: 'Khác',
-      value: other,
-      fill: INGREDIENT_CHART_COLORS[2]
-    }
+    { name: 'Chất đạm', value: protein, fill: INGREDIENT_CHART_COLORS[0] },
+    { name: 'Chất béo', value: fat, fill: INGREDIENT_CHART_COLORS[1] },
+    { name: 'Khác', value: other, fill: INGREDIENT_CHART_COLORS[2] }
   ].filter(d => d.value > 0);
 };
 
