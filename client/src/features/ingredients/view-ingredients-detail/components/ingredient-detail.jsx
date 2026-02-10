@@ -12,6 +12,7 @@ import { IoChevronForward } from 'react-icons/io5';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { Button } from '~/components/ui/button';
+import { findByLabel } from '~/lib/utils';
 
 import { useIngredientDetail } from '../api/view-ingredient-detail';
 import IngredientNutritionModal from './ingredient-nutrition-model';
@@ -22,11 +23,19 @@ export default function IngredientDetail() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { data } = useIngredientDetail(id);
-
   const item = data;
-  const nutrients = item?.nutrition?.nutrients || {};
   const defaultUnit = item?.units?.find(u => u.isDefault) || item?.units?.[0];
 
+  const nutrientList = item?.nutrition?.nutrients || [];
+  const mineralList = item?.nutrition?.minerals || [];
+
+  const calories = findByLabel(nutrientList, 'Năng lượng');
+  const protein = findByLabel(nutrientList, 'Protein');
+  const carbs = findByLabel(nutrientList, 'Tinh bột');
+  const fat = findByLabel(nutrientList, 'Chất béo');
+  const fiber = findByLabel(nutrientList, 'Chất xơ');
+
+  const sodium = findByLabel(mineralList, 'Natri');
   const [openNutrition, setOpenNutrition] = useState(false);
 
   return (
@@ -118,41 +127,42 @@ export default function IngredientDetail() {
                 <NutritionStatCard
                   icon={<FaFireAlt />}
                   label={`Calo / ${item?.baseUnit?.amount}${item?.baseUnit?.unit}`}
-                  value={`${nutrients.calories?.value ?? 0} ${
-                    nutrients.calories?.unit ?? ''
-                  }`}
+                  value={`${calories?.value ?? 0} ${calories?.unit ?? ''}`}
                   color='orange'
                 />
+
                 <NutritionStatCard
                   icon={<GiMeat />}
                   label='Đạm (Protein)'
-                  value={`${nutrients.protein?.value ?? 0}g`}
+                  value={`${protein?.value ?? 0}${protein?.unit ?? ''}`}
                   color='emerald'
                 />
+
                 <NutritionStatCard
                   icon={<GiWheat />}
-                  label='Tinh bột (Carbs)'
-                  value={`${nutrients.carbs?.value ?? 0}g`}
+                  label='Tinh bột'
+                  value={`${carbs?.value ?? 0}${carbs?.unit ?? ''}`}
                   color='sky'
                 />
+
                 <NutritionStatCard
                   icon={<GiOlive />}
-                  label='Chất béo (Fat)'
-                  value={`${nutrients.fat?.value ?? 0}g`}
+                  label='Chất béo'
+                  value={`${fat?.value ?? 0}${fat?.unit ?? ''}`}
                   color='fuchsia'
                 />
+
                 <NutritionStatCard
                   icon={<GiCottonFlower />}
-                  label='Chất xơ (Fiber)'
-                  value={`${nutrients.fiber?.value ?? 0}g`}
+                  label='Chất xơ'
+                  value={`${fiber?.value ?? 0}${fiber?.unit ?? ''}`}
                   color='violet'
                 />
+
                 <NutritionStatCard
                   icon={<GiSaltShaker />}
-                  label='Natri (Sodium)'
-                  value={`${nutrients.sodium?.value ?? 0}${
-                    nutrients.sodium?.unit ?? ''
-                  }`}
+                  label='Natri'
+                  value={`${sodium?.value ?? 0}${sodium?.unit ?? ''}`}
                   color='amber'
                 />
               </div>
