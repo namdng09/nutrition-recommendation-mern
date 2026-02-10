@@ -124,8 +124,8 @@ describe('AuthService.signUp', () => {
     ).rejects.toThrow('Mật khẩu phải có ít nhất 6 ký tự');
   });
 
-  // Branch: duplicate email
-  it('should throw 400 error when email already exists', async () => {
+  // Branch: duplicate email (User exists)
+  it('should throw 400 error when email already exists (User exists)', async () => {
     // Create existing user
     await UserModel.create({
       email: 'existing@gmail.com',
@@ -134,6 +134,7 @@ describe('AuthService.signUp', () => {
       isActive: true
     });
 
+    // Even if Auth doesn't exist, User existence should trigger error
     await expect(
       AuthService.signUp({
         email: 'existing@gmail.com',
@@ -141,5 +142,58 @@ describe('AuthService.signUp', () => {
         password: '123456'
       })
     ).rejects.toThrow('Tài khoản với email này đã tồn tại');
+  });
+
+  // Branch: Dangling Auth record (User doesn't exist, but Auth does)
+  it('should throw 400 error when Auth record already exists (Dangling Auth)', async () => {
+    // Manually create an Auth record without a corresponding User
+    // This simulates a corrupted state or a previous failed cleanup
+    const fakeUserId = new mongoose.Types.ObjectId();
+    await AuthModel.create({
+      user: fakeUserId,
+      provider: 'local',
+      providerId: 'dangling@gmail.com',
+      localPassword: 'hashedpassword',
+      verifyAt: new Date()
+    });
+
+    const mockFile = new File([Buffer.from('data')], 'avatar.jpg', {
+      type: 'image/jpeg'
+    }) as any as Express.Multer.File;
+
+    await expect(
+      AuthService.signUp(
+        {
+          email: 'dangling@gmail.com',
+          name: 'New User',
+          password: '123456'
+        },
+        mockFile
+      )
+    ).rejects.toThrow('Tài khoản với email này đã tồn tại');
+  });
+
+  // Branch: Avatar upload fails
+  it('should throw 500 error when avatar upload fails', async () => {
+    // Override mock for this test only
+    vi.mocked(authUtils.uploadAvatar).mockResolvedValueOnce({
+      success: false,
+      error: 'Upload failed'
+    } as any);
+
+    const mockFile = new File([Buffer.from('data')], 'avatar.jpg', {
+      type: 'image/jpeg'
+    }) as any as Express.Multer.File;
+
+    await expect(
+      AuthService.signUp(
+        {
+          email: 'uploadfail@gmail.com',
+          name: 'New User',
+          password: '123456'
+        },
+        mockFile
+      )
+    ).rejects.toThrow('Không thể tải lên ảnh đại diện');
   });
 });

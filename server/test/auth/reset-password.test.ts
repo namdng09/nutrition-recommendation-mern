@@ -132,4 +132,30 @@ describe('AuthService.resetPassword', () => {
       AuthService.resetPassword(resetToken, { password: 'newpassword123' })
     ).rejects.toThrow('Không tìm thấy người dùng');
   });
+
+  // Branch: Local Auth missing (e.g. Google user resetting password)
+  it('should create new local auth record if it does not exist', async () => {
+    // Delete the existing local auth
+    await AuthModel.deleteMany({});
+
+    // User still exists (created in beforeEach)
+
+    await AuthService.resetPassword(resetToken, {
+      password: 'newItemPassword123'
+    });
+
+    // Verify new auth record created
+    const auth = await AuthModel.findOne({
+      user: userId,
+      provider: 'local'
+    });
+
+    expect(auth).toBeDefined();
+    expect(auth?.provider).toBe('local');
+    const isValid = await comparePassword(
+      'newItemPassword123',
+      auth!.localPassword!
+    );
+    expect(isValid).toBe(true);
+  });
 });

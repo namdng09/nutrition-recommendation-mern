@@ -117,4 +117,37 @@ describe('AuthService.login', () => {
       'Không tìm thấy người dùng hoặc tài khoản đã bị vô hiệu hóa'
     );
   });
+
+  // Branch: Email not found (Account does not exist)
+  it('should throw 401 error when email does not exist', async () => {
+    await expect(
+      AuthService.login({
+        email: 'nonexistent@gmail.com',
+        password: '123456'
+      })
+    ).rejects.toThrow('Thông tin đăng nhập không hợp lệ');
+  });
+
+  // Branch: Orphaned Auth (Auth exists but User missing)
+  it('should throw 404 error when Auth exists but User is missing', async () => {
+    // Create an auth record linked to a non-existent user ID
+    const fakeUserId = new mongoose.Types.ObjectId();
+    const hashedPassword = await hashPassword('123456');
+    await AuthModel.create({
+      user: fakeUserId,
+      provider: 'local',
+      providerId: 'orphaned@gmail.com',
+      localPassword: hashedPassword,
+      verifyAt: new Date()
+    });
+
+    await expect(
+      AuthService.login({
+        email: 'orphaned@gmail.com',
+        password: '123456'
+      })
+    ).rejects.toThrow(
+      'Không tìm thấy người dùng hoặc tài khoản đã bị vô hiệu hóa'
+    );
+  });
 });
