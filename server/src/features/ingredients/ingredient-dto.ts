@@ -27,7 +27,7 @@ const vitaminItemSchema = z.object({
   unit: z.enum(Object.values(UNIT))
 });
 
-const nutritionSchema = z.object({
+const detailNutritionSchema = z.object({
   nutrients: z.array(nutrientItemSchema).optional(),
   minerals: z.array(mineralItemSchema).optional(),
   vitamins: z.array(vitaminItemSchema).optional()
@@ -76,7 +76,7 @@ export const createIngredientRequestSchema = z.object({
   baseUnit: z.preprocess(parseJSON, baseUnitSchema),
   units: z.preprocess(parseJSON, z.array(unitSchema)).optional(),
   allergens: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
-  nutrition: z.preprocess(parseJSON, nutritionSchema).optional(),
+  nutrition: z.preprocess(parseJSON, detailNutritionSchema).optional(),
   image: z.file().optional(),
   isActive: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
 });
@@ -98,7 +98,7 @@ export const updateIngredientRequestSchema = z.object({
   baseUnit: z.preprocess(parseJSON, baseUnitSchema).optional(),
   units: z.preprocess(parseJSON, z.array(unitSchema)).optional(),
   allergens: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
-  nutrition: z.preprocess(parseJSON, nutritionSchema).optional(),
+  nutrition: z.preprocess(parseJSON, detailNutritionSchema).optional(),
   image: z.file().optional(),
   isActive: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
 });

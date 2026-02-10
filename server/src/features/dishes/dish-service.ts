@@ -2,7 +2,6 @@ import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
 
 import { ROLE } from '~/shared/constants/role';
-import { UNIT } from '~/shared/constants/unit';
 import { DishModel, IngredientModel } from '~/shared/database/models';
 import type { Dish } from '~/shared/database/models/dish-model';
 import {
@@ -14,106 +13,6 @@ import {
 } from '~/shared/utils';
 
 import { CreateDishRequest, UpdateDishRequest } from './dish-dto';
-
-const nutrientKeys = [
-  'calories',
-  'carbs',
-  'fat',
-  'protein',
-  'fiber',
-  'sodium',
-  'cholesterol'
-] as const;
-
-type NutrientKey = (typeof nutrientKeys)[number];
-type NutrientValue = { value: number; unit: string };
-type NutrientsTotal = Record<NutrientKey, NutrientValue>;
-type NutritionItem = { label: string; value: number; unit: string };
-type NutrientsInput = Partial<
-  Record<NutrientKey, { value?: number | null; unit?: string | null } | null>
-> | null;
-type NutritionItemsInput = Array<{
-  label?: string | null;
-  value?: number | null;
-  unit?: string | null;
-} | null> | null;
-type DetailNutritionTotal = {
-  nutrients: NutrientsTotal;
-  minerals: NutritionItem[];
-  vitamins: NutritionItem[];
-  sugars: NutritionItem[];
-  fats: NutritionItem[];
-  fattyAcids: NutritionItem[];
-  aminoAcids: NutritionItem[];
-};
-
-const createEmptyNutrientsTotal = (): NutrientsTotal => ({
-  calories: { value: 0, unit: UNIT.KILOCALORIE },
-  carbs: { value: 0, unit: UNIT.GRAM },
-  fat: { value: 0, unit: UNIT.GRAM },
-  protein: { value: 0, unit: UNIT.GRAM },
-  fiber: { value: 0, unit: UNIT.GRAM },
-  sodium: { value: 0, unit: UNIT.GRAM },
-  cholesterol: { value: 0, unit: UNIT.GRAM }
-});
-
-const createEmptyDetailNutritionTotal = (): DetailNutritionTotal => ({
-  nutrients: createEmptyNutrientsTotal(),
-  minerals: [],
-  vitamins: [],
-  sugars: [],
-  fats: [],
-  fattyAcids: [],
-  aminoAcids: []
-});
-
-const addNutrientsTotal = (
-  total: NutrientsTotal,
-  nutrients?: NutrientsInput
-) => {
-  if (!nutrients) return;
-  for (const key of nutrientKeys) {
-    const item = nutrients[key];
-    if (!item) continue;
-    const value = typeof item.value === 'number' ? item.value : 0;
-    const unit = typeof item.unit === 'string' ? item.unit : undefined;
-    const current = total[key];
-    if (unit && current.unit !== unit) {
-      if (current.value !== 0) {
-        throw createHttpError(
-          400,
-          `Đơn vị dinh dưỡng không đồng nhất cho ${key}`
-        );
-      }
-      current.unit = unit;
-    }
-    current.value += value;
-  }
-};
-
-const addNutritionItemsTotal = (
-  target: Map<string, NutritionItem>,
-  items?: NutritionItemsInput
-) => {
-  if (!items || items.length === 0) return;
-  for (const item of items) {
-    const label = item?.label ?? undefined;
-    const unit = item?.unit ?? undefined;
-    if (!label || !unit) continue;
-    const value = typeof item?.value === 'number' ? item.value : 0;
-    const key = `${label}|${unit}`;
-    const current = target.get(key);
-    if (current) {
-      current.value += value;
-    } else {
-      target.set(key, {
-        label,
-        unit,
-        value
-      });
-    }
-  }
-};
 
 export const DishService = {
   createDish: async (
@@ -145,7 +44,6 @@ export const DishService = {
           name: ingredient.name,
           image: ingredient.image || '',
           description: ingredient.description,
-          nutrients: ingredient.nutrition?.nutrients,
           allergens: ingredient.allergens,
           baseUnit: ingredient.baseUnit,
           units: ing.units
@@ -163,6 +61,7 @@ export const DishService = {
       categories: data.categories,
       ingredients: ingredientDetails,
       instructions: data.instructions,
+      nutrition: data.nutrition,
       preparationTime: data.preparationTime,
       cookTime: data.cookTime,
       servings: data.servings || 1,
@@ -214,62 +113,6 @@ export const DishService = {
     return dish;
   },
 
-  viewDishDetailNutrition: async (id: string) => {
-    if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
-    }
-
-    const dish = await DishModel.findById(id);
-
-    if (!dish) {
-      throw createHttpError(404, 'Không tìm thấy món ăn');
-    }
-
-    const ingredientIds = dish.ingredients
-      ?.map(ingredient => ingredient.ingredientId)
-      .filter(Boolean);
-
-    if (!ingredientIds || ingredientIds.length === 0) {
-      return createEmptyDetailNutritionTotal();
-    }
-
-    const ingredients = await IngredientModel.find({
-      _id: { $in: ingredientIds }
-    });
-
-    if (ingredients.length !== ingredientIds.length) {
-      throw createHttpError(404, 'Một hoặc nhiều nguyên liệu không tồn tại');
-    }
-
-    const total = createEmptyDetailNutritionTotal();
-    const mineralsMap = new Map<string, NutritionItem>();
-    const vitaminsMap = new Map<string, NutritionItem>();
-    const sugarsMap = new Map<string, NutritionItem>();
-    const fatsMap = new Map<string, NutritionItem>();
-    const fattyAcidsMap = new Map<string, NutritionItem>();
-    const aminoAcidsMap = new Map<string, NutritionItem>();
-
-    for (const ingredient of ingredients) {
-      const nutrition = ingredient.nutrition;
-      addNutrientsTotal(total.nutrients, nutrition?.nutrients);
-      addNutritionItemsTotal(mineralsMap, nutrition?.minerals);
-      addNutritionItemsTotal(vitaminsMap, nutrition?.vitamins);
-      addNutritionItemsTotal(sugarsMap, nutrition?.sugars);
-      addNutritionItemsTotal(fatsMap, nutrition?.fats);
-      addNutritionItemsTotal(fattyAcidsMap, nutrition?.fattyAcids);
-      addNutritionItemsTotal(aminoAcidsMap, nutrition?.aminoAcids);
-    }
-
-    total.minerals = Array.from(mineralsMap.values());
-    total.vitamins = Array.from(vitaminsMap.values());
-    total.sugars = Array.from(sugarsMap.values());
-    total.fats = Array.from(fatsMap.values());
-    total.fattyAcids = Array.from(fattyAcidsMap.values());
-    total.aminoAcids = Array.from(aminoAcidsMap.values());
-
-    return total;
-  },
-
   updateDish: async (
     id: string,
     userId: string,
@@ -316,7 +159,6 @@ export const DishService = {
             name: ingredient.name,
             image: ingredient.image || '',
             description: ingredient.description,
-            nutrients: ingredient.nutrition?.nutrients,
             allergens: ingredient.allergens,
             baseUnit: ingredient.baseUnit,
             units: ing.units
