@@ -60,7 +60,7 @@ export const formatGram = n =>
 export const getOtherNutrition = nutrients => {
   const carbs = Number(nutrients?.carbs?.value ?? 0);
   const fiber = Number(nutrients?.fiber?.value ?? 0);
-  return Math.max(0, carbs + fiber);
+  return carbs + fiber;
 };
 
 export const buildNutritionPieData = nutrients => {
@@ -69,21 +69,9 @@ export const buildNutritionPieData = nutrients => {
   const other = getOtherNutrition(nutrients);
 
   return [
-    {
-      name: 'Chất đạm',
-      value: protein,
-      fill: INGREDIENT_CHART_COLORS[0]
-    },
-    {
-      name: 'Chất béo',
-      value: fat,
-      fill: INGREDIENT_CHART_COLORS[1]
-    },
-    {
-      name: 'Khác',
-      value: other,
-      fill: INGREDIENT_CHART_COLORS[2]
-    }
+    { name: 'Chất đạm', value: protein, fill: INGREDIENT_CHART_COLORS[0] },
+    { name: 'Chất béo', value: fat, fill: INGREDIENT_CHART_COLORS[1] },
+    { name: 'Khác', value: other, fill: INGREDIENT_CHART_COLORS[2] }
   ].filter(d => d.value > 0);
 };
 
@@ -154,3 +142,40 @@ export const buildScheduleNutritionPieData = nutrients => {
 export const EMPTY_SCHEDULE_PIE_DATA = [
   { name: 'Trống', value: 1, fill: 'hsl(var(--muted))' }
 ];
+
+// ingredient list
+export const findByLabel = (arr, label) =>
+  arr?.find(
+    x => String(x?.label).toLowerCase() === String(label).toLowerCase()
+  );
+
+export const hasValue = x => x?.value !== undefined && x?.value !== null;
+
+// dish nutrition content
+export const formatValue = (value, unit) => {
+  if (value === undefined || value === null || value === '') return '-';
+  const num = Number(value);
+  if (unit === 'g') return formatGram(num);
+  if (unit === 'kcal') return Math.round(num).toString();
+  if (['mg', 'ml', 'μg'].includes(unit))
+    return num.toLocaleString(undefined, {
+      maximumFractionDigits: 2
+    });
+
+  return num.toLocaleString();
+};
+
+// dish nutrtion detail
+export const findNutrientValue = (nutrition, label) =>
+  nutrition?.nutrients?.find(
+    n => String(n.label).toLowerCase() === String(label).toLowerCase()
+  )?.value ?? 0;
+
+export const filterNutrients = (nutrition, keywords = []) =>
+  nutrition?.nutrients?.filter(n =>
+    keywords.some(k => String(n.label).toLowerCase().includes(k.toLowerCase()))
+  ) ?? [];
+
+// dish list kcal (calories)
+export const getNutritionValue = (dish, label) =>
+  dish?.nutrition?.nutrients?.find(n => n.label === label)?.value ?? 0;

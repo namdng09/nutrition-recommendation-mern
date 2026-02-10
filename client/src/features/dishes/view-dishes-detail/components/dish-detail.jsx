@@ -23,10 +23,8 @@ export default function DishDetail() {
   }
 
   const totalCalories =
-    dish.ingredients?.reduce(
-      (sum, item) => sum + (item.nutrients?.calories?.value || 0),
-      0
-    ) || 0;
+    dish?.nutrition?.nutrients?.find(n => n.label === 'Năng lượng')?.value ?? 0;
+
   const totalTime = (dish.preparationTime ?? 0) + (dish.cookTime ?? 0);
 
   return (
@@ -71,9 +69,11 @@ export default function DishDetail() {
               {dish.name}
             </h1>
 
-            <p className='max-w-xl text-lg font-light italic leading-relaxed text-muted-foreground'>
-              “{dish.description}”
-            </p>
+            {dish.description && (
+              <p className='max-w-xl text-lg font-light italic leading-relaxed text-muted-foreground'>
+                “{dish.description}”
+              </p>
+            )}
           </div>
 
           <div className='grid grid-cols-3 gap-6'>
@@ -92,86 +92,80 @@ export default function DishDetail() {
             <DishStat
               icon={<FaUtensils />}
               label='Khẩu phần'
-              value={`${dish.servings} người`}
+              value={`${dish.servings ?? 0} người`}
               color='sky'
             />
           </div>
 
           <Link
             to={`/dishes/${id}/nutrition`}
-            className='inline-flex items-center justify-center gap-3
-    rounded-2xl bg-primary px-6 py-4
-    text-sm font-black tracking-widest text-primary-foreground
-    shadow-lg shadow-primary/30
-    hover:brightness-110 active:scale-[0.98]
-    transition-all'
+            className='inline-flex items-center justify-center gap-3 rounded-2xl bg-primary px-6 py-4 text-sm font-black tracking-widest text-primary-foreground shadow-lg shadow-primary/30 hover:brightness-110 active:scale-[0.98] transition-all'
           >
             XEM CHI TIẾT DINH DƯỠNG
             <FaFireAlt />
           </Link>
 
-          <div className='flex items-center gap-4 border-t border-border pt-6'>
-            <div className='flex h-12 w-12 items-center justify-center rounded-full bg-secondary ring-1 ring-border'>
-              <FaUser className='text-muted-foreground' />
+          {dish.user && (
+            <div className='flex items-center gap-4 border-t border-border pt-6'>
+              <div className='flex h-12 w-12 items-center justify-center rounded-full bg-secondary ring-1 ring-border'>
+                <FaUser className='text-muted-foreground' />
+              </div>
+              <div>
+                <p className='text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground'>
+                  Công thức bởi
+                </p>
+                <p className='font-bold'>{dish.user.name}</p>
+              </div>
             </div>
-            <div>
-              <p className='text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground'>
-                Công thức bởi
-              </p>
-              <p className='font-bold'>{dish.user?.name}</p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
 
-      <div className='space-y-20'>
-        {/* ingredient */}
-        <div className='space-y-8'>
-          <div className='flex items-center justify-between border-b border-border pb-4'>
-            <h2 className='flex items-center gap-3 text-2xl font-bold'>
-              <FaCarrot className='text-orange-500' />
-              Nguyên liệu
-            </h2>
-            <span className='rounded-lg bg-secondary px-3 py-1 text-xs font-bold text-muted-foreground'>
-              {dish.ingredients.length}
-            </span>
-          </div>
+      {dish.ingredients?.length > 0 && (
+        <div className='space-y-20'>
+          <div className='space-y-8'>
+            <div className='flex items-center justify-between border-b border-border pb-4'>
+              <h2 className='flex items-center gap-3 text-2xl font-bold'>
+                <FaCarrot className='text-orange-500' />
+                Nguyên liệu
+              </h2>
+              <span className='rounded-lg bg-secondary px-3 py-1 text-xs font-bold text-muted-foreground'>
+                {dish.ingredients.length}
+              </span>
+            </div>
 
-          <div className='grid gap-4 sm:grid-cols-2'>
-            {dish.ingredients.map(item => (
-              <Link
-                key={item._id}
-                to={`/ingredients/${item.ingredientId}`}
-                className='group flex items-center gap-4 rounded-2xl
-    border border-border
-    bg-background p-4
-    transition-all duration-300
-    hover:-translate-y-0.5 hover:shadow-lg hover:border-orange-200'
-              >
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className='h-14 w-14 rounded-xl object-cover transition-transform duration-300 group-hover:scale-110'
-                />
+            <div className='grid gap-4 sm:grid-cols-2'>
+              {dish.ingredients.map(item => {
+                const unit = item.units?.find(u => u.isDefault);
 
-                <div className='flex-1'>
-                  <p className='font-bold text-sm text-foreground'>
-                    {item.name}
-                  </p>
-                  <p className='text-xs text-muted-foreground'>
-                    {item.baseUnit.amount} {item.baseUnit.unit}
-                  </p>
-                </div>
-
-                <span className='text-xs font-black text-orange-600'>
-                  {item.nutrients.calories.value} kcal
-                </span>
-              </Link>
-            ))}
+                return (
+                  <Link
+                    key={item._id}
+                    to={`/ingredients/${item.ingredientId}`}
+                    className='group flex items-center gap-4 rounded-2xl border border-border bg-background p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:border-orange-200'
+                  >
+                    <img
+                      src={item.image || '/placeholder.png'}
+                      alt={item.name}
+                      className='h-14 w-14 rounded-xl object-cover transition-transform duration-300 group-hover:scale-110'
+                    />
+                    <div className='flex-1'>
+                      <p className='font-bold text-sm text-foreground'>
+                        {item.name}
+                      </p>
+                      <p className='text-xs text-muted-foreground'>
+                        {unit?.quantity ?? '-'} {unit?.unit ?? ''}
+                      </p>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         </div>
+      )}
 
-        {/* instructions */}
+      {dish.instructions?.length > 0 && (
         <div className='space-y-10'>
           <h2 className='flex items-center gap-3 border-b border-border pb-4 text-2xl font-bold'>
             <FaListOl className='text-sky-600' />
@@ -194,7 +188,7 @@ export default function DishDetail() {
             ))}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

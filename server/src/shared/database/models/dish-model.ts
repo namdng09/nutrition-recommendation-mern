@@ -10,7 +10,7 @@ import { DISH_CATEGORY } from '~/shared/constants/dish-category';
 import { NUTRITION_FOCUS } from '~/shared/constants/nutrition-focus';
 import { UNIT } from '~/shared/constants/unit';
 
-import { nutrientSchema } from './ingredient-model';
+import { nutritionSchema } from './ingredient-model';
 
 const dishSchema = new Schema(
   {
@@ -29,20 +29,21 @@ const dishSchema = new Schema(
         name: { type: String, required: true },
         image: { type: String },
         description: { type: String },
-        nutrients: { type: nutrientSchema },
         allergens: [{ type: String, enum: Object.values(ALLERGEN) }],
-        baseUnit: {
-          amount: { type: Number, required: true },
-          unit: { type: String, default: UNIT.GRAM, required: true }
-        },
-        units: [
-          {
-            value: { type: Number, required: true },
-            quantity: { type: Number, required: true },
-            unit: { type: String, required: true },
-            isDefault: { type: Boolean, required: true }
+        units: {
+          type: [
+            {
+              quantity: { type: Number, required: true },
+              unit: { type: String, required: true },
+              isDefault: { type: Boolean, required: true }
+            }
+          ],
+          validate: {
+            validator: (units: Array<{ unit?: string }>) =>
+              units?.some(unit => unit.unit === UNIT.GRAM),
+            message: 'Each ingredient must include a gram unit in units.'
           }
-        ]
+        }
       }
     ],
     instructions: [
@@ -52,6 +53,7 @@ const dishSchema = new Schema(
       }
     ],
     image: { type: String },
+    nutrition: { type: nutritionSchema },
     isActive: { type: Boolean, default: true },
     isPublic: { type: Boolean, default: false },
     preparationTime: { type: Number },
@@ -71,7 +73,7 @@ dishSchema.plugin(mongoosePaginate);
 
 dishSchema.index({ 'user._id': 1, isActive: 1 });
 dishSchema.index({ categories: 1 });
-dishSchema.index({ allergens: 1 });
+dishSchema.index({ 'ingredients.allergens': 1 });
 dishSchema.index({ tags: 1 });
 
 export type Dish = InferSchemaType<typeof dishSchema>;

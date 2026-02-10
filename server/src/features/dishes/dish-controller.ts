@@ -37,18 +37,6 @@ export const DishController = {
       .json(ApiResponse.success('Lấy thông tin món ăn thành công', result));
   },
 
-  viewDishDetailNutrition: async (req: Request, res: Response) => {
-    const id = req.params.id;
-
-    const result = await DishService.viewDishDetailNutrition(id);
-
-    res
-      .status(200)
-      .json(
-        ApiResponse.success('Lấy chi tiết dinh dưỡng món ăn thành công', result)
-      );
-  },
-
   updateDish: async (req: Request, res: Response) => {
     const id = req.params.id;
     const data = req.body;

@@ -15,6 +15,8 @@ export default function IngredientsList() {
   const params = useMemo(() => ({ page, limit: 10, name }), [page, name]);
   const { data } = useIngredients(params);
 
+  const docs = data?.docs ?? [];
+
   return (
     <div className='mx-auto w-full max-w-5xl space-y-4'>
       <IngredientsToolbar
@@ -28,18 +30,18 @@ export default function IngredientsList() {
             return next;
           });
         }}
-        totalDocs={data.totalDocs}
-        page={data.page}
-        totalPages={data.totalPages}
+        totalDocs={data?.totalDocs ?? 0}
+        page={data?.page ?? 1}
+        totalPages={data?.totalPages ?? 1}
       />
 
-      <IngredientsGrid items={data.docs} />
+      <IngredientsGrid items={docs} />
 
       <IngredientsPagination
-        page={data.page}
-        totalPages={data.totalPages}
-        hasPrevPage={data.hasPrevPage}
-        hasNextPage={data.hasNextPage}
+        page={data?.page ?? 1}
+        totalPages={data?.totalPages ?? 1}
+        hasPrevPage={!!data?.hasPrevPage}
+        hasNextPage={!!data?.hasNextPage}
         onPrev={() =>
           setSearchParams(prev => {
             const next = new URLSearchParams(prev);

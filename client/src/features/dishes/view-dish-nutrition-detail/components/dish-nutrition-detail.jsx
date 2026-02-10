@@ -1,24 +1,42 @@
 import { HiOutlineArrowLeft } from 'react-icons/hi';
 import { useNavigate, useParams } from 'react-router';
 
-import { useDishNutritionDetail } from '../api/view-dish-nutrition-detail';
+import { filterNutrients, findNutrientValue } from '~/lib/utils';
+
+import { useDishesDetail } from '../../view-dishes-detail/api/view-dishes-detail';
 import DishNutritionContent from '../components/dish-nutrition-content';
+import DishNutritionEmpty from './dish-nutrition-empty';
 
 export default function DishNutritionDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data } = useDishNutritionDetail(id);
+  const { data } = useDishesDetail(id);
+  const dish = data;
 
-  if (!data) {
-    return (
-      <div className='flex h-96 flex-col items-center justify-center space-y-4'>
-        <div className='h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent' />
-        <p className='animate-pulse font-medium text-muted-foreground'>
-          Đang tải dữ liệu dinh dưỡng...
-        </p>
-      </div>
-    );
+  if (!dish) {
+    return <DishNutritionEmpty />;
   }
+
+  const nutritionData = {
+    nutrients: {
+      calories: {
+        value: findNutrientValue(dish.nutrition, 'Năng lượng')
+      },
+      carbs: {
+        value: findNutrientValue(dish.nutrition, 'Tinh bột')
+      },
+      fat: {
+        value: findNutrientValue(dish.nutrition, 'Chất béo')
+      },
+      protein: {
+        value: findNutrientValue(dish.nutrition, 'Protein')
+      }
+    },
+    vitamins: dish.nutrition?.vitamins ?? [],
+    minerals: dish.nutrition?.minerals ?? [],
+    fats: filterNutrients(dish.nutrition, ['cholesterol', 'phytosterol']),
+    sugars: filterNutrients(dish.nutrition, ['đường', 'chất xơ'])
+  };
 
   return (
     <div className='mx-auto max-w-5xl space-y-8 p-4 md:p-8'>
@@ -35,13 +53,14 @@ export default function DishNutritionDetailPage() {
           <h1 className='text-2xl md:text-4xl font-black tracking-tight'>
             Thông tin <span className='text-primary'>dinh dưỡng</span>
           </h1>
+
           <p className='text-xs font-bold uppercase tracking-widest text-muted-foreground'>
-            Phân tích thành phần món ăn
+            {dish.name}
           </p>
         </div>
       </div>
 
-      <DishNutritionContent data={data} />
+      <DishNutritionContent data={nutritionData} />
     </div>
   );
 }

@@ -1,12 +1,16 @@
 export const NUTRITION_VITAMIN = {
-  VITAMIN_A: 'Vitamin A',
-  VITAMIN_A_IU: 'Vitamin A IU',
-  VITAMIN_B6: 'Vitamin B6',
-  VITAMIN_B12: 'Vitamin B12',
   VITAMIN_C: 'Vitamin C',
-  VITAMIN_D_IU: 'Vitamin D IU',
-  VITAMIN_D2: 'Vitamin D2',
-  VITAMIN_D3: 'Vitamin D3',
+  VITAMIN_B1: 'Vitamin B1',
+  VITAMIN_B2: 'Vitamin B2',
+  VITAMIN_PP: 'Vitamin PP',
+  VITAMIN_B5: 'Vitamin B5',
+  VITAMIN_B6: 'Vitamin B6',
+  FOLAT: 'Folat',
+  VITAMIN_B9: 'Vitamin B9',
+  VITAMIN_H: 'Vitamin H',
+  VITAMIN_B12: 'Vitamin B12',
+  VITAMIN_A: 'Vitamin A',
+  VITAMIN_D: 'Vitamin D',
   VITAMIN_E: 'Vitamin E',
   VITAMIN_K: 'Vitamin K'
 } as const;

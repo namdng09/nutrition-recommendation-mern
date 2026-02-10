@@ -1,6 +1,10 @@
 import { z } from 'zod';
 
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
+import { NUTRITION_MINERAL } from '~/shared/constants/nutrition-minerals';
+import { NUTRIENTS } from '~/shared/constants/nutrition-nutrients';
+import { NUTRITION_VITAMIN } from '~/shared/constants/nutrition-vitamin';
+import { UNIT } from '~/shared/constants/unit';
 import { NUTRITION_FOCUS } from '~/shared/constants/nutrition-focus';
 
 const parseJSON = (val: any) => {
@@ -25,8 +29,10 @@ const parseBoolean = (val: any) => {
   return val;
 };
 
+const enumValues = <T extends Record<string, string>>(values: T) =>
+  z.enum(Object.values(values) as [string, ...string[]]);
+
 const unitSchema = z.object({
-  value: z.coerce.number().min(0, 'Giá trị phải lớn hơn hoặc bằng 0'),
   quantity: z.coerce.number().min(0, 'Số lượng phải lớn hơn hoặc bằng 0'),
   unit: z.string().trim().min(1, 'Đơn vị không được để trống'),
   isDefault: z.preprocess(parseBoolean, z.coerce.boolean())
@@ -36,13 +42,43 @@ const dishIngredientSchema = z.object({
   ingredientId: z.string().trim().min(1, 'ID nguyên liệu không được để trống'),
   units: z.preprocess(
     parseJSON,
-    z.array(unitSchema).min(1, 'Phải có ít nhất 1 đơn vị')
+    z
+      .array(unitSchema)
+      .min(1, 'Phải có ít nhất 1 đơn vị')
+      .refine(
+        units => units?.some(unit => unit.unit === 'g'),
+        'Phải có đơn vị gram (g)'
+      )
   )
 });
 
 const instructionSchema = z.object({
   step: z.coerce.number().min(1, 'Bước phải lớn hơn hoặc bằng 1'),
   description: z.string().trim().min(1, 'Mô tả bước không được để trống')
+});
+
+const nutrientItemSchema = z.object({
+  label: enumValues(NUTRIENTS),
+  value: z.coerce.number().min(0),
+  unit: z.enum(Object.values(UNIT))
+});
+
+const mineralItemSchema = z.object({
+  label: enumValues(NUTRITION_MINERAL),
+  value: z.coerce.number().min(0),
+  unit: z.enum(Object.values(UNIT))
+});
+
+const vitaminItemSchema = z.object({
+  label: enumValues(NUTRITION_VITAMIN),
+  value: z.coerce.number().min(0),
+  unit: z.enum(Object.values(UNIT))
+});
+
+const detailNutritionSchema = z.object({
+  nutrients: z.array(nutrientItemSchema).optional(),
+  minerals: z.array(mineralItemSchema).optional(),
+  vitamins: z.array(vitaminItemSchema).optional()
 });
 
 export const createDishRequestSchema = z.object({
@@ -62,6 +98,7 @@ export const createDishRequestSchema = z.object({
     parseJSON,
     z.array(instructionSchema).min(1, 'Phải có ít nhất 1 bước hướng dẫn')
   ),
+  nutrition: z.preprocess(parseJSON, detailNutritionSchema).optional(),
   image: z.file().optional(),
   preparationTime: z.coerce.number().min(0).optional(),
   cookTime: z.coerce.number().min(0).optional(),
@@ -102,6 +139,7 @@ export const updateDishRequestSchema = z.object({
       z.array(instructionSchema).min(1, 'Phải có ít nhất 1 bước hướng dẫn')
     )
     .optional(),
+  nutrition: z.preprocess(parseJSON, detailNutritionSchema).optional(),
   image: z.file().optional(),
   preparationTime: z.coerce.number().min(0).optional(),
   cookTime: z.coerce.number().min(0).optional(),

@@ -10,12 +10,21 @@ import { Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import {
   buildNutritionPieData,
   EMPTY_PIE_DATA,
+  findByLabel,
   formatGram,
   getOtherNutrition
 } from '~/lib/utils';
 
 export default function IngredientNutritionPie({ item }) {
-  const nutrients = item?.nutrition?.nutrients || {};
+  const list = item?.nutrition?.nutrients || [];
+
+  const nutrients = {
+    protein: findByLabel(list, 'Protein'),
+    fat: findByLabel(list, 'Chất béo'),
+    carbs: findByLabel(list, 'Tinh bột'),
+    fiber: findByLabel(list, 'Chất xơ'),
+    calories: findByLabel(list, 'Năng lượng')
+  };
   const data = useMemo(() => buildNutritionPieData(nutrients), [nutrients]);
 
   return (

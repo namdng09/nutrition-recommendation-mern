@@ -20,11 +20,6 @@ router.post(
 
 router.get('/', asyncHandler(DishController.viewDishes));
 
-router.get(
-  '/:id/detail-nutrition',
-  asyncHandler(DishController.viewDishDetailNutrition)
-);
-
 router.get('/:id', asyncHandler(DishController.viewDishDetail));
 
 router.put(
