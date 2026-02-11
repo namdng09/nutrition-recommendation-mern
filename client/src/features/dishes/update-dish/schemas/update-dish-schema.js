@@ -13,34 +13,32 @@ export const DISH_CATEGORY_OPTIONS = [
   { value: 'Nước sốt', label: 'Nước sốt' }
 ];
 
-export const UNIT_OPTIONS = [
-  { value: 'g', label: 'Gram (g)' },
-  { value: 'kg', label: 'Kilogram (kg)' },
-  { value: 'ml', label: 'Milliliter (ml)' },
-  { value: 'l', label: 'Liter (l)' },
-  { value: 'tbsp', label: 'Tablespoon (tbsp)' },
-  { value: 'tsp', label: 'Teaspoon (tsp)' },
-  { value: 'cup', label: 'Cup' },
-  { value: 'piece', label: 'Piece' },
-  { value: 'oz', label: 'Ounce (oz)' },
-  { value: 'lb', label: 'Pound (lb)' }
+export const NUTRITION_FOCUS_OPTIONS = [
+  { value: 'Giàu đạm', label: 'Giàu đạm' },
+  { value: 'Ít tinh bột', label: 'Ít tinh bột' },
+  { value: 'Ít béo', label: 'Ít béo' },
+  { value: 'Giàu chất xơ', label: 'Giàu chất xơ' },
+  { value: 'Ít muối', label: 'Ít muối' }
 ];
 
 const unitSchema = yup.object({
-  value: yup.number().min(0, 'Giá trị không được âm'),
-  quantity: yup.number().min(0, 'Số lượng không được âm'),
-  unit: yup.string(),
-  isDefault: yup.boolean()
+  quantity: yup.number().min(0, 'Số lượng không được âm').optional(),
+  unit: yup.string().optional(),
+  isDefault: yup.boolean().optional()
 });
 
 const ingredientSchema = yup.object({
-  ingredientId: yup.string(),
-  units: yup.array().of(unitSchema).min(1, 'Phải có ít nhất 1 đơn vị')
+  ingredientId: yup.string().optional(),
+  units: yup
+    .array()
+    .of(unitSchema)
+    .min(1, 'Phải có ít nhất 1 đơn vị')
+    .optional()
 });
 
 const instructionSchema = yup.object({
-  step: yup.number().min(1, 'Bước phải lớn hơn 0'),
-  description: yup.string().min(5, 'Mô tả phải có ít nhất 5 ký tự')
+  step: yup.number().min(1, 'Bước phải lớn hơn 0').optional(),
+  description: yup.string().min(5, 'Mô tả phải có ít nhất 5 ký tự').optional()
 });
 
 export const updateDishSchema = yup.object({
@@ -54,17 +52,86 @@ export const updateDishSchema = yup.object({
         'Danh mục không hợp lệ'
       )
     )
-    .optional(),
-  ingredients: yup.array().of(ingredientSchema).optional(),
-  instructions: yup.array().of(instructionSchema).optional(),
+    .nullable()
+    .transform(value => value || []) // Transform null/undefined to empty array
+    .default([]),
+  nutritionFocus: yup
+    .array()
+    .of(
+      yup.string().oneOf(
+        NUTRITION_FOCUS_OPTIONS.map(opt => opt.value),
+        'Mục tiêu dinh dưỡng không hợp lệ'
+      )
+    )
+    .nullable()
+    .transform(value => value || []) // Transform null/undefined to empty array
+    .default([]),
+  ingredients: yup
+    .array()
+    .of(ingredientSchema)
+    .nullable()
+    .transform(value => value || [])
+    .default([]),
+  instructions: yup
+    .array()
+    .of(instructionSchema)
+    .nullable()
+    .transform(value => value || [])
+    .default([]),
   preparationTime: yup
     .number()
     .min(0, 'Thời gian chuẩn bị không được âm')
     .optional(),
   cookTime: yup.number().min(0, 'Thời gian nấu không được âm').optional(),
   servings: yup.number().min(1, 'Số phần ăn phải lớn hơn 0').optional(),
-  tags: yup.array().of(yup.string()).optional(),
+  tags: yup
+    .array()
+    .of(yup.string())
+    .nullable()
+    .transform(value => value || [])
+    .default([]),
   image: yup.mixed().optional(),
   isActive: yup.string().oneOf(['true', 'false']).optional(),
   isPublic: yup.string().oneOf(['true', 'false']).optional()
 });
+
+// Helper to get unit for nutrients/minerals/vitamins
+export const NUTRITION_UNITS = {
+  // Nutrients
+  'Năng lượng': 'kcal',
+  Nước: 'g',
+  Protein: 'g',
+  'Chất béo': 'g',
+  'Tinh bột': 'g',
+  'Chất xơ': 'g',
+  Tro: 'g',
+  Đường: 'g',
+  Cholesterol: 'mg',
+  Phytosterol: 'mg',
+  // Minerals
+  Calci: 'mg',
+  Sắt: 'mg',
+  Magiê: 'mg',
+  Mangan: 'mg',
+  Phospho: 'mg',
+  Kali: 'mg',
+  Natri: 'mg',
+  Kẽm: 'mg',
+  Đồng: 'μg',
+  Selen: 'μg',
+  // Vitamins
+  'Vitamin C': 'mg',
+  'Vitamin B1': 'mg',
+  'Vitamin B2': 'mg',
+  'Vitamin PP': 'mg',
+  'Vitamin B5': 'mg',
+  'Vitamin B6': 'mg',
+  Folat: 'μg',
+  'Vitamin B9': 'μg',
+  'Vitamin H': 'μg',
+  'Vitamin B12': 'μg',
+  'Vitamin A': 'μg',
+  'Vitamin D': 'μg',
+  'Vitamin E': 'mg',
+  'Vitamin K': 'μg'
+};
