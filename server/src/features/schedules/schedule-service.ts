@@ -287,26 +287,9 @@ export const ScheduleService = {
       vitamins: Array.from(totalVitamins.values())
     };
 
-    const totalEnergy =
-      mealsWithNutrition?.reduce((sum, meal) => {
-        const mealEnergy = meal.dishes?.reduce((dishSum, dish) => {
-          const value =
-            (dish as { energy?: unknown }).energy ??
-            (dish as { calories?: unknown }).calories;
-          const servings =
-            (dish as { servings?: unknown }).servings ??
-            (dish as { serving?: unknown }).serving;
-          const base = typeof value === 'number' ? value : 0;
-          const multiplier = typeof servings === 'number' ? servings : 1;
-          return dishSum + base * multiplier;
-        }, 0);
-        return sum + (mealEnergy ?? 0);
-      }, 0) ?? 0;
-
     return {
       ...scheduleData,
       meals: mealsWithNutrition,
-      totalEnergy,
       totalNutrition
     };
   },
