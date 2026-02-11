@@ -22,7 +22,8 @@ const updateIngredient = async ({ id, data, image }) => {
         key,
         value === true || value === 'true' ? 'true' : 'false'
       );
-    } else if (key === 'categories' || key === 'allergens' || key === 'units') {
+    } else if (key === 'categories' || key === 'allergens') {
+      // XÓA units khỏi đây
       formData.append(key, JSON.stringify(Array.isArray(value) ? value : []));
     } else if (key === 'nutrition') {
       formData.append(key, JSON.stringify(value));
