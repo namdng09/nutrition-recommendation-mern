@@ -10,6 +10,7 @@ import {
 } from 'react-icons/fa';
 import { Link, useNavigate, useParams } from 'react-router';
 
+import DishFavoriteDetailButton from '../../add-dish-to-favorite/components/dish-favorite-detail-button';
 import { useDishesDetail } from '../api/view-dishes-detail';
 import DishStat from './dish-stat';
 
@@ -65,9 +66,15 @@ export default function DishDetail() {
               </div>
             )}
 
-            <h1 className='text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl'>
-              {dish.name}
-            </h1>
+            <div className='flex items-start gap-4'>
+              <h1 className='flex-1 text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl'>
+                {dish.name}
+              </h1>
+
+              <div className='shrink-0 pt-2'>
+                <DishFavoriteDetailButton dishId={dish._id} />
+              </div>
+            </div>
 
             {dish.description && (
               <p className='max-w-xl text-lg font-light italic leading-relaxed text-muted-foreground'>
