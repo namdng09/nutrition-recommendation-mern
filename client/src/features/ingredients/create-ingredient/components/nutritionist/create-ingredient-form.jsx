@@ -485,7 +485,6 @@ const CreateIngredientForm = () => {
                         </FormControl>
                         <SelectContent>
                           <SelectItem value='g'>gram (g)</SelectItem>
-                          <SelectItem value='ml'>milliliter (ml)</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -498,7 +497,7 @@ const CreateIngredientForm = () => {
             <Separator />
 
             {/* Serving Sizes */}
-            <div className='space-y-4'>
+            {/* <div className='space-y-4'>
               <div>
                 <h3 className='text-sm font-semibold mb-1'>
                   Đơn vị chuyển đổi
@@ -591,9 +590,7 @@ const CreateIngredientForm = () => {
                 <Plus className='h-4 w-4 mr-2' />
                 Thêm đơn vị chuyển đổi
               </Button>
-            </div>
-
-            <Separator />
+            </div> */}
 
             {/* Nutritional Value */}
             <div className='space-y-4'>
