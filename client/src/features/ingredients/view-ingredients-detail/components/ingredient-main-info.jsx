@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import { Button } from '~/components/ui/button';
 
 import FavoriteIngredientDetailButton from '../../add-ingredient-to-fav/components/favorite-ingredient-detail-button';
+import BlockToggleIngredientButton from '../../block-ingredient/components/block-toggle-ingredient-button';
 import NutritionDetailGrid from './nutrition-detail-grid';
 
 export default function IngredientMainInfo({
@@ -81,6 +82,7 @@ export default function IngredientMainInfo({
               </span>
 
               <FavoriteIngredientDetailButton ingredientId={item._id} />
+              <BlockToggleIngredientButton ingredientId={item._id} />
             </div>
           </div>
 

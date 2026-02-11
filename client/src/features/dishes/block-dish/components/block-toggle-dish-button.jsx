@@ -30,17 +30,17 @@ export default function BlockToggleDishButton({ dishId }) {
       onClick={handleClick}
       size='icon'
       variant='ghost'
-      className={`rounded-full transition-all duration-300 active:scale-90 shadow-sm
-        ${
-          blocked
-            ? 'bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200'
-            : 'bg-slate-50 text-slate-500 hover:bg-slate-100 border border-slate-200'
-        }`}
+      className={`rounded-full transition-all duration-300 active:scale-95 shadow-sm
+    ${
+      blocked
+        ? 'bg-red-600 text-white border-red-700 hover:bg-red-700 shadow-red-200 animate-in fade-in zoom-in'
+        : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200'
+    } border`}
     >
       <FaBan
         size={14}
-        className={`transition-transform ${
-          blocked ? 'scale-110' : 'scale-100'
+        className={`transition-transform duration-500 ${
+          blocked ? 'rotate-[360deg] scale-125' : 'rotate-0 scale-100'
         }`}
       />
     </Button>
