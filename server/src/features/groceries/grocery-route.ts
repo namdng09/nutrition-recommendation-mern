@@ -15,7 +15,7 @@ import {
   createGroceryRequestSchema,
   removeIngredientsRequestSchema,
   updateGroceryRequestSchema,
-  updateIngredientsInGrocerySchema
+  updateIngredientInGrocerySchema
 } from './grocery-dto';
 
 const router = Router();
@@ -52,14 +52,7 @@ router.put(
   asyncHandler(GroceryController.updateGrocery)
 );
 
-router.delete(
-  '/:id',
-  authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
-  asyncHandler(GroceryController.deleteGrocery)
-);
-
-router.post(
+router.put(
   '/:id/ingredients',
   authenticate(),
   authorize([ROLE.USER, ROLE.NUTRITIONIST]),
@@ -69,12 +62,12 @@ router.post(
 );
 
 router.put(
-  '/:id/ingredients',
+  '/:groceryId/ingredients/:ingredientId',
   authenticate(),
   authorize([ROLE.USER, ROLE.NUTRITIONIST]),
   parseFormData,
-  validate(updateIngredientsInGrocerySchema.shape),
-  asyncHandler(GroceryController.updateIngredientsInGrocery)
+  validate(updateIngredientInGrocerySchema.shape),
+  asyncHandler(GroceryController.updateIngredientInGrocery)
 );
 
 router.delete(
@@ -84,6 +77,13 @@ router.delete(
   parseFormData,
   validate(removeIngredientsRequestSchema.shape),
   asyncHandler(GroceryController.removeIngredientsInGrocery)
+);
+
+router.delete(
+  '/:id',
+  authenticate(),
+  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
+  asyncHandler(GroceryController.deleteGrocery)
 );
 
 export default router;

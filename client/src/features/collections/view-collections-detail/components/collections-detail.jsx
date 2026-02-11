@@ -13,6 +13,7 @@ import { Link, useParams } from 'react-router';
 
 import StatBadge from '~/features/dishes/view-dishes/components/dish-stat-badge';
 
+import CollectionFavoriteButton from '../../add-collection-to-favorite/components/collection-favorite-button';
 import { useCollectionDetail } from '../api/view-collections-detail';
 
 export default function CollectionDetail() {
@@ -64,16 +65,19 @@ export default function CollectionDetail() {
             </div>
           </div>
 
-          <span
-            className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-black uppercase tracking-widest shadow-sm ${
-              collection.isPublic
-                ? 'bg-emerald-500 text-white shadow-emerald-200'
-                : 'bg-zinc-800 text-zinc-100 shadow-zinc-200'
-            }`}
-          >
-            {collection.isPublic ? <FaLockOpen /> : <FaLock />}
-            {collection.isPublic ? 'Công Khai' : 'Riêng Tư'}
-          </span>
+          <div className='flex items-center gap-3'>
+            <span
+              className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-black uppercase tracking-widest shadow-sm ${
+                collection.isPublic
+                  ? 'bg-emerald-500 text-white shadow-emerald-200'
+                  : 'bg-zinc-800 text-zinc-100 shadow-zinc-200'
+              }`}
+            >
+              {collection.isPublic ? <FaLockOpen /> : <FaLock />}
+              {collection.isPublic ? 'Công Khai' : 'Riêng Tư'}
+            </span>
+            <CollectionFavoriteButton collectionId={collection._id} />
+          </div>
         </div>
 
         {collection.tags?.length > 0 && (

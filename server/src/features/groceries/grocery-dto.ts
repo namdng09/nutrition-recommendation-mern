@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-import { GROCERY_STATUS } from '~/shared/constants/grocery-status';
-
 const parseBoolean = (val: any) => {
   if (typeof val === 'string') {
     if (val === 'true') return true;
@@ -28,12 +26,16 @@ const parseDate = (val: any) => {
   return val;
 };
 
+const dateSchema = z.preprocess(
+  parseDate,
+  z.date({ message: 'Ngày không hợp lệ' })
+);
+
 const ingredientItemSchema = z.object({
   ingredientId: z
     .string({ message: 'ID nguyên liệu không hợp lệ' })
     .trim()
     .min(1),
-  quantity: z.coerce.number().min(0, 'Số lượng phải lớn hơn hoặc bằng 0'),
   isPurchased: z.preprocess(parseBoolean, z.coerce.boolean()).optional(),
   notes: z.string().trim().optional()
 });
@@ -43,19 +45,7 @@ export const createGroceryRequestSchema = z.object({
     .string({ message: 'Tên danh sách mua sắm không hợp lệ' })
     .trim()
     .min(2, 'Tên danh sách mua sắm phải có ít nhất 2 ký tự'),
-  date: z.preprocess(parseDate, z.date({ message: 'Ngày không hợp lệ' })),
-  status: z
-    .enum(Object.values(GROCERY_STATUS), {
-      message: 'Trạng thái không hợp lệ'
-    })
-    .optional(),
-  ingredients: z.preprocess(
-    parseJSON,
-    z
-      .array(ingredientItemSchema)
-      .min(1, 'Danh sách nguyên liệu không được trống')
-  ),
-  notes: z.string().trim().optional()
+  date: z.preprocess(parseJSON, z.array(dateSchema)).optional()
 });
 
 export type CreateGroceryRequest = z.infer<typeof createGroceryRequestSchema>;
@@ -66,18 +56,8 @@ export const updateGroceryRequestSchema = z.object({
     .trim()
     .min(2, 'Tên danh sách mua sắm phải có ít nhất 2 ký tự')
     .optional(),
-  date: z
-    .preprocess(parseDate, z.date({ message: 'Ngày không hợp lệ' }))
-    .optional(),
-  status: z
-    .enum(Object.values(GROCERY_STATUS), {
-      message: 'Trạng thái không hợp lệ'
-    })
-    .optional(),
-  ingredients: z
-    .preprocess(parseJSON, z.array(ingredientItemSchema))
-    .optional(),
-  notes: z.string().trim().optional()
+  date: z.preprocess(parseJSON, z.array(dateSchema)).optional(),
+  ingredients: z.preprocess(parseJSON, z.array(ingredientItemSchema)).optional()
 });
 
 export type UpdateGroceryRequest = z.infer<typeof updateGroceryRequestSchema>;
@@ -86,8 +66,8 @@ export const addIngredientsRequestSchema = z.object({
   ingredients: z.preprocess(
     parseJSON,
     z
-      .array(ingredientItemSchema)
-      .min(1, 'Phải có ít nhất 1 nguyên liệu để thêm')
+      .array(z.string().trim().min(1))
+      .min(1, 'Phải có ít nhất 1 ID nguyên liệu để thêm')
   )
 });
 
@@ -106,28 +86,11 @@ export type RemoveIngredientsRequest = z.infer<
   typeof removeIngredientsRequestSchema
 >;
 
-const updateIngredientItemSchema = z.object({
-  ingredientId: z
-    .string({ message: 'ID nguyên liệu không hợp lệ' })
-    .trim()
-    .min(1),
-  quantity: z.coerce
-    .number()
-    .min(0, 'Số lượng phải lớn hơn hoặc bằng 0')
-    .optional(),
+export const updateIngredientInGrocerySchema = z.object({
   isPurchased: z.preprocess(parseBoolean, z.coerce.boolean()).optional(),
   notes: z.string().trim().optional()
 });
 
-export const updateIngredientsInGrocerySchema = z.object({
-  ingredients: z.preprocess(
-    parseJSON,
-    z
-      .array(updateIngredientItemSchema)
-      .min(1, 'Phải có ít nhất 1 nguyên liệu để cập nhật')
-  )
-});
-
-export type UpdateIngredientsInGroceryRequest = z.infer<
-  typeof updateIngredientsInGrocerySchema
+export type UpdateIngredientInGroceryRequest = z.infer<
+  typeof updateIngredientInGrocerySchema
 >;

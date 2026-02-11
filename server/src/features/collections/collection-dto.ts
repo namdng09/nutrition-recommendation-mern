@@ -37,7 +37,8 @@ export const updateCollectionRequestSchema = z.object({
   description: z.string().trim().optional(),
   image: z.file().optional(),
   isPublic: z.preprocess(parseBoolean, z.coerce.boolean()).optional(),
-  tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional()
+  tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
+  dishes: z.preprocess(parseJSON, z.array(z.string().trim())).optional()
 });
 
 export type UpdateCollectionRequest = z.infer<

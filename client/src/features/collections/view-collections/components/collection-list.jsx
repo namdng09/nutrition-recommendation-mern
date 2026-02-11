@@ -10,6 +10,7 @@ import { Link } from 'react-router';
 
 import StatBadge from '~/features/dishes/view-dishes/components/dish-stat-badge';
 
+import CollectionFavoriteButton from '../../add-collection-to-favorite/components/collection-favorite-button';
 import { useCollections } from '../api/view-collection';
 import CollectionsHeader from './collection-header';
 import CollectionPagination from './collection-pagination';
@@ -69,9 +70,13 @@ export default function CollectionsList() {
                 </div>
 
                 <div className='flex flex-col flex-1 p-6'>
-                  <h3 className='text-xl font-bold text-foreground group-hover:text-sky-600 line-clamp-1'>
-                    {col.name}
-                  </h3>
+                  <div className='flex items-start justify-between gap-2'>
+                    <h3 className='text-xl font-bold text-foreground group-hover:text-sky-600 line-clamp-1'>
+                      {col.name}
+                    </h3>
+
+                    <CollectionFavoriteButton collectionId={col._id} />
+                  </div>
 
                   <div className='flex flex-wrap gap-2 mt-3 mb-5'>
                     <StatBadge
