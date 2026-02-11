@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { HiOutlineAdjustments, HiOutlineSearch, HiPlus } from 'react-icons/hi';
 import { IoFilterOutline } from 'react-icons/io5';
 
+import CreateGroceryModal from '../../create-grocery/components/create-grocery-modal';
 import { useGroceries } from '../api/view-grocery';
 
 const GroceryHeader = () => {
+  const [openModal, setOpenModal] = useState(false);
+
   const { data } = useGroceries();
   const lists = data?.docs ?? [];
   const [active, setActive] = useState('all');
@@ -28,17 +31,30 @@ const GroceryHeader = () => {
           </p>
         </div>
 
-        <button
-          className='
-          flex items-center gap-2 rounded-2xl
-          bg-primary px-6 py-3.5 text-sm font-bold
-          text-primary-foreground shadow-lg shadow-primary/25
-          transition hover:scale-[1.02] active:scale-95
-        '
-        >
-          <HiPlus className='text-xl' />
-          Tạo danh sách mới
-        </button>
+        <>
+          <button
+            onClick={() => setOpenModal(true)}
+            className='
+      group
+      flex items-center gap-2 rounded-2xl
+      bg-primary px-6 py-3.5 text-sm font-bold
+      text-primary-foreground shadow-lg shadow-primary/25
+      transition-all duration-200
+      hover:scale-[1.02]
+      active:scale-95
+      focus:outline-none focus:ring-4 focus:ring-primary/30
+    '
+          >
+            <HiPlus className='text-xl transition group-hover:rotate-90' />
+
+            <span>Tạo danh sách mới</span>
+          </button>
+
+          <CreateGroceryModal
+            open={openModal}
+            onClose={() => setOpenModal(false)}
+          />
+        </>
       </div>
 
       <div className='flex flex-col gap-3 sm:flex-row'>
