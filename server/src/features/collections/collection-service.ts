@@ -53,8 +53,7 @@ export const CollectionService = {
         dishId: dish._id,
         name: dish.name,
         energy: getDishEnergy(dish),
-        image: dish.image,
-        addedAt: new Date()
+        image: dish.image
       }));
     }
 
@@ -132,9 +131,42 @@ export const CollectionService = {
       throw createHttpError(403, 'Bạn không có quyền cập nhật bộ sưu tập này');
     }
 
+    const { dishes, ...rest } = data;
+    const updatePayload: Omit<UpdateCollectionRequest, 'dishes'> & {
+      dishes?: any[];
+    } = { ...rest };
+
+    if (typeof dishes !== 'undefined') {
+      if (dishes.length === 0) {
+        updatePayload.dishes = [];
+      } else {
+        for (const dishId of dishes) {
+          if (!validateObjectId(dishId)) {
+            throw createHttpError(
+              400,
+              `Định dạng ID món ăn không hợp lệ: ${dishId}`
+            );
+          }
+        }
+
+        const dishDocs = await DishModel.find({ _id: { $in: dishes } });
+
+        if (dishDocs.length !== dishes.length) {
+          throw createHttpError(404, 'Một hoặc nhiều món ăn không tồn tại');
+        }
+
+        updatePayload.dishes = dishDocs.map(dish => ({
+          dishId: dish._id,
+          name: dish.name,
+          energy: getDishEnergy(dish),
+          image: dish.image
+        }));
+      }
+    }
+
     const updatedCollection = await CollectionModel.findByIdAndUpdate(
       id,
-      data,
+      updatePayload,
       { new: true }
     );
 
@@ -234,8 +266,7 @@ export const CollectionService = {
       dishId: dish._id as any,
       name: dish.name,
       energy: getDishEnergy(dish),
-      image: dish.image,
-      addedAt: new Date()
+      image: dish.image
     }));
 
     collection.dishes.push(...newDishes);
