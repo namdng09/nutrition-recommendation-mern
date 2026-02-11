@@ -4,7 +4,8 @@ import apiClient from '~/lib/api-client';
 import { QUERY_KEYS } from '~/lib/query-keys';
 
 const addDishesToCollection = async ({ id, dishIds }) => {
-  const response = await apiClient.post(`/api/collections/${id}/dishes`, {
+  // FIX: Change from POST to PUT to match backend route
+  const response = await apiClient.put(`/api/collections/${id}/dishes`, {
     dishIds
   });
   return response.data;
@@ -29,7 +30,10 @@ export const useAddDishesToCollection = ({ onSuccess, onError } = {}) => {
       });
       onSuccess?.(data);
     },
-    onError
+    onError: error => {
+      console.error('Add dishes error:', error.response?.data || error);
+      onError?.(error);
+    }
   });
 };
 
@@ -45,6 +49,9 @@ export const useRemoveDishesFromCollection = ({ onSuccess, onError } = {}) => {
       });
       onSuccess?.(data);
     },
-    onError
+    onError: error => {
+      console.error('Remove dishes error:', error.response?.data || error);
+      onError?.(error);
+    }
   });
 };
