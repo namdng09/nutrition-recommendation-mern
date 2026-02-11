@@ -61,7 +61,7 @@ export const VITAMIN_OPTIONS = [
 // Minerals (aligned with backend NUTRITION_MINERAL)
 export const MINERAL_OPTIONS = [
   { value: 'Calci', label: 'Calci' },
-  { value: 'Såt', label: 'Såt' },
+  { value: 'Sắt', label: 'Sắt' },
   { value: 'Magiê', label: 'Magiê' },
   { value: 'Mangan', label: 'Mangan' },
   { value: 'Phospho', label: 'Phospho' },
