@@ -17,6 +17,11 @@ import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardHeader } from '~/components/ui/card';
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger
+} from '~/components/ui/collapsible';
+import {
   Command,
   CommandEmpty,
   CommandGroup,
@@ -66,6 +71,7 @@ const CreateDishForm = () => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [ingredientSearch, setIngredientSearch] = useState('');
   const [openIngredientPopover, setOpenIngredientPopover] = useState(false);
+  const [isOptionalNutritionOpen, setIsOptionalNutritionOpen] = useState(false);
 
   // Fetch ingredients list
   const { data: ingredientsData, isLoading: isLoadingIngredients } =
@@ -228,8 +234,7 @@ const CreateDishForm = () => {
       return;
     }
 
-    // Use ingredient's base unit as default
-
+    // Use ingredient's base unit as default - CANNOT BE REMOVED
     const defaultUnit = ingredient.baseUnit || { amount: 100, unit: 'g' };
 
     appendIngredient({
@@ -242,7 +247,7 @@ const CreateDishForm = () => {
         {
           quantity: defaultUnit.amount,
           unit: defaultUnit.unit,
-          isDefault: true
+          isDefault: true // First unit is always default and cannot be changed
         }
       ]
     });
@@ -278,11 +283,17 @@ const CreateDishForm = () => {
       form.getValues(`ingredients.${ingredientIndex}.units`) || [];
     form.setValue(`ingredients.${ingredientIndex}.units`, [
       ...currentUnits,
-      { quantity: 100, unit: 'g', isDefault: false }
+      { quantity: '', unit: '', isDefault: false }
     ]);
   };
 
   const handleRemoveIngredientUnit = (ingredientIndex, unitIndex) => {
+    // Prevent removing the first (default) unit
+    if (unitIndex === 0) {
+      toast.error('Không thể xóa đơn vị mặc định');
+      return;
+    }
+
     const currentUnits =
       form.getValues(`ingredients.${ingredientIndex}.units`) || [];
 
@@ -291,24 +302,16 @@ const CreateDishForm = () => {
       return;
     }
 
-    // If removing default unit, set another unit as default
-    const removingDefault = currentUnits[unitIndex].isDefault;
     const newUnits = currentUnits.filter((_, idx) => idx !== unitIndex);
-
-    if (removingDefault && newUnits.length > 0) {
-      newUnits[0].isDefault = true;
-    }
-
     form.setValue(`ingredients.${ingredientIndex}.units`, newUnits);
   };
 
   const handleSetDefaultUnit = (ingredientIndex, unitIndex) => {
-    const units = form.getValues(`ingredients.${ingredientIndex}.units`);
-    const updatedUnits = units.map((unit, idx) => ({
-      ...unit,
-      isDefault: idx === unitIndex
-    }));
-    form.setValue(`ingredients.${ingredientIndex}.units`, updatedUnits);
+    // Only the first unit can be default
+    if (unitIndex !== 0) {
+      toast.error('Chỉ đơn vị đầu tiên có thể là mặc định');
+      return;
+    }
   };
 
   const handleAddInstruction = () => {
@@ -702,11 +705,11 @@ const CreateDishForm = () => {
                       <FormControl>
                         <Input
                           type='number'
-                          min='0'
-                          placeholder='0'
+                          min=''
+                          placeholder=''
                           {...field}
                           onChange={e =>
-                            field.onChange(parseInt(e.target.value) || 0)
+                            field.onChange(parseInt(e.target.value) || '')
                           }
                         />
                       </FormControl>
@@ -724,11 +727,11 @@ const CreateDishForm = () => {
                       <FormControl>
                         <Input
                           type='number'
-                          min='0'
-                          placeholder='0'
+                          min=''
+                          placeholder=''
                           {...field}
                           onChange={e =>
-                            field.onChange(parseInt(e.target.value) || 0)
+                            field.onChange(parseInt(e.target.value) || '')
                           }
                         />
                       </FormControl>
@@ -853,9 +856,6 @@ const CreateDishForm = () => {
                     );
                     const units =
                       form.watch(`ingredients.${ingredientIndex}.units`) || [];
-                    const allergens =
-                      form.watch(`ingredients.${ingredientIndex}.allergens`) ||
-                      [];
 
                     return (
                       <Card key={field.id}>
@@ -897,64 +897,6 @@ const CreateDishForm = () => {
                               </div>
                             </div>
 
-                            {/* Allergens */}
-                            <div className='space-y-2'>
-                              <label className='text-xs font-medium'>
-                                Chất gây dị ứng
-                              </label>
-                              <div className='flex items-center gap-2'>
-                                <Select
-                                  onValueChange={allergen =>
-                                    handleAddIngredientAllergen(
-                                      ingredientIndex,
-                                      allergen
-                                    )
-                                  }
-                                  value=''
-                                >
-                                  <SelectTrigger className='h-8 text-xs'>
-                                    <SelectValue placeholder='Thêm chất gây dị ứng' />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {ALLERGEN_OPTIONS.filter(
-                                      opt => !allergens.includes(opt.value)
-                                    ).map(option => (
-                                      <SelectItem
-                                        key={option.value}
-                                        value={option.value}
-                                      >
-                                        {option.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              {allergens.length > 0 && (
-                                <div className='flex flex-wrap gap-1'>
-                                  {allergens.map((allergen, idx) => (
-                                    <Badge
-                                      key={idx}
-                                      variant='secondary'
-                                      className='text-xs gap-1 pr-1'
-                                    >
-                                      {allergen}
-                                      <button
-                                        type='button'
-                                        onClick={() =>
-                                          handleRemoveIngredientAllergen(
-                                            ingredientIndex,
-                                            allergen
-                                          )
-                                        }
-                                        className='ml-1 hover:bg-destructive/20 rounded-sm p-0.5'
-                                      >
-                                        <X className='h-2 w-2' />
-                                      </button>
-                                    </Badge>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
                             {/* Units */}
                             <div className='space-y-2'>
                               <div className='flex items-center justify-between'>
@@ -981,6 +923,7 @@ const CreateDishForm = () => {
                                   key={unitIndex}
                                   className='flex items-center gap-2'
                                 >
+                                  {/* Quantity Input - EDITABLE for all units */}
                                   <FormField
                                     control={form.control}
                                     name={`ingredients.${ingredientIndex}.units.${unitIndex}.quantity`}
@@ -989,12 +932,14 @@ const CreateDishForm = () => {
                                         <FormControl>
                                           <Input
                                             type='number'
+                                            step='0.01'
+                                            min='0'
                                             placeholder='Số lượng'
                                             className='h-8'
                                             {...field}
                                             onChange={e =>
                                               field.onChange(
-                                                parseFloat(e.target.value) || 0
+                                                parseFloat(e.target.value) || ''
                                               )
                                             }
                                           />
@@ -1003,6 +948,7 @@ const CreateDishForm = () => {
                                     )}
                                   />
 
+                                  {/* Unit Input - DISABLED for first unit only */}
                                   <FormField
                                     control={form.control}
                                     name={`ingredients.${ingredientIndex}.units.${unitIndex}.unit`}
@@ -1012,6 +958,7 @@ const CreateDishForm = () => {
                                           <Input
                                             placeholder='Đơn vị (vd: g, ml, muỗng)'
                                             className='h-8'
+                                            disabled={unitIndex === 0}
                                             {...field}
                                           />
                                         </FormControl>
@@ -1019,24 +966,20 @@ const CreateDishForm = () => {
                                     )}
                                   />
 
-                                  <Button
-                                    type='button'
-                                    variant={
-                                      unit.isDefault ? 'default' : 'outline'
-                                    }
-                                    size='sm'
-                                    className='h-8 whitespace-nowrap px-3'
-                                    onClick={() =>
-                                      handleSetDefaultUnit(
-                                        ingredientIndex,
-                                        unitIndex
-                                      )
-                                    }
-                                  >
-                                    {unit.isDefault ? 'Mặc định' : 'Chọn'}
-                                  </Button>
+                                  {/* Default Badge for first unit */}
+                                  {unitIndex === 0 ? (
+                                    <Badge
+                                      variant='default'
+                                      className='h-8 whitespace-nowrap px-3'
+                                    >
+                                      Mặc định
+                                    </Badge>
+                                  ) : (
+                                    <div className='h-8 w-[88px]' />
+                                  )}
 
-                                  {units.length > 1 && (
+                                  {/* Delete button - ONLY for non-default units */}
+                                  {unitIndex > 0 ? (
                                     <Button
                                       type='button'
                                       variant='ghost'
@@ -1051,6 +994,8 @@ const CreateDishForm = () => {
                                     >
                                       <Trash2 className='h-4 w-4' />
                                     </Button>
+                                  ) : (
+                                    <div className='h-8 w-8' />
                                   )}
                                 </div>
                               ))}
@@ -1071,43 +1016,41 @@ const CreateDishForm = () => {
 
             <Separator />
 
-            {/* Nutrition Section */}
+            {/* Nutrition Section - Updated UI */}
             <div className='space-y-4'>
-              <h3 className='text-sm font-semibold'>
-                Thông tin dinh dưỡng (tùy chọn)
-              </h3>
+              <h3 className='text-sm font-semibold'>Thông tin dinh dưỡng</h3>
 
-              {/* Nutrients */}
-              <Card>
-                <CardHeader>
-                  <h4 className='text-sm font-medium'>Chất dinh dưỡng</h4>
-                </CardHeader>
-                <CardContent className='grid grid-cols-2 gap-4'>
-                  {[
-                    'Năng lượng',
-                    'Nước',
-                    'Protein',
-                    'Chất béo',
-                    'Tinh bột',
-                    'Chất xơ',
-                    'Tro',
-                    'Đường',
-                    'Cholesterol',
-                    'Phytosterol'
-                  ].map(nutrient => (
+              {/* Required Nutrients */}
+              <div className='grid grid-cols-2 gap-4'>
+                {[
+                  { label: 'Năng lượng', unit: 'kcal', color: null },
+                  { label: 'Nước', unit: 'g', color: null },
+                  { label: 'Protein', unit: 'g', color: 'bg-purple-500' },
+                  { label: 'Chất béo', unit: 'g', color: 'bg-cyan-500' },
+                  { label: 'Tinh bột', unit: 'g', color: 'bg-yellow-500' },
+                  { label: 'Chất xơ', unit: 'g', color: null }
+                ].map(nutrient => (
+                  <div key={nutrient.label} className='flex items-end gap-2'>
                     <FormField
-                      key={nutrient}
                       control={form.control}
-                      name={`nutrition.nutrients.${nutrient}`}
+                      name={`nutrition.nutrients.${nutrient.label}`}
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className='text-xs'>{nutrient}</FormLabel>
+                        <FormItem className='flex-1'>
+                          <FormLabel className='text-xs flex items-center gap-1.5'>
+                            {nutrient.color && (
+                              <span
+                                className={`inline-block w-2 h-2 rounded-full ${nutrient.color}`}
+                              ></span>
+                            )}
+                            {nutrient.label}
+                          </FormLabel>
                           <FormControl>
                             <Input
                               type='number'
                               step='0.01'
+                              min='0'
                               placeholder='0'
-                              className='h-8'
+                              className='h-9'
                               {...field}
                               onChange={e =>
                                 field.onChange(
@@ -1119,105 +1062,200 @@ const CreateDishForm = () => {
                         </FormItem>
                       )}
                     />
-                  ))}
-                </CardContent>
-              </Card>
+                    <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+                      {nutrient.unit}
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-              {/* Minerals */}
-              <Card>
-                <CardHeader>
-                  <h4 className='text-sm font-medium'>Khoáng chất</h4>
-                </CardHeader>
-                <CardContent className='grid grid-cols-2 gap-4'>
-                  {[
-                    'Calci',
-                    'Sắt',
-                    'Magiê',
-                    'Mangan',
-                    'Phospho',
-                    'Kali',
-                    'Natri',
-                    'Kẽm',
-                    'Đồng',
-                    'Selen'
-                  ].map(mineral => (
-                    <FormField
-                      key={mineral}
-                      control={form.control}
-                      name={`nutrition.minerals.${mineral}`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className='text-xs'>{mineral}</FormLabel>
-                          <FormControl>
-                            <Input
-                              type='number'
-                              step='0.01'
-                              placeholder='0'
-                              className='h-8'
-                              {...field}
-                              onChange={e =>
-                                field.onChange(
-                                  parseFloat(e.target.value) || undefined
-                                )
-                              }
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
+              {/* Optional Nutrition Values */}
+              <Collapsible
+                open={isOptionalNutritionOpen}
+                onOpenChange={setIsOptionalNutritionOpen}
+              >
+                <CollapsibleTrigger asChild>
+                  <Button
+                    variant='ghost'
+                    className='w-full justify-between p-4 h-auto hover:bg-accent'
+                    type='button'
+                  >
+                    <span className='text-sm font-medium'>
+                      Giá trị dinh dưỡng tùy chọn
+                    </span>
+                    <ChevronRight
+                      className={`h-4 w-4 transition-transform duration-200 ${
+                        isOptionalNutritionOpen ? 'rotate-90' : ''
+                      }`}
                     />
-                  ))}
-                </CardContent>
-              </Card>
+                  </Button>
+                </CollapsibleTrigger>
 
-              {/* Vitamins */}
-              <Card>
-                <CardHeader>
-                  <h4 className='text-sm font-medium'>Vitamin</h4>
-                </CardHeader>
-                <CardContent className='grid grid-cols-2 gap-4'>
-                  {[
-                    'Vitamin C',
-                    'Vitamin B1',
-                    'Vitamin B2',
-                    'Vitamin PP',
-                    'Vitamin B5',
-                    'Vitamin B6',
-                    'Folat',
-                    'Vitamin B9',
-                    'Vitamin H',
-                    'Vitamin B12',
-                    'Vitamin A',
-                    'Vitamin D',
-                    'Vitamin E',
-                    'Vitamin K'
-                  ].map(vitamin => (
-                    <FormField
-                      key={vitamin}
-                      control={form.control}
-                      name={`nutrition.vitamins.${vitamin}`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className='text-xs'>{vitamin}</FormLabel>
-                          <FormControl>
-                            <Input
-                              type='number'
-                              step='0.01'
-                              placeholder='0'
-                              className='h-8'
-                              {...field}
-                              onChange={e =>
-                                field.onChange(
-                                  parseFloat(e.target.value) || undefined
-                                )
-                              }
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  ))}
-                </CardContent>
-              </Card>
+                <CollapsibleContent className='space-y-6 pt-4'>
+                  {/* Additional Nutrients */}
+                  <div className='space-y-4'>
+                    <div className='grid grid-cols-2 gap-4'>
+                      {[
+                        { label: 'Tro', unit: 'g' },
+                        { label: 'Đường', unit: 'g' },
+                        { label: 'Cholesterol', unit: 'mg' },
+                        { label: 'Phytosterol', unit: 'mg' }
+                      ].map(nutrient => (
+                        <div
+                          key={nutrient.label}
+                          className='flex items-end gap-2'
+                        >
+                          <FormField
+                            control={form.control}
+                            name={`nutrition.nutrients.${nutrient.label}`}
+                            render={({ field }) => (
+                              <FormItem className='flex-1'>
+                                <FormLabel className='text-xs'>
+                                  {nutrient.label}
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type='number'
+                                    step='0.01'
+                                    min='0'
+                                    placeholder='0'
+                                    className='h-9'
+                                    {...field}
+                                    onChange={e =>
+                                      field.onChange(
+                                        parseFloat(e.target.value) || undefined
+                                      )
+                                    }
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+                            {nutrient.unit}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Minerals */}
+                  <div className='space-y-4'>
+                    <h4 className='text-sm font-medium'>Khoáng chất</h4>
+                    <div className='grid grid-cols-2 gap-4'>
+                      {[
+                        { label: 'Calci', unit: 'mg' },
+                        { label: 'Sắt', unit: 'mg' },
+                        { label: 'Magiê', unit: 'mg' },
+                        { label: 'Mangan', unit: 'mg' },
+                        { label: 'Phospho', unit: 'mg' },
+                        { label: 'Kali', unit: 'mg' },
+                        { label: 'Natri', unit: 'mg' },
+                        { label: 'Kẽm', unit: 'mg' },
+                        { label: 'Đồng', unit: 'μg' },
+                        { label: 'Selen', unit: 'μg' }
+                      ].map(mineral => (
+                        <div
+                          key={mineral.label}
+                          className='flex items-end gap-2'
+                        >
+                          <FormField
+                            control={form.control}
+                            name={`nutrition.minerals.${mineral.label}`}
+                            render={({ field }) => (
+                              <FormItem className='flex-1'>
+                                <FormLabel className='text-xs'>
+                                  {mineral.label}
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type='number'
+                                    step='0.001'
+                                    min='0'
+                                    placeholder='0'
+                                    className='h-9'
+                                    {...field}
+                                    onChange={e =>
+                                      field.onChange(
+                                        parseFloat(e.target.value) || undefined
+                                      )
+                                    }
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+                            {mineral.unit}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Vitamins */}
+                  <div className='space-y-4'>
+                    <h4 className='text-sm font-medium'>Vitamin</h4>
+                    <div className='grid grid-cols-2 gap-4'>
+                      {[
+                        { label: 'Vitamin C', unit: 'mg' },
+                        { label: 'Vitamin B1', unit: 'mg' },
+                        { label: 'Vitamin B2', unit: 'mg' },
+                        { label: 'Vitamin PP', unit: 'mg' },
+                        { label: 'Vitamin B5', unit: 'mg' },
+                        { label: 'Vitamin B6', unit: 'mg' },
+                        { label: 'Folat', unit: 'μg' },
+                        { label: 'Vitamin B9', unit: 'μg' },
+                        { label: 'Vitamin H', unit: 'μg' },
+                        { label: 'Vitamin B12', unit: 'μg' },
+                        { label: 'Vitamin A', unit: 'μg' },
+                        { label: 'Vitamin D', unit: 'μg' },
+                        { label: 'Vitamin E', unit: 'mg' },
+                        { label: 'Vitamin K', unit: 'μg' }
+                      ].map(vitamin => (
+                        <div
+                          key={vitamin.label}
+                          className='flex items-end gap-2'
+                        >
+                          <FormField
+                            control={form.control}
+                            name={`nutrition.vitamins.${vitamin.label}`}
+                            render={({ field }) => (
+                              <FormItem className='flex-1'>
+                                <FormLabel className='text-xs'>
+                                  {vitamin.label}
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type='number'
+                                    step='0.01'
+                                    min='0'
+                                    placeholder='0'
+                                    className='h-9'
+                                    {...field}
+                                    onChange={e =>
+                                      field.onChange(
+                                        parseFloat(e.target.value) || undefined
+                                      )
+                                    }
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          <div className='w-16 flex items-center justify-center text-xs text-muted-foreground border rounded-md bg-muted h-9'>
+                            {vitamin.unit}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
             </div>
 
             <Separator />
