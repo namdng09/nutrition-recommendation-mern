@@ -764,10 +764,8 @@ const IngredientDetail = ({ id }) => {
               </div>
             </div>
 
-            <Separator />
-
             {/* Serving Sizes */}
-            <div className='space-y-4'>
+            {/* <div className='space-y-4'>
               <div>
                 <h3 className='text-sm font-semibold mb-1'>
                   Đơn vị chuyển đổi
@@ -860,7 +858,7 @@ const IngredientDetail = ({ id }) => {
                 <Plus className='h-4 w-4 mr-2' />
                 Thêm đơn vị chuyển đổi
               </Button>
-            </div>
+            </div> */}
 
             <Separator />
 
