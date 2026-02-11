@@ -10,6 +10,8 @@ import {
 } from 'react-icons/fa';
 import { Link, useNavigate, useParams } from 'react-router';
 
+import DishFavoriteDetailButton from '../../add-dish-to-favorite/components/dish-favorite-detail-button';
+import BlockToggleDishButton from '../../block-dish/components/block-toggle-dish-button';
 import { useDishesDetail } from '../api/view-dishes-detail';
 import DishStat from './dish-stat';
 
@@ -29,15 +31,22 @@ export default function DishDetail() {
 
   return (
     <div className='mx-auto w-full max-w-7xl space-y-20 animate-in fade-in slide-in-from-bottom-4 duration-700'>
-      <button
-        onClick={() => navigate(-1)}
-        className='group inline-flex items-center gap-3 text-xs font-extrabold tracking-widest text-muted-foreground transition hover:text-primary'
-      >
-        <span className='flex h-9 w-9 items-center justify-center rounded-full bg-secondary ring-1 ring-border group-hover:bg-primary group-hover:text-white'>
-          <FaArrowLeft className='transition-transform group-hover:-translate-x-1' />
-        </span>
-        QUAY LẠI
-      </button>
+      <div className='flex items-center justify-between'>
+        <button
+          onClick={() => navigate(-1)}
+          className='group inline-flex items-center gap-3 text-xs font-extrabold tracking-widest text-muted-foreground transition hover:text-primary'
+        >
+          <span className='flex h-9 w-9 items-center justify-center rounded-full bg-secondary ring-1 ring-border group-hover:bg-primary group-hover:text-white'>
+            <FaArrowLeft className='transition-transform group-hover:-translate-x-1' />
+          </span>
+          QUAY LẠI
+        </button>
+
+        <div className='flex items-center gap-2'>
+          <DishFavoriteDetailButton dishId={dish._id} />
+          <BlockToggleDishButton dishId={dish._id} />
+        </div>
+      </div>
 
       <div className='grid gap-10 lg:grid-cols-2 lg:items-center'>
         <div className='relative group mx-auto w-[72%]'>
@@ -65,7 +74,7 @@ export default function DishDetail() {
               </div>
             )}
 
-            <h1 className='text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl'>
+            <h1 className='flex-1 text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl'>
               {dish.name}
             </h1>
 

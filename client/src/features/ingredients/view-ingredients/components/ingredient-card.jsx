@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 
 import { findByLabel, hasValue } from '~/lib/utils';
 
+import FavoriteButton from '../../add-ingredient-to-fav/components/favorite-button';
 import IngredientCalories from './ingredient-calories';
 import IngredientHeader from './ingredient-header';
 import IngredientMacros from './ingredient-macros';
@@ -28,6 +29,8 @@ export default function IngredientCard({ item }) {
 
   return (
     <div className='group relative overflow-hidden rounded-[1.75rem] border border-border bg-background p-5 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-[0_15px_30px_rgba(0,0,0,0.04)]'>
+      <FavoriteButton ingredientId={item._id} />
+
       <IngredientHeader item={item} />
 
       {hasCalories && <IngredientCalories calories={calories} />}
