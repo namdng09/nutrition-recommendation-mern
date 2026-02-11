@@ -41,7 +41,7 @@ export default function ScheduleNutritionPie({ schedule }) {
         <span className='text-[10px] text-muted-foreground'>gram (g)</span>
       </div>
 
-      <div className='h-[260px] w-full'>
+      <div className='h-[400px] w-full'>
         <ResponsiveContainer width='100%' height='100%'>
           <PieChart>
             <Pie
