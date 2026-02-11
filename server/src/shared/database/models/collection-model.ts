@@ -20,11 +20,10 @@ const collectionSchema = new Schema(
         dishId: { type: Schema.Types.ObjectId, ref: 'Dish' },
         name: { type: String, required: true },
         image: { type: String },
-        calories: { type: Number }
+        energy: { type: Number }
       }
     ],
-    tags: [{ type: String }],
-    slug: { type: String, unique: true, sparse: true }
+    tags: [{ type: String }]
   },
   {
     timestamps: true

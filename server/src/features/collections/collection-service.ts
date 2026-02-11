@@ -18,19 +18,11 @@ import {
   UpdateCollectionRequest
 } from './collection-dto';
 
-/**
- * Calculate total calories for a dish based on its ingredients
- * @param dish Object representing the dish
- * @returns Total calories for the dish
- */
-const calculateDishCalories = (dish: any): number => {
-  let totalCalories = 0;
-  for (const ingredient of dish.ingredients) {
-    const ingredientCalories = ingredient.nutrients?.calories?.value || 0;
-    totalCalories += ingredientCalories;
-  }
-
-  return totalCalories;
+const getDishEnergy = (dish: any): number => {
+  const energyValue = dish?.nutrition?.nutrients?.[0]?.value;
+  return typeof energyValue === 'number' && Number.isFinite(energyValue)
+    ? energyValue
+    : 0;
 };
 
 export const CollectionService = {
@@ -60,7 +52,7 @@ export const CollectionService = {
       dishesData = dishes.map(dish => ({
         dishId: dish._id,
         name: dish.name,
-        calories: calculateDishCalories(dish),
+        energy: getDishEnergy(dish),
         image: dish.image,
         addedAt: new Date()
       }));
@@ -241,7 +233,7 @@ export const CollectionService = {
     const newDishes = dishes.map(dish => ({
       dishId: dish._id as any,
       name: dish.name,
-      calories: calculateDishCalories(dish),
+      energy: getDishEnergy(dish),
       image: dish.image,
       addedAt: new Date()
     }));

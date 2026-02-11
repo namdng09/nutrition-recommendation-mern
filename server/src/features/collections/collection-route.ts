@@ -48,7 +48,7 @@ router.delete(
   asyncHandler(CollectionController.deleteCollection)
 );
 
-router.post(
+router.put(
   '/:id/dishes',
   authenticate(),
   authorize([ROLE.NUTRITIONIST]),
