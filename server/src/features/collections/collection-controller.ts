@@ -105,25 +105,5 @@ export const CollectionController = {
       .json(
         ApiResponse.success('Xóa món ăn khỏi bộ sưu tập thành công', result)
       );
-  },
-
-  followCollection: async (req: Request, res: Response) => {
-    const id = req.params.id;
-
-    const result = await CollectionService.followCollection(id);
-
-    res
-      .status(200)
-      .json(ApiResponse.success('Theo dõi bộ sưu tập thành công', result));
-  },
-
-  unfollowCollection: async (req: Request, res: Response) => {
-    const id = req.params.id;
-
-    const result = await CollectionService.unfollowCollection(id);
-
-    res
-      .status(200)
-      .json(ApiResponse.success('Bỏ theo dõi bộ sưu tập thành công', result));
   }
 };
