@@ -7,6 +7,7 @@ import {
 } from 'react-icons/ri';
 
 import AddIngredientButton from './add-ingredient-button';
+import DeleteIngredientButton from './delete-ingredient-button';
 
 const GroceryReceipt = ({ list }) => {
   if (!list) return null;
@@ -33,16 +34,13 @@ const GroceryReceipt = ({ list }) => {
           )}
 
           {date && (
-            <div className='flex items-center justify-center gap-4 text-sm font-mono font-bold uppercase text-muted-foreground'>
+            <div className='flex items-center justify-center gap-4 text-l font-mono font-bold uppercase text-muted-foreground'>
               <span className='flex items-center gap-2'>
                 <HiOutlineCalendar className='text-primary text-lg' />
                 {new Date(date).toLocaleDateString('vi-VN')}
               </span>
             </div>
           )}
-
-          <div className='absolute -left-10 top-1/2 h-7 w-7 rounded-full bg-background border border-border' />
-          <div className='absolute -right-10 top-1/2 h-7 w-7 rounded-full bg-background border border-border' />
         </div>
 
         <div className='flex-1 space-y-2 mb-10'>
@@ -60,10 +58,8 @@ const GroceryReceipt = ({ list }) => {
             ingredients.map(item => (
               <div
                 key={item?._id}
-                className={`flex items-center justify-between px-2 py-4 border-b border-border/40 last:border-0 ${
-                  item?.isPurchased
-                    ? 'opacity-40 grayscale'
-                    : 'hover:bg-accent/5'
+                className={`group/item flex items-center justify-between px-2 py-4 border-b border-border/40 last:border-0 ${
+                  item?.isPurchased ? 'opacity-40 grayscale' : ''
                 }`}
               >
                 <div className='flex items-center gap-5'>
@@ -86,11 +82,18 @@ const GroceryReceipt = ({ list }) => {
                   </div>
                 </div>
 
-                {item?.quantity && (
-                  <div className='font-mono font-extrabold text-lg text-primary'>
-                    {item.quantity.toLocaleString()}G
-                  </div>
-                )}
+                <div className='flex items-center gap-4'>
+                  {item?.quantity && (
+                    <div className='font-mono font-extrabold text-lg text-primary'>
+                      {item.quantity.toLocaleString()}G
+                    </div>
+                  )}
+
+                  <DeleteIngredientButton
+                    groceryId={list._id}
+                    ingredientId={item.ingredientId}
+                  />
+                </div>
               </div>
             ))
           )}
