@@ -27,7 +27,6 @@ type GroceryIngredient = {
   name: string;
   image: string;
   isPurchased: boolean;
-  notes?: string;
 };
 
 const buildIngredientsFromDates = async (
@@ -206,8 +205,7 @@ export const GroceryService = {
             ingredientId: ingredient._id,
             name: ingredient.name,
             image: ingredient.image ?? '',
-            isPurchased: ing.isPurchased ?? false,
-            notes: ing.notes
+            isPurchased: ing.isPurchased ?? false
           };
         })
       );
@@ -318,7 +316,6 @@ export const GroceryService = {
       );
 
       if (existingIndex !== -1) {
-        // Ingredient already exists, update notes if provided
         if (newIng.isPurchased !== undefined) {
           grocery.ingredients[existingIndex].isPurchased = newIng.isPurchased;
         }
@@ -373,9 +370,6 @@ export const GroceryService = {
 
     if (data.isPurchased !== undefined) {
       grocery.ingredients[ingredientIndex].isPurchased = data.isPurchased;
-    }
-    if (data.notes !== undefined) {
-      grocery.ingredients[ingredientIndex].notes = data.notes;
     }
 
     await grocery.save();
