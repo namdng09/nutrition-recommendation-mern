@@ -18,19 +18,11 @@ import {
   UpdateCollectionRequest
 } from './collection-dto';
 
-/**
- * Calculate total calories for a dish based on its ingredients
- * @param dish Object representing the dish
- * @returns Total calories for the dish
- */
-const calculateDishCalories = (dish: any): number => {
-  let totalCalories = 0;
-  for (const ingredient of dish.ingredients) {
-    const ingredientCalories = ingredient.nutrients?.calories?.value || 0;
-    totalCalories += ingredientCalories;
-  }
-  
-  return totalCalories;
+const getDishEnergy = (dish: any): number => {
+  const energyValue = dish?.nutrition?.nutrients?.[0]?.value;
+  return typeof energyValue === 'number' && Number.isFinite(energyValue)
+    ? energyValue
+    : 0;
 };
 
 export const CollectionService = {
@@ -44,7 +36,10 @@ export const CollectionService = {
     if (data.dishes && data.dishes.length > 0) {
       for (const dishId of data.dishes) {
         if (!validateObjectId(dishId)) {
-          throw createHttpError(400, `Định dạng ID món ăn không hợp lệ: ${dishId}`);
+          throw createHttpError(
+            400,
+            `Định dạng ID món ăn không hợp lệ: ${dishId}`
+          );
         }
       }
 
@@ -57,9 +52,8 @@ export const CollectionService = {
       dishesData = dishes.map(dish => ({
         dishId: dish._id,
         name: dish.name,
-        calories: calculateDishCalories(dish),
-        image: dish.image,
-        addedAt: new Date()
+        energy: getDishEnergy(dish),
+        image: dish.image
       }));
     }
 
@@ -137,9 +131,42 @@ export const CollectionService = {
       throw createHttpError(403, 'Bạn không có quyền cập nhật bộ sưu tập này');
     }
 
+    const { dishes, ...rest } = data;
+    const updatePayload: Omit<UpdateCollectionRequest, 'dishes'> & {
+      dishes?: any[];
+    } = { ...rest };
+
+    if (typeof dishes !== 'undefined') {
+      if (dishes.length === 0) {
+        updatePayload.dishes = [];
+      } else {
+        for (const dishId of dishes) {
+          if (!validateObjectId(dishId)) {
+            throw createHttpError(
+              400,
+              `Định dạng ID món ăn không hợp lệ: ${dishId}`
+            );
+          }
+        }
+
+        const dishDocs = await DishModel.find({ _id: { $in: dishes } });
+
+        if (dishDocs.length !== dishes.length) {
+          throw createHttpError(404, 'Một hoặc nhiều món ăn không tồn tại');
+        }
+
+        updatePayload.dishes = dishDocs.map(dish => ({
+          dishId: dish._id,
+          name: dish.name,
+          energy: getDishEnergy(dish),
+          image: dish.image
+        }));
+      }
+    }
+
     const updatedCollection = await CollectionModel.findByIdAndUpdate(
       id,
-      data,
+      updatePayload,
       { new: true }
     );
 
@@ -198,7 +225,10 @@ export const CollectionService = {
 
     for (const dishId of data.dishIds) {
       if (!validateObjectId(dishId)) {
-        throw createHttpError(400, `Định dạng ID món ăn không hợp lệ: ${dishId}`);
+        throw createHttpError(
+          400,
+          `Định dạng ID món ăn không hợp lệ: ${dishId}`
+        );
       }
     }
 
@@ -212,11 +242,18 @@ export const CollectionService = {
       throw createHttpError(403, 'Bạn không có quyền sửa bộ sưu tập này');
     }
 
-    const existingDishIds = collection.dishes.map(dish => dish.dishId?.toString());
-    const duplicates = data.dishIds.filter(dishId => existingDishIds.includes(dishId));
-    
+    const existingDishIds = collection.dishes.map(dish =>
+      dish.dishId?.toString()
+    );
+    const duplicates = data.dishIds.filter(dishId =>
+      existingDishIds.includes(dishId)
+    );
+
     if (duplicates.length > 0) {
-      throw createHttpError(400, `Các món ăn sau đã tồn tại trong bộ sưu tập: ${duplicates.join(', ')}`);
+      throw createHttpError(
+        400,
+        `Các món ăn sau đã tồn tại trong bộ sưu tập: ${duplicates.join(', ')}`
+      );
     }
 
     const dishes = await DishModel.find({ _id: { $in: data.dishIds } });
@@ -228,9 +265,8 @@ export const CollectionService = {
     const newDishes = dishes.map(dish => ({
       dishId: dish._id as any,
       name: dish.name,
-      calories: calculateDishCalories(dish),
-      image: dish.image,
-      addedAt: new Date()
+      energy: getDishEnergy(dish),
+      image: dish.image
     }));
 
     collection.dishes.push(...newDishes);
@@ -259,10 +295,10 @@ export const CollectionService = {
     }
 
     const initialDishCount = collection.dishes.length;
-    
+
     for (let i = collection.dishes.length - 1; i >= 0; i--) {
       const currentDishId = collection.dishes[i].dishId?.toString() || '';
-      
+
       if (data.dishIds.includes(currentDishId)) {
         collection.dishes.splice(i, 1);
       }
@@ -273,46 +309,6 @@ export const CollectionService = {
     }
 
     await collection.save();
-
-    return collection;
-  },
-
-  followCollection: async (id: string) => {
-    if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Định dạng ID bộ sưu tập không hợp lệ');
-    }
-
-    const collection = await CollectionModel.findById(id);
-
-    if (!collection) {
-      throw createHttpError(404, 'Không tìm thấy bộ sưu tập');
-    }
-
-    if (!collection.isPublic) {
-      throw createHttpError(403, 'Không thể theo dõi bộ sưu tập riêng tư');
-    }
-
-    collection.followers = (collection.followers || 0) + 1;
-    await collection.save();
-
-    return collection;
-  },
-
-  unfollowCollection: async (id: string) => {
-    if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Định dạng ID bộ sưu tập không hợp lệ');
-    }
-
-    const collection = await CollectionModel.findById(id);
-
-    if (!collection) {
-      throw createHttpError(404, 'Không tìm thấy bộ sưu tập');
-    }
-
-    if (collection.followers && collection.followers > 0) {
-      collection.followers -= 1;
-      await collection.save();
-    }
 
     return collection;
   }

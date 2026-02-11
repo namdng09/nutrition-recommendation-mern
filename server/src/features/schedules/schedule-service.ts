@@ -3,13 +3,7 @@ import createHttpError from 'http-errors';
 
 import { MEAL_TYPE } from '~/shared/constants/meal-type';
 import { ROLE } from '~/shared/constants/role';
-import { UNIT } from '~/shared/constants/unit';
-import {
-  DishModel,
-  IngredientModel,
-  ScheduleModel,
-  UserModel
-} from '~/shared/database/models';
+import { DishModel, ScheduleModel, UserModel } from '~/shared/database/models';
 import type { Schedule } from '~/shared/database/models/schedule-model';
 import {
   buildPaginateOptions,
@@ -34,37 +28,17 @@ type ScheduleMeal = {
 
 type MealType = (typeof MEAL_TYPE)[keyof typeof MEAL_TYPE];
 
-const nutrientKeys = [
-  'calories',
-  'carbs',
-  'fat',
-  'protein',
-  'fiber',
-  'sodium',
-  'cholesterol'
-] as const;
-
-type NutrientKey = (typeof nutrientKeys)[number];
-type NutrientValue = { value: number; unit: string };
-type NutrientsTotal = Record<NutrientKey, NutrientValue>;
-type NutritionItem = { label: string; value: number; unit: string };
-type NutrientsInput = Partial<
-  Record<NutrientKey, { value?: number | null; unit?: string | null } | null>
-> | null;
-type NutritionItemsInput = Array<{
+type NutritionItem = {
   label?: string | null;
   value?: number | null;
   unit?: string | null;
-} | null> | null;
-type DetailNutritionTotal = {
-  nutrients: NutrientsTotal;
-  minerals: NutritionItem[];
-  vitamins: NutritionItem[];
-  sugars: NutritionItem[];
-  fats: NutritionItem[];
-  fattyAcids: NutritionItem[];
-  aminoAcids: NutritionItem[];
 };
+
+type DishNutrition = {
+  nutrients?: NutritionItem[] | null;
+  minerals?: NutritionItem[] | null;
+  vitamins?: NutritionItem[] | null;
+} | null;
 
 const mealTypeValues = Object.values(MEAL_TYPE) as MealType[];
 
@@ -90,180 +64,70 @@ const validateDishIds = (meals?: ScheduleMeal[]) => {
   });
 };
 
-const calculateDishCalories = (dish: unknown) => {
+const calculateDishEnergy = (dish: unknown) => {
   if (!dish || typeof dish !== 'object') return 0;
 
   const isValidNumber = (value: unknown): value is number =>
     typeof value === 'number' && Number.isFinite(value);
 
-  const ingredients = (dish as { ingredients?: unknown }).ingredients;
-  if (!Array.isArray(ingredients) || ingredients.length === 0) return 0;
+  const nutrients = (dish as { nutrition?: unknown }).nutrition;
+  const energyValue =
+    nutrients && typeof nutrients === 'object'
+      ? (nutrients as { nutrients?: Array<{ value?: unknown }> }).nutrients?.[0]
+          ?.value
+      : undefined;
 
-  const totalCalories = ingredients.reduce((sum, ingredient) => {
-    if (!ingredient || typeof ingredient !== 'object') return sum;
-
-    const nutrients = (ingredient as { nutrients?: unknown }).nutrients;
-    const caloriesValue =
-      nutrients && typeof nutrients === 'object'
-        ? (nutrients as { calories?: { value?: unknown } }).calories?.value
-        : undefined;
-
-    const baseUnit = (ingredient as { baseUnit?: unknown }).baseUnit;
-    const baseAmount =
-      baseUnit && typeof baseUnit === 'object'
-        ? (baseUnit as { amount?: unknown }).amount
-        : undefined;
-
-    const units = (ingredient as { units?: unknown }).units;
-    const unitArray = Array.isArray(units) ? units : [];
-    const unit =
-      unitArray.find(
-        item => !!item && (item as { isDefault?: unknown }).isDefault
-      ) ?? unitArray[0];
-
-    const unitValue =
-      unit && typeof unit === 'object'
-        ? (unit as { value?: unknown }).value
-        : undefined;
-    const unitQuantity =
-      unit && typeof unit === 'object'
-        ? (unit as { quantity?: unknown }).quantity
-        : undefined;
-
-    if (
-      !isValidNumber(caloriesValue) ||
-      !isValidNumber(baseAmount) ||
-      !isValidNumber(unitValue) ||
-      !isValidNumber(unitQuantity) ||
-      baseAmount === 0
-    ) {
-      return sum;
-    }
-
-    const totalAmount = unitValue * unitQuantity;
-    return sum + (totalAmount / baseAmount) * caloriesValue;
-  }, 0);
-
-  return Math.round(totalCalories);
+  return isValidNumber(energyValue) ? energyValue : 0;
 };
 
-const createEmptyNutrientsTotal = (): NutrientsTotal => ({
-  calories: { value: 0, unit: UNIT.KILOCALORIE },
-  carbs: { value: 0, unit: UNIT.GRAM },
-  fat: { value: 0, unit: UNIT.GRAM },
-  protein: { value: 0, unit: UNIT.GRAM },
-  fiber: { value: 0, unit: UNIT.GRAM },
-  sodium: { value: 0, unit: UNIT.GRAM },
-  cholesterol: { value: 0, unit: UNIT.GRAM }
-});
+const scaleNutritionItems = (
+  items: NutritionItem[] | null | undefined,
+  factor: number
+) =>
+  (items ?? []).map(item => ({
+    ...item,
+    value: typeof item.value === 'number' ? item.value * factor : item.value
+  }));
 
-const createEmptyDetailNutritionTotal = (): DetailNutritionTotal => ({
-  nutrients: createEmptyNutrientsTotal(),
-  minerals: [],
-  vitamins: [],
-  sugars: [],
-  fats: [],
-  fattyAcids: [],
-  aminoAcids: []
-});
-
-const addNutrientsTotal = (
-  total: NutrientsTotal,
-  nutrients?: NutrientsInput
-) => {
-  if (!nutrients) return;
-  for (const key of nutrientKeys) {
-    const item = nutrients[key];
-    if (!item) continue;
-    const value = typeof item.value === 'number' ? item.value : 0;
-    const unit = typeof item.unit === 'string' ? item.unit : undefined;
-    const current = total[key];
-    if (unit && current.unit !== unit) {
-      if (current.value !== 0) {
-        throw createHttpError(
-          400,
-          `Đơn vị dinh dưỡng không đồng nhất cho ${key}`
-        );
-      }
-      current.unit = unit;
-    }
-    current.value += value;
+const scaleDishNutrition = (nutrition: DishNutrition, factor: number) => {
+  if (!Number.isFinite(factor) || !nutrition) {
+    return {
+      nutrients: nutrition?.nutrients ?? [],
+      minerals: nutrition?.minerals ?? [],
+      vitamins: nutrition?.vitamins ?? []
+    };
   }
+
+  return {
+    nutrients: scaleNutritionItems(nutrition.nutrients, factor),
+    minerals: scaleNutritionItems(nutrition.minerals, factor),
+    vitamins: scaleNutritionItems(nutrition.vitamins, factor)
+  };
 };
 
 const addNutritionItemsTotal = (
   target: Map<string, NutritionItem>,
-  items?: NutritionItemsInput
+  items: NutritionItem[] | null | undefined,
+  multiplier: number
 ) => {
   if (!items || items.length === 0) return;
   for (const item of items) {
     const label = item?.label ?? undefined;
     const unit = item?.unit ?? undefined;
-    if (!label || !unit) continue;
-    const value = typeof item?.value === 'number' ? item.value : 0;
+    const value = item?.value;
+    if (!label || !unit || typeof value !== 'number') continue;
     const key = `${label}|${unit}`;
     const current = target.get(key);
     if (current) {
-      current.value += value;
+      current.value = (current.value ?? 0) + value * multiplier;
     } else {
       target.set(key, {
         label,
         unit,
-        value
+        value: value * multiplier
       });
     }
   }
-};
-
-const scaleDetailNutrition = (
-  detail: DetailNutritionTotal,
-  factor: number
-): DetailNutritionTotal => {
-  if (!Number.isFinite(factor)) return detail;
-
-  const scaleItem = (item: NutritionItem) => ({
-    ...item,
-    value: item.value * factor
-  });
-
-  return {
-    nutrients: {
-      calories: {
-        value: detail.nutrients.calories.value * factor,
-        unit: detail.nutrients.calories.unit
-      },
-      carbs: {
-        value: detail.nutrients.carbs.value * factor,
-        unit: detail.nutrients.carbs.unit
-      },
-      fat: {
-        value: detail.nutrients.fat.value * factor,
-        unit: detail.nutrients.fat.unit
-      },
-      protein: {
-        value: detail.nutrients.protein.value * factor,
-        unit: detail.nutrients.protein.unit
-      },
-      fiber: {
-        value: detail.nutrients.fiber.value * factor,
-        unit: detail.nutrients.fiber.unit
-      },
-      sodium: {
-        value: detail.nutrients.sodium.value * factor,
-        unit: detail.nutrients.sodium.unit
-      },
-      cholesterol: {
-        value: detail.nutrients.cholesterol.value * factor,
-        unit: detail.nutrients.cholesterol.unit
-      }
-    },
-    minerals: detail.minerals.map(scaleItem),
-    vitamins: detail.vitamins.map(scaleItem),
-    sugars: detail.sugars.map(scaleItem),
-    fats: detail.fats.map(scaleItem),
-    fattyAcids: detail.fattyAcids.map(scaleItem),
-    aminoAcids: detail.aminoAcids.map(scaleItem)
-  };
 };
 
 export const ScheduleService = {
@@ -362,76 +226,24 @@ export const ScheduleService = {
     const dishes = await DishModel.find({
       _id: { $in: Array.from(dishIds) }
     })
-      .select('ingredients servings')
+      .select('nutrition servings')
       .lean();
-
-    const ingredientIds = new Set<string>();
-    dishes.forEach(dish => {
-      dish.ingredients?.forEach(ingredient => {
-        const ingredientId = ingredient.ingredientId?.toString();
-        if (ingredientId) {
-          ingredientIds.add(ingredientId);
-        }
-      });
-    });
-
-    const ingredients = ingredientIds.size
-      ? await IngredientModel.find({
-          _id: { $in: Array.from(ingredientIds) }
-        }).lean()
-      : [];
-
-    const ingredientById = new Map(
-      ingredients.map(ingredient => [ingredient._id.toString(), ingredient])
-    );
 
     const nutritionByDishId = new Map<
       string,
-      { nutrition: DetailNutritionTotal; servings: number }
+      { nutrition: DishNutrition; servings: number }
     >();
 
     dishes.forEach(dish => {
-      const total = createEmptyDetailNutritionTotal();
-      const mineralsMap = new Map<string, NutritionItem>();
-      const vitaminsMap = new Map<string, NutritionItem>();
-      const sugarsMap = new Map<string, NutritionItem>();
-      const fatsMap = new Map<string, NutritionItem>();
-      const fattyAcidsMap = new Map<string, NutritionItem>();
-      const aminoAcidsMap = new Map<string, NutritionItem>();
-
-      dish.ingredients?.forEach(ingredient => {
-        const ingredientId = ingredient.ingredientId?.toString();
-        if (!ingredientId) return;
-        const ingredientData = ingredientById.get(ingredientId);
-        if (!ingredientData?.nutrition) return;
-
-        addNutrientsTotal(total.nutrients, ingredientData.nutrition.nutrients);
-        addNutritionItemsTotal(mineralsMap, ingredientData.nutrition.minerals);
-        addNutritionItemsTotal(vitaminsMap, ingredientData.nutrition.vitamins);
-        addNutritionItemsTotal(sugarsMap, ingredientData.nutrition.sugars);
-        addNutritionItemsTotal(fatsMap, ingredientData.nutrition.fats);
-        addNutritionItemsTotal(
-          fattyAcidsMap,
-          ingredientData.nutrition.fattyAcids
-        );
-        addNutritionItemsTotal(
-          aminoAcidsMap,
-          ingredientData.nutrition.aminoAcids
-        );
-      });
-
-      total.minerals = Array.from(mineralsMap.values());
-      total.vitamins = Array.from(vitaminsMap.values());
-      total.sugars = Array.from(sugarsMap.values());
-      total.fats = Array.from(fatsMap.values());
-      total.fattyAcids = Array.from(fattyAcidsMap.values());
-      total.aminoAcids = Array.from(aminoAcidsMap.values());
-
       nutritionByDishId.set(dish._id.toString(), {
-        nutrition: total,
+        nutrition: dish.nutrition ?? null,
         servings: dish.servings ?? 1
       });
     });
+
+    const totalNutrients = new Map<string, NutritionItem>();
+    const totalMinerals = new Map<string, NutritionItem>();
+    const totalVitamins = new Map<string, NutritionItem>();
 
     const mealsWithNutrition = scheduleData.meals?.map(meal => ({
       ...meal,
@@ -440,7 +252,7 @@ export const ScheduleService = {
         if (!dishId) {
           return {
             ...dish,
-            nutrition: createEmptyDetailNutritionTotal()
+            nutrition: scaleDishNutrition(null, 1)
           };
         }
 
@@ -448,22 +260,55 @@ export const ScheduleService = {
         if (!detail) {
           return {
             ...dish,
-            nutrition: createEmptyDetailNutritionTotal()
+            nutrition: scaleDishNutrition(null, 1)
           };
         }
 
-        const scheduleServings = dish.servings ?? detail.servings;
-        const factor =
-          detail.servings > 0 ? scheduleServings / detail.servings : 1;
+        const servings =
+          typeof dish.servings === 'number'
+            ? dish.servings
+            : (detail.servings ?? 1);
+
+        const scaledNutrition = scaleDishNutrition(detail.nutrition, servings);
+
+        addNutritionItemsTotal(totalNutrients, scaledNutrition.nutrients, 1);
+        addNutritionItemsTotal(totalMinerals, scaledNutrition.minerals, 1);
+        addNutritionItemsTotal(totalVitamins, scaledNutrition.vitamins, 1);
 
         return {
-          ...dish,
-          nutrition: scaleDetailNutrition(detail.nutrition, factor)
+          ...dish
         };
       })
     }));
 
-    return { ...scheduleData, meals: mealsWithNutrition };
+    const totalNutrition = {
+      nutrients: Array.from(totalNutrients.values()),
+      minerals: Array.from(totalMinerals.values()),
+      vitamins: Array.from(totalVitamins.values())
+    };
+
+    const totalEnergy =
+      mealsWithNutrition?.reduce((sum, meal) => {
+        const mealEnergy = meal.dishes?.reduce((dishSum, dish) => {
+          const value =
+            (dish as { energy?: unknown }).energy ??
+            (dish as { calories?: unknown }).calories;
+          const servings =
+            (dish as { servings?: unknown }).servings ??
+            (dish as { serving?: unknown }).serving;
+          const base = typeof value === 'number' ? value : 0;
+          const multiplier = typeof servings === 'number' ? servings : 1;
+          return dishSum + base * multiplier;
+        }, 0);
+        return sum + (mealEnergy ?? 0);
+      }, 0) ?? 0;
+
+    return {
+      ...scheduleData,
+      meals: mealsWithNutrition,
+      totalEnergy,
+      totalNutrition
+    };
   },
 
   updateSchedule: async (
@@ -536,7 +381,7 @@ export const ScheduleService = {
 
     const dishes = dishIds.size
       ? await DishModel.find({ _id: { $in: Array.from(dishIds) } })
-          .select('name image servings ingredients')
+          .select('name image servings nutrition')
           .lean()
       : [];
 
@@ -576,21 +421,15 @@ export const ScheduleService = {
             throw createHttpError(404, 'Không tìm thấy món ăn');
           }
 
-          const baseCalories = calculateDishCalories(dishInfo);
-          const recipeServings = dishInfo.servings ?? 1;
-          const requestedServings = dish.servings ?? recipeServings;
-          const caloriesPerServing =
-            recipeServings > 0 ? baseCalories / recipeServings : baseCalories;
-          const totalCalories = Math.round(
-            caloriesPerServing * requestedServings
-          );
+          const baseEnergy = calculateDishEnergy(dishInfo);
+          const requestedServings = dish.servings ?? dishInfo.servings ?? 1;
 
           const dishPayload = {
             dishId: dishInfo._id,
             name: dishInfo.name,
             image: dishInfo.image,
             servings: requestedServings,
-            calories: totalCalories,
+            energy: baseEnergy * requestedServings,
             isEaten: dish.isEaten ?? false
           };
 

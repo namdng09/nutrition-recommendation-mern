@@ -48,7 +48,7 @@ router.delete(
   asyncHandler(CollectionController.deleteCollection)
 );
 
-router.post(
+router.put(
   '/:id/dishes',
   authenticate(),
   authorize([ROLE.NUTRITIONIST]),
@@ -64,18 +64,6 @@ router.delete(
   parseFormData,
   validate(removeDishFromCollectionRequestSchema.shape),
   asyncHandler(CollectionController.removeDishFromCollection)
-);
-
-router.post(
-  '/:id/follow',
-  authenticate(),
-  asyncHandler(CollectionController.followCollection)
-);
-
-router.delete(
-  '/:id/follow',
-  authenticate(),
-  asyncHandler(CollectionController.unfollowCollection)
 );
 
 export default router;

@@ -28,7 +28,7 @@ const parseJSON = (val: any) => {
 const scheduleDishSchema = z.object({
   dishId: z.string().trim().optional(),
   name: z.string().trim().min(1, 'Tên món ăn là bắt buộc'),
-  calories: z.coerce.number().min(0).optional(),
+  energy: z.coerce.number().min(0).optional(),
   servings: z.coerce.number().min(0).optional(),
   image: z.string().trim().optional(),
   isEaten: z.coerce.boolean().optional()
