@@ -116,7 +116,7 @@ const mineralItemSchema = yup.object({
     .string()
     .oneOf([
       'Calci',
-      'Sắt', // Note: Backend has typo "Såt" instead of "Sắt"
+      'Sắt',
       'Magiê',
       'Mangan',
       'Phospho',
@@ -227,9 +227,9 @@ export const NUTRITION_UNITS = {
   Đường: 'g',
   Cholesterol: 'mg',
   Phytosterol: 'mg',
-  // Minerals - Note: Backend has "Såt" not "Sắt"
+
   Calci: 'mg',
-  Såt: 'mg',
+  Sắt: 'mg',
   Magiê: 'mg',
   Mangan: 'mg',
   Phospho: 'mg',
@@ -271,7 +271,7 @@ export const NUTRIENTS_LIST = [
 
 export const MINERALS_LIST = [
   'Calci',
-  'Sắt', // Backend typo
+  'Sắt',
   'Magiê',
   'Mangan',
   'Phospho',
