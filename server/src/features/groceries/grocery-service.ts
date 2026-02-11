@@ -276,8 +276,7 @@ export const GroceryService = {
       throw createHttpError(404, 'Không tìm thấy danh sách mua sắm');
     }
 
-    // Check for duplicate ingredientId in request
-    const ingredientIds = data.ingredients.map(ing => ing.ingredientId);
+    const ingredientIds = data.ingredients;
     const uniqueIds = new Set(ingredientIds);
     if (ingredientIds.length !== uniqueIds.size) {
       throw createHttpError(
@@ -286,33 +285,31 @@ export const GroceryService = {
       );
     }
 
-    // Validate and fetch ingredient details
-    const ingredientDetails = await Promise.all(
-      data.ingredients.map(async ing => {
-        if (!validateObjectId(ing.ingredientId)) {
-          throw createHttpError(
-            400,
-            `ID nguyên liệu không hợp lệ: ${ing.ingredientId}`
-          );
-        }
+    ingredientIds.forEach(id => {
+      if (!validateObjectId(id)) {
+        throw createHttpError(400, `ID nguyên liệu không hợp lệ: ${id}`);
+      }
+    });
 
-        const ingredient = await IngredientModel.findById(ing.ingredientId);
-        if (!ingredient) {
-          throw createHttpError(
-            404,
-            `Không tìm thấy nguyên liệu với ID: ${ing.ingredientId}`
-          );
-        }
+    const ingredients = await IngredientModel.find({
+      _id: { $in: ingredientIds }
+    });
 
-        return {
-          ingredientId: ingredient._id,
-          name: ingredient.name,
-          image: ingredient.image ?? '',
-          isPurchased: ing.isPurchased ?? false,
-          notes: ing.notes
-        };
-      })
-    );
+    if (ingredients.length !== ingredientIds.length) {
+      const foundIds = new Set(ingredients.map(item => item._id.toString()));
+      const missingId = ingredientIds.find(id => !foundIds.has(id));
+      throw createHttpError(
+        404,
+        `Không tìm thấy nguyên liệu với ID: ${missingId}`
+      );
+    }
+
+    const ingredientDetails = ingredients.map(ingredient => ({
+      ingredientId: ingredient._id.toString(),
+      name: ingredient.name,
+      image: ingredient.image ?? '',
+      isPurchased: false
+    }));
 
     // Check for duplicates and merge or add new ingredients
     for (const newIng of ingredientDetails) {
@@ -322,9 +319,6 @@ export const GroceryService = {
 
       if (existingIndex !== -1) {
         // Ingredient already exists, update notes if provided
-        if (newIng.notes) {
-          grocery.ingredients[existingIndex].notes = newIng.notes;
-        }
         if (newIng.isPurchased !== undefined) {
           grocery.ingredients[existingIndex].isPurchased = newIng.isPurchased;
         }

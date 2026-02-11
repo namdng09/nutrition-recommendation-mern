@@ -52,14 +52,7 @@ router.put(
   asyncHandler(GroceryController.updateGrocery)
 );
 
-router.delete(
-  '/:id',
-  authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
-  asyncHandler(GroceryController.deleteGrocery)
-);
-
-router.post(
+router.put(
   '/:id/ingredients',
   authenticate(),
   authorize([ROLE.USER, ROLE.NUTRITIONIST]),
@@ -84,6 +77,13 @@ router.delete(
   parseFormData,
   validate(removeIngredientsRequestSchema.shape),
   asyncHandler(GroceryController.removeIngredientsInGrocery)
+);
+
+router.delete(
+  '/:id',
+  authenticate(),
+  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
+  asyncHandler(GroceryController.deleteGrocery)
 );
 
 export default router;

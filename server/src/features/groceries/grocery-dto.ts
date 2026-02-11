@@ -66,8 +66,8 @@ export const addIngredientsRequestSchema = z.object({
   ingredients: z.preprocess(
     parseJSON,
     z
-      .array(ingredientItemSchema)
-      .min(1, 'Phải có ít nhất 1 nguyên liệu để thêm')
+      .array(z.string().trim().min(1))
+      .min(1, 'Phải có ít nhất 1 ID nguyên liệu để thêm')
   )
 });
 
