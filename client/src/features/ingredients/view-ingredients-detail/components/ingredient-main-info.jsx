@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 
 import { Button } from '~/components/ui/button';
 
+import FavoriteIngredientDetailButton from '../../add-ingredient-to-fav/components/favorite-ingredient-detail-button';
 import NutritionDetailGrid from './nutrition-detail-grid';
 
 export default function IngredientMainInfo({
@@ -68,15 +69,19 @@ export default function IngredientMainInfo({
               )}
             </div>
 
-            <span
-              className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${
-                item?.isActive
-                  ? 'bg-accent text-accent-foreground'
-                  : 'bg-muted text-muted-foreground'
-              }`}
-            >
-              {item?.isActive ? 'Đang hoạt động' : 'Ngừng hoạt động'}
-            </span>
+            <div className='flex items-center gap-2'>
+              <span
+                className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${
+                  item?.isActive
+                    ? 'bg-accent text-accent-foreground'
+                    : 'bg-muted text-muted-foreground'
+                }`}
+              >
+                {item?.isActive ? 'Đang hoạt động' : 'Ngừng hoạt động'}
+              </span>
+
+              <FavoriteIngredientDetailButton ingredientId={item._id} />
+            </div>
           </div>
 
           <NutritionDetailGrid
