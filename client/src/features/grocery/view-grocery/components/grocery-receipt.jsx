@@ -2,6 +2,7 @@ import React from 'react';
 import { HiOutlineCalendar } from 'react-icons/hi';
 import { IoReceiptOutline, IoSparklesOutline } from 'react-icons/io5';
 
+import DeleteGroceryButton from '../../delete-grocery/components/delete-grocery-button';
 import AddIngredientButton from './add-ingredient-button';
 import GroceryIngredientsList from './grocery-ingredients-list';
 
@@ -19,6 +20,10 @@ const GroceryReceipt = ({ list }) => {
         <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
 
         <div className='relative mb-10 text-center space-y-4 border-b-2 border-primary pb-8'>
+          <div className='absolute right-0 top-0'>
+            <DeleteGroceryButton groceryId={list._id} />
+          </div>
+
           <div className='mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-primary text-primary'>
             <IoReceiptOutline size={32} />
           </div>
