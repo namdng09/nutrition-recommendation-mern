@@ -10,6 +10,7 @@ import { Link } from 'react-router';
 
 import { getNutritionValue } from '~/lib/utils';
 
+import DishFavoriteButton from '../../add-dish-to-favorite/components/dish-favorite-button';
 import { useDishes } from '../api/view-dishes';
 import DishEmpty from './dish-empty';
 import DishHeader from './dish-header';
@@ -53,9 +54,13 @@ export default function DishesList() {
             </div>
 
             <div className='flex flex-1 flex-col p-6'>
-              <h3 className='mb-3 line-clamp-1 text-xl font-bold text-foreground transition-colors group-hover:text-emerald-600'>
-                {dish.name}
-              </h3>
+              <div className='mb-3 flex items-start justify-between gap-3'>
+                <h3 className='line-clamp-1 text-xl font-bold text-foreground transition-colors group-hover:text-emerald-600'>
+                  {dish.name}
+                </h3>
+
+                <DishFavoriteButton dishId={dish._id} />
+              </div>
 
               <div className='mb-4 flex flex-wrap gap-2'>
                 <StatBadge
