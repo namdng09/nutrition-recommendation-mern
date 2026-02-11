@@ -30,118 +30,117 @@ export const INGREDIENT_CATEGORY_OPTIONS = [
 export const UNIT_OPTIONS = [
   { value: 'g', label: 'Gram (g)' },
   { value: 'kg', label: 'Kilogram (kg)' },
-  { value: 'ml', label: 'Milliliter (ml)' },
-  { value: 'l', label: 'Liter (l)' },
-  { value: 'tbsp', label: 'Tablespoon (tbsp)' },
-  { value: 'tsp', label: 'Teaspoon (tsp)' },
-  { value: 'cup', label: 'Cup' },
-  { value: 'piece', label: 'Piece' },
-  { value: 'whole', label: 'Whole' },
-  { value: 'oz', label: 'Ounce (oz)' },
-  { value: 'lb', label: 'Pound (lb)' },
   { value: 'mg', label: 'Milligram (mg)' },
   { value: 'μg', label: 'Microgram (μg)' },
+  { value: 'ml', label: 'Milliliter (ml)' },
+  { value: 'l', label: 'Liter (l)' },
+  { value: 'oz', label: 'Ounce (oz)' },
+  { value: 'lb', label: 'Pound (lb)' },
+  { value: 'kcal', label: 'Kilocalorie (kcal)' },
   { value: 'IU', label: 'International Unit (IU)' }
 ];
 
-// Vitamins từ backend
+// Vitamins (aligned with backend NUTRITION_VITAMIN)
 export const VITAMIN_OPTIONS = [
-  { value: 'Vitamin A', label: 'Vitamin A' },
-  { value: 'Vitamin A IU', label: 'Vitamin A IU' },
-  { value: 'Vitamin B6', label: 'Vitamin B6' },
-  { value: 'Vitamin B12', label: 'Vitamin B12' },
   { value: 'Vitamin C', label: 'Vitamin C' },
-  { value: 'Vitamin D IU', label: 'Vitamin D IU' },
-  { value: 'Vitamin D2', label: 'Vitamin D2' },
-  { value: 'Vitamin D3', label: 'Vitamin D3' },
+  { value: 'Vitamin B1', label: 'Vitamin B1' },
+  { value: 'Vitamin B2', label: 'Vitamin B2' },
+  { value: 'Vitamin PP', label: 'Vitamin PP' },
+  { value: 'Vitamin B5', label: 'Vitamin B5' },
+  { value: 'Vitamin B6', label: 'Vitamin B6' },
+  { value: 'Folat', label: 'Folat' },
+  { value: 'Vitamin B9', label: 'Vitamin B9' },
+  { value: 'Vitamin H', label: 'Vitamin H' },
+  { value: 'Vitamin B12', label: 'Vitamin B12' },
+  { value: 'Vitamin A', label: 'Vitamin A' },
+  { value: 'Vitamin D', label: 'Vitamin D' },
   { value: 'Vitamin E', label: 'Vitamin E' },
   { value: 'Vitamin K', label: 'Vitamin K' }
 ];
 
-// Minerals từ backend
+// Minerals (aligned with backend NUTRITION_MINERAL)
 export const MINERAL_OPTIONS = [
-  { value: 'Alpha carotene', label: 'Alpha carotene' },
-  { value: 'Beta carotene', label: 'Beta carotene' },
-  { value: 'Caffeine', label: 'Caffeine' },
-  { value: 'Choline', label: 'Choline' },
-  { value: 'Copper', label: 'Copper' },
-  { value: 'Fluoride', label: 'Fluoride' },
-  { value: 'Folate (B9)', label: 'Folate (B9)' },
-  { value: 'Lycopene', label: 'Lycopene' },
-  { value: 'Magnesium', label: 'Magnesium' },
-  { value: 'Manganese', label: 'Manganese' },
-  { value: 'Niacin', label: 'Niacin' },
-  { value: 'Pantothenic acid', label: 'Pantothenic acid' },
-  { value: 'Phosphorus', label: 'Phosphorus' },
-  { value: 'Retinol', label: 'Retinol' },
-  { value: 'Riboflavin (B2)', label: 'Riboflavin (B2)' },
-  { value: 'Selenium', label: 'Selenium' },
-  { value: 'Theobromine', label: 'Theobromine' },
-  { value: 'Thiamine', label: 'Thiamine' },
-  { value: 'Zinc', label: 'Zinc' }
+  { value: 'Calci', label: 'Calci' },
+  { value: 'Såt', label: 'Såt' },
+  { value: 'Magiê', label: 'Magiê' },
+  { value: 'Mangan', label: 'Mangan' },
+  { value: 'Phospho', label: 'Phospho' },
+  { value: 'Kali', label: 'Kali' },
+  { value: 'Natri', label: 'Natri' },
+  { value: 'Kẽm', label: 'Kẽm' },
+  { value: 'Đồng', label: 'Đồng' },
+  { value: 'Selen', label: 'Selen' }
 ];
 
-// Amino Acids từ backend
-export const AMINO_ACID_OPTIONS = [
-  { value: 'Alanine', label: 'Alanine' },
-  { value: 'Arginine', label: 'Arginine' },
-  { value: 'Aspartic acid', label: 'Aspartic acid' },
-  { value: 'Cystine', label: 'Cystine' },
-  { value: 'Glutamic acid', label: 'Glutamic acid' },
-  { value: 'Glycine', label: 'Glycine' },
-  { value: 'Histidine', label: 'Histidine' },
-  { value: 'Hydroxyproline', label: 'Hydroxyproline' },
-  { value: 'Isoleucine', label: 'Isoleucine' },
-  { value: 'Leucine', label: 'Leucine' },
-  { value: 'Lysine', label: 'Lysine' },
-  { value: 'Methionine', label: 'Methionine' },
-  { value: 'Phenylalanine', label: 'Phenylalanine' },
-  { value: 'Proline', label: 'Proline' },
-  { value: 'Serine', label: 'Serine' },
-  { value: 'Threonine', label: 'Threonine' },
-  { value: 'Tryptophan', label: 'Tryptophan' },
-  { value: 'Tyrosine', label: 'Tyrosine' },
-  { value: 'Valine', label: 'Valine' }
+// Nutrients (aligned with backend NUTRIENTS)
+export const NUTRIENT_OPTIONS = [
+  { value: 'Năng lượng', label: 'Năng lượng', unit: 'kcal' },
+  { value: 'Nước', label: 'Nước', unit: 'g' },
+  { value: 'Protein', label: 'Protein', unit: 'g' },
+  { value: 'Chất béo', label: 'Chất béo', unit: 'g' },
+  { value: 'Tinh bột', label: 'Tinh bột', unit: 'g' },
+  { value: 'Chất xơ', label: 'Chất xơ', unit: 'g' },
+  { value: 'Tro', label: 'Tro', unit: 'g' },
+  { value: 'Đường', label: 'Đường', unit: 'g' },
+  { value: 'Cholesterol', label: 'Cholesterol', unit: 'mg' },
+  { value: 'Phytosterol', label: 'Phytosterol', unit: 'mg' }
 ];
 
-// Sugars từ backend
-export const SUGAR_OPTIONS = [
-  { value: 'Sugar', label: 'Sugar (Tổng đường)' },
-  { value: 'Sucrose', label: 'Sucrose (Đường mía)' },
-  { value: 'Glucose', label: 'Glucose (Đường nho)' },
-  { value: 'Fructose', label: 'Fructose (Đường trái cây)' },
-  { value: 'Lactose', label: 'Lactose (Đường sữa)' },
-  { value: 'Maltose', label: 'Maltose (Đường mạch nha)' },
-  { value: 'Galactose', label: 'Galactose' },
-  { value: 'Starch', label: 'Starch (Tinh bột)' }
+// Allergens (aligned with backend ALLERGEN values)
+export const ALLERGEN_OPTIONS = [
+  { value: 'Sữa', label: 'Sữa' },
+  { value: 'Trứng', label: 'Trứng' },
+  { value: 'Cá', label: 'Cá' },
+  { value: 'Hải sản có vỏ', label: 'Hải sản có vỏ' },
+  { value: 'Hạt cây', label: 'Hạt cây' },
+  { value: 'Đậu phộng', label: 'Đậu phộng' },
+  { value: 'Lúa mì', label: 'Lúa mì' },
+  { value: 'Đậu nành', label: 'Đậu nành' },
+  { value: 'Mè', label: 'Mè' },
+  { value: 'Mù tạt', label: 'Mù tạt' },
+  { value: 'Cần tây', label: 'Cần tây' },
+  { value: 'Đậu lupin', label: 'Đậu lupin' },
+  { value: 'Động vật thân mềm', label: 'Động vật thân mềm' },
+  { value: 'Sulfite', label: 'Sulfite' },
+  { value: 'Gluten', label: 'Gluten' },
+  { value: 'Lúa mạch', label: 'Lúa mạch' },
+  { value: 'Lúa mạch đen', label: 'Lúa mạch đen' },
+  { value: 'Tôm', label: 'Tôm' },
+  { value: 'Cua', label: 'Cua' },
+  { value: 'Tôm hùm', label: 'Tôm hùm' },
+  { value: 'Mực', label: 'Mực' },
+  { value: 'Hàu', label: 'Hàu' },
+  { value: 'Nghêu', label: 'Nghêu' },
+  { value: 'Hạnh nhân', label: 'Hạnh nhân' },
+  { value: 'Hạt điều', label: 'Hạt điều' },
+  { value: 'Óc chó', label: 'Óc chó' },
+  { value: 'Hạt pecan', label: 'Hạt pecan' },
+  { value: 'Hạt dẻ cười', label: 'Hạt dẻ cười' },
+  { value: 'Hạt phỉ', label: 'Hạt phỉ' },
+  { value: 'Hạt macadamia', label: 'Hạt macadamia' },
+  { value: 'Hạt brazil', label: 'Hạt brazil' },
+  { value: 'Kiwi', label: 'Kiwi' },
+  { value: 'Chuối', label: 'Chuối' },
+  { value: 'Bơ', label: 'Bơ' },
+  { value: 'Dâu tây', label: 'Dâu tây' },
+  { value: 'Đào', label: 'Đào' },
+  { value: 'Xoài', label: 'Xoài' },
+  { value: 'Lactose', label: 'Lactose' },
+  { value: 'Ngô', label: 'Ngô' },
+  { value: 'Dừa', label: 'Dừa' },
+  { value: 'Tỏi', label: 'Tỏi' },
+  { value: 'Hành', label: 'Hành' },
+  { value: 'Cà chua', label: 'Cà chua' },
+  { value: 'Sô-cô-la', label: 'Sô-cô-la' },
+  { value: 'Cà phê', label: 'Cà phê' }
 ];
 
-// Fats từ backend
-export const FAT_OPTIONS = [
-  { value: 'Saturated fats', label: 'Saturated fats (Chất béo bão hòa)' },
-  {
-    value: 'Monounsaturated fats',
-    label: 'Monounsaturated fats (Chất béo không bão hòa đơn)'
-  },
-  {
-    value: 'Polyunsaturated fats',
-    label: 'Polyunsaturated fats (Chất béo không bão hòa đa)'
-  },
-  { value: 'Trans fats', label: 'Trans fats (Chất béo chuyển hóa)' }
-];
-
-// Fatty Acids từ backend
-export const FATTY_ACID_OPTIONS = [
-  { value: 'Total omega 3', label: 'Total omega 3 (Tổng omega 3)' },
-  { value: 'Total omega 6', label: 'Total omega 6 (Tổng omega 6)' },
-  { value: 'Alpha Linolenic Acid (ALA)', label: 'Alpha Linolenic Acid (ALA)' },
-  { value: 'Docosahexaenoic Acid (DHA)', label: 'Docosahexaenoic Acid (DHA)' },
-  {
-    value: 'Eicosapentaenoic Acid (EPA)',
-    label: 'Eicosapentaenoic Acid (EPA)'
-  },
-  { value: 'Docosapentaenoic Acid (DPA)', label: 'Docosapentaenoic Acid (DPA)' }
-];
+// Backend chỉ có nutrients, minerals, vitamins
+// Không có aminoAcids, sugars, fats, fattyAcids
+export const AMINO_ACID_OPTIONS = [];
+export const SUGAR_OPTIONS = [];
+export const FAT_OPTIONS = [];
+export const FATTY_ACID_OPTIONS = [];
 
 const nutrientValueSchema = yup.object({
   value: yup
@@ -184,7 +183,6 @@ const detailedNutrientSchema = yup.object({
   value: yup
     .number()
     .transform((value, originalValue) => {
-      // Chuyển đổi empty string thành undefined
       return originalValue === '' ? undefined : value;
     })
     .min(0, 'Giá trị không được âm')
@@ -221,23 +219,18 @@ export const createIngredientSchema = yup.object({
       unit: yup.string().required('Đơn vị là bắt buộc')
     })
     .required('Base unit là bắt buộc'),
-  units: yup
-    .array()
-    .of(unitSchema)
-    .min(1, 'Phải có ít nhất 1 đơn vị chuyển đổi')
-    .required('Đơn vị chuyển đổi là bắt buộc'),
+  // XÓA units validation - backend không có field này
   allergens: yup.array().of(yup.string()).optional(),
   nutrition: yup
     .object({
-      nutrients: nutrientsSchema.required('Thông tin dinh dưỡng là bắt buộc'),
+      nutrients: yup
+        .array()
+        .of(detailedNutrientSchema)
+        .required('Thông tin dinh dưỡng là bắt buộc'),
       minerals: yup.array().of(detailedNutrientSchema).optional(),
-      vitamins: yup.array().of(detailedNutrientSchema).optional(),
-      sugars: yup.array().of(detailedNutrientSchema).optional(),
-      fats: yup.array().of(detailedNutrientSchema).optional(),
-      fattyAcids: yup.array().of(detailedNutrientSchema).optional(),
-      aminoAcids: yup.array().of(detailedNutrientSchema).optional()
+      vitamins: yup.array().of(detailedNutrientSchema).optional()
     })
     .required('Thông tin dinh dưỡng là bắt buộc'),
   image: yup.mixed().optional(),
-  isActive: yup.boolean().optional()
+  isActive: yup.boolean().default(true).optional()
 });
