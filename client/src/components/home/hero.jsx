@@ -5,8 +5,6 @@ import {
   HiSparkles
 } from 'react-icons/hi2';
 
-import food from '../../../public/food.png';
-
 const Hero = () => {
   return (
     <section className='relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 md:py-16 grid md:grid-cols-2 gap-10 md:gap-16 items-center bg-background overflow-hidden'>
@@ -56,7 +54,7 @@ const Hero = () => {
 
         <div className='relative'>
           <img
-            src={food}
+            src='/food.png'
             alt='EatDee Healthy Meal'
             className='relative z-10
            rounded-3xl md:rounded-[3rem]
