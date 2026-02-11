@@ -88,22 +88,22 @@ export const GroceryController = {
       );
   },
 
-  updateIngredientsInGrocery: async (req: Request, res: Response) => {
-    const groceryId = req.params.id;
+  updateIngredientInGrocery: async (req: Request, res: Response) => {
+    const groceryId = req.params.groceryId;
+    const ingredientId = req.params.ingredientId;
     const data = req.body;
     const userId = req.user!._id.toString();
 
-    const result = await GroceryService.updateIngredientsInGrocery(
+    const result = await GroceryService.updateIngredientInGrocery(
       userId,
       groceryId,
+      ingredientId,
       data
     );
 
     res
       .status(200)
-      .json(
-        ApiResponse.success('Cập nhật nhiều nguyên liệu thành công', result)
-      );
+      .json(ApiResponse.success('Cập nhật nguyên liệu thành công', result));
   },
 
   removeIngredientsInGrocery: async (req: Request, res: Response) => {

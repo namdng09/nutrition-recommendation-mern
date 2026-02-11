@@ -86,24 +86,11 @@ export type RemoveIngredientsRequest = z.infer<
   typeof removeIngredientsRequestSchema
 >;
 
-const updateIngredientItemSchema = z.object({
-  ingredientId: z
-    .string({ message: 'ID nguyên liệu không hợp lệ' })
-    .trim()
-    .min(1),
+export const updateIngredientInGrocerySchema = z.object({
   isPurchased: z.preprocess(parseBoolean, z.coerce.boolean()).optional(),
   notes: z.string().trim().optional()
 });
 
-export const updateIngredientsInGrocerySchema = z.object({
-  ingredients: z.preprocess(
-    parseJSON,
-    z
-      .array(updateIngredientItemSchema)
-      .min(1, 'Phải có ít nhất 1 nguyên liệu để cập nhật')
-  )
-});
-
-export type UpdateIngredientsInGroceryRequest = z.infer<
-  typeof updateIngredientsInGrocerySchema
+export type UpdateIngredientInGroceryRequest = z.infer<
+  typeof updateIngredientInGrocerySchema
 >;

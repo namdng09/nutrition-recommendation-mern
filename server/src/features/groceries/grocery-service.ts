@@ -19,7 +19,7 @@ import {
   CreateGroceryRequest,
   RemoveIngredientsRequest,
   UpdateGroceryRequest,
-  UpdateIngredientsInGroceryRequest
+  UpdateIngredientInGroceryRequest
 } from './grocery-dto';
 
 type GroceryIngredient = {
@@ -333,10 +333,11 @@ export const GroceryService = {
     return grocery;
   },
 
-  updateIngredientsInGrocery: async (
+  updateIngredientInGrocery: async (
     userId: string,
     groceryId: string,
-    data: UpdateIngredientsInGroceryRequest
+    ingredientId: string,
+    data: UpdateIngredientInGroceryRequest
   ) => {
     if (!validateObjectId(userId)) {
       throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
@@ -344,6 +345,10 @@ export const GroceryService = {
 
     if (!validateObjectId(groceryId)) {
       throw createHttpError(400, 'Định dạng ID danh sách mua sắm không hợp lệ');
+    }
+
+    if (!validateObjectId(ingredientId)) {
+      throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
     }
 
     const grocery = await GroceryModel.findOne({
@@ -355,36 +360,22 @@ export const GroceryService = {
       throw createHttpError(404, 'Không tìm thấy danh sách mua sắm');
     }
 
-    // Check for duplicate ingredientId in request
-    const ingredientIds = data.ingredients.map(ing => ing.ingredientId);
-    const uniqueIds = new Set(ingredientIds);
-    if (ingredientIds.length !== uniqueIds.size) {
+    const ingredientIndex = grocery.ingredients.findIndex(
+      item => item.ingredientId?.toString() === ingredientId
+    );
+
+    if (ingredientIndex === -1) {
       throw createHttpError(
-        400,
-        'Không được có nguyên liệu trùng lặp trong danh sách cập nhật'
+        404,
+        `Không tìm thấy nguyên liệu với ID: ${ingredientId} trong danh sách mua sắm`
       );
     }
 
-    // Update multiple ingredients
-    for (const ing of data.ingredients) {
-      const ingredientIndex = grocery.ingredients.findIndex(
-        item => item.ingredientId?.toString() === ing.ingredientId
-      );
-
-      if (ingredientIndex === -1) {
-        throw createHttpError(
-          404,
-          `Không tìm thấy nguyên liệu với ID: ${ing.ingredientId} trong danh sách mua sắm`
-        );
-      }
-
-      // Update fields if provided
-      if (ing.isPurchased !== undefined) {
-        grocery.ingredients[ingredientIndex].isPurchased = ing.isPurchased;
-      }
-      if (ing.notes !== undefined) {
-        grocery.ingredients[ingredientIndex].notes = ing.notes;
-      }
+    if (data.isPurchased !== undefined) {
+      grocery.ingredients[ingredientIndex].isPurchased = data.isPurchased;
+    }
+    if (data.notes !== undefined) {
+      grocery.ingredients[ingredientIndex].notes = data.notes;
     }
 
     await grocery.save();
