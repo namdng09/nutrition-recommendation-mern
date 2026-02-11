@@ -105,6 +105,31 @@ const scaleDishNutrition = (nutrition: DishNutrition, factor: number) => {
   };
 };
 
+const addNutritionItemsTotal = (
+  target: Map<string, NutritionItem>,
+  items: NutritionItem[] | null | undefined,
+  multiplier: number
+) => {
+  if (!items || items.length === 0) return;
+  for (const item of items) {
+    const label = item?.label ?? undefined;
+    const unit = item?.unit ?? undefined;
+    const value = item?.value;
+    if (!label || !unit || typeof value !== 'number') continue;
+    const key = `${label}|${unit}`;
+    const current = target.get(key);
+    if (current) {
+      current.value = (current.value ?? 0) + value * multiplier;
+    } else {
+      target.set(key, {
+        label,
+        unit,
+        value: value * multiplier
+      });
+    }
+  }
+};
+
 export const ScheduleService = {
   createSchedule: async (
     userId: string,
@@ -216,6 +241,10 @@ export const ScheduleService = {
       });
     });
 
+    const totalNutrients = new Map<string, NutritionItem>();
+    const totalMinerals = new Map<string, NutritionItem>();
+    const totalVitamins = new Map<string, NutritionItem>();
+
     const mealsWithNutrition = scheduleData.meals?.map(meal => ({
       ...meal,
       dishes: meal.dishes?.map(dish => {
@@ -235,14 +264,51 @@ export const ScheduleService = {
           };
         }
 
+        const servings =
+          typeof dish.servings === 'number'
+            ? dish.servings
+            : (detail.servings ?? 1);
+
+        const scaledNutrition = scaleDishNutrition(detail.nutrition, servings);
+
+        addNutritionItemsTotal(totalNutrients, scaledNutrition.nutrients, 1);
+        addNutritionItemsTotal(totalMinerals, scaledNutrition.minerals, 1);
+        addNutritionItemsTotal(totalVitamins, scaledNutrition.vitamins, 1);
+
         return {
-          ...dish,
-          nutrition: scaleDishNutrition(detail.nutrition, 1)
+          ...dish
         };
       })
     }));
 
-    return { ...scheduleData, meals: mealsWithNutrition };
+    const totalNutrition = {
+      nutrients: Array.from(totalNutrients.values()),
+      minerals: Array.from(totalMinerals.values()),
+      vitamins: Array.from(totalVitamins.values())
+    };
+
+    const totalEnergy =
+      mealsWithNutrition?.reduce((sum, meal) => {
+        const mealEnergy = meal.dishes?.reduce((dishSum, dish) => {
+          const value =
+            (dish as { energy?: unknown }).energy ??
+            (dish as { calories?: unknown }).calories;
+          const servings =
+            (dish as { servings?: unknown }).servings ??
+            (dish as { serving?: unknown }).serving;
+          const base = typeof value === 'number' ? value : 0;
+          const multiplier = typeof servings === 'number' ? servings : 1;
+          return dishSum + base * multiplier;
+        }, 0);
+        return sum + (mealEnergy ?? 0);
+      }, 0) ?? 0;
+
+    return {
+      ...scheduleData,
+      meals: mealsWithNutrition,
+      totalEnergy,
+      totalNutrition
+    };
   },
 
   updateSchedule: async (
@@ -363,7 +429,7 @@ export const ScheduleService = {
             name: dishInfo.name,
             image: dishInfo.image,
             servings: requestedServings,
-            energy: baseEnergy,
+            energy: baseEnergy * requestedServings,
             isEaten: dish.isEaten ?? false
           };
 
