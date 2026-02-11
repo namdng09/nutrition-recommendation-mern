@@ -134,7 +134,7 @@ describe('AuthService.signUp', () => {
       isActive: true
     });
 
-    // Even if Auth doesn't exist, User existence should trigger error
+    // Attempt to sign up with existing email
     await expect(
       AuthService.signUp({
         email: 'existing@gmail.com',
@@ -146,8 +146,7 @@ describe('AuthService.signUp', () => {
 
   // Branch: Dangling Auth record (User doesn't exist, but Auth does)
   it('should throw 400 error when Auth record already exists (Dangling Auth)', async () => {
-    // Manually create an Auth record without a corresponding User
-    // This simulates a corrupted state or a previous failed cleanup
+    // Create an Auth record without a corresponding User
     const fakeUserId = new mongoose.Types.ObjectId();
     await AuthModel.create({
       user: fakeUserId,
@@ -175,7 +174,7 @@ describe('AuthService.signUp', () => {
 
   // Branch: Avatar upload fails
   it('should throw 500 error when avatar upload fails', async () => {
-    // Override mock for this test only
+    // Override mock to simulate upload failure
     vi.mocked(authUtils.uploadAvatar).mockResolvedValueOnce({
       success: false,
       error: 'Upload failed'

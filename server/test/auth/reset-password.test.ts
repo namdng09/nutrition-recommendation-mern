@@ -138,8 +138,6 @@ describe('AuthService.resetPassword', () => {
     // Delete the existing local auth
     await AuthModel.deleteMany({});
 
-    // User still exists (created in beforeEach)
-
     await AuthService.resetPassword(resetToken, {
       password: 'newItemPassword123'
     });

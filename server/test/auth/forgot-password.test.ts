@@ -70,7 +70,6 @@ describe('AuthService.forgotPassword', () => {
       AuthService.forgotPassword('nonexistent@example.com')
     ).rejects.toThrow('Không tìm thấy người dùng');
 
-    // CRITICAL: Ensure no email is sent for non-existent users
     expect(sharedUtils.sendMail).not.toHaveBeenCalled();
   });
 
@@ -80,7 +79,6 @@ describe('AuthService.forgotPassword', () => {
       new Error('Mail error')
     );
 
-    // Should not throw, just log error internally
     await expect(
       AuthService.forgotPassword('test@example.com')
     ).resolves.not.toThrow();
