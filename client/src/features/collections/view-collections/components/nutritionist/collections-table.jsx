@@ -94,18 +94,6 @@ const CollectionsTable = () => {
       )
     },
     {
-      accessorKey: 'followers',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Người theo dõi' />
-      ),
-      cell: ({ row }) => (
-        <div className='flex items-center gap-1'>
-          <Heart className='h-4 w-4 text-muted-foreground' />
-          <span>{row.original.followers || 0}</span>
-        </div>
-      )
-    },
-    {
       accessorKey: 'tags',
       header: 'Tags',
       cell: ({ row }) => (
