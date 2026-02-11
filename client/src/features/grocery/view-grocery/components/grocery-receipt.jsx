@@ -1,13 +1,9 @@
 import React from 'react';
 import { HiOutlineCalendar } from 'react-icons/hi';
 import { IoReceiptOutline, IoSparklesOutline } from 'react-icons/io5';
-import {
-  RiCheckboxBlankCircleLine,
-  RiCheckboxCircleFill
-} from 'react-icons/ri';
 
 import AddIngredientButton from './add-ingredient-button';
-import DeleteIngredientButton from './delete-ingredient-button';
+import GroceryIngredientsList from './grocery-ingredients-list';
 
 const GroceryReceipt = ({ list }) => {
   if (!list) return null;
@@ -50,53 +46,10 @@ const GroceryReceipt = ({ list }) => {
             <AddIngredientButton groceryId={list._id} />
           </div>
 
-          {ingredients.length === 0 ? (
-            <div className='text-center text-sm text-muted-foreground italic py-6'>
-              Chưa có nguyên liệu
-            </div>
-          ) : (
-            ingredients.map(item => (
-              <div
-                key={item?._id}
-                className={`group/item flex items-center justify-between px-2 py-4 border-b border-border/40 last:border-0 ${
-                  item?.isPurchased ? 'opacity-40 grayscale' : ''
-                }`}
-              >
-                <div className='flex items-center gap-5'>
-                  {item?.isPurchased ? (
-                    <RiCheckboxCircleFill className='h-7 w-7 text-primary' />
-                  ) : (
-                    <RiCheckboxBlankCircleLine className='h-7 w-7 text-muted-foreground/40' />
-                  )}
-
-                  <div>
-                    {item?.name && (
-                      <div
-                        className={`text-lg font-bold font-mono uppercase ${
-                          item?.isPurchased && 'line-through'
-                        }`}
-                      >
-                        {item.name}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className='flex items-center gap-4'>
-                  {item?.quantity && (
-                    <div className='font-mono font-extrabold text-lg text-primary'>
-                      {item.quantity.toLocaleString()}G
-                    </div>
-                  )}
-
-                  <DeleteIngredientButton
-                    groceryId={list._id}
-                    ingredientId={item.ingredientId}
-                  />
-                </div>
-              </div>
-            ))
-          )}
+          <GroceryIngredientsList
+            ingredients={ingredients}
+            groceryId={list._id}
+          />
         </div>
 
         {list?.notes && (
