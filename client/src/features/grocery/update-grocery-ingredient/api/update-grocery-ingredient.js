@@ -7,14 +7,12 @@ import { QUERY_KEYS } from '~/lib/query-keys';
 const updateGroceryIngredient = async ({
   groceryId,
   ingredientId,
-  isPurchased,
-  notes
+  isPurchased
 }) => {
   const res = await apiClient.put(
     `/api/groceries/${groceryId}/ingredients/${ingredientId}`,
     {
-      isPurchased,
-      notes
+      isPurchased
     }
   );
   return res.data;

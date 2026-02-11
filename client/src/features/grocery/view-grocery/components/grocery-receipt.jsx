@@ -5,6 +5,7 @@ import { IoReceiptOutline, IoSparklesOutline } from 'react-icons/io5';
 import DeleteGroceryButton from '../../delete-grocery/components/delete-grocery-button';
 import AddIngredientButton from './add-ingredient-button';
 import GroceryIngredientsList from './grocery-ingredients-list';
+import NoteActionsMenu from './note-action-menu';
 
 const GroceryReceipt = ({ list }) => {
   if (!list) return null;
@@ -48,7 +49,11 @@ const GroceryReceipt = ({ list }) => {
           <div className='flex justify-between items-center text-xs font-mono font-black text-muted-foreground mb-4 px-2 uppercase tracking-[0.3em]'>
             <span>Nguyên liệu</span>
 
-            <AddIngredientButton groceryId={list._id} />
+            <div className='flex items-center gap-2'>
+              <AddIngredientButton groceryId={list._id} />
+
+              <NoteActionsMenu grocery={list} />
+            </div>
           </div>
 
           <GroceryIngredientsList
