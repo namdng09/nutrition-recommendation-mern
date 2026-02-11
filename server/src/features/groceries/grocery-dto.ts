@@ -26,6 +26,11 @@ const parseDate = (val: any) => {
   return val;
 };
 
+const dateSchema = z.preprocess(
+  parseDate,
+  z.date({ message: 'Ngày không hợp lệ' })
+);
+
 const ingredientItemSchema = z.object({
   ingredientId: z
     .string({ message: 'ID nguyên liệu không hợp lệ' })
@@ -35,62 +40,25 @@ const ingredientItemSchema = z.object({
   notes: z.string().trim().optional()
 });
 
-export const createGroceryRequestSchema = z
-  .object({
-    name: z
-      .string({ message: 'Tên danh sách mua sắm không hợp lệ' })
-      .trim()
-      .min(2, 'Tên danh sách mua sắm phải có ít nhất 2 ký tự'),
-    startDate: z.preprocess(
-      parseDate,
-      z.date({ message: 'Ngày bắt đầu không hợp lệ' })
-    ),
-    endDate: z
-      .preprocess(parseDate, z.date({ message: 'Ngày kết thúc không hợp lệ' }))
-      .optional(),
-    ingredients: z.preprocess(
-      parseJSON,
-      z
-        .array(ingredientItemSchema)
-        .min(1, 'Danh sách nguyên liệu không được trống')
-    ),
-    notes: z.string().trim().optional()
-  })
-  .refine(data => !data.endDate || data.endDate >= data.startDate, {
-    message: 'Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu',
-    path: ['endDate']
-  });
+export const createGroceryRequestSchema = z.object({
+  name: z
+    .string({ message: 'Tên danh sách mua sắm không hợp lệ' })
+    .trim()
+    .min(2, 'Tên danh sách mua sắm phải có ít nhất 2 ký tự'),
+  date: z.preprocess(parseJSON, z.array(dateSchema)).optional()
+});
 
 export type CreateGroceryRequest = z.infer<typeof createGroceryRequestSchema>;
 
-export const updateGroceryRequestSchema = z
-  .object({
-    name: z
-      .string({ message: 'Tên danh sách mua sắm không hợp lệ' })
-      .trim()
-      .min(2, 'Tên danh sách mua sắm phải có ít nhất 2 ký tự')
-      .optional(),
-    startDate: z
-      .preprocess(parseDate, z.date({ message: 'Ngày bắt đầu không hợp lệ' }))
-      .optional(),
-    endDate: z
-      .preprocess(parseDate, z.date({ message: 'Ngày kết thúc không hợp lệ' }))
-      .optional(),
-    ingredients: z
-      .preprocess(parseJSON, z.array(ingredientItemSchema))
-      .optional(),
-    notes: z.string().trim().optional()
-  })
-  .refine(
-    data =>
-      data.startDate === undefined ||
-      data.endDate === undefined ||
-      data.endDate >= data.startDate,
-    {
-      message: 'Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu',
-      path: ['endDate']
-    }
-  );
+export const updateGroceryRequestSchema = z.object({
+  name: z
+    .string({ message: 'Tên danh sách mua sắm không hợp lệ' })
+    .trim()
+    .min(2, 'Tên danh sách mua sắm phải có ít nhất 2 ký tự')
+    .optional(),
+  date: z.preprocess(parseJSON, z.array(dateSchema)).optional(),
+  ingredients: z.preprocess(parseJSON, z.array(ingredientItemSchema)).optional()
+});
 
 export type UpdateGroceryRequest = z.infer<typeof updateGroceryRequestSchema>;
 

@@ -12,8 +12,7 @@ const grocerySchema = new Schema(
       name: { type: String, required: true }
     },
     name: { type: String, required: true },
-    startDate: { type: Date, required: true },
-    endDate: { type: Date },
+    date: [{ type: Date }],
     ingredients: [
       {
         ingredientId: { type: Schema.Types.ObjectId, ref: 'Ingredient' },
@@ -22,8 +21,7 @@ const grocerySchema = new Schema(
         isPurchased: { type: Boolean, default: false },
         notes: { type: String }
       }
-    ],
-    notes: { type: String }
+    ]
   },
   {
     timestamps: true
@@ -32,7 +30,7 @@ const grocerySchema = new Schema(
 
 grocerySchema.plugin(mongoosePaginate);
 
-grocerySchema.index({ 'user._id': 1, startDate: -1 });
+grocerySchema.index({ 'user._id': 1, date: -1 });
 
 export type Grocery = InferSchemaType<typeof grocerySchema>;
 
