@@ -13,7 +13,12 @@ import {
   validateObjectId
 } from '~/shared/utils';
 
-import { CreateDishRequest, UpdateDishRequest } from './dish-dto';
+import {
+  CreateDishRequest,
+  createDishRequestSchema,
+  UpdateDishRequest,
+  updateDishRequestSchema
+} from './dish-dto';
 
 const nutrientKeys = [
   'calories',
@@ -122,6 +127,21 @@ export const DishService = {
     data: CreateDishRequest,
     image?: Express.Multer.File
   ) => {
+    const validation = createDishRequestSchema.safeParse(data);
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0];
+      throw createHttpError(400, firstError.message);
+    }
+
+    const existingDish = await DishModel.findOne({
+      name: data.name
+    });
+
+    if (existingDish) {
+      throw createHttpError(409, 'Món ăn với tên này đã tồn tại');
+    }
+
     // Validate and fetch ingredient details
     const ingredientDetails = await Promise.all(
       data.ingredients.map(async ing => {
@@ -277,6 +297,13 @@ export const DishService = {
     data: UpdateDishRequest,
     image?: Express.Multer.File
   ) => {
+    const validation = updateDishRequestSchema.safeParse(data);
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0];
+      throw createHttpError(400, firstError.message);
+    }
+
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
     }
@@ -289,6 +316,18 @@ export const DishService = {
     // Check ownership - only owner can update
     if (existingDish.user?._id.toString() !== userId) {
       throw createHttpError(403, 'Bạn không có quyền cập nhật món ăn này');
+    }
+
+    // Check for duplicate name (excluding current dish)
+    if (data.name) {
+      const duplicateDish = await DishModel.findOne({
+        name: data.name,
+        _id: { $ne: id }
+      });
+
+      if (duplicateDish) {
+        throw createHttpError(409, 'Món ăn với tên này đã tồn tại');
+      }
     }
 
     const updateData: any = { ...data };
