@@ -37,6 +37,12 @@ const IngredientsTable = () => {
     setBulkDeleteDialogOpen(true);
   };
 
+  // Helper function để lấy giá trị nutrient từ array
+  const getNutrientValue = (nutrients, label) => {
+    const nutrient = nutrients?.find(n => n.label === label);
+    return nutrient ? `${nutrient.value} ${nutrient.unit}` : '-';
+  };
+
   const columns = [
     {
       accessorKey: 'image',
@@ -71,13 +77,13 @@ const IngredientsTable = () => {
       enableSorting: false
     },
     {
-      accessorKey: 'nutrition.nutrients.calories',
+      accessorKey: 'nutrition.nutrients',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Calories' />
+        <DataTableColumnHeader column={column} title='Năng lượngz' />
       ),
       cell: ({ row }) => {
-        const calories = row.original.nutrition?.nutrients?.calories;
-        return calories ? `${calories.value} ${calories.unit}` : '-';
+        const nutrients = row.original.nutrition?.nutrients || [];
+        return getNutrientValue(nutrients, 'Năng lượng');
       }
     },
     {
@@ -86,28 +92,28 @@ const IngredientsTable = () => {
         <DataTableColumnHeader column={column} title='Protein' />
       ),
       cell: ({ row }) => {
-        const protein = row.original.nutrition?.nutrients?.protein;
-        return protein ? `${protein.value} ${protein.unit}` : '-';
+        const nutrients = row.original.nutrition?.nutrients || [];
+        return getNutrientValue(nutrients, 'Protein');
       }
     },
     {
       accessorKey: 'nutrition.nutrients.carbs',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Carbs' />
+        <DataTableColumnHeader column={column} title='Tinh bột' />
       ),
       cell: ({ row }) => {
-        const carbs = row.original.nutrition?.nutrients?.carbs;
-        return carbs ? `${carbs.value} ${carbs.unit}` : '-';
+        const nutrients = row.original.nutrition?.nutrients || [];
+        return getNutrientValue(nutrients, 'Tinh bột');
       }
     },
     {
       accessorKey: 'nutrition.nutrients.fat',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Fat' />
+        <DataTableColumnHeader column={column} title='Chất béo' />
       ),
       cell: ({ row }) => {
-        const fat = row.original.nutrition?.nutrients?.fat;
-        return fat ? `${fat.value} ${fat.unit}` : '-';
+        const nutrients = row.original.nutrition?.nutrients || [];
+        return getNutrientValue(nutrients, 'Chất béo');
       }
     },
     {
