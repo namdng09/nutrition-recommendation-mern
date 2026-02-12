@@ -74,15 +74,16 @@ const ingredientSchema = yup.object({
     .of(unitSchema)
     .min(1, 'Phải có ít nhất 1 đơn vị')
     .test(
-      'has-default',
-      'Phải chọn ít nhất 1 đơn vị làm mặc định',
+      'has-one-default',
+      'Phải chọn đúng 1 đơn vị làm mặc định',
       function (value) {
-        return value && value.some(unit => unit.isDefault === true);
+        if (!value) return false;
+        const defaultUnits = value.filter(unit => unit.isDefault === true);
+        return defaultUnits.length === 1;
       }
     )
     .required('Đơn vị là bắt buộc')
 });
-
 const instructionSchema = yup.object({
   step: yup.number().min(1, 'Bước phải lớn hơn 0').required('Bước là bắt buộc'),
   description: yup
