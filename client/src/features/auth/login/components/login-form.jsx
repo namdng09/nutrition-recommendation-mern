@@ -39,7 +39,14 @@ const LoginForm = ({ onSubmit, isLoading }) => {
         variant='outline'
         className='w-full rounded-xl border border-border bg-background/60 hover:bg-accent text-primary shadow-sm'
         onClick={() => {
-          window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
+          const apiUrl = import.meta.env.VITE_API_URL;
+          const authPath = '/api/auth/google';
+
+          if (apiUrl && apiUrl.startsWith('http')) {
+            window.location.href = `${apiUrl}${authPath}`;
+          } else {
+            window.location.href = authPath;
+          }
         }}
       >
         <FaGoogle className='mr-2 h-4 w-4' />
