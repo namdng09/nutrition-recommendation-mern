@@ -73,12 +73,13 @@ const ingredientSchema = yup.object({
     .array()
     .of(unitSchema)
     .min(1, 'Phải có ít nhất 1 đơn vị')
-    .test('has-gram', 'Phải có đơn vị gram (g)', function (value) {
-      return value && value.some(unit => unit.unit === 'g');
-    })
-    .test('has-default', 'Phải chọn 1 đơn vị làm mặc định', function (value) {
-      return value && value.some(unit => unit.isDefault === true);
-    })
+    .test(
+      'has-default',
+      'Phải chọn ít nhất 1 đơn vị làm mặc định',
+      function (value) {
+        return value && value.some(unit => unit.isDefault === true);
+      }
+    )
     .required('Đơn vị là bắt buộc')
 });
 

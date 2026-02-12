@@ -247,7 +247,7 @@ const CreateDishForm = () => {
         {
           quantity: defaultUnit.amount,
           unit: defaultUnit.unit,
-          isDefault: true // First unit is always default and cannot be changed
+          isDefault: true // First unit (gram) is always default and cannot be removed
         }
       ]
     });
@@ -288,9 +288,9 @@ const CreateDishForm = () => {
   };
 
   const handleRemoveIngredientUnit = (ingredientIndex, unitIndex) => {
-    // Prevent removing the first (default) unit
+    // Prevent removing the first (gram) unit
     if (unitIndex === 0) {
-      toast.error('Không thể xóa đơn vị mặc định');
+      toast.error('Không thể xóa đơn vị gram mặc định');
       return;
     }
 
@@ -312,6 +312,24 @@ const CreateDishForm = () => {
       toast.error('Chỉ đơn vị đầu tiên có thể là mặc định');
       return;
     }
+  };
+
+  const handleToggleDefaultUnit = (ingredientIndex, unitIndex) => {
+    // First unit (gram) is always default and cannot be changed
+    if (unitIndex === 0) {
+      toast.error('Đơn vị gram luôn là mặc định');
+      return;
+    }
+
+    const currentUnits =
+      form.getValues(`ingredients.${ingredientIndex}.units`) || [];
+
+    const updatedUnits = currentUnits.map((unit, idx) => ({
+      ...unit,
+      isDefault: idx === unitIndex ? !unit.isDefault : unit.isDefault
+    }));
+
+    form.setValue(`ingredients.${ingredientIndex}.units`, updatedUnits);
   };
 
   const handleAddInstruction = () => {
@@ -948,7 +966,7 @@ const CreateDishForm = () => {
                                     )}
                                   />
 
-                                  {/* Unit Input - DISABLED for first unit only */}
+                                  {/* Unit Input - DISABLED for first unit (gram) only */}
                                   <FormField
                                     control={form.control}
                                     name={`ingredients.${ingredientIndex}.units.${unitIndex}.unit`}
@@ -966,19 +984,50 @@ const CreateDishForm = () => {
                                     )}
                                   />
 
-                                  {/* Default Badge for first unit */}
-                                  {unitIndex === 0 ? (
-                                    <Badge
-                                      variant='default'
-                                      className='h-8 whitespace-nowrap px-3'
-                                    >
-                                      Mặc định
-                                    </Badge>
-                                  ) : (
-                                    <div className='h-8 w-[88px]' />
-                                  )}
+                                  {/* Default Status */}
+                                  <FormField
+                                    control={form.control}
+                                    name={`ingredients.${ingredientIndex}.units.${unitIndex}.isDefault`}
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormControl>
+                                          {unitIndex === 0 ? (
+                                            // First unit (gram) is always default - show as badge
+                                            <Badge
+                                              variant='default'
+                                              className='h-8 whitespace-nowrap px-3'
+                                            >
+                                              Mặc định
+                                            </Badge>
+                                          ) : (
+                                            // Other units can toggle default status
+                                            <Button
+                                              type='button'
+                                              variant={
+                                                field.value
+                                                  ? 'default'
+                                                  : 'outline'
+                                              }
+                                              size='sm'
+                                              className='h-8 whitespace-nowrap px-3'
+                                              onClick={() =>
+                                                handleToggleDefaultUnit(
+                                                  ingredientIndex,
+                                                  unitIndex
+                                                )
+                                              }
+                                            >
+                                              {field.value
+                                                ? 'Mặc định'
+                                                : 'Chọn'}
+                                            </Button>
+                                          )}
+                                        </FormControl>
+                                      </FormItem>
+                                    )}
+                                  />
 
-                                  {/* Delete button - ONLY for non-default units */}
+                                  {/* Delete button - DISABLED for first unit (gram) */}
                                   {unitIndex > 0 ? (
                                     <Button
                                       type='button'

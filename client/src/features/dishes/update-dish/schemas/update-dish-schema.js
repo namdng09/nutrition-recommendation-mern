@@ -33,6 +33,13 @@ const ingredientSchema = yup.object({
     .array()
     .of(unitSchema)
     .min(1, 'Phải có ít nhất 1 đơn vị')
+    .test(
+      'has-default',
+      'Phải chọn ít nhất 1 đơn vị làm mặc định',
+      function (value) {
+        return value && value.some(unit => unit.isDefault === true);
+      }
+    )
     .optional()
 });
 
@@ -53,7 +60,7 @@ export const updateDishSchema = yup.object({
       )
     )
     .nullable()
-    .transform(value => value || []) // Transform null/undefined to empty array
+    .transform(value => value || [])
     .default([]),
   nutritionFocus: yup
     .array()
@@ -64,7 +71,7 @@ export const updateDishSchema = yup.object({
       )
     )
     .nullable()
-    .transform(value => value || []) // Transform null/undefined to empty array
+    .transform(value => value || [])
     .default([]),
   ingredients: yup
     .array()
@@ -117,7 +124,7 @@ export const NUTRITION_UNITS = {
   Kali: 'mg',
   Natri: 'mg',
   Kẽm: 'mg',
-  Đồng: 'μg',
+  Đồng: 'mg',
   Selen: 'μg',
   // Vitamins
   'Vitamin C': 'mg',
