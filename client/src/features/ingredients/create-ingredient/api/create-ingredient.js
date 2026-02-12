@@ -16,7 +16,7 @@ const createIngredient = async ({ data, image }) => {
   formData.append('description', data.description || '');
   formData.append('categories', JSON.stringify(data.categories || []));
   formData.append('baseUnit', JSON.stringify(data.baseUnit));
-  formData.append('units', JSON.stringify(data.units || []));
+  // XÓA units - backend không có field này
   formData.append('allergens', JSON.stringify(data.allergens || []));
   formData.append('nutrition', JSON.stringify(data.nutrition));
   formData.append('isActive', data.isActive ? 'true' : 'false');

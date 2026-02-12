@@ -1,16 +1,13 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { format } from 'date-fns';
-import { Calendar as CalendarIcon, Camera, LogOut, Save } from 'lucide-react';
+import { Camera, LogOut, Save, User } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { HiOutlineUserCircle } from 'react-icons/hi2';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
-import { Calendar } from '~/components/ui/calendar';
 import {
   Form,
   FormControl,
@@ -20,24 +17,11 @@ import {
   FormMessage
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '~/components/ui/popover';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '~/components/ui/select';
+import { Separator } from '~/components/ui/separator';
 import { Spinner } from '~/components/ui/spinner';
-import { GENDER_OPTIONS } from '~/constants/gender';
 import { useUpdateProfile } from '~/features/users/update-profile/api/update-profile';
 import { updateProfileSchema } from '~/features/users/update-profile/schemas/update-profile-schema';
 import { useProfileForPage } from '~/features/users/view-profile/api/view-profile';
-import { cn } from '~/lib/utils';
 import { logout } from '~/store/features/auth-slice';
 
 const Profile = () => {
@@ -89,123 +73,176 @@ const Profile = () => {
   };
 
   return (
-    <div className='px-4 sm:px-6'>
-      <div className='mb-4 flex items-center gap-2'>
-        <HiOutlineUserCircle className='h-7 w-7' />
-        <h1 className='text-2xl font-bold'>Hồ sơ cá nhân</h1>
-      </div>
-
-      <div className='flex flex-col gap-4 rounded-2xl border border-border bg-background p-5 shadow-sm md:flex-row md:items-center md:justify-between'>
-        <div className='flex items-center gap-4'>
-          <div className='relative'>
-            <div
-              className='relative cursor-pointer group'
-              onClick={handleAvatarClick}
-            >
-              <Avatar className='h-20 w-20 ring-1 ring-border'>
-                <AvatarImage
-                  src={avatarPreview || profile?.avatar}
-                  alt={profile?.name}
-                />
-                <AvatarFallback>
-                  <img
-                    src='/default-avatar.jpg'
-                    alt='Default avatar'
-                    className='h-full w-full object-cover'
-                  />
-                </AvatarFallback>
-              </Avatar>
-
-              <div className='absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-background border border-border flex items-center justify-center shadow-sm transition group-hover:bg-accent'>
-                <Camera className='h-4 w-4' />
-              </div>
+    <div className='w-full px-4 py-6 sm:px-6 lg:px-8'>
+      <div className='mx-auto max-w-4xl space-y-6'>
+        {/* Header */}
+        <div className='space-y-2'>
+          <div className='flex items-center gap-3'>
+            <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10'>
+              <User className='h-5 w-5 text-primary' />
             </div>
-
-            <input
-              ref={fileInputRef}
-              type='file'
-              accept='image/*'
-              className='hidden'
-              onChange={handleAvatarChange}
-            />
-
-            {isUpdating && (
-              <div className='absolute inset-0 flex items-center justify-center bg-background backdrop-blur-sm rounded-full'>
-                <Spinner />
-              </div>
-            )}
-          </div>
-
-          <div className='min-w-0'>
-            <h2 className='truncate text-xl font-bold'>{profile?.name}</h2>
-            <p className='truncate text-sm text-muted-foreground'>
-              {profile?.email}
-            </p>
+            <h1 className='text-2xl font-bold tracking-tight sm:text-3xl'>
+              Hồ sơ cá nhân
+            </h1>
           </div>
         </div>
 
-        <div className='flex items-center gap-2'>
-          <Button
-            size='sm'
-            onClick={form.handleSubmit(handleSave)}
-            disabled={isUpdating}
-            className='rounded-xl bg-primary text-primary-foreground hover:bg-primary/90'
-          >
-            {isUpdating ? (
-              <Spinner className='h-4 w-4 mr-1' />
-            ) : (
-              <Save className='h-4 w-4 mr-1' />
-            )}
-            Lưu
-          </Button>
+        {/* Form Card */}
+        <div className='overflow-hidden rounded-lg border bg-card shadow-sm'>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSave)}>
+              {/* Form Content */}
+              <div className='space-y-0'>
+                {/* Profile Section */}
+                <div className='p-6 space-y-6'>
+                  <div className='space-y-1'>
+                    <h3 className='text-base font-semibold'>
+                      Thông tin tài khoản
+                    </h3>
+                    <p className='text-sm text-muted-foreground'>
+                      Cập nhật ảnh đại diện và tên hiển thị của bạn
+                    </p>
+                  </div>
 
-          <Button
-            variant='destructive'
-            size='sm'
-            onClick={handleLogout}
-            className='rounded-xl'
-          >
-            <LogOut className='h-4 w-4 mr-1' />
-            Đăng xuất
-          </Button>
+                  <div className='grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-8'>
+                    {/* Left Column - Avatar */}
+                    <div className='flex lg:items-center lg:justify-center'>
+                      <div className='relative'>
+                        <div
+                          className='relative cursor-pointer group'
+                          onClick={handleAvatarClick}
+                        >
+                          <Avatar className='h-40 w-40 ring-4 ring-primary/10 transition-all group-hover:ring-primary/20'>
+                            <AvatarImage
+                              src={avatarPreview || profile?.avatar}
+                              alt={profile?.name}
+                              className='object-cover'
+                            />
+                            <AvatarFallback className='text-5xl font-semibold bg-primary/5 text-primary'>
+                              {profile?.name?.charAt(0)?.toUpperCase() || 'U'}
+                            </AvatarFallback>
+                          </Avatar>
+
+                          <div className='absolute -bottom-2 -right-2 h-12 w-12 rounded-full bg-background border-2 border-border flex items-center justify-center shadow-lg transition-all group-hover:bg-accent group-hover:scale-110'>
+                            <Camera className='h-5 w-5 text-primary' />
+                          </div>
+                        </div>
+
+                        <input
+                          ref={fileInputRef}
+                          type='file'
+                          accept='image/*'
+                          className='hidden'
+                          onChange={handleAvatarChange}
+                        />
+
+                        {isUpdating && (
+                          <div className='absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-full'>
+                            <Spinner className='h-8 w-8' />
+                          </div>
+                        )}
+
+                        <p className='mt-4 text-center text-xs text-muted-foreground'>
+                          Click để thay đổi ảnh đại diện
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Right Column - Form Fields */}
+                    <div className='space-y-5 min-w-0'>
+                      {/* Name */}
+                      <FormField
+                        control={form.control}
+                        name='name'
+                        render={({ field }) => (
+                          <FormItem className='grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3 sm:gap-4 items-start sm:items-center'>
+                            <FormLabel className='text-sm font-medium pt-2 sm:pt-0'>
+                              Họ và tên{' '}
+                              <span className='text-destructive'>*</span>
+                            </FormLabel>
+                            <div className='space-y-2'>
+                              <FormControl>
+                                <Input
+                                  placeholder='Nhập họ và tên'
+                                  className='rounded-xl border-border focus-visible:ring-primary'
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Email - Read Only */}
+                      <div className='grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3 sm:gap-4 items-start sm:items-center'>
+                        <label className='text-sm font-medium pt-2 sm:pt-0'>
+                          Email
+                        </label>
+                        <div className='space-y-2'>
+                          <div className='flex h-10 w-full rounded-xl border border-border bg-muted px-3 py-2 text-sm'>
+                            {profile?.email}
+                          </div>
+                          <p className='text-xs text-muted-foreground'>
+                            Email không thể thay đổi
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Role - Read Only */}
+                      <div className='grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3 sm:gap-4 items-start sm:items-center'>
+                        <label className='text-sm font-medium pt-2 sm:pt-0'>
+                          Vai trò
+                        </label>
+                        <div className='space-y-2'>
+                          <div className='inline-flex h-10 items-center rounded-xl border border-primary/20 bg-primary/5 px-4 text-sm font-medium text-primary'>
+                            {profile?.role}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+              </div>
+
+              {/* Footer */}
+              <div className='flex items-center justify-between gap-3 border-t bg-muted/30 px-6 py-4'>
+                <div className='flex items-center'>
+                  <Button
+                    type='button'
+                    variant='destructive'
+                    onClick={handleLogout}
+                    className='min-w-[140px] rounded-xl flex items-center justify-center'
+                  >
+                    <LogOut className='h-4 w-4 mr-2' />
+                    Đăng xuất
+                  </Button>
+                </div>
+
+                <Button
+                  type='submit'
+                  disabled={isUpdating}
+                  size='default'
+                  className='min-w-[140px]'
+                >
+                  {isUpdating ? (
+                    <>
+                      <Spinner className='h-4 w-4 mr-2' />
+                      Đang lưu...
+                    </>
+                  ) : (
+                    <>
+                      <Save className='h-4 w-4 mr-2' />
+                      Lưu thay đổi
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
         </div>
-      </div>
-
-      <div className='mt-6 rounded-2xl border border-border bg-background p-6 shadow-sm'>
-        <div className='mb-4'>
-          <h2 className='text-lg font-semibold'>Thông tin cá nhân</h2>
-          <p className='text-sm text-muted-foreground'>
-            Chỉnh sửa thông tin và bấm{' '}
-            <span className='font-semibold'>Lưu</span> để cập nhật
-          </p>
-        </div>
-
-        <Form {...form}>
-          <form className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6'>
-            <FormField
-              control={form.control}
-              name='name'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Họ và tên</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder='Nhập họ và tên'
-                      className='rounded-xl border-border focus-visible:ring-ring'
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className='space-y-1'>
-              <label className='text-sm font-medium'>Email</label>
-              <p className='text-sm py-2'>{profile?.email}</p>
-            </div>
-          </form>
-        </Form>
       </div>
     </div>
   );

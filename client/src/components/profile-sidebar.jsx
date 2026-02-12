@@ -2,6 +2,7 @@ import {
   Activity,
   Calendar,
   CircleOff,
+  Heart,
   LogOut,
   Target,
   User,
@@ -32,7 +33,7 @@ export function ProfileSidebar({ ...props }) {
 
   const navItems = [
     {
-      title: 'Tổng quan',
+      title: 'Thông tin cá nhân',
       url: '/profile',
       icon: User
     },
@@ -55,6 +56,11 @@ export function ProfileSidebar({ ...props }) {
       title: 'Chỉ số cơ thể',
       url: '/profile/physical-stats',
       icon: Activity
+    },
+    {
+      title: 'Danh sách Yêu thích',
+      url: '/profile/favorites',
+      icon: Heart
     },
     {
       title: 'Lịch trình bữa ăn',

@@ -91,6 +91,7 @@ const CollectionDetail = ({ id }) => {
         toast.success(response.message || 'Thêm món ăn thành công');
         setOpenDishPopover(false);
         setDishSearch('');
+        // Data will be automatically refetched via invalidateQueries
       },
       onError: error => {
         toast.error(error.response?.data?.message || 'Thêm món ăn thất bại');
@@ -101,6 +102,7 @@ const CollectionDetail = ({ id }) => {
     useRemoveDishesFromCollection({
       onSuccess: response => {
         toast.success(response.message || 'Xóa món ăn thành công');
+        // Data will be automatically refetched via invalidateQueries
       },
       onError: error => {
         toast.error(error.response?.data?.message || 'Xóa món ăn thất bại');
@@ -196,7 +198,6 @@ const CollectionDetail = ({ id }) => {
       currentTags.filter((_, idx) => idx !== index)
     );
   };
-
   const handleAddDish = dish => {
     addDishes({ id, dishIds: [dish._id] });
   };
@@ -404,8 +405,17 @@ const CollectionDetail = ({ id }) => {
                   onOpenChange={setOpenDishPopover}
                 >
                   <PopoverTrigger asChild>
-                    <Button type='button' variant='outline' size='sm'>
-                      <Plus className='h-4 w-4 mr-2' />
+                    <Button
+                      type='button'
+                      variant='outline'
+                      size='sm'
+                      disabled={isAddingDishes}
+                    >
+                      {isAddingDishes ? (
+                        <Spinner className='h-4 w-4 mr-2' />
+                      ) : (
+                        <Plus className='h-4 w-4 mr-2' />
+                      )}
                       Thêm món ăn
                     </Button>
                   </PopoverTrigger>
@@ -433,6 +443,7 @@ const CollectionDetail = ({ id }) => {
                                   value={dish.name}
                                   onSelect={() => handleAddDish(dish)}
                                   className='cursor-pointer'
+                                  disabled={isAddingDishes}
                                 >
                                   <div className='flex items-center gap-3 py-2 w-full'>
                                     {dish.image && (
@@ -491,8 +502,13 @@ const CollectionDetail = ({ id }) => {
                       variant='outline'
                       size='sm'
                       onClick={() => setOpenDishPopover(true)}
+                      disabled={isAddingDishes}
                     >
-                      <Plus className='h-4 w-4 mr-2' />
+                      {isAddingDishes ? (
+                        <Spinner className='h-4 w-4 mr-2' />
+                      ) : (
+                        <Plus className='h-4 w-4 mr-2' />
+                      )}
                       Thêm món ăn
                     </Button>
                   </CardContent>
@@ -514,9 +530,9 @@ const CollectionDetail = ({ id }) => {
                             <h4 className='font-medium truncate'>
                               {dish.name}
                             </h4>
-                            {dish.calories > 0 && (
+                            {dish.energy > 0 && (
                               <p className='text-xs text-muted-foreground mt-1'>
-                                {dish.calories} cal
+                                {dish.energy} kcal
                               </p>
                             )}
                             {dish.addedAt && (
@@ -535,7 +551,11 @@ const CollectionDetail = ({ id }) => {
                             onClick={() => handleRemoveDish(dish.dishId)}
                             disabled={isRemovingDishes}
                           >
-                            <Trash2 className='h-4 w-4 text-destructive' />
+                            {isRemovingDishes ? (
+                              <Spinner className='h-4 w-4' />
+                            ) : (
+                              <Trash2 className='h-4 w-4 text-destructive' />
+                            )}
                           </Button>
                         </div>
                       </CardContent>

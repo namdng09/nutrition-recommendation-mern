@@ -13,106 +13,62 @@ import { updateAllergensSchema } from '~/features/users/update-allergens/schemas
 import { useProfileForPage } from '~/features/users/view-profile/api/view-profile';
 import { cn } from '~/lib/utils';
 
-// Color mapping for allergen categories
+// Color mapping for allergen categories (chỉ dùng cho background)
 const ALLERGEN_CATEGORY_COLORS = {
   'Các thực phẩm dễ gây dị ứng phổ biến': {
     bg: 'bg-red-50',
-    border: 'border-red-200',
-    selectedBg: 'bg-red-100',
-    selectedBorder: 'border-red-500',
-    selectedText: 'text-red-700',
-    hoverBg: 'hover:bg-red-50',
-    hoverBorder: 'hover:border-red-300'
+    selectedBg: 'bg-red-50',
+    hoverBg: 'hover:bg-red-50'
   },
   'Các loại ngũ cốc có chứa gluten': {
     bg: 'bg-amber-50',
-    border: 'border-amber-200',
-    selectedBg: 'bg-amber-100',
-    selectedBorder: 'border-amber-500',
-    selectedText: 'text-amber-700',
-    hoverBg: 'hover:bg-amber-50',
-    hoverBorder: 'hover:border-amber-300'
+    selectedBg: 'bg-amber-50',
+    hoverBg: 'hover:bg-amber-50'
   },
   'Các loại hải sản và sản phẩm từ hải sản': {
     bg: 'bg-blue-50',
-    border: 'border-blue-200',
-    selectedBg: 'bg-blue-100',
-    selectedBorder: 'border-blue-500',
-    selectedText: 'text-blue-700',
-    hoverBg: 'hover:bg-blue-50',
-    hoverBorder: 'hover:border-blue-300'
+    selectedBg: 'bg-blue-50',
+    hoverBg: 'hover:bg-blue-50'
   },
   'Các loại hạt và hạt có dầu': {
     bg: 'bg-orange-50',
-    border: 'border-orange-200',
-    selectedBg: 'bg-orange-100',
-    selectedBorder: 'border-orange-500',
-    selectedText: 'text-orange-700',
-    hoverBg: 'hover:bg-orange-50',
-    hoverBorder: 'hover:border-orange-300'
+    selectedBg: 'bg-orange-50',
+    hoverBg: 'hover:bg-orange-50'
   },
   'Các loại thịt và sản phẩm từ thịt': {
     bg: 'bg-rose-50',
-    border: 'border-rose-200',
-    selectedBg: 'bg-rose-100',
-    selectedBorder: 'border-rose-500',
-    selectedText: 'text-rose-700',
-    hoverBg: 'hover:bg-rose-50',
-    hoverBorder: 'hover:border-rose-300'
+    selectedBg: 'bg-rose-50',
+    hoverBg: 'hover:bg-rose-50'
   },
   'Các loại trái cây': {
     bg: 'bg-pink-50',
-    border: 'border-pink-200',
-    selectedBg: 'bg-pink-100',
-    selectedBorder: 'border-pink-500',
-    selectedText: 'text-pink-700',
-    hoverBg: 'hover:bg-pink-50',
-    hoverBorder: 'hover:border-pink-300'
+    selectedBg: 'bg-pink-50',
+    hoverBg: 'hover:bg-pink-50'
   },
   'Các loại rau củ': {
     bg: 'bg-green-50',
-    border: 'border-green-200',
-    selectedBg: 'bg-green-100',
-    selectedBorder: 'border-green-500',
-    selectedText: 'text-green-700',
-    hoverBg: 'hover:bg-green-50',
-    hoverBorder: 'hover:border-green-300'
+    selectedBg: 'bg-green-50',
+    hoverBg: 'hover:bg-green-50'
   },
   'Các loại gia vị và thảo mộc': {
     bg: 'bg-emerald-50',
-    border: 'border-emerald-200',
-    selectedBg: 'bg-emerald-100',
-    selectedBorder: 'border-emerald-500',
-    selectedText: 'text-emerald-700',
-    hoverBg: 'hover:bg-emerald-50',
-    hoverBorder: 'hover:border-emerald-300'
+    selectedBg: 'bg-emerald-50',
+    hoverBg: 'hover:bg-emerald-50'
   },
   'Các loại đậu': {
     bg: 'bg-teal-50',
-    border: 'border-teal-200',
-    selectedBg: 'bg-teal-100',
-    selectedBorder: 'border-teal-500',
-    selectedText: 'text-teal-700',
-    hoverBg: 'hover:bg-teal-50',
-    hoverBorder: 'hover:border-teal-300'
+    selectedBg: 'bg-teal-50',
+    hoverBg: 'hover:bg-teal-50'
   },
   'Các loại nấm': {
     bg: 'bg-purple-50',
-    border: 'border-purple-200',
-    selectedBg: 'bg-purple-100',
-    selectedBorder: 'border-purple-500',
-    selectedText: 'text-purple-700',
-    hoverBg: 'hover:bg-purple-50',
-    hoverBorder: 'hover:border-purple-300'
+    selectedBg: 'bg-purple-50',
+    hoverBg: 'hover:bg-purple-50'
   },
   Khác: {
     bg: 'bg-gray-50',
-    border: 'border-gray-200',
-    selectedBg: 'bg-gray-100',
-    selectedBorder: 'border-gray-500',
-    selectedText: 'text-gray-700',
-    hoverBg: 'hover:bg-gray-50',
-    hoverBorder: 'hover:border-gray-300'
+    selectedBg: 'bg-gray-50',
+    hoverBg: 'hover:bg-gray-50'
   }
 };
 
@@ -160,9 +116,6 @@ export function UpdateAllergens() {
               Thực phẩm dị ứng
             </h1>
           </div>
-          <p className='text-sm text-muted-foreground sm:text-base'>
-            Chọn các loại thực phẩm bạn muốn loại bỏ khỏi thực đơn
-          </p>
         </div>
 
         {/* Form Card */}
@@ -172,9 +125,7 @@ export function UpdateAllergens() {
               {/* Form Content */}
               <div className='p-6'>
                 <div className='grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-8'>
-                  {/* Left Column - Avatar & Icon */}
-
-                  {/* Icon */}
+                  {/* Left Column - Icon */}
                   <div className='relative flex items-center justify-center'>
                     <OctagonAlert
                       size={140}
@@ -235,15 +186,13 @@ export function UpdateAllergens() {
                                           className={cn(
                                             'relative inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border-2',
                                             isSelected
-                                              ? `${colors.selectedBg} ${colors.selectedBorder} ${colors.selectedText} shadow-sm scale-[1.02]`
-                                              : `bg-background border-border text-foreground ${colors.hoverBg} ${colors.hoverBorder}`
+                                              ? `${colors.selectedBg} border-red-500 text-red-700 shadow-sm scale-[1.02]`
+                                              : `bg-background border-border text-foreground ${colors.hoverBg} hover:border-gray-300`
                                           )}
                                         >
                                           {option.label}
                                           {isSelected && (
-                                            <span className='ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-current text-white text-xs'>
-                                              ✓
-                                            </span>
+                                            <span className='ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-red-500 text-white text-xs'></span>
                                           )}
                                         </button>
                                       );

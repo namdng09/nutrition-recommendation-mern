@@ -11,14 +11,28 @@ const updateCollection = async ({ id, data, image }) => {
     formData.append('image', image);
   }
 
-  // Add other fields only if they exist
-  if (data.name !== undefined) formData.append('name', data.name);
-  if (data.description !== undefined)
-    formData.append('description', data.description || '');
-  if (data.isPublic !== undefined)
-    formData.append('isPublic', data.isPublic?.toString() || 'false');
-  if (data.tags !== undefined)
-    formData.append('tags', JSON.stringify(data.tags || []));
+  // Only add fields that are explicitly defined - EXCLUDE dishes
+  if (data.name !== undefined && data.name !== null) {
+    formData.append('name', data.name);
+  }
+
+  if (data.description !== undefined && data.description !== null) {
+    formData.append('description', data.description);
+  }
+
+  if (data.isPublic !== undefined && data.isPublic !== null) {
+    formData.append('isPublic', data.isPublic.toString());
+  }
+
+  if (data.tags !== undefined && data.tags !== null && data.tags.length > 0) {
+    formData.append('tags', JSON.stringify(data.tags));
+  }
+
+  // DEBUG: Log FormData
+  console.log('=== FormData being sent ===');
+  for (const [key, value] of formData.entries()) {
+    console.log(`${key}:`, value);
+  }
 
   const response = await apiClient.put(`/api/collections/${id}`, formData, {
     headers: {
@@ -42,6 +56,7 @@ export const useUpdateCollection = ({ onSuccess, onError } = {}) => {
       onSuccess?.(data);
     },
     onError: error => {
+      console.error('Update error:', error.response?.data || error);
       onError?.(error);
     }
   });

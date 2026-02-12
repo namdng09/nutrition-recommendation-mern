@@ -1,6 +1,6 @@
 export const NUTRITION_MINERAL = {
   CALCI: 'Calci',
-  SAT: 'Såt',
+  SAT: 'Sắt',
   MAGIE: 'Magiê',
   MANGAN: 'Mangan',
   PHOSPHO: 'Phospho',

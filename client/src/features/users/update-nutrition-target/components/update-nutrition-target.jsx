@@ -210,10 +210,6 @@ export function UpdateNutritionTarget() {
               Mục tiêu dinh dưỡng
             </h1>
           </div>
-          <p className='text-sm text-muted-foreground sm:text-base'>
-            Chúng tôi sẽ điều chỉnh mục tiêu dinh dưỡng hàng ngày phù hợp với
-            mục tiêu của bạn
-          </p>
         </div>
 
         {/* Form Card */}
