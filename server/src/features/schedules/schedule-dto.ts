@@ -28,32 +28,36 @@ const parseJSON = (val: any) => {
 const scheduleDishSchema = z.object({
   dishId: z.string().trim().optional(),
   name: z.string().trim().min(1, 'Tên món ăn là bắt buộc'),
-  calories: z.coerce.number().min(0).optional(),
-  servings: z.coerce.number().min(0).optional(),
+  calories: z.coerce
+    .number()
+    .min(0, 'Calo phải lớn hơn hoặc bằng 0')
+    .optional(),
+  servings: z.coerce
+    .number()
+    .min(0, 'Số khẩu phần phải lớn hơn hoặc bằng 0')
+    .optional(),
   image: z.string().trim().optional(),
   isEaten: z.coerce.boolean().optional()
 });
 
 const scheduleMealSchema = z.object({
-  mealType: z.enum(Object.values(MEAL_TYPE), { message: 'Invalid meal type' }),
+  mealType: z.enum(Object.values(MEAL_TYPE), 'Loại bữa ăn không hợp lệ'),
   notes: z.string().trim().optional(),
   dishes: z.preprocess(parseJSON, z.array(scheduleDishSchema)).optional()
 });
 
 export const createScheduleRequestSchema = z.object({
-  date: z.coerce.date(),
-  dayOfWeek: z.enum(Object.values(DAY_OF_WEEK), {
-    message: 'Invalid day of week'
-  })
+  date: z.coerce.date('Định dạng ngày không hợp lệ'),
+  dayOfWeek: z.enum(Object.values(DAY_OF_WEEK), 'Ngày trong tuần không hợp lệ')
 });
 
 export type CreateScheduleRequest = z.infer<typeof createScheduleRequestSchema>;
 
 export const updateScheduleRequestSchema = z.object({
-  date: z.coerce.date().optional(),
+  date: z.coerce.date('Định dạng ngày không hợp lệ').optional(),
   notes: z.coerce.string().optional(),
   dayOfWeek: z
-    .enum(Object.values(DAY_OF_WEEK), { message: 'Invalid day of week' })
+    .enum(Object.values(DAY_OF_WEEK), 'Ngày trong tuần không hợp lệ')
     .optional(),
   meals: z.preprocess(parseJSON, z.array(scheduleMealSchema)).optional()
 });
@@ -61,15 +65,18 @@ export const updateScheduleRequestSchema = z.object({
 export type UpdateScheduleRequest = z.infer<typeof updateScheduleRequestSchema>;
 
 const scheduleMealUpdateSchema = z.object({
-  mealType: z.enum(Object.values(MEAL_TYPE), { message: 'Invalid meal type' }),
+  mealType: z.enum(Object.values(MEAL_TYPE), 'Loại bữa ăn không hợp lệ'),
   notes: z.string().trim().optional(),
   dishes: z
     .preprocess(
       parseJSON,
       z.array(
         z.object({
-          dishId: z.string().trim().min(1, 'Dish ID is required'),
-          servings: z.coerce.number().min(0).optional(),
+          dishId: z.string('ID món ăn là bắt buộc').trim(),
+          servings: z.coerce
+            .number()
+            .min(0, 'Số khẩu phần phải lớn hơn hoặc bằng 0')
+            .optional(),
           isEaten: z.coerce.boolean().optional()
         })
       )
