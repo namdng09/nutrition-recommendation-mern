@@ -36,8 +36,7 @@ const ingredientItemSchema = z.object({
     .string({ message: 'ID nguyên liệu không hợp lệ' })
     .trim()
     .min(1),
-  isPurchased: z.preprocess(parseBoolean, z.coerce.boolean()).optional(),
-  notes: z.string().trim().optional()
+  isPurchased: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
 });
 
 export const createGroceryRequestSchema = z.object({
@@ -57,7 +56,10 @@ export const updateGroceryRequestSchema = z.object({
     .min(2, 'Tên danh sách mua sắm phải có ít nhất 2 ký tự')
     .optional(),
   date: z.preprocess(parseJSON, z.array(dateSchema)).optional(),
-  ingredients: z.preprocess(parseJSON, z.array(ingredientItemSchema)).optional()
+  ingredients: z
+    .preprocess(parseJSON, z.array(ingredientItemSchema))
+    .optional(),
+  notes: z.string().trim().optional()
 });
 
 export type UpdateGroceryRequest = z.infer<typeof updateGroceryRequestSchema>;
@@ -87,8 +89,7 @@ export type RemoveIngredientsRequest = z.infer<
 >;
 
 export const updateIngredientInGrocerySchema = z.object({
-  isPurchased: z.preprocess(parseBoolean, z.coerce.boolean()).optional(),
-  notes: z.string().trim().optional()
+  isPurchased: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
 });
 
 export type UpdateIngredientInGroceryRequest = z.infer<

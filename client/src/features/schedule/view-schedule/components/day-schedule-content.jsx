@@ -86,7 +86,7 @@ export default function DayScheduleContent({
                         </h4>
                         <div className='flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground'>
                           <HiFire className='text-destructive' size={14} />
-                          <span>{dish.calories} kcal</span>
+                          <span>{dish.energy} kcal</span>
                         </div>
                       </div>
                     </Link>
