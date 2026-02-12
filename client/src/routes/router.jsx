@@ -116,6 +116,10 @@ const router = createBrowserRouter([
               {
                 path: 'food-allergies',
                 Component: lazy(() => import('~/app/profile/allergens/page'))
+              },
+              {
+                path: 'favorites',
+                Component: lazy(() => import('~/app/profile/favorites/page'))
               }
             ]
           }
