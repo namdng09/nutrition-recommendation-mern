@@ -18,6 +18,10 @@ export const getRefreshTokenErrorCode = error => {
     return REFRESH_TOKEN_ERROR.INVALID;
   }
 
+  if (status === 404) {
+    return REFRESH_TOKEN_ERROR.INVALID;
+  }
+
   if (status === 400 && message.includes('invalid')) {
     return REFRESH_TOKEN_ERROR.INVALID;
   }

@@ -57,6 +57,6 @@ export const verifyToken = (
     if (error instanceof jwt.TokenExpiredError) {
       throw createHttpError(401, 'Token expired');
     }
-    throw new Error(error instanceof Error ? error.message : 'Invalid token');
+    throw createHttpError(401, 'Invalid token');
   }
 };
