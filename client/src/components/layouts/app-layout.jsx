@@ -35,7 +35,8 @@ const AppLayout = () => {
     user &&
     !user.hasOnboarded &&
     location.pathname !== '/onboarding' &&
-    user.role !== ROLE.ADMIN
+    user.role !== ROLE.ADMIN &&
+    user.role !== ROLE.NUTRITIONIST
   ) {
     return <Navigate to='/onboarding' replace />;
   }

@@ -15,14 +15,7 @@ import NutritionDetailSection from './nutrition-detail-section';
 
 export default function IngredientNutritionModal({ open, onClose, nutrition }) {
   if (!open) return null;
-
-  const macroNutrients = nutrition?.nutrients
-    ? Object.entries(nutrition.nutrients).map(([key, val]) => ({
-        label: key,
-        value: val.value,
-        unit: val.unit
-      }))
-    : [];
+  const macroNutrients = nutrition?.nutrients || [];
 
   const config = {
     'Thành phần chính': {
@@ -48,10 +41,7 @@ export default function IngredientNutritionModal({ open, onClose, nutrition }) {
   const sections = [
     { title: 'Thành phần chính', data: macroNutrients },
     { title: 'Vitamin', data: nutrition?.vitamins },
-    { title: 'Khoáng chất', data: nutrition?.minerals },
-    { title: 'Đường', data: nutrition?.sugars },
-    { title: 'Chất béo', data: nutrition?.fats },
-    { title: 'Amino acids', data: nutrition?.aminoAcids }
+    { title: 'Khoáng chất', data: nutrition?.minerals }
   ];
 
   return (

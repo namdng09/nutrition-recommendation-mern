@@ -4,7 +4,7 @@
     "name": "API Documentation",
     "description": "API Documentation collection.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "51830864",
+    "_exporter_id": "51829783",
     "_collection_link": "https://go.postman.co/collection/51829783-076295bd-635b-4369-ada8-768d79f391bc?source=collection_link"
   },
   "item": [
@@ -2023,43 +2023,6 @@
           "response": []
         },
         {
-          "name": "Get dish nutrition detail",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{host}}/api/dishes/:id/detail-nutrition",
-              "host": [
-                "{{host}}"
-              ],
-              "path": [
-                "api",
-                "dishes",
-                ":id",
-                "detail-nutrition"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "697af279fb1ede566b2a2de4"
-                }
-              ]
-            },
-            "description": "## Get dish detail\n\nRetrieve the detailed information for a single dish by its identifier.\n\n- **Method:** `GET`\n    \n- **URL:** `{{host}}/api/dishes/:id/`\n    \n- **Purpose:** Return all available details for a specific dish (e.g., name, description, price, nutritional info, tags, etc.).\n    \n\n---\n\n### Authentication\n\nThis endpoint requires authentication.\n\n- Typically sent as a Bearer token:\n    \n    - Header: `Authorization: Bearer {{token}}`\n        \n- The `{{token}}` variable is expected to be defined in the active environment (e.g., **Production**).\n    \n\nIf no valid token is provided, the API is expected to return an authentication error (commonly `401 Unauthorized` or `403 Forbidden`).\n\n---\n\n### Path variables\n\n- `id` (required, string or number)  \n    The unique identifier of the dish to retrieve.\n    \n\nIn Postman, this is configured as a path variable:\n\n- `:id` in the URL is mapped to the `id` variable.\n    \n- You can set it in the **Path Variables** section or in the URL field where `:id` appears.\n    \n\nExample:\n\n- `id = 123`\n    \n- Final URL: `{{host}}/api/dishes/123/`\n    \n\n---\n\n### Variables\n\n- `{{host}}`  \n    Base URL of the API (e.g., `https://api.example.com`).  \n    Usually configured as a global or environment variable.\n    \n- `{{id}}`  \n    The value used for the `:id` path variable.  \n    Set this to the dish ID you want to fetch.\n    \n- `{{token}}`  \n    Authentication token used in the `Authorization` header.  \n    Should be stored in the active environment for security.\n    \n\n---\n\n### Request headers (typical)\n\nGET {{host}}/api/dishes/:id/ HTTP/1.1  \nAuthorization: Bearer {token}  \nAccept: application/json"
-          },
-          "response": []
-        },
-        {
           "name": "Create dish",
           "request": {
             "auth": {
@@ -2075,76 +2038,13 @@
             "method": "POST",
             "header": [],
             "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "name",
-                  "value": " Cơm gà test create",
-                  "type": "text"
-                },
-                {
-                  "key": "description",
-                  "value": " Món chính dễ làm",
-                  "type": "text"
-                },
-                {
-                  "key": "categories",
-                  "value": " [\"Món chính\",\"Bữa sáng\"]",
-                  "type": "text"
-                },
-                {
-                  "key": "ingredients",
-                  "value": " [{\"ingredientId\":\"69870c61f68911d201229a35\",\"units\":[{\"value\":100,\"quantity\":1,\"unit\":\"g\",\"isDefault\":true}]},{\"ingredientId\":\"69870c61f68911d201229a35\",\"units\":[{\"value\":100,\"quantity\":1,\"unit\":\"g\",\"isDefault\":true}]},{\"ingredientId\":\"69870c61f68911d201229a35\",\"units\":[{\"value\":100,\"quantity\":1,\"unit\":\"g\",\"isDefault\":true}]}]",
-                  "type": "text"
-                },
-                {
-                  "key": "instructions",
-                  "value": "[{\"step\":1,\"description\":\"Chuẩn bị nguyên liệu: gạo, thịt gà (đùi/ức), gừng, hành tím/tỏi (tuỳ chọn), hành lá. Rửa gừng, hành lá; gừng thái lát, hành lá cắt khúc.\"},{\"step\":2,\"description\":\"Sơ chế gà: chà muối lên gà rồi rửa lại, để ráo. Ướp gà với muối + tiêu (có thể thêm chút nước mắm/hành tỏi băm) trong 15–20 phút.\"},{\"step\":3,\"description\":\"Vo và để ráo gạo: vo 1–2 lần cho sạch, để ráo 5 phút. (Tuỳ chọn) rang/đảo gạo với chút dầu cho hạt gạo bóng thơm.\"},{\"step\":4,\"description\":\"Xào gà và gạo: phi thơm hành tỏi (tuỳ chọn), cho gà vào đảo/áp chảo đến khi săn. Cho gạo vào đảo cùng 1–2 phút, thêm gừng để dậy mùi.\"},{\"step\":5,\"description\":\"Nấu cơm: đổ tất cả vào nồi cơm điện, thêm nước hoặc nước luộc gà theo tỉ lệ 1 gạo : 1–1.2 nước (tuỳ loại gạo). Bấm nấu đến khi chín, ủ thêm 10 phút, xới tơi. Rắc hành lá và tiêu trước khi ăn.\"}]",
-                  "type": "text"
-                },
-                {
-                  "key": "preparationTime",
-                  "value": "10",
-                  "type": "text"
-                },
-                {
-                  "key": "cookTime",
-                  "value": " 20",
-                  "type": "text"
-                },
-                {
-                  "key": "servings",
-                  "value": " 2",
-                  "type": "text"
-                },
-                {
-                  "key": "tags",
-                  "value": " [\"nhanh\",\"dễ làm\"]",
-                  "type": "text"
-                },
-                {
-                  "key": "isActive",
-                  "value": "true",
-                  "type": "text"
-                },
-                {
-                  "key": "isPublic",
-                  "value": "true",
-                  "type": "text"
-                },
-                {
-                  "key": "nutritionFocus",
-                  "value": "nutritionFocus",
-                  "type": "text",
-                  "uuid": "5bfb2b5c-ff7a-47cc-8743-68ea63d2c64f"
-                },
-                {
-                  "key": "image",
-                  "type": "file",
-                  "uuid": "acff2656-3644-4fdf-b15f-017236a1bd57",
-                  "src": "postman-cloud:///1f0fcd51-e943-4b70-b16e-9c4861d70163"
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Gà xào rau củ\",\n    \"description\": \"Món chính giàu protein, dễ làm\",\n    \"categories\": [\n        \"Món chính\"\n    ],\n    \"ingredients\": [\n        {\n            \"ingredientId\": \"698a9db2a93bf9c19e001d4d\",\n            \"units\": [\n                {\n                    \"quantity\": 80,\n                    \"unit\": \"g\",\n                    \"isDefault\": true\n                },\n                {\n                    \"quantity\": 1,\n                    \"unit\": \"củ\",\n                    \"isDefault\": false\n                }\n            ]\n        },\n        {\n            \"ingredientId\": \"698aa5ce65ab754ef40d36e0\",\n            \"units\": [\n                {\n                    \"quantity\": 200,\n                    \"unit\": \"g\",\n                    \"isDefault\": true\n                },\n                {\n                    \"quantity\": 1,\n                    \"unit\": \"nửa con\",\n                    \"isDefault\": false\n                }\n            ]\n        }\n    ],\n    \"instructions\": [\n        {\n            \"step\": 1,\n            \"description\": \"Sơ chế nguyên liệu.\"\n        },\n        {\n            \"step\": 2,\n            \"description\": \"Xào gà chín tới.\"\n        },\n        {\n            \"step\": 3,\n            \"description\": \"Thêm rau củ, nêm nếm và hoàn thành.\"\n        }\n    ],\n    \"nutrition\": {\n        \"nutrients\": [\n            {\n                \"label\": \"Năng lượng\",\n                \"value\": 420,\n                \"unit\": \"kcal\"\n            },\n            {\n                \"label\": \"Nước\",\n                \"value\": 300,\n                \"unit\": \"ml\"\n            },\n            {\n                \"label\": \"Protein\",\n                \"value\": 35,\n                \"unit\": \"g\"\n            },\n            {\n                \"label\": \"Chất béo\",\n                \"value\": 18,\n                \"unit\": \"g\"\n            },\n            {\n                \"label\": \"Tinh bột\",\n                \"value\": 25,\n                \"unit\": \"g\"\n            },\n            {\n                \"label\": \"Chất xơ\",\n                \"value\": 4,\n                \"unit\": \"g\"\n            },\n            {\n                \"label\": \"Tro\",\n                \"value\": 2,\n                \"unit\": \"g\"\n            },\n            {\n                \"label\": \"Đường\",\n                \"value\": 6,\n                \"unit\": \"g\"\n            },\n            {\n                \"label\": \"Cholesterol\",\n                \"value\": 90,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Phytosterol\",\n                \"value\": 8,\n                \"unit\": \"mg\"\n            }\n        ],\n        \"minerals\": [\n            {\n                \"label\": \"Calci\",\n                \"value\": 40,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Såt\",\n                \"value\": 1.8,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Magiê\",\n                \"value\": 28,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Mangan\",\n                \"value\": 0.2,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Phospho\",\n                \"value\": 210,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Kali\",\n                \"value\": 520,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Natri\",\n                \"value\": 480,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Kẽm\",\n                \"value\": 2.2,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Đồng\",\n                \"value\": 0.1,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Selen\",\n                \"value\": 20,\n                \"unit\": \"μg\"\n            }\n        ],\n        \"vitamins\": [\n            {\n                \"label\": \"Vitamin C\",\n                \"value\": 18,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Vitamin B1\",\n                \"value\": 0.1,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Vitamin B2\",\n                \"value\": 0.15,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Vitamin PP\",\n                \"value\": 4.2,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Vitamin B5\",\n                \"value\": 0.6,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Vitamin B6\",\n                \"value\": 0.4,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Folat\",\n                \"value\": 45,\n                \"unit\": \"μg\"\n            },\n            {\n                \"label\": \"Vitamin B9\",\n                \"value\": 45,\n                \"unit\": \"μg\"\n            },\n            {\n                \"label\": \"Vitamin H\",\n                \"value\": 6,\n                \"unit\": \"μg\"\n            },\n            {\n                \"label\": \"Vitamin B12\",\n                \"value\": 0.8,\n                \"unit\": \"μg\"\n            },\n            {\n                \"label\": \"Vitamin A\",\n                \"value\": 250,\n                \"unit\": \"μg\"\n            },\n            {\n                \"label\": \"Vitamin D\",\n                \"value\": 20,\n                \"unit\": \"IU\"\n            },\n            {\n                \"label\": \"Vitamin E\",\n                \"value\": 2.5,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Vitamin K\",\n                \"value\": 30,\n                \"unit\": \"μg\"\n            }\n        ]\n    },\n    \"preparationTime\": 15,\n    \"cookTime\": 20,\n    \"servings\": 2,\n    \"tags\": [\n        \"nhanh\",\n        \"ít dầu\"\n    ],\n    \"isActive\": true,\n    \"isPublic\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
                 }
-              ]
+              }
             },
             "url": {
               "raw": "{{host}}/api/dishes/",
@@ -2262,6 +2162,53 @@
                 {
                   "key": "id",
                   "value": "69856ac604e12fbe21f34adf"
+                }
+              ]
+            },
+            "description": "Retrieve a paginated list of dishes. Supports filtering and pagination via query parameters.\n\nMethod & URL\n\n**GET** `{{host}}/api/dishes/`\n\nAuthentication\n\nThis endpoint requires authentication with a Bearer token.\n\n**Header:** Authorization: Bearer {token}"
+          },
+          "response": []
+        },
+        {
+          "name": "Update dish (image)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "acff2656-3644-4fdf-b15f-017236a1bd57",
+                  "src": "postman-cloud:///1f0fcd51-e943-4b70-b16e-9c4861d70163"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/dishes/:id",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "dishes",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "698aa72e1a9ab98a6fcd7903"
                 }
               ]
             },
@@ -2393,50 +2340,8 @@
               }
             ],
             "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "name",
-                  "value": "Cà rốt",
-                  "type": "text"
-                },
-                {
-                  "key": "description",
-                  "value": "Rau củ tươi",
-                  "type": "text"
-                },
-                {
-                  "key": "categories",
-                  "value": "[\"Rau củ\",\"Trái cây\"]",
-                  "type": "text"
-                },
-                {
-                  "key": "baseUnit",
-                  "value": "{\"amount\":100,\"unit\":\"g\"}",
-                  "type": "text"
-                },
-                {
-                  "key": "units",
-                  "value": "[{\"value\":1,\"unit\":\"củ\",\"isDefault\":true},{\"value\":0.5,\"unit\":\"cốc\",\"isDefault\":false}]",
-                  "type": "text"
-                },
-                {
-                  "key": "isActive",
-                  "value": "true",
-                  "type": "text"
-                },
-                {
-                  "key": "nutrition",
-                  "value": "{\"nutrients\":{\"calories\":{\"value\":41,\"unit\":\"kcal\"},\"carbs\":{\"value\":9.6,\"unit\":\"g\"},\"fat\":{\"value\":0.2,\"unit\":\"g\"},\"protein\":{\"value\":0.9,\"unit\":\"g\"},\"fiber\":{\"value\":2.8,\"unit\":\"g\"},\"sodium\":{\"value\":69,\"unit\":\"mg\"},\"cholesterol\":{\"value\":0,\"unit\":\"mg\"}},\"minerals\":[{\"label\":\"Alpha carotene\",\"value\":\"0\",\"unit\":\"μg\"},{\"label\":\"Magnesium\",\"value\":\"6\",\"unit\":\"g\"}],\"vitamins\":[{\"label\":\"Vitamin A\",\"value\":\"80\",\"unit\":\"μg\"},{\"label\":\"Vitamin B6\",\"value\":\"0.1\",\"unit\":\"mg\"}],\"sugars\":[{\"label\":\"Sugar\",\"value\":\"0.2\",\"unit\":\"g\"},{\"label\":\"Sucrose\",\"value\":\"0\",\"unit\":\"g\"}],\"fats\":[{\"label\":\"Saturated fats\",\"value\":\"1.6\",\"unit\":\"g\"},{\"label\":\"Monounsaturated fats\",\"value\":\"1.8\",\"unit\":\"g\"}],\"fattyAcids\":[{\"label\":\"Total omega 3\",\"value\":\"1.6\",\"unit\":\"g\"},{\"label\":\"Alpha Linolenic Acid (ALA)\",\"value\":\"1.8\",\"unit\":\"g\"}],\"aminoAcids\":[{\"label\":\"Alanine\",\"value\":\"1.6\",\"unit\":\"g\"},{\"label\":\"Aspartic acid\",\"value\":\"1.8\",\"unit\":\"g\"}]}",
-                  "type": "text"
-                },
-                {
-                  "key": "image",
-                  "type": "file",
-                  "uuid": "a0d00a30-2859-40c3-bbd7-b4b52de302e9",
-                  "src": "/home/namdng09/SP26/image/1915_mamarouf_35617191-f11c-4d8b-840b-9a44b68d8511.jpg"
-                }
-              ]
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Cà rốt\",\n    \"description\": \"Cà rốt tươi\",\n    \"categories\": [\n        \"Rau củ\"\n    ],\n    \"baseUnit\": {\n        \"amount\": 100,\n        \"unit\": \"g\"\n    },\n    \"allergens\": [\n        \"Cần tây\"\n    ],\n    \"nutrition\": {\n        \"nutrients\": [\n            {\n                \"label\": \"Năng lượng\",\n                \"value\": 41,\n                \"unit\": \"kcal\"\n            },\n            {\n                \"label\": \"Nước\",\n                \"value\": 88.3,\n                \"unit\": \"ml\"\n            },\n            {\n                \"label\": \"Protein\",\n                \"value\": 0.9,\n                \"unit\": \"g\"\n            },\n            {\n                \"label\": \"Chất béo\",\n                \"value\": 0.2,\n                \"unit\": \"g\"\n            },\n            {\n                \"label\": \"Tinh bột\",\n                \"value\": 9.6,\n                \"unit\": \"g\"\n            },\n            {\n                \"label\": \"Chất xơ\",\n                \"value\": 2.8,\n                \"unit\": \"g\"\n            },\n            {\n                \"label\": \"Tro\",\n                \"value\": 1.0,\n                \"unit\": \"g\"\n            },\n            {\n                \"label\": \"Đường\",\n                \"value\": 4.7,\n                \"unit\": \"g\"\n            },\n            {\n                \"label\": \"Cholesterol\",\n                \"value\": 0,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Phytosterol\",\n                \"value\": 3,\n                \"unit\": \"mg\"\n            }\n        ],\n        \"minerals\": [\n            {\n                \"label\": \"Calci\",\n                \"value\": 33,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Såt\",\n                \"value\": 0.3,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Magiê\",\n                \"value\": 12,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Mangan\",\n                \"value\": 0.1,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Phospho\",\n                \"value\": 35,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Kali\",\n                \"value\": 320,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Natri\",\n                \"value\": 69,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Kẽm\",\n                \"value\": 0.2,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Đồng\",\n                \"value\": 0.05,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Selen\",\n                \"value\": 0.1,\n                \"unit\": \"mg\"\n            }\n        ],\n        \"vitamins\": [\n            {\n                \"label\": \"Vitamin C\",\n                \"value\": 5.9,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Vitamin B1\",\n                \"value\": 0.07,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Vitamin B2\",\n                \"value\": 0.06,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Vitamin PP\",\n                \"value\": 1.0,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Vitamin B5\",\n                \"value\": 0.3,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Vitamin B6\",\n                \"value\": 0.1,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Folat\",\n                \"value\": 19,\n                \"unit\": \"μg\"\n            },\n            {\n                \"label\": \"Vitamin B9\",\n                \"value\": 19,\n                \"unit\": \"μg\"\n            },\n            {\n                \"label\": \"Vitamin H\",\n                \"value\": 0.2,\n                \"unit\": \"μg\"\n            },\n            {\n                \"label\": \"Vitamin B12\",\n                \"value\": 0,\n                \"unit\": \"μg\"\n            },\n            {\n                \"label\": \"Vitamin A\",\n                \"value\": 835,\n                \"unit\": \"μg\"\n            },\n            {\n                \"label\": \"Vitamin D\",\n                \"value\": 0,\n                \"unit\": \"IU\"\n            },\n            {\n                \"label\": \"Vitamin E\",\n                \"value\": 0.7,\n                \"unit\": \"mg\"\n            },\n            {\n                \"label\": \"Vitamin K\",\n                \"value\": 13.2,\n                \"unit\": \"μg\"\n            }\n        ]\n    },\n    \"isActive\": true\n}"
             },
             "url": {
               "raw": "{{host}}/api/ingredients/",
@@ -2469,13 +2374,8 @@
             "method": "PUT",
             "header": [],
             "body": {
-              "mode": "raw",
-              "raw": "{\"name\": \"Updated Ingredient\",\"unit\": \"ml\",\"caloriesPerUnit\": 45,\"status\": \"INACTIVE\"}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "mode": "formdata",
+              "formdata": []
             },
             "url": {
               "raw": "{{host}}/api/ingredients/:id/",
@@ -2492,6 +2392,54 @@
                 {
                   "key": "id",
                   "value": "6985f654c9ff126900bd9437"
+                }
+              ]
+            },
+            "description": "Generated from cURL: curl --location --request PUT '{{host}}/api/ingredients/:id/' --header 'Authorization: Bearer {{token}}' --header 'Content-Type: application/json' --data '{\"name\": \"Updated Ingredient\",\"unit\": \"ml\",\"caloriesPerUnit\": 45,\"status\": \"INACTIVE\"}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Update ingredient (image)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "6e26028f-20a4-4630-b9f7-7b64f0aed502",
+                  "src": "/home/namdng09/Screenshots/Screenshot_2026-01-24_20.09.27.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/api/ingredients/:id/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "ingredients",
+                ":id",
+                ""
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "698a9db2a93bf9c19e001d4d"
                 }
               ]
             },
@@ -3183,7 +3131,8 @@
                   "key": "name",
                   "value": "Danh sách mua sắm tuần này",
                   "type": "text",
-                  "uuid": "d0b1b9cd-1cab-4fd5-933a-39c3f1cf202c"
+                  "uuid": "d0b1b9cd-1cab-4fd5-933a-39c3f1cf202c",
+                  "disabled": true
                 },
                 {
                   "key": "date",
@@ -3195,19 +3144,22 @@
                   "key": "status",
                   "value": "Đang hoạt động",
                   "type": "text",
-                  "uuid": "fe018678-3962-49d9-aa61-a90c35d6ef8c"
+                  "uuid": "fe018678-3962-49d9-aa61-a90c35d6ef8c",
+                  "disabled": true
                 },
                 {
                   "key": "ingredients",
                   "value": " [\n  {\n    \"ingredientId\": \"6986e7490fdc473fc4f11e6b\",\n    \"quantity\": 500,\n    \"isPurchased\": false,\n    \"notes\": \"Mua loại tươi\"\n  },\n  {\n    \"ingredientId\": \"6986e7490fdc473fc4f11e6b\",\n    \"quantity\": 300,\n    \"isPurchased\": true\n  },\n  {\n    \"ingredientId\": \"6986e7490fdc473fc4f11e6b\",\n    \"quantity\": 1000\n  }\n]",
                   "type": "text",
-                  "uuid": "a90e2f82-735d-4b2f-9026-bb3991f848b4"
+                  "uuid": "a90e2f82-735d-4b2f-9026-bb3991f848b4",
+                  "disabled": true
                 },
                 {
                   "key": "notes",
                   "value": "Mua sáng thứ 7",
                   "type": "text",
-                  "uuid": "bb56a5f9-d606-41ad-bd95-8a717b6fe8ff"
+                  "uuid": "bb56a5f9-d606-41ad-bd95-8a717b6fe8ff",
+                  "disabled": true
                 }
               ]
             },

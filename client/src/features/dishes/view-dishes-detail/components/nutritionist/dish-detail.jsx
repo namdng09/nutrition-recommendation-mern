@@ -59,9 +59,9 @@ import DeleteDishDialog from '~/features/dishes/delete-dish/components/nutrition
 import { useUpdateDish } from '~/features/dishes/update-dish/api/update-dish';
 import {
   DISH_CATEGORY_OPTIONS,
-  UNIT_OPTIONS,
   updateDishSchema
 } from '~/features/dishes/update-dish/schemas/update-dish-schema';
+import { NUTRITION_FOCUS_OPTIONS } from '~/features/dishes/update-dish/schemas/update-dish-schema';
 import { useDishesDetail } from '~/features/dishes/view-dishes-detail/api/view-dishes-detail';
 import { useIngredients } from '~/features/ingredients/view-ingredients/api/view-ingredient';
 
@@ -105,23 +105,27 @@ const DishDetail = ({ id }) => {
           name: dish.name || '',
           description: dish.description || '',
           categories: dish.categories || [],
+          nutritionFocus: Array.isArray(dish.nutritionFocus)
+            ? dish.nutritionFocus
+            : [], // FIX: Ensure it's always an array
           ingredients:
             dish.ingredients?.map(ing => ({
               ingredientId: ing.ingredientId,
-              units: ing.units || []
+              units: Array.isArray(ing.units) ? ing.units : [] // FIX: Ensure units is array
             })) || [],
-          instructions: dish.instructions || [],
+          instructions: Array.isArray(dish.instructions)
+            ? dish.instructions
+            : [], // FIX: Ensure it's always an array
           preparationTime: dish.preparationTime || 0,
           cookTime: dish.cookTime || 0,
           servings: dish.servings || 1,
-          tags: dish.tags || [],
+          tags: Array.isArray(dish.tags) ? dish.tags : [], // FIX: Ensure it's always an array
           image: dish.image || '',
           isActive: dish.isActive?.toString() || 'true',
           isPublic: dish.isPublic?.toString() || 'false'
         }
       : undefined
   });
-
   const {
     fields: ingredientFields,
     append: appendIngredient,
@@ -169,41 +173,81 @@ const DishDetail = ({ id }) => {
   };
 
   const handleSave = data => {
+    // Validate at least one default unit per ingredient
+    const hasInvalidIngredient = data.ingredients.some(
+      ing => !ing.units.some(unit => unit.isDefault)
+    );
+
+    if (hasInvalidIngredient) {
+      toast.error('Mỗi nguyên liệu phải có ít nhất 1 đơn vị mặc định');
+      return;
+    }
+
     const processedData = {
-      ...data,
+      name: data.name,
+      description: data.description || '',
+      categories: Array.isArray(data.categories) ? data.categories : [],
+      nutritionFocus: Array.isArray(data.nutritionFocus)
+        ? data.nutritionFocus
+        : [],
+      ingredients: Array.isArray(data.ingredients) ? data.ingredients : [],
+      instructions: Array.isArray(data.instructions) ? data.instructions : [],
+      preparationTime: parseInt(data.preparationTime) || 0,
+      cookTime: parseInt(data.cookTime) || 0,
+      servings: parseInt(data.servings) || 1,
+      tags: Array.isArray(data.tags) ? data.tags : [],
       isActive: data.isActive === 'true' || data.isActive === true,
       isPublic: data.isPublic === 'true' || data.isPublic === true
     };
 
+    console.log('Processed data:', processedData);
     updateDish({ id, data: processedData, image: selectedImage });
   };
-
   const handleToggleActive = () => {
+    // GỬI TẤT CẢ FIELDS cần thiết để pass backend validation
+    const currentFormData = form.getValues();
+
     updateDish({
       id,
-      data: { isActive: !dish.isActive },
-      image: null
+      data: {
+        name: currentFormData.name,
+        description: currentFormData.description || '',
+        categories: currentFormData.categories || [],
+        nutritionFocus: currentFormData.nutritionFocus || [],
+        ingredients: currentFormData.ingredients || [],
+        instructions: currentFormData.instructions || [],
+        preparationTime: currentFormData.preparationTime || 0,
+        cookTime: currentFormData.cookTime || 0,
+        servings: currentFormData.servings || 1,
+        tags: currentFormData.tags || [],
+        isActive: !dish.isActive, // TOGGLE THIS
+        isPublic: dish.isPublic // Keep current value
+      },
+      image: selectedImage
     });
   };
 
   const handleTogglePublic = () => {
-    const newPublicStatus = !dish.isPublic;
-    updateDish(
-      {
-        id,
-        data: { isPublic: newPublicStatus },
-        image: null
+    const currentFormData = form.getValues();
+
+    updateDish({
+      id,
+      data: {
+        name: currentFormData.name,
+        description: currentFormData.description || '',
+        categories: currentFormData.categories || [],
+        nutritionFocus: currentFormData.nutritionFocus || [],
+        ingredients: currentFormData.ingredients || [],
+        instructions: currentFormData.instructions || [],
+        preparationTime: currentFormData.preparationTime || 0,
+        cookTime: currentFormData.cookTime || 0,
+        servings: currentFormData.servings || 1,
+        tags: currentFormData.tags || [],
+        isActive: dish.isActive, // Keep current value
+        isPublic: !dish.isPublic // TOGGLE THIS
       },
-      {
-        onSuccess: () => {
-          toast.success(
-            newPublicStatus
-              ? 'Món ăn đã được chuyển sang công khai'
-              : 'Món ăn đã được chuyển sang riêng tư'
-          );
-        }
-      }
-    );
+      image: selectedImage
+    });
   };
 
   const handleBack = () => {
@@ -246,6 +290,25 @@ const DishDetail = ({ id }) => {
     );
   };
 
+  const handleAddFocus = focus => {
+    const currentFocus = form.getValues('nutritionFocus') || [];
+    if (!currentFocus.includes(focus)) {
+      form.setValue('nutritionFocus', [...currentFocus, focus], {
+        shouldValidate: true,
+        shouldDirty: true
+      });
+    }
+  };
+
+  const handleRemoveFocus = focusToRemove => {
+    const currentFocus = form.getValues('nutritionFocus') || [];
+    form.setValue(
+      'nutritionFocus',
+      currentFocus.filter(f => f !== focusToRemove),
+      { shouldValidate: true, shouldDirty: true }
+    );
+  };
+
   const handleAddIngredient = ingredient => {
     const currentIngredients = form.getValues('ingredients') || [];
 
@@ -258,14 +321,14 @@ const DishDetail = ({ id }) => {
       return;
     }
 
+    // Use ingredient's base unit as default
     const defaultUnit = ingredient.baseUnit || { amount: 100, unit: 'g' };
 
     appendIngredient({
       ingredientId: ingredient._id,
       units: [
         {
-          value: defaultUnit.amount,
-          quantity: 1,
+          quantity: defaultUnit.amount,
           unit: defaultUnit.unit,
           isDefault: true
         }
@@ -281,11 +344,17 @@ const DishDetail = ({ id }) => {
       form.getValues(`ingredients.${ingredientIndex}.units`) || [];
     form.setValue(`ingredients.${ingredientIndex}.units`, [
       ...currentUnits,
-      { value: 100, quantity: 1, unit: 'g', isDefault: false }
+      { quantity: '', unit: '', isDefault: false }
     ]);
   };
 
   const handleRemoveIngredientUnit = (ingredientIndex, unitIndex) => {
+    // Prevent removing the first (gram) unit
+    if (unitIndex === 0) {
+      toast.error('Không thể xóa đơn vị gram mặc định');
+      return;
+    }
+
     const currentUnits =
       form.getValues(`ingredients.${ingredientIndex}.units`) || [];
 
@@ -294,15 +363,32 @@ const DishDetail = ({ id }) => {
       return;
     }
 
-    const removingDefault = currentUnits[unitIndex].isDefault;
     const newUnits = currentUnits.filter((_, idx) => idx !== unitIndex);
-
-    if (removingDefault && newUnits.length > 0) {
-      newUnits[0].isDefault = true;
-    }
-
     form.setValue(`ingredients.${ingredientIndex}.units`, newUnits);
   };
+
+  const handleToggleDefaultUnit = (ingredientIndex, unitIndex) => {
+    // First unit (gram) is always default and cannot be changed
+    if (unitIndex === 0) {
+      toast.error('Đơn vị gram luôn là mặc định');
+      return;
+    }
+
+    const currentUnits =
+      form.getValues(`ingredients.${ingredientIndex}.units`) || [];
+
+    const updatedUnits = currentUnits.map((unit, idx) => ({
+      ...unit,
+      isDefault: idx === unitIndex ? !unit.isDefault : unit.isDefault
+    }));
+
+    form.setValue(`ingredients.${ingredientIndex}.units`, updatedUnits);
+  };
+
+  const selectedFocus = form.watch('nutritionFocus') || [];
+  const availableFocus = NUTRITION_FOCUS_OPTIONS.filter(
+    opt => !selectedFocus.includes(opt.value)
+  );
 
   const handleSetDefaultUnit = (ingredientIndex, unitIndex) => {
     const units = form.getValues(`ingredients.${ingredientIndex}.units`);
@@ -378,8 +464,22 @@ const DishDetail = ({ id }) => {
 
   // Get full ingredient details for display
   const getIngredientDetails = ingredientId => {
+    // First try to find in the ingredients list (has full data)
+    const ingredientFromList = ingredients.find(
+      ing => ing._id === ingredientId
+    );
+
+    if (ingredientFromList) {
+      return ingredientFromList;
+    }
+
+    // Fallback to dish.ingredients (might have limited data)
     return (
-      dish.ingredients?.find(ing => ing.ingredientId === ingredientId) || null
+      dish.ingredients?.find(ing => ing.ingredientId === ingredientId) || {
+        name: 'Unknown',
+        description: '',
+        image: null
+      }
     );
   };
 
@@ -554,6 +654,7 @@ const DishDetail = ({ id }) => {
               />
 
               <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+                {/* Categories */}
                 <FormField
                   control={form.control}
                   name='categories'
@@ -615,29 +716,63 @@ const DishDetail = ({ id }) => {
                   )}
                 />
 
+                {/* Nutrition Focus */}
                 <FormField
                   control={form.control}
-                  name='isActive'
+                  name='nutritionFocus'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Trạng thái</FormLabel>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {STATUS_OPTIONS.map(option => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormLabel>Mục tiêu dinh dưỡng</FormLabel>
+                      <div className='space-y-3'>
+                        <Select onValueChange={handleAddFocus} value=''>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder='Chọn mục tiêu' />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {availableFocus.length === 0 ? (
+                              <div className='p-2 text-sm text-muted-foreground text-center'>
+                                Đã chọn tất cả mục tiêu
+                              </div>
+                            ) : (
+                              availableFocus.map(option => (
+                                <SelectItem
+                                  key={option.value}
+                                  value={option.value}
+                                >
+                                  {option.label}
+                                </SelectItem>
+                              ))
+                            )}
+                          </SelectContent>
+                        </Select>
+
+                        {selectedFocus.length > 0 && (
+                          <div className='flex flex-wrap gap-2'>
+                            {selectedFocus.map((focus, idx) => (
+                              <Badge
+                                key={idx}
+                                variant='secondary'
+                                className='gap-1 pr-1'
+                              >
+                                {focus}
+                                <button
+                                  type='button'
+                                  className='ml-1 hover:bg-secondary-foreground/20 rounded-sm p-0.5'
+                                  onClick={e => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleRemoveFocus(focus);
+                                  }}
+                                >
+                                  <X className='h-3 w-3' />
+                                </button>
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -818,193 +953,176 @@ const DishDetail = ({ id }) => {
                     return (
                       <Card key={field.id}>
                         <CardContent className='p-4'>
-                          <div className='flex items-start gap-3'>
-                            {ingredientDetails?.image && (
-                              <img
-                                src={ingredientDetails.image}
-                                alt={ingredientDetails.name}
-                                className='h-16 w-16 rounded object-cover border flex-shrink-0'
-                              />
-                            )}
-                            <div className='flex-1 space-y-3 min-w-0'>
-                              <div className='flex items-start justify-between gap-2'>
-                                <div className='min-w-0'>
-                                  <h4 className='font-medium truncate'>
-                                    {ingredientDetails?.name || 'Unknown'}
-                                  </h4>
-                                  {ingredientDetails?.description && (
-                                    <p className='text-xs text-muted-foreground line-clamp-2'>
-                                      {ingredientDetails.description}
-                                    </p>
-                                  )}
+                          <div className='space-y-4'>
+                            {/* Ingredient Header */}
+                            <div className='flex items-start gap-3'>
+                              {ingredientDetails?.image && (
+                                <img
+                                  src={ingredientDetails.image}
+                                  alt={ingredientDetails.name}
+                                  className='h-16 w-16 rounded object-cover border'
+                                />
+                              )}
+                              <div className='flex-1'>
+                                <div className='flex items-start justify-between'>
+                                  <div>
+                                    <h4 className='font-medium'>
+                                      {ingredientDetails?.name || 'Unknown'}
+                                    </h4>
+                                    {ingredientDetails?.description && (
+                                      <p className='text-xs text-muted-foreground mt-1'>
+                                        {ingredientDetails.description}
+                                      </p>
+                                    )}
+                                  </div>
+                                  <Button
+                                    type='button'
+                                    variant='ghost'
+                                    size='icon'
+                                    className='h-8 w-8'
+                                    onClick={() =>
+                                      removeIngredient(ingredientIndex)
+                                    }
+                                  >
+                                    <Trash2 className='h-4 w-4' />
+                                  </Button>
                                 </div>
+                              </div>
+                            </div>
+
+                            {/* Units */}
+                            <div className='space-y-2'>
+                              <div className='flex items-center justify-between'>
+                                <label className='text-xs font-medium'>
+                                  Đơn vị{' '}
+                                  <span className='text-destructive'>*</span>
+                                </label>
                                 <Button
                                   type='button'
                                   variant='ghost'
-                                  size='icon'
-                                  className='h-8 w-8 flex-shrink-0'
-                                  onClick={() =>
-                                    removeIngredient(ingredientIndex)
-                                  }
-                                >
-                                  <Trash2 className='h-4 w-4' />
-                                </Button>
-                              </div>
-
-                              <div className='space-y-2'>
-                                <FormLabel className='text-xs'>
-                                  Số lượng
-                                </FormLabel>
-                                <RadioGroup
-                                  value={units
-                                    .findIndex(u => u.isDefault)
-                                    .toString()}
-                                  onValueChange={value =>
-                                    handleSetDefaultUnit(
-                                      ingredientIndex,
-                                      parseInt(value)
-                                    )
-                                  }
-                                >
-                                  {units.map((unit, unitIndex) => (
-                                    <div
-                                      key={unitIndex}
-                                      className='flex items-center gap-2 p-2 border rounded-lg'
-                                    >
-                                      <FormField
-                                        control={form.control}
-                                        name={`ingredients.${ingredientIndex}.units.${unitIndex}.isDefault`}
-                                        render={({ field }) => (
-                                          <FormItem className='flex items-center space-y-0'>
-                                            <FormControl>
-                                              <RadioGroupItem
-                                                value={unitIndex.toString()}
-                                                checked={field.value}
-                                              />
-                                            </FormControl>
-                                          </FormItem>
-                                        )}
-                                      />
-
-                                      <div className='flex-1 grid grid-cols-3 gap-2'>
-                                        <FormField
-                                          control={form.control}
-                                          name={`ingredients.${ingredientIndex}.units.${unitIndex}.quantity`}
-                                          render={({ field }) => (
-                                            <FormItem>
-                                              <FormControl>
-                                                <Input
-                                                  type='number'
-                                                  step='0.01'
-                                                  min='0'
-                                                  placeholder='SL'
-                                                  className='h-9'
-                                                  {...field}
-                                                  onChange={e =>
-                                                    field.onChange(
-                                                      parseFloat(
-                                                        e.target.value
-                                                      ) || 0
-                                                    )
-                                                  }
-                                                />
-                                              </FormControl>
-                                              <FormMessage />
-                                            </FormItem>
-                                          )}
-                                        />
-
-                                        <FormField
-                                          control={form.control}
-                                          name={`ingredients.${ingredientIndex}.units.${unitIndex}.value`}
-                                          render={({ field }) => (
-                                            <FormItem>
-                                              <FormControl>
-                                                <Input
-                                                  type='number'
-                                                  step='0.01'
-                                                  min='0'
-                                                  placeholder='Giá trị'
-                                                  className='h-9'
-                                                  {...field}
-                                                  onChange={e =>
-                                                    field.onChange(
-                                                      parseFloat(
-                                                        e.target.value
-                                                      ) || 0
-                                                    )
-                                                  }
-                                                />
-                                              </FormControl>
-                                              <FormMessage />
-                                            </FormItem>
-                                          )}
-                                        />
-
-                                        <FormField
-                                          control={form.control}
-                                          name={`ingredients.${ingredientIndex}.units.${unitIndex}.unit`}
-                                          render={({ field }) => (
-                                            <FormItem>
-                                              <Select
-                                                value={field.value}
-                                                onValueChange={field.onChange}
-                                              >
-                                                <FormControl>
-                                                  <SelectTrigger className='h-9'>
-                                                    <SelectValue placeholder='Đơn vị' />
-                                                  </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                  {UNIT_OPTIONS.map(option => (
-                                                    <SelectItem
-                                                      key={option.value}
-                                                      value={option.value}
-                                                    >
-                                                      {option.label}
-                                                    </SelectItem>
-                                                  ))}
-                                                </SelectContent>
-                                              </Select>
-                                              <FormMessage />
-                                            </FormItem>
-                                          )}
-                                        />
-                                      </div>
-
-                                      {units.length > 1 && (
-                                        <Button
-                                          type='button'
-                                          variant='ghost'
-                                          size='icon'
-                                          className='h-9 w-9 flex-shrink-0'
-                                          onClick={() =>
-                                            handleRemoveIngredientUnit(
-                                              ingredientIndex,
-                                              unitIndex
-                                            )
-                                          }
-                                        >
-                                          <Trash2 className='h-4 w-4' />
-                                        </Button>
-                                      )}
-                                    </div>
-                                  ))}
-                                </RadioGroup>
-
-                                <Button
-                                  type='button'
-                                  variant='outline'
                                   size='sm'
+                                  className='h-7 text-xs'
                                   onClick={() =>
                                     handleAddIngredientUnit(ingredientIndex)
                                   }
-                                  className='w-full'
                                 >
-                                  <Plus className='h-4 w-4 mr-2' />
+                                  <Plus className='h-3 w-3 mr-1' />
                                   Thêm đơn vị
                                 </Button>
                               </div>
+
+                              {units.map((unit, unitIndex) => (
+                                <div
+                                  key={unitIndex}
+                                  className='flex items-center gap-2'
+                                >
+                                  {/* Quantity Input - EDITABLE for all units */}
+                                  <FormField
+                                    control={form.control}
+                                    name={`ingredients.${ingredientIndex}.units.${unitIndex}.quantity`}
+                                    render={({ field }) => (
+                                      <FormItem className='flex-1'>
+                                        <FormControl>
+                                          <Input
+                                            type='number'
+                                            step='0.01'
+                                            min='0'
+                                            placeholder='Số lượng'
+                                            className='h-8'
+                                            {...field}
+                                            onChange={e =>
+                                              field.onChange(
+                                                parseFloat(e.target.value) || ''
+                                              )
+                                            }
+                                          />
+                                        </FormControl>
+                                      </FormItem>
+                                    )}
+                                  />
+
+                                  {/* Unit Input - DISABLED for first unit only */}
+                                  <FormField
+                                    control={form.control}
+                                    name={`ingredients.${ingredientIndex}.units.${unitIndex}.unit`}
+                                    render={({ field }) => (
+                                      <FormItem className='flex-1'>
+                                        <FormControl>
+                                          <Input
+                                            placeholder='Đơn vị (vd: g, ml, muỗng)'
+                                            className='h-8'
+                                            disabled={unitIndex === 0}
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                      </FormItem>
+                                    )}
+                                  />
+
+                                  {/* Default Status */}
+                                  <FormField
+                                    control={form.control}
+                                    name={`ingredients.${ingredientIndex}.units.${unitIndex}.isDefault`}
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormControl>
+                                          {unitIndex === 0 ? (
+                                            // First unit (gram) is always default - show as badge
+                                            <Badge
+                                              variant='default'
+                                              className='h-8 whitespace-nowrap px-3'
+                                            >
+                                              Mặc định
+                                            </Badge>
+                                          ) : (
+                                            // Other units can toggle default status
+                                            <Button
+                                              type='button'
+                                              variant={
+                                                field.value
+                                                  ? 'default'
+                                                  : 'outline'
+                                              }
+                                              size='sm'
+                                              className='h-8 whitespace-nowrap px-3'
+                                              onClick={() =>
+                                                handleToggleDefaultUnit(
+                                                  ingredientIndex,
+                                                  unitIndex
+                                                )
+                                              }
+                                            >
+                                              {field.value
+                                                ? 'Mặc định'
+                                                : 'Chọn'}
+                                            </Button>
+                                          )}
+                                        </FormControl>
+                                      </FormItem>
+                                    )}
+                                  />
+
+                                  {/* Delete button - DISABLED for first unit (gram) */}
+                                  {unitIndex > 0 ? (
+                                    <Button
+                                      type='button'
+                                      variant='ghost'
+                                      size='icon'
+                                      className='h-8 w-8'
+                                      onClick={() =>
+                                        handleRemoveIngredientUnit(
+                                          ingredientIndex,
+                                          unitIndex
+                                        )
+                                      }
+                                    >
+                                      <Trash2 className='h-4 w-4' />
+                                    </Button>
+                                  ) : (
+                                    <div className='h-8 w-8' />
+                                  )}
+                                </div>
+                              ))}
                             </div>
                           </div>
                         </CardContent>
@@ -1164,7 +1282,7 @@ const DishDetail = ({ id }) => {
           </form>
         </Form>
 
-        <div className='flex justify-start items-center mt-6 pt-6 border-t'>
+        <div className='flex justify-end gap-2 items-center mt-6 pt-6 border-t'>
           <Button
             variant='destructive'
             size='sm'
@@ -1172,6 +1290,20 @@ const DishDetail = ({ id }) => {
           >
             <Trash2 className='h-4 w-4 mr-1' />
             Xóa món ăn
+          </Button>
+
+          <Button
+            size='sm'
+            type='button'
+            onClick={form.handleSubmit(handleSave)}
+            disabled={isUpdating}
+          >
+            {isUpdating ? (
+              <Spinner className='h-4 w-4 mr-1' />
+            ) : (
+              <Save className='h-4 w-4 mr-1' />
+            )}
+            Lưu
           </Button>
         </div>
       </div>

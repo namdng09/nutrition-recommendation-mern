@@ -399,7 +399,36 @@ export const UserService = {
       throw createHttpError(400, 'Invalid user ID format');
     }
 
-    const user = await UserModel.findById(id);
+    const user = await UserModel.findById(id)
+      .populate({
+        path: 'favoriteDishes',
+        select:
+          'name description image tags preparationTime cookTime servings nutrition user',
+        populate: {
+          path: 'user',
+          select: 'name'
+        }
+      })
+      .populate({
+        path: 'favoriteIngredients',
+        select: 'name description category image baseUnit nutrition isActive'
+      })
+      .populate({
+        path: 'favoriteCollections',
+        select: 'name description image isPublic tags user dishes',
+        populate: [
+          {
+            path: 'user',
+            select: 'name'
+          },
+          {
+            path: 'dishes',
+            select: 'name image nutrition',
+            options: { limit: 1 }
+          }
+        ]
+      })
+      .select('-password');
 
     if (!user) {
       throw createHttpError(404, 'User not found');

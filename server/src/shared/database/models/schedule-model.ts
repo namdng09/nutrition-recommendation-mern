@@ -27,7 +27,7 @@ const scheduleSchema = new Schema(
           {
             dishId: { type: Schema.Types.ObjectId, ref: 'Dish' },
             name: { type: String, required: true },
-            calories: { type: Number },
+            energy: { type: Number },
             servings: { type: Number, default: 1 },
             image: { type: String },
             isEaten: { type: Boolean, default: false }

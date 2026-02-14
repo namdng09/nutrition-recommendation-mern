@@ -4,7 +4,7 @@ import { cn } from '~/lib/utils';
 
 const HeaderNav = ({ links }) => {
   return (
-    <nav className='hidden md:flex items-center gap-1 flex-nowrap'>
+    <nav className='hidden md:flex items-center flex-nowrap'>
       {links.map(link => (
         <NavLink
           key={link.to}

@@ -80,7 +80,9 @@ const router = createBrowserRouter([
           {
             path: 'profile',
             Component: () => (
-              <PrivateRoute allowedRoles={[ROLE.USER, ROLE.ADMIN]}>
+              <PrivateRoute
+                allowedRoles={[ROLE.USER, ROLE.ADMIN, ROLE.NUTRITIONIST]}
+              >
                 <ProfileLayout />
               </PrivateRoute>
             ),
@@ -114,6 +116,10 @@ const router = createBrowserRouter([
               {
                 path: 'food-allergies',
                 Component: lazy(() => import('~/app/profile/allergens/page'))
+              },
+              {
+                path: 'favorites',
+                Component: lazy(() => import('~/app/profile/favorites/page'))
               }
             ]
           }

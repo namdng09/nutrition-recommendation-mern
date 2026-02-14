@@ -1,37 +1,36 @@
 import { z } from 'zod';
 
 import { INGREDIENT_CATEGORY } from '~/shared/constants/ingredient-category';
+import { NUTRITION_MINERAL } from '~/shared/constants/nutrition-minerals';
+import { NUTRIENTS } from '~/shared/constants/nutrition-nutrients';
+import { NUTRITION_VITAMIN } from '~/shared/constants/nutrition-vitamin';
 import { UNIT } from '~/shared/constants/unit';
 
-const nutrientValueSchema = z.object({
+const enumValues = <T extends Record<string, string>>(values: T) =>
+  z.enum(Object.values(values) as [string, ...string[]]);
+
+const nutrientItemSchema = z.object({
+  label: enumValues(NUTRIENTS),
   value: z.coerce.number().min(0),
   unit: z.enum(Object.values(UNIT))
 });
 
-const nutrientsSchema = z.object({
-  calories: nutrientValueSchema,
-  carbs: nutrientValueSchema,
-  fat: nutrientValueSchema,
-  protein: nutrientValueSchema,
-  fiber: nutrientValueSchema,
-  sodium: nutrientValueSchema,
-  cholesterol: nutrientValueSchema
+const mineralItemSchema = z.object({
+  label: enumValues(NUTRITION_MINERAL),
+  value: z.coerce.number().min(0),
+  unit: z.enum(Object.values(UNIT))
 });
 
-const nutritionItemSchema = z.object({
-  label: z.string().trim(),
+const vitaminItemSchema = z.object({
+  label: enumValues(NUTRITION_VITAMIN),
   value: z.coerce.number().min(0),
   unit: z.enum(Object.values(UNIT))
 });
 
 const detailNutritionSchema = z.object({
-  nutrients: nutrientsSchema.optional(),
-  minerals: z.array(nutritionItemSchema).optional(),
-  vitamins: z.array(nutritionItemSchema).optional(),
-  sugars: z.array(nutritionItemSchema).optional(),
-  fats: z.array(nutritionItemSchema).optional(),
-  fattyAcids: z.array(nutritionItemSchema).optional(),
-  aminoAcids: z.array(nutritionItemSchema).optional()
+  nutrients: z.array(nutrientItemSchema).optional(),
+  minerals: z.array(mineralItemSchema).optional(),
+  vitamins: z.array(vitaminItemSchema).optional()
 });
 
 const baseUnitSchema = z.object({

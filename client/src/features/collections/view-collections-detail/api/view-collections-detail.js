@@ -10,7 +10,7 @@ const fetchCollectionDetail = async id => {
 
 export const useCollectionDetail = id => {
   return useSuspenseQuery({
-    queryKey: QUERY_KEYS.INGREDIENT(id),
+    queryKey: QUERY_KEYS.COLLECTION(id),
     queryFn: () => fetchCollectionDetail(id)
   });
 };
