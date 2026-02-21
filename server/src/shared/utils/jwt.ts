@@ -1,6 +1,8 @@
 import createHttpError from 'http-errors';
 import jwt from 'jsonwebtoken';
 
+import { TOKEN_TYPE, type TokenType } from '~/shared/constants/token-type';
+
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 const JWT_RESET_PASSWORD_SECRET = process.env.JWT_RESET_PASSWORD_SECRET;
@@ -47,14 +49,29 @@ export const generateResetPasswordToken = (id: string): string => {
   });
 };
 
+/**
+ * Verify a JWT token and return its payload.
+ * @param token - The JWT token string
+ * @param secret - The secret key used to sign the token
+ * @param tokenType - The type of token ('access', 'refresh', 'resetPassword')
+ *                    Determines the expiry error message for proper error handling.
+ *                    Defaults to 'access'.
+ */
 export const verifyToken = (
   token: string,
-  secret: string
-): string | JwtPayload => {
+  secret: string,
+  tokenType: TokenType = TOKEN_TYPE.ACCESS
+): JwtPayload => {
   try {
-    return jwt.verify(token, secret) as string | JwtPayload;
+    return jwt.verify(token, secret) as JwtPayload;
   } catch (error: unknown) {
     if (error instanceof jwt.TokenExpiredError) {
+      if (tokenType === TOKEN_TYPE.REFRESH) {
+        throw createHttpError(401, 'Refresh token expired');
+      }
+      if (tokenType === TOKEN_TYPE.RESET_PASSWORD) {
+        throw createHttpError(401, 'Reset password token expired');
+      }
       throw createHttpError(401, 'Token expired');
     }
     throw createHttpError(401, 'Invalid token');
