@@ -15,10 +15,12 @@ import {
   FormMessage
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
+import { useOAuth } from '~/hooks/useOAuth';
 
 import { loginSchema } from '../schemas/login-schema';
 
 const LoginForm = ({ onSubmit, isLoading }) => {
+  const { navigateToProvider } = useOAuth();
   const form = useForm({
     resolver: yupResolver(loginSchema),
     defaultValues: {
@@ -38,16 +40,7 @@ const LoginForm = ({ onSubmit, isLoading }) => {
       <Button
         variant='outline'
         className='w-full rounded-xl border border-border bg-background/60 hover:bg-accent text-primary shadow-sm'
-        onClick={() => {
-          const apiUrl = import.meta.env.VITE_API_URL;
-          const authPath = '/api/auth/google';
-
-          if (apiUrl && apiUrl.startsWith('http')) {
-            window.location.href = `${apiUrl}${authPath}`;
-          } else {
-            window.location.href = authPath;
-          }
-        }}
+        onClick={() => navigateToProvider('google')}
       >
         <FaGoogle className='mr-2 h-4 w-4' />
         Tiếp tục đăng nhập với Google

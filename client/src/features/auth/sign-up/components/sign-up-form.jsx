@@ -21,10 +21,12 @@ import {
   FormMessage
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
+import { useOAuth } from '~/hooks/useOAuth';
 
 import { signUpSchema } from '../schemas/sign-up-schema';
 
 const SignUpForm = ({ onSubmit, isLoading }) => {
+  const { navigateToProvider } = useOAuth();
   const fileInputRef = useRef(null);
 
   const form = useForm({
@@ -53,16 +55,7 @@ const SignUpForm = ({ onSubmit, isLoading }) => {
       <Button
         variant='outline'
         className='w-full rounded-xl border border-border bg-background/60 hover:bg-accent text-primary shadow-sm'
-        onClick={() => {
-          const apiUrl = import.meta.env.VITE_API_URL;
-          const authPath = '/api/auth/google';
-
-          if (apiUrl && apiUrl.startsWith('http')) {
-            window.location.href = `${apiUrl}${authPath}`;
-          } else {
-            window.location.href = authPath;
-          }
-        }}
+        onClick={() => navigateToProvider('google')}
       >
         <FaGoogle className='mr-2 h-4 w-4' />
         Tiếp tục với Google
