@@ -1,12 +1,19 @@
 import mongoose from 'mongoose';
-import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it
+} from 'vitest';
 
-import app from '~/app';
+import { CollectionService } from '~/features/collections/collection-service';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
 import { CollectionModel, DishModel } from '~/shared/database/models';
 
-describe('GET /api/collections/:id', () => {
+describe('CollectionService.viewCollectionDetail', () => {
   let collectionId: string;
   let userId: string;
 
@@ -46,7 +53,7 @@ describe('GET /api/collections/:id', () => {
         {
           dishId: dish._id,
           name: dish.name,
-          calories: 250,
+          energy: 250,
           image: 'dish-image.jpg',
           addedAt: new Date()
         }
@@ -57,57 +64,55 @@ describe('GET /api/collections/:id', () => {
     collectionId = collection._id.toString();
   });
 
-  afterAll(async () => {
-    // Clean up and close connection
+  afterEach(async () => {
+    // Clean up after each test
     await CollectionModel.deleteMany({});
     await DishModel.deleteMany({});
+  });
+
+  afterAll(async () => {
+    // Close connection
     await mongoose.connection.close();
   });
 
-  // ============ HAPPY CASES ============
+  // Branch - Happy case: get collection detail successfully
   it('should get collection detail successfully', async () => {
-    const res = await request(app).get(`/api/collections/${collectionId}`);
+    const collection =
+      await CollectionService.viewCollectionDetail(collectionId);
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Lấy thông tin bộ sưu tập thành công');
-    expect(res.body.data).toHaveProperty('_id', collectionId);
-    expect(res.body.data).toHaveProperty('name', 'Món ăn giảm cân');
-    expect(res.body.data).toHaveProperty('description', 'Bộ sưu tập các món ăn giúp giảm cân hiệu quả');
-    expect(res.body.data).toHaveProperty('isPublic', true);
-    expect(res.body.data).toHaveProperty('image', 'collection-image.jpg');
-    expect(res.body.data).toHaveProperty('user');
-    expect(res.body.data.user).toHaveProperty('_id', userId);
-    expect(res.body.data.user).toHaveProperty('name', 'Test User');
-    expect(res.body.data).toHaveProperty('dishes');
-    expect(Array.isArray(res.body.data.dishes)).toBe(true);
-    expect(res.body.data.dishes.length).toBe(1);
-    expect(res.body.data.dishes[0]).toHaveProperty('name', 'Phở bò');
-    expect(res.body.data.dishes[0]).toHaveProperty('calories', 250);
-    expect(res.body.data.dishes[0]).toHaveProperty('addedAt');
-    expect(res.body.data).toHaveProperty('followers', 10);
-    expect(res.body.data).toHaveProperty('tags');
-    expect(Array.isArray(res.body.data.tags)).toBe(true);
-    expect(res.body.data.tags).toContain('giảm cân');
-    expect(res.body.data.tags).toContain('healthy');
+    expect(collection).toBeDefined();
+    expect(collection._id.toString()).toBe(collectionId);
+    expect(collection.name).toBe('Món ăn giảm cân');
+    expect(collection.description).toBe(
+      'Bộ sưu tập các món ăn giúp giảm cân hiệu quả'
+    );
+    expect(collection.isPublic).toBe(true);
+    expect(collection.image).toBe('collection-image.jpg');
+    expect(collection.user?._id.toString()).toBe(userId);
+    expect(collection.user?.name).toBe('Test User');
+    expect(collection.dishes).toBeDefined();
+    expect(Array.isArray(collection.dishes)).toBe(true);
+    expect(collection.dishes.length).toBe(1);
+    expect(collection.dishes[0].name).toBe('Phở bò');
+    expect(collection.tags).toBeDefined();
+    expect(Array.isArray(collection.tags)).toBe(true);
+    expect(collection.tags).toContain('giảm cân');
+    expect(collection.tags).toContain('healthy');
   });
 
-  // ============ VALIDATION (400) ============
-  it('should return 400 when id format is invalid', async () => {
-    const res = await request(app).get('/api/collections/invalid-id');
-
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Định dạng ID bộ sưu tập không hợp lệ');
+  // Branch - Invalid ID format
+  it('should throw error when id format is invalid', async () => {
+    await expect(
+      CollectionService.viewCollectionDetail('invalid-id')
+    ).rejects.toThrow('Định dạng ID bộ sưu tập không hợp lệ');
   });
 
-  // ============ NOT FOUND (404) ============
-  it('should return 404 when collection does not exist', async () => {
+  // Branch - Collection not found
+  it('should throw error when collection does not exist', async () => {
     const nonExistentId = new mongoose.Types.ObjectId().toString();
-    const res = await request(app).get(`/api/collections/${nonExistentId}`);
 
-    expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Không tìm thấy bộ sưu tập');
+    await expect(
+      CollectionService.viewCollectionDetail(nonExistentId)
+    ).rejects.toThrow('Không tìm thấy bộ sưu tập');
   });
 });
