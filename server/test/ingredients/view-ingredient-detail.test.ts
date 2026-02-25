@@ -33,21 +33,17 @@ describe('IngredientService.viewIngredientDetail', () => {
       description: 'Cà chua tươi',
       categories: [INGREDIENT_CATEGORY.VEGETABLES],
       baseUnit: { amount: 100, unit: UNIT.GRAM },
-      units: [
-        { value: 1, unit: 'quả', isDefault: true },
-        { value: 200, unit: UNIT.GRAM, isDefault: false }
-      ],
       allergens: [],
       nutrition: {
-        nutrients: {
-          calories: { value: 18, unit: UNIT.KILOCALORIE },
-          carbs: { value: 3.9, unit: UNIT.GRAM },
-          fat: { value: 0.2, unit: UNIT.GRAM },
-          protein: { value: 0.9, unit: UNIT.GRAM },
-          fiber: { value: 1.2, unit: UNIT.GRAM },
-          sodium: { value: 5, unit: UNIT.MILLIGRAM },
-          cholesterol: { value: 0, unit: UNIT.MILLIGRAM }
-        }
+        nutrients: [
+          { label: 'Năng lượng', value: 18, unit: UNIT.KILOCALORIE },
+          { label: 'Protein', value: 0.9, unit: UNIT.GRAM },
+          { label: 'Chất béo', value: 0.2, unit: UNIT.GRAM },
+          { label: 'Tinh bột', value: 3.9, unit: UNIT.GRAM },
+          { label: 'Chất xơ', value: 1.2, unit: UNIT.GRAM },
+          { label: 'Cholesterol', value: 0, unit: UNIT.MILLIGRAM }
+        ],
+        minerals: []
       },
       isActive: true
     });
@@ -76,8 +72,6 @@ describe('IngredientService.viewIngredientDetail', () => {
     expect(ingredient.categories).toContain(INGREDIENT_CATEGORY.VEGETABLES);
     expect(ingredient.baseUnit).toHaveProperty('amount', 100);
     expect(ingredient.baseUnit).toHaveProperty('unit', UNIT.GRAM);
-    expect(ingredient.units).toBeDefined();
-    expect(Array.isArray(ingredient.units)).toBe(true);
     expect(ingredient.nutrition).toBeDefined();
     expect(ingredient.isActive).toBe(true);
   });
