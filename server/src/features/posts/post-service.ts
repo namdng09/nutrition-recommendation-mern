@@ -323,6 +323,10 @@ export const PostService = {
       throw createHttpError(404, 'Không tìm thấy bài viết');
     }
 
+    if (!validateObjectId(commentId)) {
+      throw createHttpError(400, 'ID bình luận không hợp lệ');
+    }
+
     const commentIndex = post.comments.findIndex(
       (comment: any) => comment._id.toString() === commentId
     );
