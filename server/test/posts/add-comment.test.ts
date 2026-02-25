@@ -118,4 +118,26 @@ describe('PostService.addComment', () => {
       )
     ).rejects.toThrow('Không tìm thấy bài viết');
   });
+
+  // Branch - Invalid comment type
+  it('should throw error when comment content is not a string', async () => {
+    const commentData = {
+      content: 123 as unknown as string
+    };
+
+    await expect(
+      PostService.addComment(postId, userId, userName, userAvatar, commentData)
+    ).rejects.toThrow('Nội dung bình luận không hợp lệ');
+  });
+
+  // Branch - Empty comment content
+  it('should throw error when comment is empty', async () => {
+    const commentData = {
+      content: ''
+    };
+
+    await expect(
+      PostService.addComment(postId, userId, userName, userAvatar, commentData)
+    ).rejects.toThrow('Nội dung bình luận phải có ít nhất 1 ký tự');
+  });
 });

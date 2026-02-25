@@ -108,6 +108,7 @@ describe('PostService.updatePost', () => {
     await mongoose.connection.close();
   });
 
+  // Branch - Happy case
   it('should update post successfully', async () => {
     const updateData = {
       title: 'Tiêu đề mới',
@@ -144,6 +145,7 @@ describe('PostService.updatePost', () => {
     );
   });
 
+  // Branch - Admin updates post
   it('should allow admin to update post', async () => {
     const updateData = {
       content: 'Admin cập nhật nội dung'
@@ -212,6 +214,38 @@ describe('PostService.updatePost', () => {
         updateData
       )
     ).rejects.toThrow('Bài viết với tiêu đề này đã tồn tại');
+  });
+
+  // Branch - Invalid title type
+  it('should throw error when title is not a string', async () => {
+    const updateData = {
+      title: 123 as unknown as string
+    };
+
+    await expect(
+      PostService.updatePost(
+        postId,
+        nutritionistId,
+        ROLE.NUTRITIONIST,
+        updateData
+      )
+    ).rejects.toThrow('Tiêu đề không hợp lệ');
+  });
+
+  // Branch - Title too short
+  it('should throw error when title is too short', async () => {
+    const updateData = {
+      title: 'abc'
+    };
+
+    await expect(
+      PostService.updatePost(
+        postId,
+        nutritionistId,
+        ROLE.NUTRITIONIST,
+        updateData
+      )
+    ).rejects.toThrow('Tiêu đề phải có ít nhất 5 ký tự');
   });
 
   // Branch - Post not found

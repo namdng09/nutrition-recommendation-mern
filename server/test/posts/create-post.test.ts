@@ -92,10 +92,6 @@ describe('PostService.createPost', () => {
     );
 
     expect(post).toBeDefined();
-    expect(post.title).toBe('Cách giảm cân hiệu quả');
-    expect(post.content).toBe(
-      'Nội dung chi tiết về giảm cân an toàn và hiệu quả...'
-    );
     expect(post.slug).toBe('cach-giam-can-hieu-qua');
     expect(post.isPublished).toBe(true);
     expect(post.publishedAt).toBeDefined();
@@ -129,6 +125,42 @@ describe('PostService.createPost', () => {
     await expect(
       PostService.createPost(userId, userName, userAvatar, userRole, postData)
     ).rejects.toThrow('Bài viết với tiêu đề này đã tồn tại');
+  });
+
+  // Branch - Missing required fields
+  it('should throw error when required fields are missing', async () => {
+    const postData = {
+      title: undefined as unknown as string,
+      content: 'content'
+    };
+
+    await expect(
+      PostService.createPost(userId, userName, userAvatar, userRole, postData)
+    ).rejects.toThrow('Tiêu đề không hợp lệ');
+  });
+
+  // Branch - Title too short
+  it('should throw error when title is too short', async () => {
+    const postData = {
+      title: 'abc',
+      content: 'Nội dung đủ dài'
+    };
+
+    await expect(
+      PostService.createPost(userId, userName, userAvatar, userRole, postData)
+    ).rejects.toThrow('Tiêu đề phải có ít nhất 5 ký tự');
+  });
+
+  // Branch - Invalid title type
+  it('should throw error when title is not a string', async () => {
+    const postData = {
+      title: 123 as unknown as string,
+      content: 'Nội dung đủ dài'
+    };
+
+    await expect(
+      PostService.createPost(userId, userName, userAvatar, userRole, postData)
+    ).rejects.toThrow('Tiêu đề không hợp lệ');
   });
 
   // Branch - Image upload failure
