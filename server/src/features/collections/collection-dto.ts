@@ -23,9 +23,14 @@ export const createCollectionRequestSchema = z.object({
   name: z.string().trim().min(2, 'Tên phải có ít nhất 2 ký tự'),
   description: z.string().trim().optional(),
   image: z.file().optional(),
-  isPublic: z.preprocess(parseBoolean, z.coerce.boolean()),
+  isPublic: z.preprocess(parseBoolean, z.coerce.boolean()).optional(),
   tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
-  dishes: z.preprocess(parseJSON, z.array(z.string().trim())).optional()
+  dishes: z
+    .preprocess(
+      parseJSON,
+      z.array(z.string().trim()).min(1, 'Phải có ít nhất một món ăn')
+    )
+    .optional()
 });
 
 export type CreateCollectionRequest = z.infer<
