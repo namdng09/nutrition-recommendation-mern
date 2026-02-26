@@ -1,6 +1,7 @@
 import createHttpError from 'http-errors';
 import { HydratedDocument } from 'mongoose';
 
+import { TOKEN_TYPE } from '~/shared/constants/token-type';
 import { AuthModel, UserModel } from '~/shared/database/models';
 import type { User } from '~/shared/database/models/user-model';
 import {
@@ -59,8 +60,8 @@ export const AuthService = {
   },
 
   loginWithProvider: async (
-    provider: string,
-    providerId: string,
+    provider: string | undefined,
+    providerId: string | undefined,
     user: HydratedDocument<User>
   ): Promise<LoginWithProviderResponse> => {
     if (!user || !user._id) {
@@ -98,8 +99,6 @@ export const AuthService = {
     data: SignUpRequest,
     avatar?: Express.Multer.File
   ): Promise<SignUpResponse> => {
-    const newUser = await createNewUser(data, avatar);
-
     const existingAuth = await AuthModel.findOne({
       provider: 'local',
       providerId: data.email
@@ -112,6 +111,7 @@ export const AuthService = {
       );
     }
 
+    const newUser = await createNewUser(data, avatar);
     const hashedPassword = await hashPassword(data.password);
 
     await AuthModel.create({
@@ -142,13 +142,9 @@ export const AuthService = {
 
     const decoded = verifyToken(
       refreshToken,
-      process.env.JWT_REFRESH_SECRET || 'your_jwt_secret'
+      process.env.JWT_REFRESH_SECRET!,
+      TOKEN_TYPE.REFRESH
     );
-
-    // If the decoded token is a string, it means the token is invalid
-    if (typeof decoded === 'string') {
-      throw createHttpError(400, 'Invalid refresh token');
-    }
 
     const user = await UserModel.findById(decoded.id);
     if (!user) {
@@ -198,12 +194,11 @@ export const AuthService = {
       );
     }
 
-    const decoded = verifyToken(token, process.env.JWT_RESET_PASSWORD_SECRET!);
-
-    // If the decoded token is a string, it means the token is invalid
-    if (typeof decoded === 'string') {
-      throw createHttpError(400, 'Invalid reset password token');
-    }
+    const decoded = verifyToken(
+      token,
+      process.env.JWT_RESET_PASSWORD_SECRET!,
+      TOKEN_TYPE.RESET_PASSWORD
+    );
 
     const user = await UserModel.findById(decoded.id);
     if (!user) {
