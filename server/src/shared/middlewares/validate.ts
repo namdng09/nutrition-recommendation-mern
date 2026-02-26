@@ -9,7 +9,6 @@ const formatZodErrors = (errors: z.ZodError['issues']): string => {
 /**
  * Generic middleware to validate request body fields using Zod.
  * @param fields - An object mapping field names to Zod schemas.
- * @param options - Additional options for validation
  */
 export const validate = (fields: Record<string, ZodType<any>>) => {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -20,6 +19,22 @@ export const validate = (fields: Record<string, ZodType<any>>) => {
       return next(createHttpError(400, formattedErrors));
     }
     req.body = result.data;
+    next();
+  };
+};
+
+/**
+ * Generic middleware to validate request query parameters using Zod.
+ * @param fields - An object mapping query param names to Zod schemas.
+ */
+export const validateQuery = (fields: Record<string, ZodType<any>>) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const schema = z.object(fields);
+    const result = schema.safeParse(req.query);
+    if (!result.success) {
+      const formattedErrors = formatZodErrors(result.error.issues);
+      return next(createHttpError(400, formattedErrors));
+    }
     next();
   };
 };

@@ -11,10 +11,14 @@ export const errorHandler: ErrorRequestHandler = (
 ): void => {
   const status = isHttpError.isHttpError(err) ? err.status : 500;
 
-  if (err instanceof Error && err.message === 'Token expired') {
+  // Only clear the refresh token cookie when the refresh token itself expires,
+  // NOT when the access token expires (client should use refresh token to renew it).
+  if (err instanceof Error && err.message === 'Refresh token expired') {
     res.clearCookie('refreshToken', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure:
+        process.env.NODE_ENV === 'production' &&
+        process.env.SERVER_URL?.startsWith('https'),
       sameSite: 'strict'
     });
   }
