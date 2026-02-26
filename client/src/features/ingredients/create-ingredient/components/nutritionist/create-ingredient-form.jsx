@@ -634,9 +634,12 @@ const CreateIngredientForm = () => {
                               value={field.value ?? ''}
                               onChange={e => {
                                 const value = e.target.value;
-                                field.onChange(
-                                  value === '' ? '' : parseFloat(value) || ''
-                                );
+                                if (value === '') {
+                                  field.onChange('');
+                                } else {
+                                  const parsed = parseFloat(value);
+                                  field.onChange(isNaN(parsed) ? '' : parsed);
+                                }
                               }}
                             />
                           </FormControl>
@@ -697,17 +700,20 @@ const CreateIngredientForm = () => {
                                       type='number'
                                       step='0.001'
                                       min='0'
-                                      placeholder=''
+                                      placeholder='0'
                                       className='h-9'
                                       {...field}
                                       value={field.value ?? ''}
                                       onChange={e => {
                                         const value = e.target.value;
-                                        field.onChange(
-                                          value === ''
-                                            ? ''
-                                            : parseFloat(value) || ''
-                                        );
+                                        if (value === '') {
+                                          field.onChange('');
+                                        } else {
+                                          const parsed = parseFloat(value);
+                                          field.onChange(
+                                            isNaN(parsed) ? '' : parsed
+                                          );
+                                        }
                                       }}
                                     />
                                   </FormControl>
@@ -747,17 +753,20 @@ const CreateIngredientForm = () => {
                                       type='number'
                                       step='0.01'
                                       min='0'
-                                      placeholder=''
+                                      placeholder='0'
                                       className='h-9'
                                       {...field}
                                       value={field.value ?? ''}
                                       onChange={e => {
                                         const value = e.target.value;
-                                        field.onChange(
-                                          value === ''
-                                            ? ''
-                                            : parseFloat(value) || ''
-                                        );
+                                        if (value === '') {
+                                          field.onChange('');
+                                        } else {
+                                          const parsed = parseFloat(value);
+                                          field.onChange(
+                                            isNaN(parsed) ? '' : parsed
+                                          );
+                                        }
                                       }}
                                     />
                                   </FormControl>
