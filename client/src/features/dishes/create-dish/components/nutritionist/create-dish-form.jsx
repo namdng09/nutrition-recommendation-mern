@@ -949,13 +949,22 @@ const CreateDishForm = () => {
                                                 placeholder='Số lượng'
                                                 className='h-8'
                                                 {...field}
-                                                onChange={e =>
-                                                  field.onChange(
-                                                    parseFloat(
-                                                      e.target.value
-                                                    ) || ''
-                                                  )
-                                                }
+                                                value={field.value ?? ''}
+                                                onChange={e => {
+                                                  const value = e.target.value;
+                                                  // Allow empty string or valid number (including 0)
+                                                  if (value === '') {
+                                                    field.onChange('');
+                                                  } else {
+                                                    const numValue =
+                                                      parseFloat(value);
+                                                    field.onChange(
+                                                      isNaN(numValue)
+                                                        ? ''
+                                                        : numValue
+                                                    );
+                                                  }
+                                                }}
                                               />
                                             </FormControl>
                                           </FormItem>
