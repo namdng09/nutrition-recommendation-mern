@@ -4,17 +4,11 @@ import { useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import { Button } from '~/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel
-} from '~/components/ui/form';
+import { Form, FormControl, FormField, FormItem } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
 import { buildQueryParams } from '~/lib/build-query-params';
 
-const CollectionsFilter = () => {
+const CollectionsFilter = ({ hideCreateButton = false }) => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -27,7 +21,6 @@ const CollectionsFilter = () => {
 
   const handleSearch = data => {
     const sort = searchParams.get('sort');
-    // Remove empty values
     const filteredData = Object.fromEntries(
       Object.entries(data).filter(([_, value]) => value !== '')
     );
@@ -92,16 +85,18 @@ const CollectionsFilter = () => {
             )}
           </div>
 
-          <Button
-            type='button'
-            onClick={() =>
-              navigate('/nutritionist/manage-collections/create-collection')
-            }
-            className='sm:ml-auto'
-          >
-            <Plus className='mr-2 h-4 w-4' />
-            Tạo bộ sưu tập
-          </Button>
+          {!hideCreateButton && (
+            <Button
+              type='button'
+              onClick={() =>
+                navigate('/nutritionist/manage-collections/create-collection')
+              }
+              className='sm:ml-auto'
+            >
+              <Plus className='mr-2 h-4 w-4' />
+              Tạo bộ sưu tập
+            </Button>
+          )}
         </div>
       </form>
     </Form>
