@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import passport from 'passport';
 
-import { parseFormData, validate } from '~/shared/middlewares';
+import { parseFormData, validate, validateQuery } from '~/shared/middlewares';
 import { createOAuthCallback } from '~/shared/middlewares/oauth-callback';
 import { asyncHandler, handleSingleImageUpload } from '~/shared/utils';
 
@@ -9,6 +9,7 @@ import { AuthController } from './auth-controller';
 import {
   forgotPasswordRequestSchema,
   loginRequestSchema,
+  resetPasswordQuerySchema,
   resetPasswordRequestSchema,
   signUpRequestSchema
 } from './auth-dto';
@@ -56,6 +57,7 @@ router.post(
 
 router.post(
   '/reset-password',
+  validateQuery(resetPasswordQuerySchema.shape),
   parseFormData,
   validate(resetPasswordRequestSchema.shape),
   asyncHandler(AuthController.resetPassword)

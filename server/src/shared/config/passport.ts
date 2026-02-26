@@ -48,13 +48,20 @@ export const configurePassport = () => {
         },
         async (accessToken, refreshToken, profile, done) => {
           try {
-            let user = await UserModel.findOne({
-              email: profile.emails?.[0]?.value || ''
-            });
+            const email = profile.emails?.[0]?.value;
+
+            // Reject OAuth logins that provide no email — creating a user with
+            // an empty email would violate the unique index and cause failures
+            // for any subsequent Google login with a missing email.
+            if (!email) {
+              return done(null, false, { message: 'no_email_provided' });
+            }
+
+            let user = await UserModel.findOne({ email });
 
             if (!user) {
               user = await UserModel.create({
-                email: profile.emails?.[0]?.value || '',
+                email,
                 name: profile.displayName || '',
                 avatar: profile.photos?.[0]?.value || '',
                 role: ROLE.USER

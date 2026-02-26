@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import { HydratedDocument } from 'mongoose';
 
 import type { User } from '~/shared/database/models/user-model';
+import type { OAuthRequest } from '~/shared/middlewares';
 import { ApiResponse } from '~/shared/utils';
 
 import { AuthService } from './auth-service';
@@ -14,7 +15,9 @@ export const AuthController = {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure:
+        process.env.NODE_ENV === 'production' &&
+        process.env.SERVER_URL?.startsWith('https'),
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
@@ -29,15 +32,16 @@ export const AuthController = {
 
   loginWithProvider: async (req: Request, res: Response) => {
     const user = req.user as HydratedDocument<User>;
-    const provider = (req as any).authInfo?.provider;
-    const providerId = (req as any).authInfo?.providerId;
+    const { provider, providerId } = (req as OAuthRequest).authInfo ?? {};
 
     const { accessToken, refreshToken, hasOnboarded } =
       await AuthService.loginWithProvider(provider, providerId, user);
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure:
+        process.env.NODE_ENV === 'production' &&
+        process.env.SERVER_URL?.startsWith('https'),
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
@@ -56,7 +60,9 @@ export const AuthController = {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure:
+        process.env.NODE_ENV === 'production' &&
+        process.env.SERVER_URL?.startsWith('https'),
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
@@ -72,7 +78,9 @@ export const AuthController = {
   logout: async (req: Request, res: Response) => {
     res.clearCookie('refreshToken', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure:
+        process.env.NODE_ENV === 'production' &&
+        process.env.SERVER_URL?.startsWith('https'),
       sameSite: 'strict'
     });
 

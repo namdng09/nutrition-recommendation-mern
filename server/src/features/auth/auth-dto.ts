@@ -49,3 +49,9 @@ export const resetPasswordRequestSchema = z.object({
     .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
 });
 export type ResetPasswordRequest = z.infer<typeof resetPasswordRequestSchema>;
+
+// Query-param schema — the signed JWT is delivered via ?token=<value>
+export const resetPasswordQuerySchema = z.object({
+  token: z.string().min(1, 'Reset token is required')
+});
+export type ResetPasswordQuery = z.infer<typeof resetPasswordQuerySchema>;
