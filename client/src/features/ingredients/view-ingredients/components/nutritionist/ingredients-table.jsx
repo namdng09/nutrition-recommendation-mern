@@ -10,7 +10,9 @@ import DeleteBulkIngredientsDialog from '~/features/ingredients/delete-ingredien
 import DeleteIngredientDialog from '~/features/ingredients/delete-ingredient/components/nutritionist/delete-ingredient-dialog';
 import { useIngredients } from '~/features/ingredients/view-ingredients/api/view-ingredient';
 
-const IngredientsTable = () => {
+const IngredientsTable = ({
+  viewDetailPath = '/nutritionist/manage-ingredients'
+}) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -79,7 +81,7 @@ const IngredientsTable = () => {
     {
       accessorKey: 'nutrition.nutrients',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Năng lượngz' />
+        <DataTableColumnHeader column={column} title='Năng lượng' />
       ),
       cell: ({ row }) => {
         const nutrients = row.original.nutrition?.nutrients || [];
@@ -124,9 +126,8 @@ const IngredientsTable = () => {
           <Button
             variant='ghost'
             size='icon'
-            onClick={() =>
-              navigate(`/nutritionist/manage-ingredients/${row.original._id}`)
-            }
+            onClick={() => navigate(`${viewDetailPath}/${row.original._id}`)}
+            title='Xem chi tiết'
           >
             <Eye className='h-4 w-4' />
           </Button>
@@ -134,6 +135,7 @@ const IngredientsTable = () => {
             variant='ghost'
             size='icon'
             onClick={() => handleDelete(row.original)}
+            title='Xóa'
           >
             <Trash2 className='h-4 w-4 text-destructive' />
           </Button>
