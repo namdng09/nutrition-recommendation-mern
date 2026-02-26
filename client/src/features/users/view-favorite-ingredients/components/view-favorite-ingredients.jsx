@@ -10,12 +10,29 @@ import IngredientHeader from '~/features/ingredients/view-ingredients/components
 import IngredientMacros from '~/features/ingredients/view-ingredients/components/ingredient-macros';
 import IngredientMicronutrients from '~/features/ingredients/view-ingredients/components/ingredient-micronutrients';
 import { useRemoveFavoriteIngredient } from '~/features/users/update-favorite-ingredient/api/update-favorite-ingredient';
+import { useBlockIngredients } from '~/features/users/view-block-ingredients/api/view-block-ingredient';
 import { useFavoriteIngredients } from '~/features/users/view-favorite-ingredients/api/view-favorite-ingredients';
 import { findByLabel, hasValue } from '~/lib/utils';
 
 export function ViewFavoriteIngredients() {
-  // ✅ TỰ FETCH DATA thay vì nhận từ props
-  const { data: ingredients, isLoading } = useFavoriteIngredients();
+  const { data: favoriteIngredients, isLoading: isLoadingFavorites } =
+    useFavoriteIngredients();
+  const { data: blockIngredients, isLoading: isLoadingBlocks } =
+    useBlockIngredients();
+
+  // Lọc bỏ các nguyên liệu đã bị block
+  const filteredIngredients = useMemo(() => {
+    if (!favoriteIngredients) return [];
+    if (!blockIngredients || blockIngredients.length === 0)
+      return favoriteIngredients;
+
+    const blockIds = new Set(
+      blockIngredients.map(ingredient => ingredient._id)
+    );
+    return favoriteIngredients.filter(
+      ingredient => !blockIds.has(ingredient._id)
+    );
+  }, [favoriteIngredients, blockIngredients]);
 
   const { mutate: removeIngredient, isPending: isRemovingIngredient } =
     useRemoveFavoriteIngredient({
@@ -28,6 +45,8 @@ export function ViewFavoriteIngredients() {
         );
       }
     });
+
+  const isLoading = isLoadingFavorites || isLoadingBlocks;
 
   if (isLoading) {
     return (
@@ -58,7 +77,7 @@ export function ViewFavoriteIngredients() {
     );
   }
 
-  if (!ingredients || ingredients.length === 0) {
+  if (!filteredIngredients || filteredIngredients.length === 0) {
     return (
       <Card>
         <CardContent className='flex flex-col items-center justify-center py-12'>
@@ -82,7 +101,7 @@ export function ViewFavoriteIngredients() {
 
   return (
     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-      {ingredients.map(item => (
+      {filteredIngredients.map(item => (
         <IngredientFavoriteCard
           key={item._id}
           item={item}
