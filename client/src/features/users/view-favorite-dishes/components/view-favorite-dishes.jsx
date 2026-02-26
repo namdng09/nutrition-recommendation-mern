@@ -1,4 +1,5 @@
 import { Trash2, UtensilsCrossed } from 'lucide-react';
+import { useMemo } from 'react';
 import {
   FaChevronRight,
   FaClock,
@@ -13,11 +14,23 @@ import { Button } from '~/components/ui/button';
 import { Card, CardContent } from '~/components/ui/card';
 import StatBadge from '~/features/dishes/view-dishes/components/dish-stat-badge';
 import { useRemoveFavoriteDish } from '~/features/users/update-favorite-dish/api/update-favorite-dish';
+import { useBlockDishes } from '~/features/users/view-block-dishes/api/view-block-dishes';
 import { useFavoriteDishes } from '~/features/users/view-favorite-dishes/api/view-favorite-dishes';
 import { getNutritionValue } from '~/lib/utils';
 
 export function ViewFavoriteDishes() {
-  const { data: dishes, isLoading } = useFavoriteDishes();
+  const { data: favoriteDishes, isLoading: isLoadingFavorites } =
+    useFavoriteDishes();
+  const { data: blockDishes, isLoading: isLoadingBlocks } = useBlockDishes();
+
+  // Lọc bỏ các món ăn đã bị block
+  const filteredDishes = useMemo(() => {
+    if (!favoriteDishes) return [];
+    if (!blockDishes || blockDishes.length === 0) return favoriteDishes;
+
+    const blockIds = new Set(blockDishes.map(dish => dish._id));
+    return favoriteDishes.filter(dish => !blockIds.has(dish._id));
+  }, [favoriteDishes, blockDishes]);
 
   const { mutate: removeDish, isPending: isRemovingDish } =
     useRemoveFavoriteDish({
@@ -30,6 +43,8 @@ export function ViewFavoriteDishes() {
         );
       }
     });
+
+  const isLoading = isLoadingFavorites || isLoadingBlocks;
 
   if (isLoading) {
     return (
@@ -44,7 +59,7 @@ export function ViewFavoriteDishes() {
     );
   }
 
-  if (!dishes || dishes.length === 0) {
+  if (!filteredDishes || filteredDishes.length === 0) {
     return (
       <Card>
         <CardContent className='flex flex-col items-center justify-center py-12'>
@@ -69,7 +84,7 @@ export function ViewFavoriteDishes() {
 
   return (
     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8'>
-      {dishes.map(dish => (
+      {filteredDishes.map(dish => (
         <div
           key={dish._id}
           className='group relative flex flex-col overflow-hidden rounded-[2rem] border border-border bg-background transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)]'
