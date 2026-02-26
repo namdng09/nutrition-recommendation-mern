@@ -428,6 +428,19 @@ export const UserService = {
           }
         ]
       })
+      .populate({
+        path: 'blockDishes',
+        select:
+          'name description image tags preparationTime cookTime servings nutrition user',
+        populate: {
+          path: 'user',
+          select: 'name'
+        }
+      })
+      .populate({
+        path: 'blockIngredients',
+        select: 'name description category image baseUnit nutrition isActive'
+      })
       .select('-password');
 
     if (!user) {

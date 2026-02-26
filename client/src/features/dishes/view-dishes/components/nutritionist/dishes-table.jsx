@@ -10,7 +10,7 @@ import DeleteBulkDishesDialog from '~/features/dishes/delete-dish/components/nut
 import DeleteDishDialog from '~/features/dishes/delete-dish/components/nutritionist/delete-dish-dialog';
 import { useDishes } from '~/features/dishes/view-dishes/api/view-dishes';
 
-const DishesTable = () => {
+const DishesTable = ({ viewDetailPath = '/nutritionist/manage-dishes' }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -121,9 +121,8 @@ const DishesTable = () => {
           <Button
             variant='ghost'
             size='icon'
-            onClick={() =>
-              navigate(`/nutritionist/manage-dishes/${row.original._id}`)
-            }
+            onClick={() => navigate(`${viewDetailPath}/${row.original._id}`)}
+            title='Xem chi tiết'
           >
             <Eye className='h-4 w-4' />
           </Button>
@@ -131,6 +130,7 @@ const DishesTable = () => {
             variant='ghost'
             size='icon'
             onClick={() => handleDelete(row.original)}
+            title='Xóa'
           >
             <Trash2 className='h-4 w-4 text-destructive' />
           </Button>
