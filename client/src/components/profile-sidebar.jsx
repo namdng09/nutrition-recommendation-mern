@@ -63,6 +63,11 @@ export function ProfileSidebar({ ...props }) {
       icon: Heart
     },
     {
+      title: 'Món ăn bị chặn',
+      url: '/profile/blocks',
+      icon: CircleOff
+    },
+    {
       title: 'Lịch trình bữa ăn',
       url: '/profile/schedule-settings',
       icon: Calendar
