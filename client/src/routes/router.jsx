@@ -120,6 +120,10 @@ const router = createBrowserRouter([
               {
                 path: 'favorites',
                 Component: lazy(() => import('~/app/profile/favorites/page'))
+              },
+              {
+                path: 'blocks',
+                Component: lazy(() => import('~/app/profile/blocks/page'))
               }
             ]
           }
@@ -292,6 +296,19 @@ const router = createBrowserRouter([
             Component: lazy(
               () => import('~/app/admin/manage-users/create-user/page')
             )
+          },
+          //admin manage dishes
+          {
+            path: 'manage-dishes/',
+            Component: lazy(() => import('~/app/admin/manage-dishes/page'))
+          },
+          {
+            path: 'manage-ingredients/',
+            Component: lazy(() => import('~/app/admin/manage-ingredients/page'))
+          },
+          {
+            path: 'manage-collections/',
+            Component: lazy(() => import('~/app/admin/manage-collections/page'))
           }
         ]
       },
