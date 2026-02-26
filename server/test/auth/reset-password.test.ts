@@ -58,71 +58,38 @@ describe('AuthService.resetPassword', () => {
     await mongoose.connection.close();
   });
 
-  // Happy case - reset password with existing auth
+  // Happy case - reset password successfully
   it('should reset password successfully with valid token', async () => {
-    await AuthService.resetPassword(resetToken, 'newpassword123');
+    await AuthService.resetPassword(resetToken, { password: 'newpassword123' });
 
     // Verify password was updated in database
     const auth = await AuthModel.findOne({ user: userId });
+    const compareResult = await comparePassword(
+      'newpassword123',
+      auth!.localPassword!
+    );
     expect(auth).toBeDefined();
     expect(auth?.localPassword).toBeDefined();
-    expect(auth?.localPassword).not.toBe('oldpassword'); // Should be hashed
+    expect(compareResult).toBe(true);
     expect(auth?.lastResetPasswordToken).toBe(resetToken);
-
-    // Verify user can login with new password
-    const loginResult = await AuthService.login({
-      email: 'testuser@gmail.com',
-      password: 'newpassword123'
-    });
-    expect(loginResult).toHaveProperty('accessToken');
-    expect(loginResult).toHaveProperty('refreshToken');
   });
 
-  // Happy case - create new auth if not exists
-  it('should create new auth record if user has no local auth', async () => {
-    // Delete existing auth
-    await AuthModel.deleteMany({ user: userId });
-
-    await AuthService.resetPassword(resetToken, 'newpassword123');
-
-    // Verify new auth was created
-    const auth = await AuthModel.findOne({ user: userId, provider: 'local' });
-    expect(auth).toBeDefined();
-    expect(auth?.localPassword).toBeDefined();
-    expect(auth?.providerId).toBe('testuser@gmail.com');
-    expect(auth?.lastResetPasswordToken).toBe(resetToken);
+  // Branch: invalid token
+  it('should throw error when reset token is invalid', async () => {
+    await expect(
+      AuthService.resetPassword('invalid-token', { password: 'newpassword123' })
+    ).rejects.toThrow('Token không hợp lệ');
   });
 
   // Branch: token already used
-  it('should throw 400 error when reset token has already been used', async () => {
+  it('should throw error when reset token has already been used', async () => {
     // Use the token once
-    await AuthService.resetPassword(resetToken, 'newpassword123');
+    await AuthService.resetPassword(resetToken, { password: 'newpassword123' });
 
     // Try to use the same token again
     await expect(
-      AuthService.resetPassword(resetToken, 'anotherpassword')
-    ).rejects.toThrow('This reset password token has already been used');
-  });
-
-  // Branch: invalid token (malformed)
-  it('should throw error when reset token is invalid', async () => {
-    await expect(
-      AuthService.resetPassword('invalid-token', 'newpassword123')
-    ).rejects.toThrow();
-  });
-
-  // Branch: token signed with wrong secret
-  it('should throw 400 error when reset token is signed with wrong secret', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const jwt = require('jsonwebtoken');
-    const invalidToken = jwt.sign(
-      'just-a-string',
-      process.env.JWT_RESET_PASSWORD_SECRET!
-    );
-
-    await expect(
-      AuthService.resetPassword(invalidToken, 'newpassword123')
-    ).rejects.toThrow('Invalid reset password token');
+      AuthService.resetPassword(resetToken, { password: 'anotherpassword' })
+    ).rejects.toThrow('Token đã được sử dụng');
   });
 
   // Branch: expired token
@@ -131,25 +98,62 @@ describe('AuthService.resetPassword', () => {
     const jwt = require('jsonwebtoken');
     const expiredToken = jwt.sign(
       { id: userId },
-      process.env.JWT_RESET_PASSWORD_SECRET || 'your_reset_password_secret',
+      process.env.JWT_RESET_PASSWORD_SECRET,
       { expiresIn: '0s' } // Expired immediately
     );
 
-    // Wait a bit to ensure token is expired
-    await new Promise(resolve => setTimeout(resolve, 100));
-
     await expect(
-      AuthService.resetPassword(expiredToken, 'newpassword123')
-    ).rejects.toThrow();
+      AuthService.resetPassword(expiredToken, { password: 'newpassword123' })
+    ).rejects.toThrow('Token đã hết hạn');
+  });
+
+  // Branch: missing required field
+  it('should throw error when password is missing', async () => {
+    await expect(
+      AuthService.resetPassword(resetToken, {
+        password: undefined as unknown as string
+      })
+    ).rejects.toThrow('Mật khẩu là bắt buộc');
+  });
+
+  // Branch: password too short
+  it('should throw error when password is less than 6 characters', async () => {
+    await expect(
+      AuthService.resetPassword(resetToken, { password: '123' })
+    ).rejects.toThrow('Mật khẩu phải có ít nhất 6 ký tự');
   });
 
   // Branch: user not found
-  it('should throw 404 error when user does not exist', async () => {
+  it('should throw error when user does not exist', async () => {
     // Delete the user
     await UserModel.findByIdAndDelete(userId);
 
     await expect(
-      AuthService.resetPassword(resetToken, 'newpassword123')
-    ).rejects.toThrow('User not found');
+      AuthService.resetPassword(resetToken, { password: 'newpassword123' })
+    ).rejects.toThrow('Không tìm thấy người dùng');
+  });
+
+  // Branch: Local Auth missing (e.g. Google user resetting password)
+  it('should create new local auth record if it does not exist', async () => {
+    // Delete the existing local auth
+    await AuthModel.deleteMany({});
+
+    await AuthService.resetPassword(resetToken, {
+      password: 'newItemPassword123'
+    });
+
+    // Verify new auth record created
+    const auth = await AuthModel.findOne({
+      user: userId,
+      provider: 'local'
+    });
+
+    expect(auth).toBeDefined();
+    expect(auth?.provider).toBe('local');
+    const isValid = await comparePassword(
+      'newItemPassword123',
+      auth!.localPassword!
+    );
+    expect(isValid).toBe(true);
   });
 });

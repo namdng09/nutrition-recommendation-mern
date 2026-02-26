@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
+import { NUTRITION_FOCUS } from '~/shared/constants/nutrition-focus';
 import { NUTRITION_MINERAL } from '~/shared/constants/nutrition-minerals';
 import { NUTRIENTS } from '~/shared/constants/nutrition-nutrients';
 import { NUTRITION_VITAMIN } from '~/shared/constants/nutrition-vitamin';
 import { UNIT } from '~/shared/constants/unit';
-import { NUTRITION_FOCUS } from '~/shared/constants/nutrition-focus';
 
 const parseJSON = (val: any) => {
   if (val === undefined || val === null) {
@@ -82,12 +82,17 @@ const detailNutritionSchema = z.object({
 });
 
 export const createDishRequestSchema = z.object({
-  name: z.string().trim().min(2, 'Tên phải có ít nhất 2 ký tự'),
+  name: z
+    .string('Tên món ăn không hợp lệ')
+    .trim()
+    .min(2, 'Tên món ăn phải có ít nhất 2 ký tự'),
   description: z.string().trim().optional(),
   categories: z.preprocess(
     parseJSON,
     z
-      .array(z.enum(Object.values(DISH_CATEGORY)))
+      .array(
+        z.enum(Object.values(DISH_CATEGORY), 'Danh mục món ăn không hợp lệ')
+      )
       .min(1, 'Phải có ít nhất 1 danh mục')
   ),
   ingredients: z.preprocess(
@@ -100,14 +105,28 @@ export const createDishRequestSchema = z.object({
   ),
   nutrition: z.preprocess(parseJSON, detailNutritionSchema).optional(),
   image: z.file().optional(),
-  preparationTime: z.coerce.number().min(0).optional(),
-  cookTime: z.coerce.number().min(0).optional(),
-  servings: z.coerce.number().min(1).optional(),
+  preparationTime: z.coerce
+    .number()
+    .min(1, 'Số phút phải lớn hơn hoặc bằng 1')
+    .optional(),
+  cookTime: z.coerce
+    .number()
+    .min(1, 'Số phút phải lớn hơn hoặc bằng 1')
+    .optional(),
+  servings: z.coerce
+    .number()
+    .min(1, 'Số lượng phải lớn hơn hoặc bằng 1')
+    .optional(),
   tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
   nutritionFocus: z.preprocess(
     parseJSON,
     z
-      .array(z.enum(Object.values(NUTRITION_FOCUS)))
+      .array(
+        z.enum(
+          Object.values(NUTRITION_FOCUS),
+          'Danh mục dinh dưỡng không hợp lệ'
+        )
+      )
       .min(1, 'Phải có ít nhất 1 danh mục')
   ),
   isActive: z.preprocess(parseBoolean, z.coerce.boolean()).optional(),
@@ -117,13 +136,19 @@ export const createDishRequestSchema = z.object({
 export type CreateDishRequest = z.infer<typeof createDishRequestSchema>;
 
 export const updateDishRequestSchema = z.object({
-  name: z.string().trim().min(2, 'Tên phải có ít nhất 2 ký tự').optional(),
+  name: z
+    .string('Tên món ăn không hợp lệ')
+    .trim()
+    .min(2, 'Tên món ăn phải có ít nhất 2 ký tự')
+    .optional(),
   description: z.string().trim().optional(),
   categories: z
     .preprocess(
       parseJSON,
       z
-        .array(z.enum(Object.values(DISH_CATEGORY)))
+        .array(
+          z.enum(Object.values(DISH_CATEGORY), 'Danh mục món ăn không hợp lệ')
+        )
         .min(1, 'Phải có ít nhất 1 danh mục')
     )
     .optional(),
@@ -141,16 +166,32 @@ export const updateDishRequestSchema = z.object({
     .optional(),
   nutrition: z.preprocess(parseJSON, detailNutritionSchema).optional(),
   image: z.file().optional(),
-  preparationTime: z.coerce.number().min(0).optional(),
-  cookTime: z.coerce.number().min(0).optional(),
-  servings: z.coerce.number().min(1).optional(),
+  preparationTime: z.coerce
+    .number()
+    .min(1, 'Số phút phải lớn hơn hoặc bằng 1')
+    .optional(),
+  cookTime: z.coerce
+    .number()
+    .min(1, 'Số phút phải lớn hơn hoặc bằng 1')
+    .optional(),
+  servings: z.coerce
+    .number()
+    .min(1, 'Số lượng phải lớn hơn hoặc bằng 1')
+    .optional(),
   tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
-  nutritionFocus: z.preprocess(
-    parseJSON,
-    z
-      .array(z.enum(Object.values(NUTRITION_FOCUS)))
-      .min(1, 'Phải có ít nhất 1 danh mục')
-  ),
+  nutritionFocus: z
+    .preprocess(
+      parseJSON,
+      z
+        .array(
+          z.enum(
+            Object.values(NUTRITION_FOCUS),
+            'Danh mục dinh dưỡng không hợp lệ'
+          )
+        )
+        .min(1, 'Phải có ít nhất 1 danh mục')
+    )
+    .optional(),
   isActive: z.preprocess(parseBoolean, z.coerce.boolean()).optional(),
   isPublic: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
 });

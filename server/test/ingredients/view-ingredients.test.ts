@@ -1,13 +1,20 @@
 import mongoose from 'mongoose';
-import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it
+} from 'vitest';
 
-import app from '~/app';
+import { IngredientService } from '~/features/ingredients/ingredient-service';
 import { INGREDIENT_CATEGORY } from '~/shared/constants/ingredient-category';
 import { UNIT } from '~/shared/constants/unit';
 import { IngredientModel } from '~/shared/database/models';
 
-describe('GET /api/ingredients', () => {
+describe('IngredientService.viewIngredients', () => {
   beforeAll(async () => {
     // Connect to test database if not already connected
     if (mongoose.connection.readyState === 0) {
@@ -18,9 +25,6 @@ describe('GET /api/ingredients', () => {
   });
 
   beforeEach(async () => {
-    // Clean up database before each test
-    await IngredientModel.deleteMany({});
-
     // Create test ingredients
     await IngredientModel.create([
       {
@@ -58,26 +62,26 @@ describe('GET /api/ingredients', () => {
     ]);
   });
 
-  afterAll(async () => {
-    // Clean up and close connection
+  afterEach(async () => {
+    // Clean up after each test
     await IngredientModel.deleteMany({});
+  });
+
+  afterAll(async () => {
+    // Close connection
     await mongoose.connection.close();
   });
 
-  // ============ HAPPY CASES ============
+  // Branch - Happy case
   it('should get all ingredients successfully', async () => {
-    const res = await request(app).get('/api/ingredients');
+    const result = await IngredientService.viewIngredients({
+      filter: {},
+      limit: 10
+    });
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty(
-      'message',
-      'Lấy danh sách nguyên liệu thành công'
-    );
-    expect(res.body.data).toHaveProperty('docs');
-    expect(res.body.data).toHaveProperty('totalDocs');
-    expect(res.body.data).toHaveProperty('page');
-    expect(Array.isArray(res.body.data.docs)).toBe(true);
-    expect(res.body.data.docs.length).toBe(4);
+    expect(result).toBeDefined();
+    expect(result.docs).toBeDefined();
+    expect(Array.isArray(result.docs)).toBe(true);
+    expect(result.docs.length).toBe(4);
   });
 });

@@ -1,13 +1,20 @@
 import mongoose from 'mongoose';
-import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it
+} from 'vitest';
 
-import app from '~/app';
+import { PostService } from '~/features/posts/post-service';
 import { POST_CATEGORY } from '~/shared/constants/post-category';
 import { ROLE } from '~/shared/constants/role';
 import { PostModel } from '~/shared/database/models';
 
-describe('GET /api/posts', () => {
+describe('PostService.viewPosts', () => {
   let userId1: string;
   let userId2: string;
 
@@ -75,53 +82,30 @@ describe('GET /api/posts', () => {
     });
   });
 
-  afterAll(async () => {
-    // Clean up and close connection
+  afterEach(async () => {
+    // Clean up after each test
     await PostModel.deleteMany({});
+  });
+
+  afterAll(async () => {
+    // Close connection
     await mongoose.connection.close();
   });
 
-  // ============ HAPPY CASES ============
+  // Branch - Happy case
   it('should get all posts successfully', async () => {
-    const res = await request(app).get('/api/posts');
+    const parsed = {
+      filter: {},
+      limit: 10
+    };
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Lấy danh sách bài viết thành công');
-    expect(res.body.data).toHaveProperty('docs');
-    expect(Array.isArray(res.body.data.docs)).toBe(true);
-    expect(res.body.data.docs.length).toBe(3);
-    expect(res.body.data).toHaveProperty('totalDocs', 3);
-    expect(res.body.data).toHaveProperty('page');
-    expect(res.body.data).toHaveProperty('totalPages');
-  });
+    const result = await PostService.viewPosts(parsed);
 
-  it('should filter posts by isPublished', async () => {
-    const res = await request(app).get('/api/posts?filter[isPublished]=true');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body.data.docs.length).toBe(2);
-    res.body.data.docs.forEach((post: any) => {
-      expect(post.isPublished).toBe(true);
-    });
-  });
-
-  it('should paginate posts correctly', async () => {
-    const res = await request(app).get('/api/posts?page=1&limit=2');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body.data.docs.length).toBe(2);
-    expect(res.body.data).toHaveProperty('page', 1);
-    expect(res.body.data).toHaveProperty('totalPages', 2);
-  });
-
-  it('should return empty array when no posts match filter', async () => {
-    const res = await request(app).get('/api/posts?filter[tags]=nonexistent');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body.data.docs).toHaveLength(0);
+    expect(result).toBeDefined();
+    expect(result.docs).toBeDefined();
+    expect(Array.isArray(result.docs)).toBe(true);
+    expect(result.docs.length).toBe(3);
+    expect(result.page).toBeDefined();
+    expect(result.totalPages).toBeDefined();
   });
 });

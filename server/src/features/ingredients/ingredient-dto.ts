@@ -65,7 +65,7 @@ const parseJSON = (val: any) => {
 
 export const createIngredientRequestSchema = z.object({
   name: z
-    .string({ message: 'Tên nguyên liệu không hợp lệ' })
+    .string('Tên nguyên liệu không hợp lệ')
     .trim()
     .min(2, 'Tên nguyên liệu phải có ít nhất 2 ký tự'),
   description: z.string().trim().optional(),
@@ -87,7 +87,7 @@ export type CreateIngredientRequest = z.infer<
 
 export const updateIngredientRequestSchema = z.object({
   name: z
-    .string({ message: 'Tên nguyên liệu không hợp lệ' })
+    .string('Tên nguyên liệu không hợp lệ')
     .trim()
     .min(2, 'Tên nguyên liệu phải có ít nhất 2 ký tự')
     .optional(),

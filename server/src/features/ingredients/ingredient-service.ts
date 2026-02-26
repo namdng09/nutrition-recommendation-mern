@@ -13,7 +13,9 @@ import {
 
 import {
   CreateIngredientRequest,
-  UpdateIngredientRequest
+  createIngredientRequestSchema,
+  UpdateIngredientRequest,
+  updateIngredientRequestSchema
 } from './ingredient-dto';
 
 export const IngredientService = {
@@ -21,6 +23,21 @@ export const IngredientService = {
     data: CreateIngredientRequest,
     image?: Express.Multer.File
   ) => {
+    const validation = createIngredientRequestSchema.safeParse(data);
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0];
+      throw createHttpError(400, firstError.message);
+    }
+
+    const existingIngredient = await IngredientModel.findOne({
+      name: data.name
+    });
+
+    if (existingIngredient) {
+      throw createHttpError(409, 'Nguyên liệu với tên này đã tồn tại');
+    }
+
     const newIngredient = await IngredientModel.create(data);
     if (!newIngredient) {
       throw createHttpError(500, 'Tạo nguyên liệu thất bại');
@@ -72,8 +89,26 @@ export const IngredientService = {
     data: UpdateIngredientRequest,
     image?: Express.Multer.File
   ) => {
+    const validation = updateIngredientRequestSchema.safeParse(data);
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0];
+      throw createHttpError(400, firstError.message);
+    }
+
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
+    }
+
+    if (data.name) {
+      const existingIngredient = await IngredientModel.findOne({
+        name: data.name,
+        _id: { $ne: id }
+      });
+
+      if (existingIngredient) {
+        throw createHttpError(409, 'Nguyên liệu với tên này đã tồn tại');
+      }
     }
 
     const updatedIngredient = await IngredientModel.findByIdAndUpdate(

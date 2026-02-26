@@ -23,7 +23,7 @@ export const AuthController = {
     });
 
     res.status(200).json(
-      ApiResponse.success('Login successful', {
+      ApiResponse.success('Đăng nhập thành công', {
         accessToken,
         hasOnboarded
       })
@@ -68,7 +68,7 @@ export const AuthController = {
     });
 
     res.status(200).json(
-      ApiResponse.success('Sign up successful', {
+      ApiResponse.success('Đăng ký thành công', {
         accessToken,
         hasOnboarded
       })
@@ -84,7 +84,7 @@ export const AuthController = {
       sameSite: 'strict'
     });
 
-    res.status(200).json(ApiResponse.success('Logout successful'));
+    res.status(200).json(ApiResponse.success('Đăng xuất thành công'));
   },
 
   refreshAccessToken: async (req: Request, res: Response) => {
@@ -93,7 +93,7 @@ export const AuthController = {
     const accessToken = await AuthService.refreshAccessToken(refreshToken);
 
     res.status(200).json(
-      ApiResponse.success('Access token refreshed successfully', {
+      ApiResponse.success('Làm mới token truy cập thành công', {
         accessToken
       })
     );
@@ -107,7 +107,9 @@ export const AuthController = {
     res
       .status(200)
       .json(
-        ApiResponse.success('A password reset link has been sent to your email')
+        ApiResponse.success(
+          'Liên kết đặt lại mật khẩu đã được gửi đến email của bạn'
+        )
       );
   },
 
@@ -119,6 +121,6 @@ export const AuthController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Your password has been reset successfully'));
+      .json(ApiResponse.success('Mật khẩu của bạn đã được đặt lại thành công'));
   }
 };

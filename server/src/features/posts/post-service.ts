@@ -14,8 +14,11 @@ import {
 
 import {
   CreateCommentRequest,
+  createCommentRequestSchema,
   CreatePostRequest,
-  UpdatePostRequest
+  createPostRequestSchema,
+  UpdatePostRequest,
+  updatePostRequestSchema
 } from './post-dto';
 
 const generateSlug = (title: string): string => {
@@ -39,6 +42,13 @@ export const PostService = {
     data: CreatePostRequest,
     images?: Express.Multer.File[]
   ) => {
+    const validation = createPostRequestSchema.safeParse(data);
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0];
+      throw createHttpError(400, firstError.message);
+    }
+
     const slug = generateSlug(data.title);
 
     // Check if slug already exists
@@ -138,6 +148,13 @@ export const PostService = {
     data: UpdatePostRequest,
     images?: Express.Multer.File[]
   ) => {
+    const validation = updatePostRequestSchema.safeParse(data);
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0];
+      throw createHttpError(400, firstError.message);
+    }
+
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'ID bài viết không hợp lệ');
     }
@@ -281,6 +298,13 @@ export const PostService = {
     userAvatar: string,
     data: CreateCommentRequest
   ) => {
+    const validation = createCommentRequestSchema.safeParse(data);
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0];
+      throw createHttpError(400, firstError.message);
+    }
+
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'ID bài viết không hợp lệ');
     }
@@ -321,6 +345,10 @@ export const PostService = {
 
     if (!post) {
       throw createHttpError(404, 'Không tìm thấy bài viết');
+    }
+
+    if (!validateObjectId(commentId)) {
+      throw createHttpError(400, 'ID bình luận không hợp lệ');
     }
 
     const commentIndex = post.comments.findIndex(

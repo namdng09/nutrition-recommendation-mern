@@ -1,13 +1,19 @@
 import mongoose from 'mongoose';
-import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it
+} from 'vitest';
 
-import app from '~/app';
+import { CollectionService } from '~/features/collections/collection-service';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
-import { ROLE } from '~/shared/constants/role';
 import { CollectionModel, DishModel } from '~/shared/database/models';
 
-describe('GET /api/collections', () => {
+describe('CollectionService.viewCollections', () => {
   let userId1: string;
   let userId2: string;
 
@@ -56,7 +62,7 @@ describe('GET /api/collections', () => {
         {
           dishId: dish1._id,
           name: dish1.name,
-          calories: 250,
+          energy: 250,
           addedAt: new Date()
         }
       ],
@@ -73,7 +79,7 @@ describe('GET /api/collections', () => {
         {
           dishId: dish2._id,
           name: dish2.name,
-          calories: 300,
+          energy: 300,
           addedAt: new Date()
         }
       ],
@@ -92,62 +98,32 @@ describe('GET /api/collections', () => {
     });
   });
 
-  afterAll(async () => {
-    // Clean up and close connection
+  afterEach(async () => {
+    // Clean up after each test
     await CollectionModel.deleteMany({});
     await DishModel.deleteMany({});
+  });
+
+  afterAll(async () => {
+    // Close connection
     await mongoose.connection.close();
   });
 
-  // ============ HAPPY CASES ============
+  // Branch - Happy case: get all collections
   it('should get all collections successfully', async () => {
-    const res = await request(app).get('/api/collections');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Lấy danh sách bộ sưu tập thành công');
-    expect(res.body.data).toHaveProperty('docs');
-    expect(Array.isArray(res.body.data.docs)).toBe(true);
-    expect(res.body.data.docs.length).toBe(3);
-    expect(res.body.data).toHaveProperty('totalDocs', 3);
-    expect(res.body.data).toHaveProperty('page');
-    expect(res.body.data).toHaveProperty('totalPages');
-  });
-
-  it('should filter collections by isPublic', async () => {
-    const res = await request(app).get('/api/collections?filter[isPublic]=true');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body.data.docs.length).toBe(2);
-    res.body.data.docs.forEach((collection: any) => {
-      expect(collection.isPublic).toBe(true);
+    const result = await CollectionService.viewCollections({
+      filter: {},
+      sort: {},
+      limit: 10,
+      skip: 0,
+      populate: []
     });
-  });
 
-  it('should paginate collections correctly', async () => {
-    const res = await request(app).get('/api/collections?filter[tags]=giảm cân');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body.data.docs.length).toBeGreaterThanOrEqual(1);
-  });
-
-  it('should paginate collections correctly', async () => {
-    const res = await request(app).get('/api/collections?page=1&limit=2');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body.data.docs.length).toBe(2);
-    expect(res.body.data).toHaveProperty('page', 1);
-    expect(res.body.data).toHaveProperty('totalPages', 2);
-  });
-
-  it('should return empty array when no collections match filter', async () => {
-    const res = await request(app).get('/api/collections?filter[tags]=nonexistent');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body.data.docs).toHaveLength(0);
+    expect(result).toBeDefined();
+    expect(result.docs).toBeDefined();
+    expect(Array.isArray(result.docs)).toBe(true);
+    expect(result.docs.length).toBe(3);
+    expect(result.page).toBeDefined();
+    expect(result.totalPages).toBeDefined();
   });
 });

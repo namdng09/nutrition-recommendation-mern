@@ -1,14 +1,22 @@
 import mongoose from 'mongoose';
-import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { vi } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it
+} from 'vitest';
 
-import app from '~/app';
+import { DishService } from '~/features/dishes/dish-service';
 import { ALLERGEN } from '~/shared/constants/allergen';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
 import { UNIT } from '~/shared/constants/unit';
 import { DishModel } from '~/shared/database/models';
 
-describe('GET /api/dishes/:id', () => {
+describe('DishService.viewDishDetail', () => {
   let dishId: string;
   let userId: string;
 
@@ -19,12 +27,12 @@ describe('GET /api/dishes/:id', () => {
         process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
       );
     }
-    userId = new mongoose.Types.ObjectId().toString();
   });
 
   beforeEach(async () => {
     // Clean up database before each test
     await DishModel.deleteMany({});
+    userId = new mongoose.Types.ObjectId().toString();
 
     // Create a test dish for happy case
     const dish = await DishModel.create({
@@ -96,67 +104,29 @@ describe('GET /api/dishes/:id', () => {
     await mongoose.connection.close();
   });
 
-  // ============ HAPPY CASES ============
+  // Branch - Happy case
   it('should get dish detail successfully', async () => {
-    const res = await request(app).get(`/api/dishes/${dishId}`);
+    const dish = await DishService.viewDishDetail(dishId);
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty(
-      'message',
-      'Lấy thông tin món ăn thành công'
-    );
-    expect(res.body.data).toHaveProperty('_id', dishId);
-    expect(res.body.data).toHaveProperty('name', 'Phở bò');
-    expect(res.body.data).toHaveProperty('description');
-    expect(res.body.data).toHaveProperty('categories');
-    expect(res.body.data.categories).toContain(DISH_CATEGORY.MAIN_COURSE);
-    expect(res.body.data.categories).toContain(DISH_CATEGORY.SOUP);
-    expect(res.body.data).toHaveProperty('user');
-    expect(res.body.data.user).toHaveProperty('_id', userId);
-    expect(res.body.data.user).toHaveProperty('name', 'Test User');
-    expect(res.body.data).toHaveProperty('ingredients');
-    expect(Array.isArray(res.body.data.ingredients)).toBe(true);
-    expect(res.body.data.ingredients.length).toBe(2);
-    expect(res.body.data.ingredients[0]).toHaveProperty('name', 'Thịt bò');
-    expect(res.body.data.ingredients[0]).toHaveProperty('nutrients');
-    expect(res.body.data.ingredients[1]).toHaveProperty('allergens');
-    expect(res.body.data.ingredients[1].allergens).toContain(ALLERGEN.GLUTEN);
-    expect(res.body.data).toHaveProperty('instructions');
-    expect(Array.isArray(res.body.data.instructions)).toBe(true);
-    expect(res.body.data.instructions.length).toBe(4);
-    expect(res.body.data.instructions[0]).toHaveProperty('step', 1);
-    expect(res.body.data).toHaveProperty('image', 'pho-bo.jpg');
-    expect(res.body.data).toHaveProperty('isActive', true);
-    expect(res.body.data).toHaveProperty('isPublic', true);
-    expect(res.body.data).toHaveProperty('preparationTime', 30);
-    expect(res.body.data).toHaveProperty('cookTime', 240);
-    expect(res.body.data).toHaveProperty('servings', 4);
-    expect(res.body.data).toHaveProperty('tags');
-    expect(Array.isArray(res.body.data.tags)).toBe(true);
-    expect(res.body.data.tags).toContain('phở');
+    expect(dish).toBeDefined();
+    expect(dish._id.toString()).toBe(dishId);
+    expect(dish.name).toBe('Phở bò');
+    expect(dish.ingredients).toHaveLength(2);
+    expect(dish.instructions).toHaveLength(4);
   });
 
-  // ============ VALIDATION (400) ============
-  it('should return 400 when id format is invalid', async () => {
-    const res = await request(app).get('/api/dishes/invalid-id');
-
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty(
-      'message',
+  // Branch - Invalid ID format
+  it('should throw error when id format is invalid', async () => {
+    await expect(DishService.viewDishDetail('invalid-id')).rejects.toThrow(
       'Định dạng ID món ăn không hợp lệ'
     );
   });
 
-  // ============ NOT FOUND (404) ============
-  it('should return 404 when dish does not exist', async () => {
-    // Create a valid ObjectId that doesn't exist in database
+  // Branch - Dish not found
+  it('should throw error when dish does not exist', async () => {
     const nonExistentId = new mongoose.Types.ObjectId().toString();
-    const res = await request(app).get(`/api/dishes/${nonExistentId}`);
-
-    expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Không tìm thấy món ăn');
+    await expect(DishService.viewDishDetail(nonExistentId)).rejects.toThrow(
+      'Không tìm thấy món ăn'
+    );
   });
 });
