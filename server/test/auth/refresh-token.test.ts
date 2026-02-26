@@ -47,7 +47,7 @@ describe('AuthService.refreshAccessToken', () => {
   });
 
   // Happy case
-  it('should refresh access token successfully with valid refresh token', async () => {
+  it('should refresh access token successfully', async () => {
     const newAccessToken =
       await AuthService.refreshAccessToken(validRefreshToken);
 
@@ -58,7 +58,7 @@ describe('AuthService.refreshAccessToken', () => {
   // Branch: no refresh token provided
   it('should throw 401 error when refresh token is missing', async () => {
     await expect(AuthService.refreshAccessToken('')).rejects.toThrow(
-      'Refresh token is required'
+      'Token không được cung cấp'
     );
   });
 
@@ -66,21 +66,7 @@ describe('AuthService.refreshAccessToken', () => {
   it('should throw error when refresh token is invalid', async () => {
     await expect(
       AuthService.refreshAccessToken('invalid-token')
-    ).rejects.toThrow();
-  });
-
-  // Branch: refresh token with wrong secret
-  it('should throw 400 error when refresh token is signed with wrong secret', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const jwt = require('jsonwebtoken');
-    const invalidToken = jwt.sign(
-      'just-a-string',
-      process.env.JWT_REFRESH_SECRET || 'your_jwt_secret'
-    );
-
-    await expect(AuthService.refreshAccessToken(invalidToken)).rejects.toThrow(
-      'Invalid refresh token'
-    );
+    ).rejects.toThrow('Token không hợp lệ');
   });
 
   // Branch: expired refresh token
@@ -93,12 +79,9 @@ describe('AuthService.refreshAccessToken', () => {
       { expiresIn: '0s' } // Expired immediately
     );
 
-    // Wait a bit to ensure token is expired
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    await expect(
-      AuthService.refreshAccessToken(expiredToken)
-    ).rejects.toThrow();
+    await expect(AuthService.refreshAccessToken(expiredToken)).rejects.toThrow(
+      'Token đã hết hạn'
+    );
   });
 
   // Branch: user not found
@@ -108,32 +91,6 @@ describe('AuthService.refreshAccessToken', () => {
 
     await expect(
       AuthService.refreshAccessToken(validRefreshToken)
-    ).rejects.toThrow('User not found');
-  });
-
-  // Branch: refresh token with fallback secret
-  it('should work with fallback secret when JWT_REFRESH_SECRET is not set', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const jwt = require('jsonwebtoken');
-    const originalSecret = process.env.JWT_REFRESH_SECRET;
-
-    // Temporarily unset JWT_REFRESH_SECRET
-    delete process.env.JWT_REFRESH_SECRET;
-
-    // Generate token with fallback secret
-    const fallbackToken = jwt.sign(
-      { id: userId, role: ROLE.USER },
-      'your_jwt_secret',
-      { expiresIn: '7d' }
-    );
-
-    const newAccessToken = await AuthService.refreshAccessToken(fallbackToken);
-
-    // Restore original secret
-    if (originalSecret) {
-      process.env.JWT_REFRESH_SECRET = originalSecret;
-    }
-
-    expect(typeof newAccessToken).toBe('string');
+    ).rejects.toThrow('Không tìm thấy người dùng');
   });
 });

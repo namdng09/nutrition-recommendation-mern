@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import request from 'supertest';
 import {
   afterAll,
+  afterEach,
   beforeAll,
   beforeEach,
   describe,
@@ -10,17 +10,10 @@ import {
   vi
 } from 'vitest';
 
-import app from '~/app';
+import { IngredientService } from '~/features/ingredients/ingredient-service';
 import { INGREDIENT_CATEGORY } from '~/shared/constants/ingredient-category';
-import { ROLE } from '~/shared/constants/role';
 import { UNIT } from '~/shared/constants/unit';
-import {
-  AuthModel,
-  IngredientModel,
-  UserModel
-} from '~/shared/database/models';
-import { hashPassword } from '~/shared/utils/bcrypt';
-import { generateToken } from '~/shared/utils/jwt';
+import { IngredientModel } from '~/shared/database/models';
 
 // Mock Cloudinary upload
 vi.mock('~/shared/utils/cloudinary', () => ({
@@ -39,10 +32,7 @@ vi.mock('~/shared/utils/cloudinary', () => ({
 // Import mocked functions to customize per test
 import * as cloudinaryUtils from '~/shared/utils/cloudinary';
 
-describe('POST /api/ingredients', () => {
-  let nutritionistToken: string;
-  let userToken: string;
-
+describe('IngredientService.createIngredient', () => {
   beforeAll(async () => {
     // Connect to test database if not already connected
     if (mongoose.connection.readyState === 0) {
@@ -55,8 +45,6 @@ describe('POST /api/ingredients', () => {
   beforeEach(async () => {
     // Clean up database before each test
     await IngredientModel.deleteMany({});
-    await UserModel.deleteMany({});
-    await AuthModel.deleteMany({});
 
     // Reset mocks
     vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValue({
@@ -68,182 +56,135 @@ describe('POST /api/ingredients', () => {
         format: 'jpg'
       } as any
     });
+  });
 
-    // Create nutritionist user
-    const nutritionist = await UserModel.create({
-      email: 'nutritionist@test.com',
-      name: 'Test Nutritionist',
-      role: ROLE.NUTRITIONIST,
-      isActive: true
-    });
-
-    const hashedPassword = await hashPassword('123456');
-    await AuthModel.create({
-      user: nutritionist._id,
-      provider: 'local',
-      providerId: 'nutritionist@test.com',
-      localPassword: hashedPassword,
-      verifyAt: new Date()
-    });
-
-    const nutritionistTokens = generateToken({
-      id: nutritionist._id.toString(),
-      role: ROLE.NUTRITIONIST
-    });
-    nutritionistToken = nutritionistTokens.accessToken;
-
-    // Create regular user
-    const user = await UserModel.create({
-      email: 'user@test.com',
-      name: 'Test User',
-      role: ROLE.USER,
-      isActive: true
-    });
-
-    await AuthModel.create({
-      user: user._id,
-      provider: 'local',
-      providerId: 'user@test.com',
-      localPassword: hashedPassword,
-      verifyAt: new Date()
-    });
-
-    const userTokens = generateToken({
-      id: user._id.toString(),
-      role: ROLE.USER
-    });
-    userToken = userTokens.accessToken;
+  afterEach(async () => {
+    // Clean up after each test
+    await IngredientModel.deleteMany({});
   });
 
   afterAll(async () => {
-    // Clean up and close connection
-    await IngredientModel.deleteMany({});
-    await UserModel.deleteMany({});
-    await AuthModel.deleteMany({});
+    // Close connection
     await mongoose.connection.close();
   });
 
-  // ============ HAPPY CASES ============
-  it('UC01 - should create ingredient successfully', async () => {
-    const ingredientData = {
-      name: 'Cà chua',
-      description: 'Cà chua tươi',
-      categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES]),
-      baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM }),
-      units: JSON.stringify([{ value: 1, unit: 'quả', isDefault: true }]),
-      allergens: JSON.stringify([]),
-      isActive: 'true'
-    };
-
-    const res = await request(app)
-      .post('/api/ingredients')
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', ingredientData.name)
-      .field('description', ingredientData.description)
-      .field('categories', ingredientData.categories)
-      .field('baseUnit', ingredientData.baseUnit)
-      .field('units', ingredientData.units)
-      .field('allergens', ingredientData.allergens)
-      .field('isActive', ingredientData.isActive);
-
-    expect(res.status).toBe(201);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Tạo nguyên liệu thành công');
-    expect(res.body.data).toHaveProperty('_id');
-    expect(res.body.data).toHaveProperty('name', 'Cà chua');
-    expect(res.body.data).toHaveProperty('description', 'Cà chua tươi');
-    expect(res.body.data.categories).toContain(INGREDIENT_CATEGORY.VEGETABLES);
-    expect(res.body.data).toHaveProperty('isActive', true);
-  });
-
-  it('UC02 - should create ingredient successfully with image', async () => {
+  // Branch - Happy case
+  it('should create ingredient successfully', async () => {
     const ingredientData = {
       name: 'Thịt bò',
       description: 'Thịt bò Úc',
-      categories: JSON.stringify([INGREDIENT_CATEGORY.MEAT]),
-      baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM }),
-      allergens: JSON.stringify([])
+      categories: [INGREDIENT_CATEGORY.MEAT],
+      baseUnit: { amount: 100, unit: UNIT.GRAM },
+      allergens: []
     };
 
-    const res = await request(app)
-      .post('/api/ingredients')
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', ingredientData.name)
-      .field('description', ingredientData.description)
-      .field('categories', ingredientData.categories)
-      .field('baseUnit', ingredientData.baseUnit)
-      .field('allergens', ingredientData.allergens)
-      .attach('image', Buffer.from('fake-image-data'), 'test-image.jpg');
+    const fakeImage = {
+      buffer: Buffer.from('fake-image-data'),
+      originalname: 'test-image.jpg'
+    } as Express.Multer.File;
 
-    expect(res.status).toBe(201);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body.data).toHaveProperty('name', 'Thịt bò');
+    const ingredient = await IngredientService.createIngredient(
+      ingredientData,
+      fakeImage
+    );
+
+    expect(ingredient).toBeDefined();
+    expect(ingredient.name).toBe('Thịt bò');
+    expect(ingredient.image).toBeDefined();
+    expect(ingredient.image).toContain('https://res.cloudinary.com');
   });
 
-  // ============ VALIDATION (400) ============
-  it('UC03 - should return 400 when name is missing', async () => {
+  // Branch - Missing name
+  it('should throw error when name is missing', async () => {
     const ingredientData = {
       description: 'Cà chua tươi',
-      categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES]),
-      baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM }),
-      allergens: JSON.stringify([])
+      categories: [INGREDIENT_CATEGORY.VEGETABLES],
+      baseUnit: { amount: 100, unit: UNIT.GRAM },
+      allergens: []
     };
 
-    const res = await request(app)
-      .post('/api/ingredients')
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('description', ingredientData.description)
-      .field('categories', ingredientData.categories)
-      .field('baseUnit', ingredientData.baseUnit)
-      .field('allergens', ingredientData.allergens);
-
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Tên nguyên liệu không hợp lệ');
+    await expect(
+      IngredientService.createIngredient(ingredientData as any, undefined)
+    ).rejects.toThrow('Tên nguyên liệu không hợp lệ');
   });
 
-  it('UC04 - should return 400 when name is number', async () => {
+  // Branch - Invalid name type
+  it('should throw error when name is not a string', async () => {
     const ingredientData = {
       name: 1234,
       description: 'Cà chua tươi',
-      categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES]),
-      baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM }),
-      allergens: JSON.stringify([])
+      categories: [INGREDIENT_CATEGORY.VEGETABLES],
+      baseUnit: { amount: 100, unit: UNIT.GRAM },
+      allergens: []
     };
 
-    const res = await request(app)
-      .post('/api/ingredients')
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .send(ingredientData);
-
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Tên nguyên liệu không hợp lệ');
+    await expect(
+      IngredientService.createIngredient(ingredientData as any, undefined)
+    ).rejects.toThrow('Tên nguyên liệu không hợp lệ');
   });
 
-  it('UC05 - should return 400 when name is too short', async () => {
+  // Branch - Name too short
+  it('should throw error when name is too short', async () => {
     const ingredientData = {
       name: 'A',
       description: 'Cà chua tươi',
-      categories: JSON.stringify([INGREDIENT_CATEGORY.VEGETABLES]),
-      baseUnit: JSON.stringify({ amount: 100, unit: UNIT.GRAM }),
-      allergens: JSON.stringify([])
+      categories: [INGREDIENT_CATEGORY.VEGETABLES],
+      baseUnit: { amount: 100, unit: UNIT.GRAM },
+      allergens: []
     };
 
-    const res = await request(app)
-      .post('/api/ingredients')
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', ingredientData.name)
-      .field('description', ingredientData.description)
-      .field('categories', ingredientData.categories)
-      .field('baseUnit', ingredientData.baseUnit)
-      .field('allergens', ingredientData.allergens);
+    await expect(
+      IngredientService.createIngredient(ingredientData as any, undefined)
+    ).rejects.toThrow('Tên nguyên liệu phải có ít nhất 2 ký tự');
+  });
 
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty(
-      'message',
-      'Tên nguyên liệu phải có ít nhất 2 ký tự'
-    );
+  // Branch - Image upload failure
+  it('should throw error when image upload fails', async () => {
+    // Mock uploadImage to fail
+    vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValueOnce({
+      success: false,
+      data: null
+    } as any);
+
+    const ingredientData = {
+      name: 'Cá hồi',
+      description: 'Cá hồi Na Uy',
+      categories: [INGREDIENT_CATEGORY.SEAFOOD],
+      baseUnit: { amount: 100, unit: UNIT.GRAM },
+      allergens: []
+    };
+
+    const fakeImage = {
+      buffer: Buffer.from('fake-image-data'),
+      originalname: 'test-image.jpg'
+    } as Express.Multer.File;
+
+    await expect(
+      IngredientService.createIngredient(ingredientData, fakeImage)
+    ).rejects.toThrow('Tải ảnh lên thất bại');
+  });
+
+  // Branch - Duplicate name
+  it('should throw error when ingredient name already exists', async () => {
+    await IngredientModel.create({
+      name: 'Thịt gà',
+      description: 'Thịt gà tươi',
+      categories: [INGREDIENT_CATEGORY.MEAT],
+      baseUnit: { amount: 100, unit: UNIT.GRAM },
+      allergens: []
+    });
+
+    // Create another ingredient with same name
+    const ingredientData = {
+      name: 'Thịt gà',
+      description: 'Thịt gà khác',
+      categories: [INGREDIENT_CATEGORY.MEAT],
+      baseUnit: { amount: 100, unit: UNIT.GRAM },
+      allergens: []
+    };
+
+    await expect(
+      IngredientService.createIngredient(ingredientData, undefined)
+    ).rejects.toThrow('Nguyên liệu với tên này đã tồn tại');
   });
 });

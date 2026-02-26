@@ -42,7 +42,7 @@ router.put(
 router.delete(
   '/:id',
   authenticate(),
-  authorize([ROLE.NUTRITIONIST]),
+  authorize([ROLE.NUTRITIONIST, ROLE.ADMIN]),
   asyncHandler(IngredientController.deleteIngredient)
 );
 

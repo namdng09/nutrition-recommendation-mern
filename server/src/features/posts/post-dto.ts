@@ -25,8 +25,14 @@ const parseBoolean = (val: any) => {
 };
 
 export const createPostRequestSchema = z.object({
-  title: z.string().trim().min(5, 'Tiêu đề phải có ít nhất 5 ký tự'),
-  content: z.string().trim().min(10, 'Nội dung phải có ít nhất 10 ký tự'),
+  title: z
+    .string('Tiêu đề không hợp lệ')
+    .trim()
+    .min(5, 'Tiêu đề phải có ít nhất 5 ký tự'),
+  content: z
+    .string('Nội dung không hợp lệ')
+    .trim()
+    .min(10, 'Nội dung phải có ít nhất 10 ký tự'),
   tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
   category: z.enum(Object.values(POST_CATEGORY)).optional(),
   images: z.array(z.file()).optional(),
@@ -36,9 +42,13 @@ export const createPostRequestSchema = z.object({
 export type CreatePostRequest = z.infer<typeof createPostRequestSchema>;
 
 export const updatePostRequestSchema = z.object({
-  title: z.string().trim().min(5, 'Tiêu đề phải có ít nhất 5 ký tự').optional(),
+  title: z
+    .string('Tiêu đề không hợp lệ')
+    .trim()
+    .min(5, 'Tiêu đề phải có ít nhất 5 ký tự')
+    .optional(),
   content: z
-    .string()
+    .string('Nội dung không hợp lệ')
     .trim()
     .min(10, 'Nội dung phải có ít nhất 10 ký tự')
     .optional(),
@@ -51,7 +61,10 @@ export const updatePostRequestSchema = z.object({
 export type UpdatePostRequest = z.infer<typeof updatePostRequestSchema>;
 
 export const createCommentRequestSchema = z.object({
-  content: z.string().trim().min(1, 'Nội dung bình luận không được để trống')
+  content: z
+    .string('Nội dung bình luận không hợp lệ')
+    .trim()
+    .min(1, 'Nội dung bình luận phải có ít nhất 1 ký tự')
 });
 
 export type CreateCommentRequest = z.infer<typeof createCommentRequestSchema>;

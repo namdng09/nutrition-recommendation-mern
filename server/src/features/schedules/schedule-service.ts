@@ -13,9 +13,13 @@ import {
 
 import {
   CreateScheduleRequest,
+  createScheduleRequestSchema,
   UpdateScheduleDishStatusRequest,
+  updateScheduleDishStatusRequestSchema,
   UpdateScheduleMealsRequest,
-  UpdateScheduleRequest
+  updateScheduleMealsRequestSchema,
+  UpdateScheduleRequest,
+  updateScheduleRequestSchema
 } from './schedule-dto';
 
 type ScheduleMeal = {
@@ -44,13 +48,6 @@ const mealTypeValues = Object.values(MEAL_TYPE) as MealType[];
 
 const isValidMealType = (value: string): value is MealType =>
   mealTypeValues.includes(value as MealType);
-
-const ensureValidDate = (value: Date) => {
-  if (Number.isNaN(value.getTime())) {
-    throw createHttpError(400, 'Định dạng ngày không hợp lệ');
-  }
-  return value;
-};
 
 const validateDishIds = (meals?: ScheduleMeal[]) => {
   if (!meals) return;
@@ -136,11 +133,17 @@ export const ScheduleService = {
     userName: string,
     data: CreateScheduleRequest
   ) => {
+    const validation = createScheduleRequestSchema.safeParse(data);
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0];
+      throw createHttpError(400, firstError.message);
+    }
+
     if (!validateObjectId(userId)) {
       throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
     }
 
-    const date = ensureValidDate(data.date);
     const user = await UserModel.findById(userId);
 
     if (!user) {
@@ -157,7 +160,7 @@ export const ScheduleService = {
         _id: userId,
         name: userName
       },
-      date,
+      date: data.date,
       dayOfWeek: data.dayOfWeek,
       meals
     });
@@ -300,6 +303,13 @@ export const ScheduleService = {
     role: string | undefined,
     data: UpdateScheduleRequest
   ) => {
+    const validation = updateScheduleRequestSchema.safeParse(data);
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0];
+      throw createHttpError(400, firstError.message);
+    }
+
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
     }
@@ -312,10 +322,6 @@ export const ScheduleService = {
 
     if (role !== ROLE.ADMIN && schedule.user?._id.toString() !== userId) {
       throw createHttpError(403, 'Bạn không có quyền cập nhật lịch ăn này');
-    }
-
-    if (data.date) {
-      data.date = ensureValidDate(data.date);
     }
 
     validateDishIds(data.meals);
@@ -336,6 +342,13 @@ export const ScheduleService = {
     userId: string,
     data: UpdateScheduleMealsRequest
   ) => {
+    const validation = updateScheduleMealsRequestSchema.safeParse(data);
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0];
+      throw createHttpError(400, firstError.message);
+    }
+
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
     }
@@ -356,7 +369,7 @@ export const ScheduleService = {
     data.meals.forEach(meal => {
       meal.dishes?.forEach(dish => {
         if (!dish.dishId) {
-          throw createHttpError(400, 'Dish ID is required');
+          throw createHttpError(400, 'ID món ăn là bắt buộc');
         }
         dishIds.add(dish.dishId);
       });
@@ -448,6 +461,13 @@ export const ScheduleService = {
     dishId: string,
     data: UpdateScheduleDishStatusRequest
   ) => {
+    const validation = updateScheduleDishStatusRequestSchema.safeParse(data);
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0];
+      throw createHttpError(400, firstError.message);
+    }
+
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
     }

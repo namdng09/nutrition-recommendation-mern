@@ -1,15 +1,19 @@
 import mongoose from 'mongoose';
-import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it
+} from 'vitest';
 
-import app from '~/app';
+import { PostService } from '~/features/posts/post-service';
 import { ROLE } from '~/shared/constants/role';
-import { AuthModel, PostModel, UserModel } from '~/shared/database/models';
-import { hashPassword } from '~/shared/utils/bcrypt';
-import { generateToken } from '~/shared/utils/jwt';
+import { PostModel } from '~/shared/database/models';
 
-describe('POST /api/posts/:id/like', () => {
-  let userToken: string;
+describe('PostService.likePost', () => {
   let userId: string;
   let postId: string;
   let postWithLikesId: string;
@@ -26,41 +30,9 @@ describe('POST /api/posts/:id/like', () => {
   beforeEach(async () => {
     // Clean up database before each test
     await PostModel.deleteMany({});
-    await UserModel.deleteMany({});
-    await AuthModel.deleteMany({});
 
-    // Create user
-    const user = await UserModel.create({
-      email: 'user@test.com',
-      name: 'Test User',
-      role: ROLE.USER,
-      isActive: true
-    });
-    userId = user._id.toString();
-
-    const hashedPassword = await hashPassword('123456');
-    await AuthModel.create({
-      user: user._id,
-      provider: 'local',
-      providerId: 'user@test.com',
-      localPassword: hashedPassword,
-      verifyAt: new Date()
-    });
-
-    const userTokens = generateToken({
-      id: user._id.toString(),
-      role: ROLE.USER
-    });
-    userToken = userTokens.accessToken;
-
-    // Create nutritionist for posts
-    const nutritionist = await UserModel.create({
-      email: 'nutritionist@test.com',
-      name: 'Test Nutritionist',
-      role: ROLE.NUTRITIONIST,
-      isActive: true
-    });
-    const nutritionistId = nutritionist._id.toString();
+    userId = new mongoose.Types.ObjectId().toString();
+    const nutritionistId = new mongoose.Types.ObjectId().toString();
 
     // Create post without likes
     const post = await PostModel.create({
@@ -77,16 +49,8 @@ describe('POST /api/posts/:id/like', () => {
     });
     postId = post._id.toString();
 
-    // Create another user who already liked
-    const otherUser = await UserModel.create({
-      email: 'other@test.com',
-      name: 'Other User',
-      role: ROLE.USER,
-      isActive: true
-    });
-    const otherUserId = otherUser._id;
-
     // Create post with existing likes
+    const otherUserId = new mongoose.Types.ObjectId();
     const postWithLikes = await PostModel.create({
       author: {
         _id: nutritionistId,
@@ -102,59 +66,46 @@ describe('POST /api/posts/:id/like', () => {
     postWithLikesId = postWithLikes._id.toString();
   });
 
-  afterAll(async () => {
-    // Clean up and close connection
+  afterEach(async () => {
+    // Clean up after each test
     await PostModel.deleteMany({});
-    await UserModel.deleteMany({});
-    await AuthModel.deleteMany({});
+  });
+
+  afterAll(async () => {
+    // Close connection
     await mongoose.connection.close();
   });
 
-  // ============ HAPPY CASES ============
+  // Branch - Happy case: like post
   it('should like post successfully', async () => {
-    const res = await request(app)
-      .post(`/api/posts/${postId}/like`)
-      .set('Authorization', `Bearer ${userToken}`);
+    const result = await PostService.likePost(postId, userId);
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Đã thích bài viết');
-    expect(res.body.data).toHaveProperty('liked', true);
-    expect(res.body.data).toHaveProperty('likesCount', 1);
+    expect(result).toBeDefined();
+    expect(result.liked).toBe(true);
+    expect(result.likesCount).toBe(1);
   });
 
   it('should unlike post successfully', async () => {
-    const res = await request(app)
-      .post(`/api/posts/${postWithLikesId}/like`)
-      .set('Authorization', `Bearer ${userToken}`);
+    const result = await PostService.likePost(postWithLikesId, userId);
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Đã bỏ thích bài viết');
-    expect(res.body.data).toHaveProperty('liked', false);
-    expect(res.body.data).toHaveProperty('likesCount', 1); // Should be 1 after removing user's like
+    expect(result).toBeDefined();
+    expect(result.liked).toBe(false);
+    expect(result.likesCount).toBe(1); // Should be 1 after removing user's like
   });
 
-  // ============ VALIDATION (400) ============
-  it('should return 400 when id format is invalid', async () => {
-    const res = await request(app)
-      .post('/api/posts/invalid-id/like')
-      .set('Authorization', `Bearer ${userToken}`);
-
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'ID bài viết không hợp lệ');
+  // Branch - Invalid ID
+  it('should throw error when id format is invalid', async () => {
+    await expect(PostService.likePost('invalid-id', userId)).rejects.toThrow(
+      'ID bài viết không hợp lệ'
+    );
   });
 
-  // ============ NOT FOUND (404) ============
-  it('should return 404 when post does not exist', async () => {
+  // Branch - Post not found
+  it('should throw error when post does not exist', async () => {
     const nonExistentId = new mongoose.Types.ObjectId().toString();
-    const res = await request(app)
-      .post(`/api/posts/${nonExistentId}/like`)
-      .set('Authorization', `Bearer ${userToken}`);
 
-    expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Không tìm thấy bài viết');
+    await expect(PostService.likePost(nonExistentId, userId)).rejects.toThrow(
+      'Không tìm thấy bài viết'
+    );
   });
 });

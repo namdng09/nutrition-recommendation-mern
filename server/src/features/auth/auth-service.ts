@@ -13,23 +13,34 @@ import {
   verifyToken
 } from '~/shared/utils';
 
-import type {
-  LoginRequest,
-  LoginResponse,
-  LoginWithProviderResponse,
-  SignUpRequest,
-  SignUpResponse
+import {
+  type LoginRequest,
+  loginRequestSchema,
+  type LoginResponse,
+  type LoginWithProviderResponse,
+  type ResetPasswordRequest,
+  resetPasswordRequestSchema,
+  type SignUpRequest,
+  signUpRequestSchema,
+  type SignUpResponse
 } from './auth-dto';
 
 export const AuthService = {
   login: async (data: LoginRequest): Promise<LoginResponse> => {
+    const validation = loginRequestSchema.safeParse(data);
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0];
+      throw createHttpError(400, firstError.message);
+    }
+
     const auth = await AuthModel.findOne({
       provider: 'local',
       providerId: data.email
     });
 
     if (!auth || !auth.localPassword) {
-      throw createHttpError(401, 'Invalid credentials');
+      throw createHttpError(401, 'Thông tin đăng nhập không hợp lệ');
     }
 
     const isValidPassword = await comparePassword(
@@ -37,12 +48,15 @@ export const AuthService = {
       auth.localPassword
     );
     if (!isValidPassword) {
-      throw createHttpError(401, 'Invalid credentials');
+      throw createHttpError(401, 'Thông tin đăng nhập không hợp lệ');
     }
 
     const user = await UserModel.findById(auth.user);
     if (!user || !user.isActive) {
-      throw createHttpError(404, 'User not found or inactive');
+      throw createHttpError(
+        404,
+        'Không tìm thấy người dùng hoặc tài khoản đã bị vô hiệu hóa'
+      );
     }
 
     const { accessToken, refreshToken } = generateToken({
@@ -64,7 +78,7 @@ export const AuthService = {
     user: HydratedDocument<User>
   ): Promise<LoginWithProviderResponse> => {
     if (!user || !user._id) {
-      throw createHttpError(400, 'User not found');
+      throw createHttpError(400, 'Không tìm thấy người dùng');
     }
 
     let auth = await AuthModel.findOne({ provider, providerId });
@@ -98,6 +112,16 @@ export const AuthService = {
     data: SignUpRequest,
     avatar?: Express.Multer.File
   ): Promise<SignUpResponse> => {
+    const validation = signUpRequestSchema.safeParse({
+      ...data,
+      avatar: avatar
+    });
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0];
+      throw createHttpError(400, firstError.message);
+    }
+
     const newUser = await createNewUser(data, avatar);
 
     const existingAuth = await AuthModel.findOne({
@@ -106,10 +130,7 @@ export const AuthService = {
     });
 
     if (existingAuth) {
-      throw createHttpError(
-        400,
-        'Unable to create account with provided information'
-      );
+      throw createHttpError(400, 'Tài khoản với email này đã tồn tại');
     }
 
     const hashedPassword = await hashPassword(data.password);
@@ -137,7 +158,7 @@ export const AuthService = {
 
   refreshAccessToken: async (refreshToken: string): Promise<string> => {
     if (!refreshToken) {
-      throw createHttpError(401, 'Refresh token is required');
+      throw createHttpError(401, 'Token không được cung cấp');
     }
 
     const decoded = verifyToken(
@@ -147,12 +168,12 @@ export const AuthService = {
 
     // If the decoded token is a string, it means the token is invalid
     if (typeof decoded === 'string') {
-      throw createHttpError(400, 'Invalid refresh token');
+      throw createHttpError(400, 'Token không hợp lệ');
     }
 
     const user = await UserModel.findById(decoded.id);
     if (!user) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     const { accessToken } = generateToken({
@@ -168,49 +189,56 @@ export const AuthService = {
     const user = await UserModel.findOne({ email });
 
     if (!user) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     const resetToken = generateResetPasswordToken(user._id.toString());
 
     sendMail({
       to: user.email,
-      subject: 'Password Reset',
+      subject: 'Đặt lại mật khẩu',
       template: 'password-reset',
       templateData: {
         name: user.name,
         resetUrl: `${process.env.CLIENT_URL}/auth/reset-password?token=${resetToken}`
       }
     }).catch(error => {
-      console.error('Failed to send reset password email:', error);
+      console.error('Không thể gửi email đặt lại mật khẩu:', error);
     });
   },
 
-  resetPassword: async (token: string, newPassword: string): Promise<void> => {
+  resetPassword: async (
+    token: string,
+    data: ResetPasswordRequest
+  ): Promise<void> => {
+    const validation = resetPasswordRequestSchema.safeParse(data);
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0];
+      throw createHttpError(400, firstError.message);
+    }
+
     const storedLastResetToken = await AuthModel.findOne({
       lastResetPasswordToken: token
     });
 
     if (storedLastResetToken) {
-      throw createHttpError(
-        400,
-        'This reset password token has already been used'
-      );
+      throw createHttpError(400, 'Token đã được sử dụng');
     }
 
     const decoded = verifyToken(token, process.env.JWT_RESET_PASSWORD_SECRET!);
 
     // If the decoded token is a string, it means the token is invalid
     if (typeof decoded === 'string') {
-      throw createHttpError(400, 'Invalid reset password token');
+      throw createHttpError(400, 'Token không hợp lệ');
     }
 
     const user = await UserModel.findById(decoded.id);
     if (!user) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
-    const hashedPassword = await hashPassword(newPassword);
+    const hashedPassword = await hashPassword(data.password);
     let auth = await AuthModel.findOne({ user: user._id, provider: 'local' });
 
     if (!auth) {
@@ -238,10 +266,7 @@ const createNewUser = async (
   const existingUser = await UserModel.findOne({ email: data.email });
 
   if (existingUser) {
-    throw createHttpError(
-      400,
-      'Unable to create account with provided information'
-    );
+    throw createHttpError(400, 'Tài khoản với email này đã tồn tại');
   }
 
   const newUser = await UserModel.create({
@@ -250,7 +275,7 @@ const createNewUser = async (
   });
 
   if (!newUser) {
-    throw createHttpError(500, 'Unable to complete registration at this time');
+    throw createHttpError(500, 'Không thể hoàn tất đăng ký vào lúc này');
   }
 
   if (avatar) {
@@ -263,7 +288,7 @@ const createNewUser = async (
         avatar: uploadResult.data.secure_url
       });
     } else {
-      throw createHttpError(500, 'Failed to upload avatar');
+      throw createHttpError(500, 'Không thể tải lên ảnh đại diện');
     }
   }
   return newUser;

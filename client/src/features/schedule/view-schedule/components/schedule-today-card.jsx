@@ -148,9 +148,7 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
                         <div className='mt-1.5 flex items-center gap-4 text-[11px] font-medium text-muted-foreground'>
                           <span className='flex items-center gap-1'>
                             <HiFire className='text-destructive/70' size={14} />
-                            <b className='text-foreground/80'>
-                              {dish.calories}
-                            </b>
+                            <b className='text-foreground/80'>{dish.energy}</b>
                             kcal
                           </span>
 

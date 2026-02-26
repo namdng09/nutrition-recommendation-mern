@@ -5,24 +5,20 @@ import { Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import {
   buildScheduleNutritionPieData,
   EMPTY_SCHEDULE_PIE_DATA,
+  findByLabel,
   formatGram
 } from '~/lib/utils';
 
 export default function ScheduleNutritionPie({ schedule }) {
   const nutrients = useMemo(() => {
-    return schedule.meals.reduce(
-      (acc, meal) => {
-        meal.dishes.forEach(d => {
-          const n = d.nutrition?.nutrients || {};
-          acc.calories += n.calories?.value || 0;
-          acc.protein += n.protein?.value || 0;
-          acc.carbs += n.carbs?.value || 0;
-          acc.fat += n.fat?.value || 0;
-        });
-        return acc;
-      },
-      { calories: 0, protein: 0, carbs: 0, fat: 0 }
-    );
+    const list = schedule?.totalNutrition?.nutrients || [];
+
+    return {
+      calories: findByLabel(list, 'Năng lượng')?.value ?? 0,
+      protein: findByLabel(list, 'Protein')?.value ?? 0,
+      carbs: findByLabel(list, 'Tinh bột')?.value ?? 0,
+      fat: findByLabel(list, 'Chất béo')?.value ?? 0
+    };
   }, [schedule]);
 
   const data = useMemo(
@@ -44,7 +40,8 @@ export default function ScheduleNutritionPie({ schedule }) {
         </h2>
         <span className='text-[10px] text-muted-foreground'>gram (g)</span>
       </div>
-      <div className='h-[260px] w-full'>
+
+      <div className='h-[400px] w-full'>
         <ResponsiveContainer width='100%' height='100%'>
           <PieChart>
             <Pie

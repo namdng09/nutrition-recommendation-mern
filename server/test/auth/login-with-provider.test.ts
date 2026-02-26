@@ -43,7 +43,7 @@ describe('AuthService.loginWithProvider', () => {
   it('should throw 400 error when user is not provided', async () => {
     await expect(
       AuthService.loginWithProvider('google', 'google-user-123', null as any)
-    ).rejects.toThrow('User not found');
+    ).rejects.toThrow('Không tìm thấy người dùng');
   });
 
   // Branch: auth does not exist - create new auth

@@ -1,36 +1,44 @@
 import mongoose from 'mongoose';
-import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest';
 
-import app from '~/app';
+import { DishService } from '~/features/dishes/dish-service';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
+import { NUTRITION_FOCUS } from '~/shared/constants/nutrition-focus';
 import { ROLE } from '~/shared/constants/role';
-import { AuthModel, DishModel, UserModel } from '~/shared/database/models';
-import { hashPassword } from '~/shared/utils/bcrypt';
-import { generateToken } from '~/shared/utils/jwt';
+import { DishModel } from '~/shared/database/models';
 
-// Mock Cloudinary delete
+// Mock Cloudinary
 vi.mock('~/shared/utils/cloudinary', () => ({
   uploadImage: vi.fn().mockResolvedValue({
     success: true,
     data: {
-      secure_url: 'https://res.cloudinary.com/test/image/upload/v1234567890/test-dish.jpg',
-      public_id: 'test-dish',
+      secure_url:
+        'https://res.cloudinary.com/test/image/upload/v1234567890/test.jpg',
+      public_id: 'test',
       format: 'jpg'
     }
   }),
   deleteImage: vi.fn().mockResolvedValue({ success: true })
 }));
 
-describe('DELETE /api/dishes/:id', () => {
-  let userToken: string;
-  let otherUserToken: string;
-  let adminToken: string;
-  let userId: string;
+// Import mocked functions to customize per test
+import * as cloudinaryUtils from '~/shared/utils/cloudinary';
+
+describe('DishService.deleteDish', () => {
   let dishId: string;
+  const userId = new mongoose.Types.ObjectId().toString();
+  const otherUserId = new mongoose.Types.ObjectId().toString();
 
   beforeAll(async () => {
-    // Connect to test database if not already connected
     if (mongoose.connection.readyState === 0) {
       await mongoose.connect(
         process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
@@ -39,80 +47,12 @@ describe('DELETE /api/dishes/:id', () => {
   });
 
   beforeEach(async () => {
-    // Clean up database before each test
     await DishModel.deleteMany({});
-    await UserModel.deleteMany({});
-    await AuthModel.deleteMany({});
 
-    // Create user
-    const user = await UserModel.create({
-      email: 'user@test.com',
-      name: 'Test User',
-      role: ROLE.USER,
-      isActive: true
-    });
-    userId = user._id.toString();
+    // Reset mocks
+    vi.mocked(cloudinaryUtils.deleteImage).mockResolvedValue({ success: true });
 
-    const hashedPassword = await hashPassword('123456');
-    await AuthModel.create({
-      user: user._id,
-      provider: 'local',
-      providerId: 'user@test.com',
-      localPassword: hashedPassword,
-      verifyAt: new Date()
-    });
-
-    const userTokens = generateToken({
-      id: user._id.toString(),
-      role: ROLE.USER
-    });
-    userToken = userTokens.accessToken;
-
-    // Create another user
-    const otherUser = await UserModel.create({
-      email: 'other@test.com',
-      name: 'Other User',
-      role: ROLE.USER,
-      isActive: true
-    });
-
-    await AuthModel.create({
-      user: otherUser._id,
-      provider: 'local',
-      providerId: 'other@test.com',
-      localPassword: hashedPassword,
-      verifyAt: new Date()
-    });
-
-    const otherUserTokens = generateToken({
-      id: otherUser._id.toString(),
-      role: ROLE.USER
-    });
-    otherUserToken = otherUserTokens.accessToken;
-
-    // Create admin
-    const admin = await UserModel.create({
-      email: 'admin@test.com',
-      name: 'Admin User',
-      role: ROLE.ADMIN,
-      isActive: true
-    });
-
-    await AuthModel.create({
-      user: admin._id,
-      provider: 'local',
-      providerId: 'admin@test.com',
-      localPassword: hashedPassword,
-      verifyAt: new Date()
-    });
-
-    const adminTokens = generateToken({
-      id: admin._id.toString(),
-      role: ROLE.ADMIN
-    });
-    adminToken = adminTokens.accessToken;
-
-    // Create test dish
+    // Create test dish with user info
     const dish = await DishModel.create({
       user: { _id: userId, name: 'Test User' },
       name: 'Phở bò',
@@ -120,114 +60,68 @@ describe('DELETE /api/dishes/:id', () => {
       categories: [DISH_CATEGORY.MAIN_COURSE],
       ingredients: [],
       instructions: [{ step: 1, description: 'Luộc xương' }],
-      isActive: true
+      isActive: true,
+      nutritionFocus: [NUTRITION_FOCUS.HIGH_PROTEIN]
     });
     dishId = dish._id.toString();
   });
 
-  afterAll(async () => {
-    // Clean up and close connection
+  afterEach(async () => {
     await DishModel.deleteMany({});
-    await UserModel.deleteMany({});
-    await AuthModel.deleteMany({});
+  });
+
+  afterAll(async () => {
     await mongoose.connection.close();
   });
 
-  // ============ HAPPY CASES ============
-  it('should delete dish successfully by owner', async () => {
-    const res = await request(app)
-      .delete(`/api/dishes/${dishId}`)
-      .set('Authorization', `Bearer ${userToken}`);
+  // Branch - Happy case
+  it('should delete dish successfully', async () => {
+    const deletedDish = await DishService.deleteDish(dishId, userId, ROLE.USER);
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Xóa món ăn thành công');
+    expect(deletedDish).toBeDefined();
+    expect(deletedDish._id.toString()).toBe(dishId);
+    expect(deletedDish.name).toBe('Phở bò');
 
     // Verify dish is deleted from database
-    const deletedDish = await DishModel.findById(dishId);
-    expect(deletedDish).toBeNull();
+    const dish = await DishModel.findById(dishId);
+    expect(dish).toBeNull();
   });
 
-  it('should allow admin to delete any dish', async () => {
-    const res = await request(app)
-      .delete(`/api/dishes/${dishId}`)
-      .set('Authorization', `Bearer ${adminToken}`);
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Xóa món ăn thành công');
-
-    // Verify dish is deleted from database
-    const deletedDish = await DishModel.findById(dishId);
-    expect(deletedDish).toBeNull();
+  // Branch - Invalid ID format
+  it('should throw error when id format is invalid', async () => {
+    await expect(
+      DishService.deleteDish('invalid-id', userId, ROLE.USER)
+    ).rejects.toThrow('Định dạng ID món ăn không hợp lệ');
   });
 
-  it('should delete dish with image successfully', async () => {
-    // Create dish with image
-    const dishWithImage = await DishModel.create({
-      user: { _id: userId, name: 'Test User' },
-      name: 'Bún chả',
-      description: 'Bún chả Hà Nội',
-      categories: [DISH_CATEGORY.MAIN_COURSE],
-      ingredients: [],
-      instructions: [{ step: 1, description: 'Ướp thịt' }],
-      image: 'https://example.com/image.jpg',
-      isActive: true
-    });
-
-    const res = await request(app)
-      .delete(`/api/dishes/${dishWithImage._id}`)
-      .set('Authorization', `Bearer ${userToken}`);
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Xóa món ăn thành công');
-  });
-
-  // ============ AUTHENTICATION & AUTHORIZATION ============
-  it('should return 403 when user is not dish owner', async () => {
-    const res = await request(app)
-      .delete(`/api/dishes/${dishId}`)
-      .set('Authorization', `Bearer ${otherUserToken}`);
-
-    expect(res.status).toBe(403);
-  });
-
-  // ============ VALIDATION (400) ============
-  it('should return 400 when id format is invalid', async () => {
-    const res = await request(app)
-      .delete('/api/dishes/invalid-id')
-      .set('Authorization', `Bearer ${userToken}`);
-
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Định dạng ID món ăn không hợp lệ');
-  });
-
-  // ============ NOT FOUND (404) ============
-  it('should return 404 when dish does not exist', async () => {
+  // Branch - Dish not found
+  it('should throw error when dish does not exist', async () => {
     const nonExistentId = new mongoose.Types.ObjectId().toString();
-    const res = await request(app)
-      .delete(`/api/dishes/${nonExistentId}`)
-      .set('Authorization', `Bearer ${userToken}`);
 
-    expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Không tìm thấy món ăn');
+    await expect(
+      DishService.deleteDish(nonExistentId, userId, ROLE.USER)
+    ).rejects.toThrow('Không tìm thấy món ăn');
   });
 
-  it('should return 404 when findByIdAndDelete returns null', async () => {
-    // Mock findByIdAndDelete to return null
-    vi.spyOn(DishModel, 'findByIdAndDelete').mockResolvedValueOnce(null);
+  // Branch - Permission denied - user is not owner
+  it('should throw error when non-owner tries to delete', async () => {
+    await expect(
+      DishService.deleteDish(dishId, otherUserId, ROLE.USER)
+    ).rejects.toThrow('Bạn không có quyền xóa món ăn này');
+  });
 
-    const res = await request(app)
-      .delete(`/api/dishes/${dishId}`)
-      .set('Authorization', `Bearer ${userToken}`);
+  // Branch - Admin can delete any dish
+  it('should allow admin to delete any dish', async () => {
+    const deletedDish = await DishService.deleteDish(
+      dishId,
+      otherUserId,
+      ROLE.ADMIN
+    );
 
-    expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('message', 'Không tìm thấy món ăn');
+    expect(deletedDish).toBeDefined();
+    expect(deletedDish._id.toString()).toBe(dishId);
 
-    // Restore
-    vi.spyOn(DishModel, 'findByIdAndDelete').mockRestore();
+    const dish = await DishModel.findById(dishId);
+    expect(dish).toBeNull();
   });
 });

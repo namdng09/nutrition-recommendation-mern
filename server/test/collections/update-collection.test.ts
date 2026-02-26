@@ -1,20 +1,27 @@
 import mongoose from 'mongoose';
-import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest';
 
-import app from '~/app';
+import { CollectionService } from '~/features/collections/collection-service';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
-import { ROLE } from '~/shared/constants/role';
-import { AuthModel, CollectionModel, DishModel, UserModel } from '~/shared/database/models';
-import { hashPassword } from '~/shared/utils/bcrypt';
-import { generateToken } from '~/shared/utils/jwt';
+import { UNIT } from '~/shared/constants/unit';
+import { CollectionModel, DishModel } from '~/shared/database/models';
 
 // Mock Cloudinary upload
 vi.mock('~/shared/utils/cloudinary', () => ({
   uploadImage: vi.fn().mockResolvedValue({
     success: true,
     data: {
-      secure_url: 'https://res.cloudinary.com/test/image/upload/v1234567890/updated-collection.jpg',
+      secure_url:
+        'https://res.cloudinary.com/test/image/upload/v1234567890/updated-collection.jpg',
       public_id: 'updated-collection',
       format: 'jpg'
     }
@@ -25,12 +32,11 @@ vi.mock('~/shared/utils/cloudinary', () => ({
 // Import mocked functions to customize per test
 import * as cloudinaryUtils from '~/shared/utils/cloudinary';
 
-describe('PUT /api/collections/:id', () => {
-  let nutritionistToken: string;
-  let otherNutritionistToken: string;
-  let userToken: string;
-  let nutritionistId: string;
+describe('CollectionService.updateCollection', () => {
+  const userId = new mongoose.Types.ObjectId().toString();
+  const otherUserId = new mongoose.Types.ObjectId().toString();
   let collectionId: string;
+  let dishId: string;
 
   beforeAll(async () => {
     // Connect to test database if not already connected
@@ -45,14 +51,13 @@ describe('PUT /api/collections/:id', () => {
     // Clean up database before each test
     await CollectionModel.deleteMany({});
     await DishModel.deleteMany({});
-    await UserModel.deleteMany({});
-    await AuthModel.deleteMany({});
 
     // Reset mocks
     vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValue({
       success: true,
       data: {
-        secure_url: 'https://res.cloudinary.com/test/image/upload/v1234567890/updated-collection.jpg',
+        secure_url:
+          'https://res.cloudinary.com/test/image/upload/v1234567890/updated-collection.jpg',
         public_id: 'updated-collection',
         format: 'jpg'
       } as any
@@ -60,77 +65,37 @@ describe('PUT /api/collections/:id', () => {
 
     vi.mocked(cloudinaryUtils.deleteImage).mockResolvedValue({ success: true });
 
-    // Create nutritionist
-    const nutritionist = await UserModel.create({
-      email: 'nutritionist@test.com',
-      name: 'Test Nutritionist',
-      role: ROLE.NUTRITIONIST,
+    // Create test dish
+    const dish = await DishModel.create({
+      user: { _id: userId, name: 'Test User' },
+      name: 'Phở bò',
+      description: 'Phở bò truyền thống',
+      categories: [DISH_CATEGORY.MAIN_COURSE],
+      ingredients: [
+        {
+          ingredientId: new mongoose.Types.ObjectId(),
+          name: 'Thịt bò',
+          nutrients: {
+            calories: { value: 250, unit: UNIT.KILOCALORIE },
+            carbs: { value: 0, unit: UNIT.GRAM },
+            fat: { value: 15, unit: UNIT.GRAM },
+            protein: { value: 26, unit: UNIT.GRAM },
+            fiber: { value: 0, unit: UNIT.GRAM },
+            sodium: { value: 72, unit: UNIT.MILLIGRAM },
+            cholesterol: { value: 90, unit: UNIT.MILLIGRAM }
+          },
+          baseUnit: { amount: 100, unit: UNIT.GRAM },
+          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
+        }
+      ],
+      instructions: [{ step: 1, description: 'Luộc xương' }],
       isActive: true
     });
-    nutritionistId = nutritionist._id.toString();
-
-    const hashedPassword = await hashPassword('123456');
-    await AuthModel.create({
-      user: nutritionist._id,
-      provider: 'local',
-      providerId: 'nutritionist@test.com',
-      localPassword: hashedPassword,
-      verifyAt: new Date()
-    });
-
-    const nutritionistTokens = generateToken({
-      id: nutritionist._id.toString(),
-      role: ROLE.NUTRITIONIST
-    });
-    nutritionistToken = nutritionistTokens.accessToken;
-
-    // Create another nutritionist
-    const otherNutritionist = await UserModel.create({
-      email: 'other@test.com',
-      name: 'Other Nutritionist',
-      role: ROLE.NUTRITIONIST,
-      isActive: true
-    });
-
-    await AuthModel.create({
-      user: otherNutritionist._id,
-      provider: 'local',
-      providerId: 'other@test.com',
-      localPassword: hashedPassword,
-      verifyAt: new Date()
-    });
-
-    const otherNutritionistTokens = generateToken({
-      id: otherNutritionist._id.toString(),
-      role: ROLE.NUTRITIONIST
-    });
-    otherNutritionistToken = otherNutritionistTokens.accessToken;
-
-    // Create regular user
-    const user = await UserModel.create({
-      email: 'user@test.com',
-      name: 'Test User',
-      role: ROLE.USER,
-      isActive: true
-    });
-
-    await AuthModel.create({
-      user: user._id,
-      provider: 'local',
-      providerId: 'user@test.com',
-      localPassword: hashedPassword,
-      verifyAt: new Date()
-    });
-
-    const userTokens = generateToken({
-      id: user._id.toString(),
-      role: ROLE.USER
-    });
-    userToken = userTokens.accessToken;
+    dishId = dish._id.toString();
 
     // Create test collection
     const collection = await CollectionModel.create({
-      user: { _id: nutritionistId, name: 'Test Nutritionist' },
+      user: { _id: userId, name: 'Test User' },
       name: 'Món ăn giảm cân',
       description: 'Bộ sưu tập các món ăn giảm cân',
       isPublic: false,
@@ -140,151 +105,153 @@ describe('PUT /api/collections/:id', () => {
     collectionId = collection._id.toString();
   });
 
-  afterAll(async () => {
-    // Clean up and close connection
+  afterEach(async () => {
+    // Clean up after each test
     await CollectionModel.deleteMany({});
     await DishModel.deleteMany({});
-    await UserModel.deleteMany({});
-    await AuthModel.deleteMany({});
+  });
+
+  afterAll(async () => {
+    // Close connection
     await mongoose.connection.close();
   });
 
-  // ============ HAPPY CASES ============
-  it('should update collection successfully without image', async () => {
+  // Branch - Happy case: update collection successfully
+  it('should update collection successfully', async () => {
     const updateData = {
       name: 'Món ăn giảm cân hiệu quả',
       description: 'Bộ sưu tập các món ăn giúp giảm cân nhanh chóng',
-      isPublic: 'true',
-      tags: JSON.stringify(['giảm cân', 'healthy', 'low-carb'])
+      isPublic: true,
+      tags: ['giảm cân', 'healthy', 'low-carb']
     };
 
-    const res = await request(app)
-      .put(`/api/collections/${collectionId}`)
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', updateData.name)
-      .field('description', updateData.description)
-      .field('isPublic', updateData.isPublic)
-      .field('tags', updateData.tags);
+    const updatedCollection = await CollectionService.updateCollection(
+      collectionId,
+      userId,
+      updateData,
+      undefined
+    );
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body).toHaveProperty('message', 'Cập nhật bộ sưu tập thành công');
-    expect(res.body.data).toHaveProperty('_id', collectionId);
-    expect(res.body.data).toHaveProperty('name', 'Món ăn giảm cân hiệu quả');
-    expect(res.body.data).toHaveProperty('description', 'Bộ sưu tập các món ăn giúp giảm cân nhanh chóng');
-    expect(res.body.data).toHaveProperty('isPublic', true);
-    expect(res.body.data.tags).toContain('giảm cân');
-    expect(res.body.data.tags).toContain('healthy');
-    expect(res.body.data.tags).toContain('low-carb');
+    expect(updatedCollection).toBeDefined();
+    expect(updatedCollection._id.toString()).toBe(collectionId);
+    expect(updatedCollection.name).toBe('Món ăn giảm cân hiệu quả');
+    expect(updatedCollection.description).toBe(
+      'Bộ sưu tập các món ăn giúp giảm cân nhanh chóng'
+    );
+    expect(updatedCollection.isPublic).toBe(true);
+    expect(updatedCollection.tags).toContain('giảm cân');
+    expect(updatedCollection.tags).toContain('healthy');
+    expect(updatedCollection.tags).toContain('low-carb');
   });
 
-  it('should update collection successfully with image', async () => {
-    const updateData = {
-      name: 'Món ăn tăng cơ'
-    };
-
-    const res = await request(app)
-      .put(`/api/collections/${collectionId}`)
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', updateData.name)
-      .attach('image', Buffer.from('fake-image-data'), 'updated-collection.jpg');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('status', 'success');
-    expect(res.body.data).toHaveProperty('name', 'Món ăn tăng cơ');
-    expect(res.body.data).toHaveProperty('image', 'https://res.cloudinary.com/test/image/upload/v1234567890/updated-collection.jpg');
-  });
-
-  // ============ AUTHENTICATION & AUTHORIZATION ============
-  it('should return 403 when updating collection of another nutritionist', async () => {
+  // Branch - Unauthorized user
+  it('should throw error when updating collection of another user', async () => {
     const updateData = {
       name: 'Món ăn mới'
     };
 
-    const res = await request(app)
-      .put(`/api/collections/${collectionId}`)
-      .set('Authorization', `Bearer ${otherNutritionistToken}`)
-      .field('name', updateData.name);
-
-    expect(res.status).toBe(403);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Bạn không có quyền cập nhật bộ sưu tập này');
+    await expect(
+      CollectionService.updateCollection(
+        collectionId,
+        otherUserId,
+        updateData,
+        undefined
+      )
+    ).rejects.toThrow('Bạn không có quyền cập nhật bộ sưu tập này');
   });
 
-  // ============ VALIDATION (400) ============
-  it('should return 400 when id format is invalid', async () => {
+  // Branch - Invalid ID format
+  it('should throw error when id format is invalid', async () => {
     const updateData = {
       name: 'Món ăn mới'
     };
 
-    const res = await request(app)
-      .put('/api/collections/invalid-id')
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', updateData.name);
-
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Định dạng ID bộ sưu tập không hợp lệ');
+    await expect(
+      CollectionService.updateCollection(
+        'invalid-id',
+        userId,
+        updateData,
+        undefined
+      )
+    ).rejects.toThrow('Định dạng ID bộ sưu tập không hợp lệ');
   });
 
-  // ============ NOT FOUND (404) ============
-  it('should return 404 when collection does not exist', async () => {
+  // Branch - Collection not found
+  it('should throw error when collection does not exist', async () => {
     const nonExistentId = new mongoose.Types.ObjectId().toString();
     const updateData = {
       name: 'Món ăn mới'
     };
 
-    const res = await request(app)
-      .put(`/api/collections/${nonExistentId}`)
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', updateData.name);
-
-    expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Không tìm thấy bộ sưu tập');
+    await expect(
+      CollectionService.updateCollection(
+        nonExistentId,
+        userId,
+        updateData,
+        undefined
+      )
+    ).rejects.toThrow('Không tìm thấy bộ sưu tập');
   });
 
-  // ============ ERROR CASES (500) ============
-  it('should return 500 when image upload fails', async () => {
+  // Branch - Image upload failure
+  it('should throw error when image upload fails', async () => {
     // Mock upload to fail
     vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValueOnce({
       success: false,
       error: 'Upload failed'
-    });
+    } as any);
 
     const updateData = {
       name: 'Món ăn mới'
     };
 
-    const res = await request(app)
-      .put(`/api/collections/${collectionId}`)
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', updateData.name)
-      .attach('image', Buffer.from('fake-image-data'), 'updated-collection.jpg');
+    const fakeImage = {
+      buffer: Buffer.from('fake-image-data'),
+      originalname: 'updated-collection.jpg'
+    } as Express.Multer.File;
 
-    expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty('status', 'error');
-    expect(res.body).toHaveProperty('message', 'Tải ảnh lên thất bại');
+    await expect(
+      CollectionService.updateCollection(
+        collectionId,
+        userId,
+        updateData,
+        fakeImage
+      )
+    ).rejects.toThrow('Tải ảnh lên thất bại');
   });
 
-  it('should return 404 when findByIdAndUpdate returns null', async () => {
-    // Mock findByIdAndUpdate to return null
-    vi.spyOn(CollectionModel, 'findByIdAndUpdate').mockResolvedValueOnce(null as any);
-
+  // Branch - Update with invalid dish ID format
+  it('should throw error when updating with invalid dish ID format', async () => {
     const updateData = {
-      name: 'Updated collection'
+      name: 'Món ăn Việt',
+      dishes: ['invalid-id']
     };
 
-    const res = await request(app)
-      .put(`/api/collections/${collectionId}`)
-      .set('Authorization', `Bearer ${nutritionistToken}`)
-      .field('name', updateData.name);
+    await expect(
+      CollectionService.updateCollection(
+        collectionId,
+        userId,
+        updateData,
+        undefined
+      )
+    ).rejects.toThrow('Định dạng ID món ăn không hợp lệ');
+  });
 
-    expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('status', 'failed');
-    expect(res.body).toHaveProperty('message', 'Không tìm thấy bộ sưu tập');
+  // Branch - Update with non-existent dish
+  it('should throw error when updating with non-existent dish', async () => {
+    const nonExistentDishId = new mongoose.Types.ObjectId().toString();
+    const updateData = {
+      name: 'Món ăn Việt',
+      dishes: [nonExistentDishId]
+    };
 
-    // Restore original function
-    vi.spyOn(CollectionModel, 'findByIdAndUpdate').mockRestore();
+    await expect(
+      CollectionService.updateCollection(
+        collectionId,
+        userId,
+        updateData,
+        undefined
+      )
+    ).rejects.toThrow('Một hoặc nhiều món ăn không tồn tại');
   });
 });

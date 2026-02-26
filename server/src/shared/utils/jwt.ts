@@ -55,8 +55,8 @@ export const verifyToken = (
     return jwt.verify(token, secret) as string | JwtPayload;
   } catch (error: unknown) {
     if (error instanceof jwt.TokenExpiredError) {
-      throw createHttpError(401, 'Token expired');
+      throw createHttpError(401, 'Token đã hết hạn');
     }
-    throw new Error(error instanceof Error ? error.message : 'Invalid token');
+    throw new Error('Token không hợp lệ');
   }
 };
