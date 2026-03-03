@@ -17,7 +17,6 @@ import {
 import type {
   AddDishToCollectionRequest,
   CreateCollectionRequest,
-  DeleteBulkCollectionRequest,
   RemoveDishFromCollectionRequest,
   UpdateCollectionRequest
 } from './collection-dto';
