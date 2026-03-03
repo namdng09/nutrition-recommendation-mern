@@ -3,7 +3,21 @@ import createHttpError from 'http-errors';
 import { z, ZodType } from 'zod';
 
 const formatZodErrors = (errors: z.ZodError['issues']): string => {
-  return errors.map(error => error.message).join(', ');
+  const seen = new Set<string>();
+  return errors
+    .filter(error => {
+      const key = error.path.join('.');
+      for (const seenKey of seen) {
+        if (key === seenKey || key.startsWith(seenKey + '.')) return false;
+      }
+      seen.add(key);
+      return true;
+    })
+    .map(error => {
+      const path = error.path.length > 0 ? error.path.join('.') : null;
+      return path ? `${path}: ${error.message}` : error.message;
+    })
+    .join(', ');
 };
 
 /**
