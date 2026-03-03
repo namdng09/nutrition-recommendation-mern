@@ -173,52 +173,12 @@ export const GroceryService = {
       throw createHttpError(400, 'Định dạng ID danh sách mua sắm không hợp lệ');
     }
 
-    const updateData: any = { ...data };
-
-    if (data.date) {
-      updateData.ingredients = await buildIngredientsFromDates(
-        userId,
-        data.date
-      );
-    }
-
-    // If ingredients are updated, fetch their details
-    if (!data.date && data.ingredients) {
-      const ingredientDetails = await Promise.all(
-        data.ingredients.map(async ing => {
-          if (!validateObjectId(ing.ingredientId)) {
-            throw createHttpError(
-              400,
-              `ID nguyên liệu không hợp lệ: ${ing.ingredientId}`
-            );
-          }
-
-          const ingredient = await IngredientModel.findById(ing.ingredientId);
-          if (!ingredient) {
-            throw createHttpError(
-              404,
-              `Không tìm thấy nguyên liệu với ID: ${ing.ingredientId}`
-            );
-          }
-
-          return {
-            ingredientId: ingredient._id,
-            name: ingredient.name,
-            image: ingredient.image ?? '',
-            isPurchased: ing.isPurchased ?? false
-          };
-        })
-      );
-
-      updateData.ingredients = ingredientDetails;
-    }
-
     const updatedGrocery = await GroceryModel.findOneAndUpdate(
       {
         _id: groceryId,
         'user._id': userId
       },
-      updateData,
+      data,
       {
         new: true
       }

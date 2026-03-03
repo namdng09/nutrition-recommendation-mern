@@ -56,9 +56,6 @@ export const updateGroceryRequestSchema = z.object({
     .min(2, 'Tên danh sách mua sắm phải có ít nhất 2 ký tự')
     .optional(),
   date: z.preprocess(parseJSON, z.array(dateSchema)).optional(),
-  ingredients: z
-    .preprocess(parseJSON, z.array(ingredientItemSchema))
-    .optional(),
   notes: z.string().trim().optional()
 });
 

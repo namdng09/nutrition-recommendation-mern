@@ -13,9 +13,7 @@ import {
 
 import {
   CreateIngredientRequest,
-  createIngredientRequestSchema,
-  UpdateIngredientRequest,
-  updateIngredientRequestSchema
+  UpdateIngredientRequest
 } from './ingredient-dto';
 
 export const IngredientService = {
@@ -23,13 +21,6 @@ export const IngredientService = {
     data: CreateIngredientRequest,
     image?: Express.Multer.File
   ) => {
-    const validation = createIngredientRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
     const existingIngredient = await IngredientModel.findOne({
       name: data.name
     });
@@ -89,13 +80,6 @@ export const IngredientService = {
     data: UpdateIngredientRequest,
     image?: Express.Multer.File
   ) => {
-    const validation = updateIngredientRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
     }
