@@ -13,6 +13,7 @@ import { CollectionController } from './collection-controller';
 import {
   addDishToCollectionRequestSchema,
   createCollectionRequestSchema,
+  deleteBulkCollectionRequestSchema,
   removeDishFromCollectionRequestSchema,
   updateCollectionRequestSchema
 } from './collection-dto';
@@ -30,6 +31,14 @@ router.post(
 
 router.get('/', asyncHandler(CollectionController.viewCollections));
 
+router.delete(
+  '/',
+  authenticate(),
+  authorize([ROLE.NUTRITIONIST, ROLE.ADMIN]),
+  validate(deleteBulkCollectionRequestSchema.shape),
+  asyncHandler(CollectionController.deleteBulk)
+);
+
 router.get('/:id', asyncHandler(CollectionController.viewCollectionDetail));
 
 router.put(
@@ -44,11 +53,11 @@ router.put(
 router.delete(
   '/:id',
   authenticate(),
-  authorize([ROLE.NUTRITIONIST]),
+  authorize([ROLE.NUTRITIONIST, ROLE.ADMIN]),
   asyncHandler(CollectionController.deleteCollection)
 );
 
-router.put(
+router.post(
   '/:id/dishes',
   authenticate(),
   authorize([ROLE.NUTRITIONIST]),
