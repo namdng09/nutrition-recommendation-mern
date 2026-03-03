@@ -80,3 +80,11 @@ export const updateIngredientRequestSchema =
 export type UpdateIngredientRequest = z.infer<
   typeof updateIngredientRequestSchema
 >;
+
+export const deleteBulkRequestSchema = z.object({
+  ids: z
+    .array(z.string().trim().min(1, 'ID nguyên liệu không được để trống'))
+    .min(1, 'Cần ít nhất một ID nguyên liệu')
+});
+
+export type DeleteBulkRequest = z.infer<typeof deleteBulkRequestSchema>;

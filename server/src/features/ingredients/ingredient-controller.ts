@@ -59,5 +59,17 @@ export const IngredientController = {
     await IngredientService.deleteIngredient(id);
 
     res.status(200).json(ApiResponse.success('Xóa nguyên liệu thành công'));
+  },
+
+  deleteBulk: async (req: Request, res: Response) => {
+    const { ids } = req.body;
+
+    const result = await IngredientService.deleteBulk(ids);
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success(`Đã xóa ${result.deletedCount} nguyên liệu`, result)
+      );
   }
 };

@@ -1,17 +1,13 @@
 import { Router } from 'express';
 
 import { ROLE } from '~/shared/constants/role';
-import {
-  authenticate,
-  authorize,
-  parseFormData,
-  validate
-} from '~/shared/middlewares';
+import { authenticate, authorize, validate } from '~/shared/middlewares';
 import { asyncHandler, handleSingleImageUpload } from '~/shared/utils';
 
 import { IngredientController } from './ingredient-controller';
 import {
   createIngredientRequestSchema,
+  deleteBulkRequestSchema,
   updateIngredientRequestSchema
 } from './ingredient-dto';
 
@@ -27,6 +23,14 @@ router.post(
 );
 
 router.get('/', asyncHandler(IngredientController.viewIngredients));
+
+router.delete(
+  '/',
+  authenticate(),
+  authorize([ROLE.NUTRITIONIST, ROLE.ADMIN]),
+  validate(deleteBulkRequestSchema.shape),
+  asyncHandler(IngredientController.deleteBulk)
+);
 
 router.get('/:id', asyncHandler(IngredientController.viewIngredientDetail));
 

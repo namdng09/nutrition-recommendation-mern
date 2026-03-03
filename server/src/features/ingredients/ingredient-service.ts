@@ -118,6 +118,20 @@ export const IngredientService = {
     await ingredient.deleteOne();
 
     return ingredient;
+  },
+
+  deleteBulk: async (ids: string[]) => {
+    ids.forEach(id => {
+      if (!validateObjectId(id)) {
+        throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
+      }
+    });
+
+    await Promise.all(ids.map(id => deleteImage(id)));
+
+    const result = await IngredientModel.deleteMany({ _id: { $in: ids } });
+
+    return result;
   }
 };
 
