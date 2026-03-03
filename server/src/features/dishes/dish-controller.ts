@@ -58,5 +58,17 @@ export const DishController = {
     await DishService.deleteDish(id, userId, userRole);
 
     res.status(200).json(ApiResponse.success('Xóa món ăn thành công'));
+  },
+
+  deleteBulk: async (req: Request, res: Response) => {
+    const { ids } = req.body;
+    const userId = req.user!._id.toString();
+    const userRole = req.user!.role;
+
+    const result = await DishService.deleteBulk(ids, userId, userRole);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Xóa các món ăn thành công', result));
   }
 };

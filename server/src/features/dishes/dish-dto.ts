@@ -6,36 +6,12 @@ import { NUTRITION_MINERAL } from '~/shared/constants/nutrition-minerals';
 import { NUTRIENTS } from '~/shared/constants/nutrition-nutrients';
 import { NUTRITION_VITAMIN } from '~/shared/constants/nutrition-vitamin';
 import { UNIT } from '~/shared/constants/unit';
-
-const parseJSON = (val: any) => {
-  if (val === undefined || val === null) {
-    return undefined;
-  }
-  if (typeof val === 'string') {
-    try {
-      return JSON.parse(val);
-    } catch {
-      return val;
-    }
-  }
-  return val;
-};
-
-const parseBoolean = (val: any) => {
-  if (typeof val === 'string') {
-    if (val === 'true') return true;
-    if (val === 'false') return false;
-  }
-  return val;
-};
-
-const enumValues = <T extends Record<string, string>>(values: T) =>
-  z.enum(Object.values(values) as [string, ...string[]]);
+import { booleanSchema, parseJSON } from '~/shared/utils/dto-parsers';
 
 const unitSchema = z.object({
   quantity: z.coerce.number().min(0, 'Số lượng phải lớn hơn hoặc bằng 0'),
   unit: z.string().trim().min(1, 'Đơn vị không được để trống'),
-  isDefault: z.preprocess(parseBoolean, z.coerce.boolean())
+  isDefault: booleanSchema
 });
 
 const dishIngredientSchema = z.object({
@@ -58,21 +34,21 @@ const instructionSchema = z.object({
 });
 
 const nutrientItemSchema = z.object({
-  label: enumValues(NUTRIENTS),
+  label: z.enum(Object.values(NUTRIENTS), 'Chất dinh dưỡng không hợp lệ'),
   value: z.coerce.number().min(0),
-  unit: z.enum(Object.values(UNIT))
+  unit: z.enum(Object.values(UNIT), 'Đơn vị chất dinh dưỡng không hợp lệ')
 });
 
 const mineralItemSchema = z.object({
-  label: enumValues(NUTRITION_MINERAL),
+  label: z.enum(Object.values(NUTRITION_MINERAL), 'Khoáng chất không hợp lệ'),
   value: z.coerce.number().min(0),
-  unit: z.enum(Object.values(UNIT))
+  unit: z.enum(Object.values(UNIT), 'Đơn vị khoáng chất không hợp lệ')
 });
 
 const vitaminItemSchema = z.object({
-  label: enumValues(NUTRITION_VITAMIN),
+  label: z.enum(Object.values(NUTRITION_VITAMIN), 'Vitamin không hợp lệ'),
   value: z.coerce.number().min(0),
-  unit: z.enum(Object.values(UNIT))
+  unit: z.enum(Object.values(UNIT), 'Đơn vị vitamin không hợp lệ')
 });
 
 const detailNutritionSchema = z.object({
@@ -129,71 +105,18 @@ export const createDishRequestSchema = z.object({
       )
       .min(1, 'Phải có ít nhất 1 danh mục')
   ),
-  isActive: z.preprocess(parseBoolean, z.coerce.boolean()).optional(),
-  isPublic: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
+  isActive: booleanSchema.optional(),
+  isPublic: booleanSchema.optional()
 });
 
 export type CreateDishRequest = z.infer<typeof createDishRequestSchema>;
 
-export const updateDishRequestSchema = z.object({
-  name: z
-    .string('Tên món ăn không hợp lệ')
-    .trim()
-    .min(2, 'Tên món ăn phải có ít nhất 2 ký tự')
-    .optional(),
-  description: z.string().trim().optional(),
-  categories: z
-    .preprocess(
-      parseJSON,
-      z
-        .array(
-          z.enum(Object.values(DISH_CATEGORY), 'Danh mục món ăn không hợp lệ')
-        )
-        .min(1, 'Phải có ít nhất 1 danh mục')
-    )
-    .optional(),
-  ingredients: z
-    .preprocess(
-      parseJSON,
-      z.array(dishIngredientSchema).min(1, 'Phải có ít nhất 1 nguyên liệu')
-    )
-    .optional(),
-  instructions: z
-    .preprocess(
-      parseJSON,
-      z.array(instructionSchema).min(1, 'Phải có ít nhất 1 bước hướng dẫn')
-    )
-    .optional(),
-  nutrition: z.preprocess(parseJSON, detailNutritionSchema).optional(),
-  image: z.file().optional(),
-  preparationTime: z.coerce
-    .number()
-    .min(1, 'Số phút phải lớn hơn hoặc bằng 1')
-    .optional(),
-  cookTime: z.coerce
-    .number()
-    .min(1, 'Số phút phải lớn hơn hoặc bằng 1')
-    .optional(),
-  servings: z.coerce
-    .number()
-    .min(1, 'Số lượng phải lớn hơn hoặc bằng 1')
-    .optional(),
-  tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
-  nutritionFocus: z
-    .preprocess(
-      parseJSON,
-      z
-        .array(
-          z.enum(
-            Object.values(NUTRITION_FOCUS),
-            'Danh mục dinh dưỡng không hợp lệ'
-          )
-        )
-        .min(1, 'Phải có ít nhất 1 danh mục')
-    )
-    .optional(),
-  isActive: z.preprocess(parseBoolean, z.coerce.boolean()).optional(),
-  isPublic: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
-});
+export const updateDishRequestSchema = createDishRequestSchema.partial();
 
 export type UpdateDishRequest = z.infer<typeof updateDishRequestSchema>;
+
+export const deleteBulkRequestSchema = z.object({
+  ids: z.array(z.string().trim().min(1)).min(1, 'Cần ít nhất một ID món ăn')
+});
+
+export type DeleteBulkRequest = z.infer<typeof deleteBulkRequestSchema>;

@@ -1,8 +1,14 @@
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
+import type { HydratedDocument } from 'mongoose';
 
 import { ROLE } from '~/shared/constants/role';
-import { DishModel, IngredientModel } from '~/shared/database/models';
+import {
+  CollectionModel,
+  DishModel,
+  IngredientModel,
+  ScheduleModel
+} from '~/shared/database/models';
 import type { Dish } from '~/shared/database/models/dish-model';
 import {
   buildPaginateOptions,
@@ -12,12 +18,7 @@ import {
   validateObjectId
 } from '~/shared/utils';
 
-import {
-  CreateDishRequest,
-  createDishRequestSchema,
-  UpdateDishRequest,
-  updateDishRequestSchema
-} from './dish-dto';
+import type { CreateDishRequest, UpdateDishRequest } from './dish-dto';
 
 export const DishService = {
   createDish: async (
@@ -26,61 +27,20 @@ export const DishService = {
     data: CreateDishRequest,
     image?: Express.Multer.File
   ) => {
-    const validation = createDishRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
-    const existingDish = await DishModel.findOne({
-      name: data.name
-    });
-
+    const existingDish = await DishModel.findOne({ name: data.name });
     if (existingDish) {
       throw createHttpError(409, 'Món ăn với tên này đã tồn tại');
     }
 
-    // Validate and fetch ingredient details
-    const ingredientDetails = await Promise.all(
-      data.ingredients.map(async ing => {
-        if (!validateObjectId(ing.ingredientId)) {
-          throw createHttpError(
-            400,
-            `ID nguyên liệu không hợp lệ: ${ing.ingredientId}`
-          );
-        }
-
-        const ingredient = await IngredientModel.findById(ing.ingredientId);
-        if (!ingredient) {
-          throw createHttpError(
-            404,
-            `Không tìm thấy nguyên liệu với ID: ${ing.ingredientId}`
-          );
-        }
-
-        return {
-          ingredientId: ingredient._id,
-          name: ingredient.name,
-          image: ingredient.image || '',
-          description: ingredient.description,
-          allergens: ingredient.allergens,
-          baseUnit: ingredient.baseUnit,
-          units: ing.units
-        };
-      })
-    );
+    const ingredients = await resolveIngredientSnapshots(data.ingredients);
 
     const newDish = await DishModel.create({
-      user: {
-        _id: userId,
-        name: userName
-      },
+      user: { _id: userId, name: userName },
       name: data.name,
       description: data.description,
       categories: data.categories,
       nutritionFocus: data.nutritionFocus,
-      ingredients: ingredientDetails,
+      ingredients,
       instructions: data.instructions,
       nutrition: data.nutrition,
       preparationTime: data.preparationTime,
@@ -91,22 +51,7 @@ export const DishService = {
       isPublic: data.isPublic ?? false
     });
 
-    if (!newDish) {
-      throw createHttpError(500, 'Tạo món ăn thất bại');
-    }
-
-    if (image) {
-      const uploadResult = await uploadImage(
-        image.buffer,
-        newDish._id.toString()
-      );
-      if (uploadResult.success && uploadResult.data) {
-        newDish.image = uploadResult.data.secure_url;
-        await newDish.save();
-      } else {
-        throw createHttpError(500, 'Tải ảnh lên thất bại');
-      }
-    }
+    if (image) await saveDishImage(newDish, image);
 
     return newDish;
   },
@@ -126,12 +71,25 @@ export const DishService = {
     }
 
     const dish = await DishModel.findById(id);
-
     if (!dish) {
       throw createHttpError(404, 'Không tìm thấy món ăn');
     }
 
-    return dish;
+    const ingredientIds = dish.ingredients.map(i => i.ingredientId);
+    const found = await IngredientModel.find(
+      { _id: { $in: ingredientIds } },
+      { _id: 1 }
+    ).lean();
+    const existingIds = new Set(found.map(i => i._id.toString()));
+
+    const dishObj = dish.toObject();
+    const ingredients = dishObj.ingredients.map(ing => {
+      const isDeleted =
+        !ing.ingredientId || !existingIds.has(ing.ingredientId.toString());
+      return { ...ing, isDeleted };
+    });
+
+    return { ...dishObj, ingredients };
   },
 
   updateDish: async (
@@ -140,13 +98,6 @@ export const DishService = {
     data: UpdateDishRequest,
     image?: Express.Multer.File
   ) => {
-    const validation = updateDishRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
     }
@@ -156,56 +107,27 @@ export const DishService = {
       throw createHttpError(404, 'Không tìm thấy món ăn');
     }
 
-    // Check ownership - only owner can update
     if (existingDish.user?._id.toString() !== userId) {
       throw createHttpError(403, 'Bạn không có quyền cập nhật món ăn này');
     }
 
-    // Check for duplicate name (excluding current dish)
     if (data.name) {
-      const duplicateDish = await DishModel.findOne({
+      const duplicate = await DishModel.findOne({
         name: data.name,
         _id: { $ne: id }
       });
-
-      if (duplicateDish) {
+      if (duplicate) {
         throw createHttpError(409, 'Món ăn với tên này đã tồn tại');
       }
     }
 
-    const updateData: any = { ...data };
+    const { ingredients: _ingredients, ...rest } = data;
+    const updateData: Record<string, unknown> = { ...rest };
 
-    // If ingredients are updated, fetch their details
     if (data.ingredients) {
-      const ingredientDetails = await Promise.all(
-        data.ingredients.map(async ing => {
-          if (!validateObjectId(ing.ingredientId)) {
-            throw createHttpError(
-              400,
-              `ID nguyên liệu không hợp lệ: ${ing.ingredientId}`
-            );
-          }
-
-          const ingredient = await IngredientModel.findById(ing.ingredientId);
-          if (!ingredient) {
-            throw createHttpError(
-              404,
-              `Không tìm thấy nguyên liệu với ID: ${ing.ingredientId}`
-            );
-          }
-
-          return {
-            ingredientId: ingredient._id,
-            name: ingredient.name,
-            image: ingredient.image || '',
-            description: ingredient.description,
-            allergens: ingredient.allergens,
-            baseUnit: ingredient.baseUnit,
-            units: ing.units
-          };
-        })
+      updateData.ingredients = await resolveIngredientSnapshots(
+        data.ingredients
       );
-      updateData.ingredients = ingredientDetails;
     }
 
     const updatedDish = await DishModel.findByIdAndUpdate(id, updateData, {
@@ -216,20 +138,9 @@ export const DishService = {
       throw createHttpError(404, 'Không tìm thấy món ăn');
     }
 
-    if (image) {
-      await deleteImage(updatedDish._id.toString());
+    if (image) await replaceDishImage(updatedDish, image);
 
-      const uploadResult = await uploadImage(
-        image.buffer,
-        updatedDish._id.toString()
-      );
-      if (uploadResult.success && uploadResult.data) {
-        updatedDish.image = uploadResult.data.secure_url;
-        await updatedDish.save();
-      } else {
-        throw createHttpError(500, 'Tải ảnh lên thất bại');
-      }
-    }
+    await cascadeDishSnapshot(updatedDish);
 
     return updatedDish;
   },
@@ -244,25 +155,128 @@ export const DishService = {
       throw createHttpError(404, 'Không tìm thấy món ăn');
     }
 
-    // Check ownership or role-based permission
     const isOwner = dish.user?._id.toString() === userId;
     const isAdmin = userRole === ROLE.ADMIN;
 
-    // Admin can delete any dish, users can delete their own dishes
     if (!isOwner && !isAdmin) {
       throw createHttpError(403, 'Bạn không có quyền xóa món ăn này');
     }
 
-    const deletedDish = await DishModel.findByIdAndDelete(id);
+    if (dish.image) await deleteImage(dish._id.toString());
+    await dish.deleteOne();
 
-    if (!deletedDish) {
-      throw createHttpError(404, 'Không tìm thấy món ăn');
+    return dish;
+  },
+
+  deleteBulk: async (ids: string[], userId: string, userRole: string) => {
+    ids.forEach(id => {
+      if (!validateObjectId(id)) {
+        throw createHttpError(400, `Định dạng ID món ăn không hợp lệ: ${id}`);
+      }
+    });
+
+    const dishes = await DishModel.find({ _id: { $in: ids } });
+
+    const isAdmin = userRole === ROLE.ADMIN;
+
+    if (!isAdmin) {
+      const unauthorized = dishes.find(d => d.user?._id.toString() !== userId);
+      if (unauthorized) {
+        throw createHttpError(403, 'Bạn không có quyền xóa một số món ăn này');
+      }
     }
 
-    if (deletedDish.image) {
-      await deleteImage(deletedDish._id.toString());
-    }
+    await Promise.all(
+      dishes.map(d =>
+        d.image ? deleteImage(d._id.toString()) : Promise.resolve()
+      )
+    );
 
-    return deletedDish;
+    const result = await DishModel.deleteMany({ _id: { $in: ids } });
+
+    return result;
   }
 };
+
+async function resolveIngredientSnapshots(
+  items: CreateDishRequest['ingredients']
+) {
+  return Promise.all(
+    items.map(async ing => {
+      if (!validateObjectId(ing.ingredientId)) {
+        throw createHttpError(
+          400,
+          `ID nguyên liệu không hợp lệ: ${ing.ingredientId}`
+        );
+      }
+
+      const ingredient = await IngredientModel.findById(ing.ingredientId);
+      if (!ingredient) {
+        throw createHttpError(
+          404,
+          `Không tìm thấy nguyên liệu với ID: ${ing.ingredientId}`
+        );
+      }
+
+      return {
+        ingredientId: ingredient._id,
+        name: ingredient.name,
+        image: ingredient.image || '',
+        description: ingredient.description,
+        allergens: ingredient.allergens,
+        baseUnit: ingredient.baseUnit,
+        units: ing.units
+      };
+    })
+  );
+}
+
+async function saveDishImage(
+  dish: HydratedDocument<Dish>,
+  file: Express.Multer.File
+) {
+  const uploadResult = await uploadImage(file.buffer, dish._id.toString());
+
+  if (uploadResult.success && uploadResult.data) {
+    dish.image = uploadResult.data.secure_url;
+    await dish.save();
+  } else {
+    throw createHttpError(500, 'Tải ảnh lên thất bại');
+  }
+}
+
+async function replaceDishImage(
+  dish: HydratedDocument<Dish>,
+  file: Express.Multer.File
+) {
+  await deleteImage(dish._id.toString());
+  await saveDishImage(dish, file);
+}
+
+async function cascadeDishSnapshot(dish: HydratedDocument<Dish>) {
+  const { _id, name, image } = dish;
+  const query = { 'dishes.dishId': _id };
+  const arrayFilters = [{ 'elem.dishId': _id }];
+
+  await CollectionModel.updateMany(
+    query,
+    {
+      $set: {
+        'dishes.$[elem].name': name,
+        'dishes.$[elem].image': image
+      }
+    },
+    { arrayFilters }
+  );
+
+  await ScheduleModel.updateMany(
+    { 'meals.dishes.dishId': _id },
+    {
+      $set: {
+        'meals.$[].dishes.$[elem].name': name,
+        'meals.$[].dishes.$[elem].image': image
+      }
+    },
+    { arrayFilters }
+  );
+}

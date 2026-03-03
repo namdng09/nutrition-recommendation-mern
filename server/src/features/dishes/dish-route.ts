@@ -5,14 +5,18 @@ import { authenticate, authorize, validate } from '~/shared/middlewares';
 import { asyncHandler, handleSingleImageUpload } from '~/shared/utils';
 
 import { DishController } from './dish-controller';
-import { createDishRequestSchema, updateDishRequestSchema } from './dish-dto';
+import {
+  createDishRequestSchema,
+  deleteBulkRequestSchema,
+  updateDishRequestSchema
+} from './dish-dto';
 
 const router = Router();
 
 router.post(
   '/',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
+  authorize([ROLE.NUTRITIONIST]),
   handleSingleImageUpload('image'),
   validate(createDishRequestSchema.shape),
   asyncHandler(DishController.createDish)
@@ -20,12 +24,20 @@ router.post(
 
 router.get('/', asyncHandler(DishController.viewDishes));
 
+router.delete(
+  '/',
+  authenticate(),
+  authorize([ROLE.NUTRITIONIST, ROLE.ADMIN]),
+  validate(deleteBulkRequestSchema.shape),
+  asyncHandler(DishController.deleteBulk)
+);
+
 router.get('/:id', asyncHandler(DishController.viewDishDetail));
 
 router.put(
   '/:id',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST, ROLE.ADMIN]),
+  authorize([ROLE.NUTRITIONIST, ROLE.ADMIN]),
   handleSingleImageUpload('image'),
   validate(updateDishRequestSchema.shape),
   asyncHandler(DishController.updateDish)
@@ -34,7 +46,7 @@ router.put(
 router.delete(
   '/:id',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST, ROLE.ADMIN]),
+  authorize([ROLE.NUTRITIONIST, ROLE.ADMIN]),
   asyncHandler(DishController.deleteDish)
 );
 
