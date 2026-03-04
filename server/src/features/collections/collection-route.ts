@@ -29,7 +29,11 @@ router.post(
   asyncHandler(CollectionController.createCollection)
 );
 
-router.get('/', asyncHandler(CollectionController.viewCollections));
+router.get(
+  '/',
+  authenticate({ required: false }),
+  asyncHandler(CollectionController.viewCollections)
+);
 
 router.delete(
   '/',
@@ -39,7 +43,11 @@ router.delete(
   asyncHandler(CollectionController.deleteBulk)
 );
 
-router.get('/:id', asyncHandler(CollectionController.viewCollectionDetail));
+router.get(
+  '/:id',
+  authenticate({ required: false }),
+  asyncHandler(CollectionController.viewCollectionDetail)
+);
 
 router.put(
   '/:id',

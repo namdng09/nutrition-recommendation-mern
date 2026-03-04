@@ -3,7 +3,11 @@ import createHttpError from 'http-errors';
 import type { HydratedDocument, Types } from 'mongoose';
 
 import { ROLE } from '~/shared/constants/role';
-import { CollectionModel, DishModel } from '~/shared/database/models';
+import {
+  CollectionModel,
+  DishModel,
+  UserModel
+} from '~/shared/database/models';
 import type { Collection } from '~/shared/database/models/collection-model';
 import type { Dish } from '~/shared/database/models/dish-model';
 import {
@@ -52,17 +56,40 @@ export const CollectionService = {
   },
 
   viewCollections: async (
-    parsed: QueryOptions
+    parsed: QueryOptions,
+    userId?: string
   ): Promise<PaginateResponse<Collection>> => {
     const { filter } = parsed;
     const options = buildPaginateOptions(parsed);
 
+    let favoriteCollectionIds: Set<string> = new Set();
+
+    if (userId) {
+      const user = await UserModel.findById(
+        userId,
+        'favoriteCollections'
+      ).lean();
+
+      if (user?.favoriteCollections?.length) {
+        favoriteCollectionIds = new Set(
+          user.favoriteCollections.map((id: unknown) => String(id))
+        );
+      }
+    }
+
     const result = await CollectionModel.paginate(filter, options);
 
-    return result as unknown as PaginateResponse<Collection>;
+    const paginatedResult = result as unknown as PaginateResponse<Collection>;
+
+    paginatedResult.docs = paginatedResult.docs.map(doc => ({
+      ...((doc as any).toObject?.() ?? doc),
+      isFavorited: favoriteCollectionIds.has(String((doc as any)._id))
+    })) as any;
+
+    return paginatedResult;
   },
 
-  viewCollectionDetail: async (id: string) => {
+  viewCollectionDetail: async (id: string, userId?: string) => {
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID bộ sưu tập không hợp lệ');
     }
@@ -86,7 +113,17 @@ export const CollectionService = {
       isDeleted: !d.dishId || !existingDishIds.has(d.dishId.toString())
     }));
 
-    return { ...collObj, dishes };
+    let isFavorited = false;
+    if (userId) {
+      const user = await UserModel.findById(
+        userId,
+        'favoriteCollections'
+      ).lean();
+      isFavorited =
+        user?.favoriteCollections?.some(fId => String(fId) === id) ?? false;
+    }
+
+    return { ...collObj, dishes, isFavorited };
   },
 
   updateCollection: async (

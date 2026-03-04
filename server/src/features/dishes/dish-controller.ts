@@ -19,8 +19,9 @@ export const DishController = {
 
   viewDishes: async (req: Request, res: Response) => {
     const parsed = parseQuery(req.query);
+    const userId = req.user?._id.toString();
 
-    const result = await DishService.viewDishes(parsed);
+    const result = await DishService.viewDishes(parsed, userId);
 
     res
       .status(200)
@@ -29,8 +30,9 @@ export const DishController = {
 
   viewDishDetail: async (req: Request, res: Response) => {
     const id = req.params.id;
+    const userId = req.user?._id.toString();
 
-    const result = await DishService.viewDishDetail(id);
+    const result = await DishService.viewDishDetail(id, userId);
 
     res
       .status(200)

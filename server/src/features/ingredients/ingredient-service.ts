@@ -5,7 +5,8 @@ import type { HydratedDocument } from 'mongoose';
 import {
   DishModel,
   GroceryModel,
-  IngredientModel
+  IngredientModel,
+  UserModel
 } from '~/shared/database/models';
 import type { Ingredient } from '~/shared/database/models/ingredient-model';
 import {
@@ -42,17 +43,44 @@ export const IngredientService = {
   },
 
   viewIngredients: async (
-    parsed: QueryOptions
+    parsed: QueryOptions,
+    userId?: string
   ): Promise<PaginateResponse<Ingredient>> => {
-    const { filter } = parsed;
     const options = buildPaginateOptions(parsed);
+    let { filter } = parsed;
+
+    let favoriteIngredientIds: Set<string> = new Set();
+
+    if (userId) {
+      const user = await UserModel.findById(
+        userId,
+        'blockIngredients favoriteIngredients'
+      ).lean();
+
+      if (user?.blockIngredients?.length) {
+        filter = { ...filter, _id: { $nin: user.blockIngredients } };
+      }
+
+      if (user?.favoriteIngredients?.length) {
+        favoriteIngredientIds = new Set(
+          user.favoriteIngredients.map((id: unknown) => String(id))
+        );
+      }
+    }
 
     const result = await IngredientModel.paginate(filter, options);
 
-    return result as unknown as PaginateResponse<Ingredient>;
+    const paginatedResult = result as unknown as PaginateResponse<Ingredient>;
+
+    paginatedResult.docs = paginatedResult.docs.map(doc => ({
+      ...((doc as any).toObject?.() ?? doc),
+      isFavorited: favoriteIngredientIds.has(String((doc as any)._id))
+    })) as any;
+
+    return paginatedResult;
   },
 
-  viewIngredientDetail: async (id: string) => {
+  viewIngredientDetail: async (id: string, userId?: string) => {
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
     }
@@ -63,7 +91,17 @@ export const IngredientService = {
       throw createHttpError(404, 'Không tìm thấy nguyên liệu');
     }
 
-    return ingredient;
+    let isFavorited = false;
+    if (userId) {
+      const user = await UserModel.findById(
+        userId,
+        'favoriteIngredients'
+      ).lean();
+      isFavorited =
+        user?.favoriteIngredients?.some(fId => String(fId) === id) ?? false;
+    }
+
+    return { ...ingredient.toObject(), isFavorited };
   },
 
   updateIngredient: async (
