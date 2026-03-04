@@ -22,7 +22,11 @@ router.post(
   asyncHandler(IngredientController.createIngredient)
 );
 
-router.get('/', asyncHandler(IngredientController.viewIngredients));
+router.get(
+  '/',
+  authenticate({ required: false }),
+  asyncHandler(IngredientController.viewIngredients)
+);
 
 router.delete(
   '/',
@@ -32,7 +36,11 @@ router.delete(
   asyncHandler(IngredientController.deleteBulk)
 );
 
-router.get('/:id', asyncHandler(IngredientController.viewIngredientDetail));
+router.get(
+  '/:id',
+  authenticate({ required: false }),
+  asyncHandler(IngredientController.viewIngredientDetail)
+);
 
 router.put(
   '/:id',

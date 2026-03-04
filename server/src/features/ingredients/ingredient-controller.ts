@@ -19,8 +19,9 @@ export const IngredientController = {
 
   viewIngredients: async (req: Request, res: Response) => {
     const parsed = parseQuery(req.query);
+    const userId = req.user?._id.toString();
 
-    const result = await IngredientService.viewIngredients(parsed);
+    const result = await IngredientService.viewIngredients(parsed, userId);
 
     res
       .status(200)
@@ -31,8 +32,9 @@ export const IngredientController = {
 
   viewIngredientDetail: async (req: Request, res: Response) => {
     const id = req.params.id;
+    const userId = req.user?._id.toString();
 
-    const result = await IngredientService.viewIngredientDetail(id);
+    const result = await IngredientService.viewIngredientDetail(id, userId);
 
     res
       .status(200)

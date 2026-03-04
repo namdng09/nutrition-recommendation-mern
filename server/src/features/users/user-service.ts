@@ -1,6 +1,7 @@
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import generatePassword from 'generate-password';
 import createHttpError from 'http-errors';
+import type { HydratedDocument } from 'mongoose';
 
 import { ACTIVITY_LEVEL } from '~/shared/constants/activity-level';
 import { DIET } from '~/shared/constants/diet';
@@ -23,9 +24,22 @@ import {
   CreateUserRequest,
   NutritionTargetRequest,
   OnboardingRequest,
-  UpdateProfileRequest,
+  UpdateAllergens,
+  UpdateNutritionTarget,
+  UpdatePhysicalStats,
+  UpdateProfile,
+  UpdateRestrictions,
+  UpdateScheduleSettings,
   UpdateUserRequest
 } from './user-dto';
+
+type UpdateProfileRequest =
+  | UpdateProfile
+  | UpdatePhysicalStats
+  | UpdateNutritionTarget
+  | UpdateRestrictions
+  | UpdateAllergens
+  | UpdateScheduleSettings;
 
 const ACTIVITY_MULTIPLIERS: Record<
   (typeof ACTIVITY_LEVEL)[keyof typeof ACTIVITY_LEVEL],
@@ -525,7 +539,7 @@ export const UserService = {
       throw createHttpError(400, 'Invalid user ID format');
     }
 
-    const { weight, ...rest } = data;
+    const { weight, ...rest } = data as UpdatePhysicalStats;
 
     const updateOp = weight
       ? { $set: rest, $push: { weightRecord: { weight, date: new Date() } } }
@@ -540,18 +554,7 @@ export const UserService = {
     }
 
     if (avatar) {
-      await deleteAvatar(updatedUser._id.toString());
-
-      const uploadResult = await uploadAvatar(
-        avatar.buffer,
-        updatedUser._id.toString()
-      );
-      if (uploadResult.success && uploadResult.data) {
-        updatedUser.avatar = uploadResult.data.secure_url;
-        await updatedUser.save();
-      } else {
-        throw createHttpError(500, 'Failed to upload avatar');
-      }
+      await replaceUserAvatar(updatedUser, avatar);
     }
 
     return updatedUser;
@@ -571,9 +574,17 @@ export const UserService = {
     return user;
   },
 
-  updateUser: async (id: string, data: UpdateUserRequest) => {
+  updateUser: async (
+    id: string,
+    data: UpdateUserRequest,
+    currentUserId: string
+  ) => {
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Invalid user ID format');
+    }
+
+    if (id === currentUserId && data.isActive === 'false') {
+      throw createHttpError(400, 'Admin cannot deactivate own account');
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(id, data, {
@@ -587,9 +598,13 @@ export const UserService = {
     return updatedUser;
   },
 
-  deleteUser: async (id: string) => {
+  deleteUser: async (id: string, currentUserId: string) => {
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Invalid user ID format');
+    }
+
+    if (id === currentUserId) {
+      throw createHttpError(400, 'Admin cannot delete own account');
     }
 
     const deletedUser = await UserModel.findByIdAndDelete(id);
@@ -603,12 +618,16 @@ export const UserService = {
     return deletedUser;
   },
 
-  deleteBulk: async (ids: string[]) => {
+  deleteBulk: async (ids: string[], currentUserId: string) => {
     ids.forEach(id => {
       if (!validateObjectId(id)) {
         throw createHttpError(400, 'Invalid user ID format');
       }
     });
+
+    if (ids.includes(currentUserId)) {
+      throw createHttpError(400, 'Cannot delete your own account');
+    }
 
     const result = await UserModel.deleteMany({ _id: { $in: ids } });
 
@@ -617,3 +636,24 @@ export const UserService = {
     return result;
   }
 };
+
+async function saveUserAvatar(
+  user: HydratedDocument<User>,
+  file: Express.Multer.File
+) {
+  const uploadResult = await uploadAvatar(file.buffer, user._id.toString());
+  if (uploadResult.success && uploadResult.data) {
+    user.avatar = uploadResult.data.secure_url;
+    await user.save();
+  } else {
+    throw createHttpError(500, 'Failed to upload avatar');
+  }
+}
+
+async function replaceUserAvatar(
+  user: HydratedDocument<User>,
+  file: Express.Multer.File
+) {
+  await deleteAvatar(user._id.toString());
+  await saveUserAvatar(user, file);
+}

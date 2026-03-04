@@ -3,7 +3,15 @@ import createHttpError from 'http-errors';
 import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 import passport from 'passport';
 
-export const authenticate = () => {
+/**
+ * JWT authentication middleware.
+ * Option `required` allow that public routes can optionally personalize responses without requiring a login.
+ *
+ * - `required: true` (default) — no/invalid token → 401.
+ * - `required: false` — valid token sets `req.user`; no token passes through
+ *   with `req.user` undefined. Expired tokens still return 401 either way.
+ */
+export const authenticate = ({ required = true } = {}) => {
   return (req: Request, res: Response, next: NextFunction) => {
     passport.authenticate(
       'jwt',
@@ -22,6 +30,7 @@ export const authenticate = () => {
         }
 
         if (!user) {
+          if (!required) return next();
           return next(createHttpError(401, 'Unauthorized'));
         }
 

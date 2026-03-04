@@ -7,7 +7,8 @@ import {
   CollectionModel,
   DishModel,
   IngredientModel,
-  ScheduleModel
+  ScheduleModel,
+  UserModel
 } from '~/shared/database/models';
 import type { Dish } from '~/shared/database/models/dish-model';
 import {
@@ -56,16 +57,45 @@ export const DishService = {
     return newDish;
   },
 
-  viewDishes: async (parsed: QueryOptions): Promise<PaginateResponse<Dish>> => {
-    const { filter } = parsed;
+  viewDishes: async (
+    parsed: QueryOptions,
+    userId?: string
+  ): Promise<PaginateResponse<Dish>> => {
     const options = buildPaginateOptions(parsed);
+    let { filter } = parsed;
+
+    let favoriteDishIds: Set<string> = new Set();
+
+    if (userId) {
+      const user = await UserModel.findById(
+        userId,
+        'blockDishes favoriteDishes'
+      ).lean();
+
+      if (user?.blockDishes?.length) {
+        filter = { ...filter, _id: { $nin: user.blockDishes } };
+      }
+
+      if (user?.favoriteDishes?.length) {
+        favoriteDishIds = new Set(
+          user.favoriteDishes.map((id: unknown) => String(id))
+        );
+      }
+    }
 
     const result = await DishModel.paginate(filter, options);
 
-    return result as unknown as PaginateResponse<Dish>;
+    const paginatedResult = result as unknown as PaginateResponse<Dish>;
+
+    paginatedResult.docs = paginatedResult.docs.map(doc => ({
+      ...((doc as any).toObject?.() ?? doc),
+      isFavorited: favoriteDishIds.has(String((doc as any)._id))
+    })) as any;
+
+    return paginatedResult;
   },
 
-  viewDishDetail: async (id: string) => {
+  viewDishDetail: async (id: string, userId?: string) => {
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
     }
@@ -89,7 +119,14 @@ export const DishService = {
       return { ...ing, isDeleted };
     });
 
-    return { ...dishObj, ingredients };
+    let isFavorited = false;
+    if (userId) {
+      const user = await UserModel.findById(userId, 'favoriteDishes').lean();
+      isFavorited =
+        user?.favoriteDishes?.some(fId => String(fId) === id) ?? false;
+    }
+
+    return { ...dishObj, ingredients, isFavorited };
   },
 
   updateDish: async (

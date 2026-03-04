@@ -22,7 +22,11 @@ router.post(
   asyncHandler(DishController.createDish)
 );
 
-router.get('/', asyncHandler(DishController.viewDishes));
+router.get(
+  '/',
+  authenticate({ required: false }),
+  asyncHandler(DishController.viewDishes)
+);
 
 router.delete(
   '/',
@@ -32,7 +36,11 @@ router.delete(
   asyncHandler(DishController.deleteBulk)
 );
 
-router.get('/:id', asyncHandler(DishController.viewDishDetail));
+router.get(
+  '/:id',
+  authenticate({ required: false }),
+  asyncHandler(DishController.viewDishDetail)
+);
 
 router.put(
   '/:id',

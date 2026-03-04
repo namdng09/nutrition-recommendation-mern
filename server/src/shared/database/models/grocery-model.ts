@@ -17,7 +17,7 @@ const grocerySchema = new Schema(
       {
         ingredientId: { type: Schema.Types.ObjectId, ref: 'Ingredient' },
         name: { type: String, required: true },
-        image: { type: String, required: true },
+        image: { type: String },
         isPurchased: { type: Boolean, default: false }
       }
     ],

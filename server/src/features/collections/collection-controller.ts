@@ -26,8 +26,9 @@ export const CollectionController = {
 
   viewCollections: async (req: Request, res: Response) => {
     const parsed = parseQuery(req.query);
+    const userId = req.user?._id.toString();
 
-    const result = await CollectionService.viewCollections(parsed);
+    const result = await CollectionService.viewCollections(parsed, userId);
 
     res
       .status(200)
@@ -36,8 +37,9 @@ export const CollectionController = {
 
   viewCollectionDetail: async (req: Request, res: Response) => {
     const id = req.params.id;
+    const userId = req.user?._id.toString();
 
-    const result = await CollectionService.viewCollectionDetail(id);
+    const result = await CollectionService.viewCollectionDetail(id, userId);
 
     res
       .status(200)
