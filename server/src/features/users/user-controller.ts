@@ -86,13 +86,7 @@ export const UserController = {
     const data = req.body;
     const currentUserId = req.user?._id.toString();
 
-    if (id === currentUserId && data.isActive === 'false') {
-      return res
-        .status(400)
-        .json(ApiResponse.failed('Admin cannot deactivate own account'));
-    }
-
-    const result = await UserService.updateUser(id, data);
+    const result = await UserService.updateUser(id, data, currentUserId);
 
     res
       .status(200)
@@ -103,13 +97,7 @@ export const UserController = {
     const id = req.params.id;
     const currentUserId = req.user?._id.toString();
 
-    if (id === currentUserId) {
-      return res
-        .status(400)
-        .json(ApiResponse.failed('Admin cannot delete own account'));
-    }
-
-    const result = await UserService.deleteUser(id);
+    const result = await UserService.deleteUser(id, currentUserId);
 
     res
       .status(200)
@@ -120,19 +108,7 @@ export const UserController = {
     const { ids } = req.body;
     const currentUserId = req.user?._id.toString();
 
-    if (!Array.isArray(ids) || ids.length === 0) {
-      return res
-        .status(400)
-        .json(ApiResponse.failed('Invalid user IDs provided'));
-    }
-
-    if (ids.includes(currentUserId)) {
-      return res
-        .status(400)
-        .json(ApiResponse.failed('Cannot delete your own account'));
-    }
-
-    const result = await UserService.deleteBulk(ids);
+    const result = await UserService.deleteBulk(ids, currentUserId);
 
     res
       .status(200)
@@ -148,10 +124,6 @@ export const UserController = {
     const userId = req.user?._id.toString();
     const { dishId } = req.body;
 
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
-
     const result = await UserService.addFavoriteDish(userId, dishId);
 
     res
@@ -163,10 +135,6 @@ export const UserController = {
     const userId = req.user?._id.toString();
     const { dishId } = req.body;
 
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
-
     const result = await UserService.removeFavoriteDish(userId, dishId);
 
     res
@@ -177,10 +145,6 @@ export const UserController = {
   addFavoriteIngredient: async (req: Request, res: Response) => {
     const userId = req.user?._id.toString();
     const { ingredientId } = req.body;
-
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
 
     const result = await UserService.addFavoriteIngredient(
       userId,
@@ -198,10 +162,6 @@ export const UserController = {
     const userId = req.user?._id.toString();
     const { ingredientId } = req.body;
 
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
-
     const result = await UserService.removeFavoriteIngredient(
       userId,
       ingredientId
@@ -217,10 +177,6 @@ export const UserController = {
   addFavoriteCollection: async (req: Request, res: Response) => {
     const userId = req.user?._id.toString();
     const { collectionId } = req.body;
-
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
 
     const result = await UserService.addFavoriteCollection(
       userId,
@@ -238,10 +194,6 @@ export const UserController = {
     const userId = req.user?._id.toString();
     const { collectionId } = req.body;
 
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
-
     const result = await UserService.removeFavoriteCollection(
       userId,
       collectionId
@@ -258,10 +210,6 @@ export const UserController = {
     const userId = req.user?._id.toString();
     const { dishId } = req.body;
 
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
-
     const result = await UserService.addBlockDish(userId, dishId);
 
     res
@@ -273,10 +221,6 @@ export const UserController = {
     const userId = req.user?._id.toString();
     const { dishId } = req.body;
 
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
-
     const result = await UserService.removeBlockDish(userId, dishId);
 
     res
@@ -287,10 +231,6 @@ export const UserController = {
   addBlockIngredient: async (req: Request, res: Response) => {
     const userId = req.user?._id.toString();
     const { ingredientId } = req.body;
-
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
 
     const result = await UserService.addBlockIngredient(userId, ingredientId);
 
@@ -304,10 +244,6 @@ export const UserController = {
   removeBlockIngredient: async (req: Request, res: Response) => {
     const userId = req.user?._id.toString();
     const { ingredientId } = req.body;
-
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
 
     const result = await UserService.removeBlockIngredient(
       userId,

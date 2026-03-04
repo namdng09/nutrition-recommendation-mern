@@ -14,11 +14,13 @@ import {
   blockDishRequestSchema,
   blockIngredientRequestSchema,
   createUserRequestSchema,
+  deleteBulkRequestSchema,
   favoriteCollectionRequestSchema,
   favoriteDishRequestSchema,
   favoriteIngredientRequestSchema,
   nutritionTargetRequestSchema,
   onboardingRequestSchema,
+  updateProfileRequestSchema,
   updateUserRequestSchema
 } from './user-dto';
 
@@ -44,6 +46,7 @@ router.delete(
   '/',
   authenticate(),
   authorize([ROLE.ADMIN]),
+  validate(deleteBulkRequestSchema.shape),
   asyncHandler(UserController.deleteBulk)
 );
 
@@ -69,6 +72,7 @@ router.put(
   '/me',
   authenticate(),
   handleSingleImageUpload('avatar'),
+  // validate(updateProfileRequestSchema.shape),
   asyncHandler(UserController.updateProfile)
 );
 

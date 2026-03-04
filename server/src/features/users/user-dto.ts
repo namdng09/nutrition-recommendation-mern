@@ -203,3 +203,11 @@ export const blockIngredientRequestSchema = z.object({
 export type BlockIngredientRequest = z.infer<
   typeof blockIngredientRequestSchema
 >;
+
+export const deleteBulkRequestSchema = z.object({
+  ids: z
+    .array(z.string().trim().min(1, 'User ID cannot be empty'))
+    .min(1, 'At least one user ID is required')
+});
+
+export type DeleteBulkRequest = z.infer<typeof deleteBulkRequestSchema>;
