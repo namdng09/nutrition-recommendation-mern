@@ -3,7 +3,7 @@ import createHttpError from 'http-errors';
 import { type HydratedDocument } from 'mongoose';
 
 import { ROLE } from '~/shared/constants/role';
-import type { Post } from '~/shared/database/models/post-model';
+import type { Post, PostComment } from '~/shared/database/models/post-model';
 import { PostModel } from '~/shared/database/models/post-model';
 import {
   buildPaginateOptions,
@@ -173,7 +173,7 @@ export const PostService = {
     const post = await PostModel.findById(id);
     if (!post) throw createHttpError(404, 'Không tìm thấy bài viết');
 
-    const comment = {
+    const comment: PostComment = {
       author: {
         _id: toObjectId(userId),
         name: userName,
@@ -183,7 +183,7 @@ export const PostService = {
       createdAt: new Date()
     };
 
-    post.comments.push(comment as any);
+    post.comments.push(comment);
     await post.save();
 
     return comment;
@@ -205,13 +205,13 @@ export const PostService = {
     if (!post) throw createHttpError(404, 'Không tìm thấy bài viết');
 
     const commentIndex = post.comments.findIndex(
-      (comment: any) => comment._id.toString() === commentId
+      comment => comment._id?.toString() === commentId
     );
     if (commentIndex === -1)
       throw createHttpError(404, 'Không tìm thấy bình luận');
 
-    const comment = post.comments[commentIndex] as any;
-    const isCommentAuthor = comment.author._id.toString() === userId;
+    const comment = post.comments[commentIndex] as PostComment;
+    const isCommentAuthor = comment.author?._id?.toString() === userId;
     const isPostAuthor = post.author?._id.toString() === userId;
     const isAdmin = userRole === ROLE.ADMIN;
 

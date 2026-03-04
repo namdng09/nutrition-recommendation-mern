@@ -86,11 +86,13 @@ export const GroceryService = {
       foundIngredients.map(i => i._id.toString())
     );
 
-    const annotatedDocs = (result.docs as unknown as Grocery[]).map(g => {
-      const grocObj = (g as any).toObject ? (g as any).toObject() : { ...g };
+    const annotatedDocs = (
+      result.docs as unknown as HydratedDocument<Grocery>[]
+    ).map(g => {
+      const grocObj = g.toObject();
       return {
         ...grocObj,
-        ingredients: grocObj.ingredients.map((i: any) => ({
+        ingredients: grocObj.ingredients.map(i => ({
           ...i,
           isDeleted:
             !i.ingredientId ||
