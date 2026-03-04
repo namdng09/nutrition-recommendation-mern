@@ -27,7 +27,7 @@ export const UserController = {
   },
 
   viewProfile: async (req: Request, res: Response) => {
-    const id = req.user?.id;
+    const id = req.user?._id.toString();
 
     const result = await UserService.viewProfile(id);
 
@@ -37,7 +37,7 @@ export const UserController = {
   },
 
   onboardUser: async (req: Request, res: Response) => {
-    const id = req.user?.id;
+    const id = req.user?._id.toString();
     const data = req.body;
 
     const result = await UserService.onboardUser(id, data);

@@ -146,10 +146,6 @@ const calculateMacros = (calories: number, ratios: MacroRatios) => {
 
 export const UserService = {
   addFavoriteDish: async (userId: string, dishId: string) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Invalid user ID format');
-    }
-
     if (!validateObjectId(dishId)) {
       throw createHttpError(400, 'Invalid dish ID format');
     }
@@ -168,10 +164,6 @@ export const UserService = {
   },
 
   removeFavoriteDish: async (userId: string, dishId: string) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Invalid user ID format');
-    }
-
     if (!validateObjectId(dishId)) {
       throw createHttpError(400, 'Invalid dish ID format');
     }
@@ -190,10 +182,6 @@ export const UserService = {
   },
 
   addFavoriteIngredient: async (userId: string, ingredientId: string) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Invalid user ID format');
-    }
-
     if (!validateObjectId(ingredientId)) {
       throw createHttpError(400, 'Invalid ingredient ID format');
     }
@@ -212,10 +200,6 @@ export const UserService = {
   },
 
   removeFavoriteIngredient: async (userId: string, ingredientId: string) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Invalid user ID format');
-    }
-
     if (!validateObjectId(ingredientId)) {
       throw createHttpError(400, 'Invalid ingredient ID format');
     }
@@ -234,10 +218,6 @@ export const UserService = {
   },
 
   addFavoriteCollection: async (userId: string, collectionId: string) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Invalid user ID format');
-    }
-
     if (!validateObjectId(collectionId)) {
       throw createHttpError(400, 'Invalid collection ID format');
     }
@@ -256,10 +236,6 @@ export const UserService = {
   },
 
   removeFavoriteCollection: async (userId: string, collectionId: string) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Invalid user ID format');
-    }
-
     if (!validateObjectId(collectionId)) {
       throw createHttpError(400, 'Invalid collection ID format');
     }
@@ -278,10 +254,6 @@ export const UserService = {
   },
 
   addBlockDish: async (userId: string, dishId: string) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Invalid user ID format');
-    }
-
     if (!validateObjectId(dishId)) {
       throw createHttpError(400, 'Invalid dish ID format');
     }
@@ -300,10 +272,6 @@ export const UserService = {
   },
 
   removeBlockDish: async (userId: string, dishId: string) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Invalid user ID format');
-    }
-
     if (!validateObjectId(dishId)) {
       throw createHttpError(400, 'Invalid dish ID format');
     }
@@ -322,10 +290,6 @@ export const UserService = {
   },
 
   addBlockIngredient: async (userId: string, ingredientId: string) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Invalid user ID format');
-    }
-
     if (!validateObjectId(ingredientId)) {
       throw createHttpError(400, 'Invalid ingredient ID format');
     }
@@ -344,10 +308,6 @@ export const UserService = {
   },
 
   removeBlockIngredient: async (userId: string, ingredientId: string) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Invalid user ID format');
-    }
-
     if (!validateObjectId(ingredientId)) {
       throw createHttpError(400, 'Invalid ingredient ID format');
     }
@@ -415,10 +375,6 @@ export const UserService = {
   },
 
   viewProfile: async (id: string) => {
-    if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Invalid user ID format');
-    }
-
     const user = await UserModel.findById(id)
       .populate({
         path: 'favoriteDishes',
@@ -447,8 +403,7 @@ export const UserService = {
             options: { limit: 1 }
           }
         ]
-      })
-      .select('-password');
+      });
 
     if (!user) {
       throw createHttpError(404, 'User not found');
@@ -458,10 +413,6 @@ export const UserService = {
   },
 
   onboardUser: async (id: string, data: OnboardingRequest) => {
-    if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Invalid user ID format');
-    }
-
     const user = await UserModel.findById(id);
 
     if (!user) {
@@ -541,10 +492,6 @@ export const UserService = {
     data: UpdateProfileRequest,
     avatar?: Express.Multer.File
   ) => {
-    if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Invalid user ID format');
-    }
-
     const { weight, ...rest } = data as UpdatePhysicalStats;
 
     const updateOp = weight
