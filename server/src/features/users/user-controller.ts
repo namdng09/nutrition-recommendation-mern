@@ -13,7 +13,7 @@ export const UserController = {
 
     res
       .status(201)
-      .json(ApiResponse.success('User created successfully', result));
+      .json(ApiResponse.success('Người dùng được tạo thành công', result));
   },
 
   viewUsers: async (req: Request, res: Response) => {
@@ -23,7 +23,7 @@ export const UserController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Users retrieved successfully', result));
+      .json(ApiResponse.success('Người dùng được lấy thành công', result));
   },
 
   viewProfile: async (req: Request, res: Response) => {
@@ -33,7 +33,7 @@ export const UserController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Profile retrieved successfully', result));
+      .json(ApiResponse.success('Hồ sơ được lấy thành công', result));
   },
 
   onboardUser: async (req: Request, res: Response) => {
@@ -44,7 +44,7 @@ export const UserController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Onboarding completed successfully', result));
+      .json(ApiResponse.success('Onboarding hoàn thành thành công', result));
   },
 
   calculateNutritionTarget: async (req: Request, res: Response) => {
@@ -55,7 +55,10 @@ export const UserController = {
     res
       .status(200)
       .json(
-        ApiResponse.success('Nutrition target calculated successfully', result)
+        ApiResponse.success(
+          'Mục tiêu dinh dưỡng được tính toán thành công',
+          result
+        )
       );
   },
 
@@ -68,7 +71,7 @@ export const UserController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Profile updated successfully', result));
+      .json(ApiResponse.success('Hồ sơ được cập nhật thành công', result));
   },
 
   viewUserDetail: async (req: Request, res: Response) => {
@@ -78,7 +81,7 @@ export const UserController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('User retrieved successfully', result));
+      .json(ApiResponse.success('Người dùng được lấy thành công', result));
   },
 
   updateUser: async (req: Request, res: Response) => {
@@ -90,7 +93,7 @@ export const UserController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('User updated successfully', result));
+      .json(ApiResponse.success('Người dùng được cập nhật thành công', result));
   },
 
   deleteUser: async (req: Request, res: Response) => {
@@ -101,7 +104,7 @@ export const UserController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('User deleted successfully', result));
+      .json(ApiResponse.success('Người dùng được xóa thành công', result));
   },
 
   deleteBulk: async (req: Request, res: Response) => {
@@ -114,7 +117,7 @@ export const UserController = {
       .status(200)
       .json(
         ApiResponse.success(
-          `${result.deletedCount} user(s) deleted successfully`,
+          `${result.deletedCount} người dùng được xóa thành công`,
           result
         )
       );
@@ -128,7 +131,9 @@ export const UserController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Favorite dish added successfully', result));
+      .json(
+        ApiResponse.success('Món ăn yêu thích được thêm thành công', result)
+      );
   },
 
   removeFavoriteDish: async (req: Request, res: Response) => {
@@ -139,7 +144,9 @@ export const UserController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Favorite dish removed successfully', result));
+      .json(
+        ApiResponse.success('Món ăn yêu thích được xóa thành công', result)
+      );
   },
 
   addFavoriteIngredient: async (req: Request, res: Response) => {
@@ -154,7 +161,10 @@ export const UserController = {
     res
       .status(200)
       .json(
-        ApiResponse.success('Favorite ingredient added successfully', result)
+        ApiResponse.success(
+          'Nguyên liệu yêu thích được thêm thành công',
+          result
+        )
       );
   },
 
@@ -170,7 +180,7 @@ export const UserController = {
     res
       .status(200)
       .json(
-        ApiResponse.success('Favorite ingredient removed successfully', result)
+        ApiResponse.success('Nguyên liệu yêu thích được xóa thành công', result)
       );
   },
 
@@ -186,7 +196,7 @@ export const UserController = {
     res
       .status(200)
       .json(
-        ApiResponse.success('Favorite collection added successfully', result)
+        ApiResponse.success('Bộ sưu tập yêu thích được thêm thành công', result)
       );
   },
 
@@ -202,7 +212,7 @@ export const UserController = {
     res
       .status(200)
       .json(
-        ApiResponse.success('Favorite collection removed successfully', result)
+        ApiResponse.success('Bộ sưu tập yêu thích được xóa thành công', result)
       );
   },
 
@@ -214,7 +224,7 @@ export const UserController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Blocked dish added successfully', result));
+      .json(ApiResponse.success('Món ăn bị chặn được thêm thành công', result));
   },
 
   removeBlockDish: async (req: Request, res: Response) => {
@@ -225,7 +235,7 @@ export const UserController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Blocked dish removed successfully', result));
+      .json(ApiResponse.success('Món ăn bị chặn được xóa thành công', result));
   },
 
   addBlockIngredient: async (req: Request, res: Response) => {
@@ -237,7 +247,7 @@ export const UserController = {
     res
       .status(200)
       .json(
-        ApiResponse.success('Blocked ingredient added successfully', result)
+        ApiResponse.success('Nguyên liệu bị chặn được thêm thành công', result)
       );
   },
 
@@ -253,7 +263,7 @@ export const UserController = {
     res
       .status(200)
       .json(
-        ApiResponse.success('Blocked ingredient removed successfully', result)
+        ApiResponse.success('Nguyên liệu bị chặn được xóa thành công', result)
       );
   }
 };

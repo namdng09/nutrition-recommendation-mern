@@ -4,7 +4,7 @@ import apiClient from '~/lib/api-client';
 import { QUERY_KEYS } from '~/lib/query-keys';
 
 const updatePhysicalStats = async data => {
-  const response = await apiClient.put('/api/users/me', data);
+  const response = await apiClient.put('/api/users/me/physical-stats', data);
   return response.data;
 };
 

@@ -24,9 +24,22 @@ import {
   CreateUserRequest,
   NutritionTargetRequest,
   OnboardingRequest,
-  UpdateProfileRequest,
+  UpdateAllergens,
+  UpdateNutritionTarget,
+  UpdatePhysicalStats,
+  UpdateProfile,
+  UpdateRestrictions,
+  UpdateScheduleSettings,
   UpdateUserRequest
 } from './user-dto';
+
+type UpdateProfileRequest =
+  | UpdateProfile
+  | UpdatePhysicalStats
+  | UpdateNutritionTarget
+  | UpdateRestrictions
+  | UpdateAllergens
+  | UpdateScheduleSettings;
 
 const ACTIVITY_MULTIPLIERS: Record<
   (typeof ACTIVITY_LEVEL)[keyof typeof ACTIVITY_LEVEL],
@@ -526,7 +539,7 @@ export const UserService = {
       throw createHttpError(400, 'Invalid user ID format');
     }
 
-    const { weight, ...rest } = data;
+    const { weight, ...rest } = data as UpdatePhysicalStats;
 
     const updateOp = weight
       ? { $set: rest, $push: { weightRecord: { weight, date: new Date() } } }
