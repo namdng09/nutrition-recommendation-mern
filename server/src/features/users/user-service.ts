@@ -106,12 +106,12 @@ const calculateAge = (dob?: string, age?: number) => {
   }
 
   if (!dob) {
-    throw createHttpError(400, 'dob or age is required');
+    throw createHttpError(400, 'Ngày sinh hoặc tuổi là bắt buộc');
   }
 
   const date = new Date(dob);
   if (Number.isNaN(date.getTime())) {
-    throw createHttpError(400, 'Invalid dob format');
+    throw createHttpError(400, 'Định dạng ngày sinh không hợp lệ');
   }
 
   const today = new Date();
@@ -123,7 +123,7 @@ const calculateAge = (dob?: string, age?: number) => {
   }
 
   if (years < 0) {
-    throw createHttpError(400, 'Invalid dob');
+    throw createHttpError(400, 'Ngày sinh không hợp lệ');
   }
 
   return years;
@@ -147,7 +147,7 @@ const calculateMacros = (calories: number, ratios: MacroRatios) => {
 export const UserService = {
   addFavoriteDish: async (userId: string, dishId: string) => {
     if (!validateObjectId(dishId)) {
-      throw createHttpError(400, 'Invalid dish ID format');
+      throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(
@@ -157,7 +157,7 @@ export const UserService = {
     );
 
     if (!updatedUser) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     return updatedUser;
@@ -165,7 +165,7 @@ export const UserService = {
 
   removeFavoriteDish: async (userId: string, dishId: string) => {
     if (!validateObjectId(dishId)) {
-      throw createHttpError(400, 'Invalid dish ID format');
+      throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(
@@ -175,7 +175,7 @@ export const UserService = {
     );
 
     if (!updatedUser) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     return updatedUser;
@@ -183,7 +183,7 @@ export const UserService = {
 
   addFavoriteIngredient: async (userId: string, ingredientId: string) => {
     if (!validateObjectId(ingredientId)) {
-      throw createHttpError(400, 'Invalid ingredient ID format');
+      throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(
@@ -193,7 +193,7 @@ export const UserService = {
     );
 
     if (!updatedUser) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     return updatedUser;
@@ -201,7 +201,7 @@ export const UserService = {
 
   removeFavoriteIngredient: async (userId: string, ingredientId: string) => {
     if (!validateObjectId(ingredientId)) {
-      throw createHttpError(400, 'Invalid ingredient ID format');
+      throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(
@@ -211,7 +211,7 @@ export const UserService = {
     );
 
     if (!updatedUser) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     return updatedUser;
@@ -219,7 +219,7 @@ export const UserService = {
 
   addFavoriteCollection: async (userId: string, collectionId: string) => {
     if (!validateObjectId(collectionId)) {
-      throw createHttpError(400, 'Invalid collection ID format');
+      throw createHttpError(400, 'Định dạng ID bộ sưu tập không hợp lệ');
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(
@@ -229,7 +229,7 @@ export const UserService = {
     );
 
     if (!updatedUser) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     return updatedUser;
@@ -237,7 +237,7 @@ export const UserService = {
 
   removeFavoriteCollection: async (userId: string, collectionId: string) => {
     if (!validateObjectId(collectionId)) {
-      throw createHttpError(400, 'Invalid collection ID format');
+      throw createHttpError(400, 'Định dạng ID bộ sưu tập không hợp lệ');
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(
@@ -247,7 +247,7 @@ export const UserService = {
     );
 
     if (!updatedUser) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     return updatedUser;
@@ -255,7 +255,7 @@ export const UserService = {
 
   addBlockDish: async (userId: string, dishId: string) => {
     if (!validateObjectId(dishId)) {
-      throw createHttpError(400, 'Invalid dish ID format');
+      throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(
@@ -265,7 +265,7 @@ export const UserService = {
     );
 
     if (!updatedUser) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     return updatedUser;
@@ -273,7 +273,7 @@ export const UserService = {
 
   removeBlockDish: async (userId: string, dishId: string) => {
     if (!validateObjectId(dishId)) {
-      throw createHttpError(400, 'Invalid dish ID format');
+      throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(
@@ -283,7 +283,7 @@ export const UserService = {
     );
 
     if (!updatedUser) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     return updatedUser;
@@ -291,7 +291,7 @@ export const UserService = {
 
   addBlockIngredient: async (userId: string, ingredientId: string) => {
     if (!validateObjectId(ingredientId)) {
-      throw createHttpError(400, 'Invalid ingredient ID format');
+      throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(
@@ -301,7 +301,7 @@ export const UserService = {
     );
 
     if (!updatedUser) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     return updatedUser;
@@ -309,7 +309,7 @@ export const UserService = {
 
   removeBlockIngredient: async (userId: string, ingredientId: string) => {
     if (!validateObjectId(ingredientId)) {
-      throw createHttpError(400, 'Invalid ingredient ID format');
+      throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(
@@ -319,7 +319,7 @@ export const UserService = {
     );
 
     if (!updatedUser) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     return updatedUser;
@@ -327,7 +327,7 @@ export const UserService = {
   createUser: async (data: CreateUserRequest) => {
     const newUser = await UserModel.create(data);
     if (!newUser) {
-      throw createHttpError(500, 'Failed to create user');
+      throw createHttpError(500, 'Không thể tạo người dùng');
     }
 
     const password = generatePassword.generate({
@@ -350,7 +350,7 @@ export const UserService = {
 
     sendMail({
       to: newUser.email,
-      subject: 'Welcome to Our Platform',
+      subject: 'Chào mừng bạn đến với nền tảng của chúng tôi',
       template: 'create-user',
       templateData: {
         email: newUser.email,
@@ -368,7 +368,7 @@ export const UserService = {
     const result = await UserModel.paginate(filter, options);
 
     if (!result || result.totalDocs === 0) {
-      throw createHttpError(404, 'No users found');
+      throw createHttpError(404, 'Không tìm thấy người dùng nào');
     }
 
     return result as unknown as PaginateResponse<User>;
@@ -406,7 +406,7 @@ export const UserService = {
       });
 
     if (!user) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     return user;
@@ -416,11 +416,11 @@ export const UserService = {
     const user = await UserModel.findById(id);
 
     if (!user) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     if (user.hasOnboarded) {
-      throw createHttpError(400, 'User already onboarded');
+      throw createHttpError(400, 'Người dùng đã hoàn thành onboarding');
     }
 
     const { weight, ...rest } = data;
@@ -451,7 +451,7 @@ export const UserService = {
     const activityMultiplier = ACTIVITY_MULTIPLIERS[data.activityLevel];
 
     if (!activityMultiplier) {
-      throw createHttpError(400, 'Invalid activity level');
+      throw createHttpError(400, 'Mức hoạt động không hợp lệ');
     }
 
     const baseBmr = 10 * data.weight + 6.25 * data.height - 5 * age;
@@ -503,7 +503,7 @@ export const UserService = {
     });
 
     if (!updatedUser) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     if (avatar) {
@@ -515,13 +515,13 @@ export const UserService = {
 
   viewUserDetail: async (id: string) => {
     if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Invalid user ID format');
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
     }
 
     const user = await UserModel.findById(id);
 
     if (!user) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     return user;
@@ -533,11 +533,14 @@ export const UserService = {
     currentUserId: string
   ) => {
     if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Invalid user ID format');
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
     }
 
     if (id === currentUserId && data.isActive === 'false') {
-      throw createHttpError(400, 'Admin cannot deactivate own account');
+      throw createHttpError(
+        400,
+        'Admin không thể vô hiệu hóa tài khoản của chính mình'
+      );
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(id, data, {
@@ -545,7 +548,7 @@ export const UserService = {
     });
 
     if (!updatedUser) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     return updatedUser;
@@ -553,17 +556,20 @@ export const UserService = {
 
   deleteUser: async (id: string, currentUserId: string) => {
     if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Invalid user ID format');
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
     }
 
     if (id === currentUserId) {
-      throw createHttpError(400, 'Admin cannot delete own account');
+      throw createHttpError(
+        400,
+        'Admin không thể xóa tài khoản của chính mình'
+      );
     }
 
     const deletedUser = await UserModel.findByIdAndDelete(id);
 
     if (!deletedUser) {
-      throw createHttpError(404, 'User not found');
+      throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
     await Promise.all([
@@ -583,12 +589,12 @@ export const UserService = {
   deleteBulk: async (ids: string[], currentUserId: string) => {
     ids.forEach(id => {
       if (!validateObjectId(id)) {
-        throw createHttpError(400, 'Invalid user ID format');
+        throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
       }
     });
 
     if (ids.includes(currentUserId)) {
-      throw createHttpError(400, 'Cannot delete your own account');
+      throw createHttpError(400, 'Không thể xóa tài khoản của chính mình');
     }
 
     const result = await UserModel.deleteMany({ _id: { $in: ids } });
@@ -620,7 +626,7 @@ async function saveUserAvatar(
     user.avatar = uploadResult.data.secure_url;
     await user.save();
   } else {
-    throw createHttpError(500, 'Failed to upload avatar');
+    throw createHttpError(500, 'Không thể tải lên ảnh đại diện');
   }
 }
 
