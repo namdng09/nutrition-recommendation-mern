@@ -7,7 +7,13 @@ import { ACTIVITY_LEVEL } from '~/shared/constants/activity-level';
 import { DIET } from '~/shared/constants/diet';
 import { GENDER } from '~/shared/constants/gender';
 import { USER_TARGET } from '~/shared/constants/user-target';
-import { AuthModel, UserModel } from '~/shared/database/models';
+import {
+  AuthModel,
+  GroceryModel,
+  PostModel,
+  ScheduleModel,
+  UserModel
+} from '~/shared/database/models';
 import type { User } from '~/shared/database/models/user-model';
 import {
   buildPaginateOptions,
@@ -613,7 +619,16 @@ export const UserService = {
       throw createHttpError(404, 'User not found');
     }
 
-    await AuthModel.deleteMany({ user: deletedUser._id });
+    await Promise.all([
+      AuthModel.deleteMany({ user: id }),
+      GroceryModel.deleteMany({ 'user._id': id }),
+      ScheduleModel.deleteMany({ 'user._id': id }),
+      PostModel.updateMany({ likes: id }, { $pull: { likes: id } }),
+      PostModel.updateMany(
+        { 'comments.author._id': id },
+        { $pull: { comments: { 'author._id': id } } }
+      )
+    ]);
 
     return deletedUser;
   },
@@ -631,7 +646,19 @@ export const UserService = {
 
     const result = await UserModel.deleteMany({ _id: { $in: ids } });
 
-    await AuthModel.deleteMany({ user: { $in: ids } });
+    await Promise.all([
+      AuthModel.deleteMany({ user: { $in: ids } }),
+      GroceryModel.deleteMany({ 'user._id': { $in: ids } }),
+      ScheduleModel.deleteMany({ 'user._id': { $in: ids } }),
+      PostModel.updateMany(
+        { likes: { $in: ids } },
+        { $pull: { likes: { $in: ids } } }
+      ),
+      PostModel.updateMany(
+        { 'comments.author._id': { $in: ids } },
+        { $pull: { comments: { 'author._id': { $in: ids } } } }
+      )
+    ]);
 
     return result;
   }
