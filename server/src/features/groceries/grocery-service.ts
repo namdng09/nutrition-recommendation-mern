@@ -359,14 +359,15 @@ function buildDateRangeFilters(dates: Date[]) {
 
 function collectDishIds(schedules: HydratedDocument<Schedule>[]): string[] {
   const dishIds = new Set<string>();
-  schedules.forEach(schedule => {
-    schedule.meals?.forEach(meal => {
-      meal.dishes?.forEach(dish => {
-        const dishId = dish.dishId?.toString();
-        if (dishId) dishIds.add(dishId);
-      });
-    });
-  });
+
+  const allDishes = schedules.flatMap(
+    schedule => schedule.meals?.flatMap(meal => meal.dishes ?? []) ?? []
+  );
+
+  for (const dish of allDishes) {
+    const dishId = dish.dishId?.toString();
+    if (dishId) dishIds.add(dishId);
+  }
   return Array.from(dishIds);
 }
 
@@ -374,17 +375,20 @@ function collectIngredientSnapshots(
   dishes: HydratedDocument<Dish>[]
 ): GroceryIngredient[] {
   const ingredientMap = new Map<string, GroceryIngredient>();
-  dishes.forEach(dish => {
-    dish.ingredients?.forEach(ingredient => {
-      const ingredientId = ingredient.ingredientId?.toString();
-      if (!ingredientId || ingredientMap.has(ingredientId)) return;
+  const allIngredients = dishes.flatMap(dish => dish.ingredients ?? []);
+  for (const ingredient of allIngredients) {
+    const ingredientId = ingredient.ingredientId?.toString();
+    const shouldAddIngredient =
+      ingredientId && !ingredientMap.has(ingredientId);
+
+    if (shouldAddIngredient) {
       ingredientMap.set(ingredientId, {
         ingredientId,
         name: ingredient.name,
         image: ingredient.image ?? '',
         isPurchased: false
       });
-    });
-  });
+    }
+  }
   return Array.from(ingredientMap.values());
 }
