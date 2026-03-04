@@ -75,7 +75,34 @@ export const GroceryService = {
 
     const result = await GroceryModel.paginate(userFilter, options);
 
-    return result as unknown as PaginateResponse<Grocery>;
+    const allIngredientIds = (result.docs as unknown as Grocery[]).flatMap(g =>
+      g.ingredients.map(i => i.ingredientId)
+    );
+    const foundIngredients = await IngredientModel.find(
+      { _id: { $in: allIngredientIds } },
+      { _id: 1 }
+    ).lean();
+    const existingIngredientIds = new Set(
+      foundIngredients.map(i => i._id.toString())
+    );
+
+    const annotatedDocs = (result.docs as unknown as Grocery[]).map(g => {
+      const grocObj = (g as any).toObject ? (g as any).toObject() : { ...g };
+      return {
+        ...grocObj,
+        ingredients: grocObj.ingredients.map((i: any) => ({
+          ...i,
+          isDeleted:
+            !i.ingredientId ||
+            !existingIngredientIds.has(i.ingredientId.toString())
+        }))
+      };
+    });
+
+    return {
+      ...result,
+      docs: annotatedDocs
+    } as unknown as PaginateResponse<Grocery>;
   },
 
   viewGroceryDetail: async (userId: string, id: string) => {

@@ -73,7 +73,20 @@ export const CollectionService = {
       throw createHttpError(404, 'Không tìm thấy bộ sưu tập');
     }
 
-    return collection;
+    const dishIds = collection.dishes.map(d => d.dishId);
+    const found = await DishModel.find(
+      { _id: { $in: dishIds } },
+      { _id: 1 }
+    ).lean();
+    const existingDishIds = new Set(found.map(d => d._id.toString()));
+
+    const collObj = collection.toObject();
+    const dishes = collObj.dishes.map(d => ({
+      ...d,
+      isDeleted: !d.dishId || !existingDishIds.has(d.dishId.toString())
+    }));
+
+    return { ...collObj, dishes };
   },
 
   updateCollection: async (
