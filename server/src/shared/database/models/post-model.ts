@@ -48,7 +48,7 @@ const postSchema = new Schema(
 postSchema.plugin(mongoosePaginate);
 
 postSchema.index({ 'author._id': 1, isPublished: 1 });
-postSchema.index({ isPublished: 1, publishedAt: -1 });
+postSchema.index({ isPublished: 1, createdAt: -1 });
 postSchema.index({ category: 1, isPublished: 1 });
 postSchema.index({ tags: 1 });
 
