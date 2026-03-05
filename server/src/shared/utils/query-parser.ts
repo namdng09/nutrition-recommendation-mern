@@ -4,6 +4,11 @@ import {
 } from '@quarks/mongoose-query-parser';
 import type { ParsedQs } from 'qs';
 
+import {
+  buildMongoNormalizationExpr,
+  removeVietnameseDiacritics
+} from './vietnamese-normalizer';
+
 /**
  * Parse URL query parameters into MongoDB-friendly query options
  *
@@ -61,5 +66,67 @@ export const parseQuery = (
       }
     }
   });
-  return parser.parse(query);
+  const result = parser.parse(query);
+  result.filter = transformVietnameseSearchFilter(result.filter);
+  return result;
 };
+
+/**
+ * Post-processes a parsed MongoDB filter to replace any RegExp field conditions
+ * with diacritic-insensitive equivalents using $expr + $regexMatch +
+ * $replaceAll normalization chain.
+ *
+ * This allows queries like name=/ca rot/i to match documents storing "Cà Rốt"
+ * without requiring any schema changes or pre-normalized fields.
+ */
+function transformVietnameseSearchFilter(
+  filter: Record<string, any>
+): Record<string, any> {
+  const transformed = { ...filter };
+  const exprConditions: object[] = [];
+
+  for (const [key, value] of Object.entries(filter)) {
+    // Skip MongoDB operator keys like $or, $and, $expr, etc.
+    if (key.startsWith('$')) continue;
+
+    if (value instanceof RegExp) {
+      const normalizedPattern = removeVietnameseDiacritics(value.source);
+      exprConditions.push({
+        $regexMatch: {
+          input: buildMongoNormalizationExpr(`$${key}`),
+          regex: normalizedPattern,
+          options: value.flags
+        }
+      });
+      delete transformed[key];
+    } else if (typeof value === 'string') {
+      const normalizedPattern = removeVietnameseDiacritics(value);
+      exprConditions.push({
+        $regexMatch: {
+          input: buildMongoNormalizationExpr(`$${key}`),
+          regex: normalizedPattern,
+          options: 'i'
+        }
+      });
+      delete transformed[key];
+    }
+  }
+
+  if (exprConditions.length === 1) {
+    if (transformed.$expr) {
+      transformed.$expr = { $and: [transformed.$expr, exprConditions[0]] };
+    } else {
+      transformed.$expr = exprConditions[0];
+    }
+  } else if (exprConditions.length > 1) {
+    if (transformed.$expr) {
+      transformed.$expr = {
+        $and: [transformed.$expr, ...exprConditions]
+      };
+    } else {
+      transformed.$expr = { $and: exprConditions };
+    }
+  }
+
+  return transformed;
+}
