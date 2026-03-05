@@ -1,7 +1,10 @@
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+import dotenv from 'dotenv';
 import { createAgent } from 'langchain';
 
 import { DEFAULT_SYSTEM_PROMPT } from '~/shared/constants/ai-prompt';
+
+dotenv.config();
 
 export const agentConfig = {
   provider: 'gemini' as const,
@@ -9,7 +12,13 @@ export const agentConfig = {
   systemPrompt: DEFAULT_SYSTEM_PROMPT
 };
 
+const googleApiKey =
+  process.env.GOOGLE_API_KEY?.trim() ||
+  process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim() ||
+  undefined;
+
 const model = new ChatGoogleGenerativeAI({
+  apiKey: googleApiKey,
   model: agentConfig.model,
   temperature: 0.3,
   maxOutputTokens: 512
