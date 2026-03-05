@@ -7,6 +7,18 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 
 import { POST_CATEGORY } from '~/shared/constants/post-category';
 
+const commentSchema = new Schema({
+  author: {
+    _id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    name: { type: String, required: true },
+    avatar: { type: String, default: '' }
+  },
+  content: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+export type PostComment = InferSchemaType<typeof commentSchema>;
+
 const postSchema = new Schema(
   {
     author: {
@@ -21,17 +33,7 @@ const postSchema = new Schema(
     tags: [{ type: String }],
     likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     views: { type: Number, default: 0 },
-    comments: [
-      {
-        author: {
-          _id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-          name: { type: String, required: true },
-          avatar: { type: String, default: '' }
-        },
-        content: { type: String, required: true },
-        createdAt: { type: Date, default: Date.now }
-      }
-    ],
+    comments: [commentSchema],
     isPublished: { type: Boolean, default: false },
     publishedAt: { type: Date },
     category: {
@@ -48,7 +50,7 @@ const postSchema = new Schema(
 postSchema.plugin(mongoosePaginate);
 
 postSchema.index({ 'author._id': 1, isPublished: 1 });
-postSchema.index({ isPublished: 1, publishedAt: -1 });
+postSchema.index({ isPublished: 1, createdAt: -1 });
 postSchema.index({ category: 1, isPublished: 1 });
 postSchema.index({ tags: 1 });
 

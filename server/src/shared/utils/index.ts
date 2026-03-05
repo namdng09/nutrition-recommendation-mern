@@ -2,6 +2,7 @@ export * from './api-response';
 export * from './async-handler';
 export * from './bcrypt';
 export * from './cloudinary';
+export * from './dto-parsers';
 export * from './email/mailer';
 export * from './jwt';
 export * from './multer';

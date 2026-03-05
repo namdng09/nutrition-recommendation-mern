@@ -14,11 +14,18 @@ import {
   blockDishRequestSchema,
   blockIngredientRequestSchema,
   createUserRequestSchema,
+  deleteBulkRequestSchema,
   favoriteCollectionRequestSchema,
   favoriteDishRequestSchema,
   favoriteIngredientRequestSchema,
   nutritionTargetRequestSchema,
   onboardingRequestSchema,
+  updateAllergensSchema,
+  updateNutritionTargetSchema,
+  updatePhysicalStatsSchema,
+  updateProfileSchema,
+  updateRestrictionsSchema,
+  updateScheduleSettingsSchema,
   updateUserRequestSchema
 } from './user-dto';
 
@@ -44,6 +51,7 @@ router.delete(
   '/',
   authenticate(),
   authorize([ROLE.ADMIN]),
+  validate(deleteBulkRequestSchema.shape),
   asyncHandler(UserController.deleteBulk)
 );
 
@@ -66,9 +74,50 @@ router.post(
 );
 
 router.put(
-  '/me',
+  '/me/profile',
   authenticate(),
   handleSingleImageUpload('avatar'),
+  validate(updateProfileSchema.shape),
+  asyncHandler(UserController.updateProfile)
+);
+
+router.put(
+  '/me/physical-stats',
+  authenticate(),
+  parseFormData,
+  validate(updatePhysicalStatsSchema.shape),
+  asyncHandler(UserController.updateProfile)
+);
+
+router.put(
+  '/me/nutrition-target',
+  authenticate(),
+  parseFormData,
+  validate(updateNutritionTargetSchema.shape),
+  asyncHandler(UserController.updateProfile)
+);
+
+router.put(
+  '/me/restrictions',
+  authenticate(),
+  parseFormData,
+  validate(updateRestrictionsSchema.shape),
+  asyncHandler(UserController.updateProfile)
+);
+
+router.put(
+  '/me/allergens',
+  authenticate(),
+  parseFormData,
+  validate(updateAllergensSchema.shape),
+  asyncHandler(UserController.updateProfile)
+);
+
+router.put(
+  '/me/schedule-settings',
+  authenticate(),
+  parseFormData,
+  validate(updateScheduleSettingsSchema.shape),
   asyncHandler(UserController.updateProfile)
 );
 
