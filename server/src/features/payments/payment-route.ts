@@ -30,12 +30,13 @@ router.get(
   '/',
   authenticate(),
   authorize([ROLE.ADMIN]),
-  asyncHandler(PaymentController.listMembershipPayments)
+  asyncHandler(PaymentController.listPayments)
 );
 
 router.get(
   '/user',
   authenticate(),
+  authorize([ROLE.USER]),
   asyncHandler(PaymentController.listPaymentsByUser)
 );
 
@@ -46,11 +47,18 @@ router.get(
   asyncHandler(PaymentController.listPaymentsByUser)
 );
 
+router.post(
+  '/confirm',
+  authenticate(),
+  authorize([ROLE.USER]),
+  asyncHandler(PaymentController.confirmPayment)
+);
+
 router.get(
   '/:orderCode',
   authenticate(),
   authorize([ROLE.ADMIN]),
-  asyncHandler(PaymentController.getMembershipPaymentByOrderCode)
+  asyncHandler(PaymentController.getPaymentByOrderCode)
 );
 
 router.put(
@@ -59,7 +67,7 @@ router.put(
   authorize([ROLE.ADMIN]),
   parseFormData,
   validate(updatePaymentStatusRequestSchema.shape),
-  asyncHandler(PaymentController.updateMembershipPaymentStatus)
+  asyncHandler(PaymentController.updatePaymentStatus)
 );
 
 export default router;

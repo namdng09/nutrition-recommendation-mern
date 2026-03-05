@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 
-import type { PaymentStatus } from '~/shared/constants/payment-status';
 import { ApiResponse } from '~/shared/utils';
+import { parseQuery } from '~/shared/utils/query-parser';
 
 import { PaymentService } from './payment-service';
 
@@ -19,11 +19,11 @@ export const PaymentController = {
       );
   },
 
-  updateMembershipPaymentStatus: async (req: Request, res: Response) => {
+  updatePaymentStatus: async (req: Request, res: Response) => {
     const orderCode = Number(req.params.orderCode);
     const data = req.body;
 
-    const result = await PaymentService.updateMembershipPaymentStatus({
+    const result = await PaymentService.updatePaymentStatus({
       orderCode,
       ...data
     });
@@ -35,11 +35,10 @@ export const PaymentController = {
       );
   },
 
-  getMembershipPaymentByOrderCode: async (req: Request, res: Response) => {
+  getPaymentByOrderCode: async (req: Request, res: Response) => {
     const orderCode = Number(req.params.orderCode);
 
-    const result =
-      await PaymentService.getMembershipPaymentByOrderCode(orderCode);
+    const result = await PaymentService.getPaymentByOrderCode(orderCode);
 
     res
       .status(200)
@@ -48,18 +47,19 @@ export const PaymentController = {
 
   listPaymentsByUser: async (req: Request, res: Response) => {
     const userId = req.params.userId ?? req.user!._id.toString();
+    const parsed = parseQuery(req.query);
 
-    const result = await PaymentService.listPaymentsByUser(userId);
+    const result = await PaymentService.listPaymentsByUser(userId, parsed);
 
     res
       .status(200)
       .json(ApiResponse.success('Lấy danh sách thanh toán thành công', result));
   },
 
-  listMembershipPayments: async (req: Request, res: Response) => {
-    const status = req.query.status as PaymentStatus | undefined;
+  listPayments: async (req: Request, res: Response) => {
+    const parsed = parseQuery(req.query);
 
-    const result = await PaymentService.listMembershipPayments(status);
+    const result = await PaymentService.listPayments(parsed);
 
     res
       .status(200)
@@ -69,5 +69,16 @@ export const PaymentController = {
           result
         )
       );
+  },
+
+  confirmPayment: async (req: Request, res: Response) => {
+    const orderCode = Number(req.query.orderCode);
+    const userId = req.user!._id.toString();
+
+    const result = await PaymentService.confirmPayment(orderCode, userId);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Xác nhận thanh toán thành công', result));
   }
 };

@@ -2,14 +2,21 @@ import {
   type CreatePaymentLinkRequest,
   type CreatePaymentLinkResponse
 } from '@payos/node';
+import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
-import { Types } from 'mongoose';
 
+import type { MembershipLevel } from '~/shared/constants/membership-level';
 import { MEMBERSHIP_LEVEL } from '~/shared/constants/membership-level';
-import type { PaymentStatus } from '~/shared/constants/payment-status';
 import { PAYMENT_STATUS } from '~/shared/constants/payment-status';
 import { UserModel } from '~/shared/database/models';
+import type { Payment } from '~/shared/database/models/payment-model';
 import { PaymentModel } from '~/shared/database/models/payment-model';
+import {
+  buildPaginateOptions,
+  type PaginateResponse,
+  toObjectId,
+  validateObjectId
+} from '~/shared/utils';
 import { sendMail } from '~/shared/utils/email/mailer';
 import { payOS } from '~/shared/utils/payos';
 
@@ -17,6 +24,43 @@ import {
   CreatePaymentRequest,
   UpdatePaymentStatusRequest
 } from './payment-dto';
+
+const VIP_AI_TOKENS = 100;
+
+const applyMembershipUpgrade = async (
+  payment: InstanceType<typeof PaymentModel>,
+  targetMembership: MembershipLevel
+) => {
+  const user = await UserModel.findById(payment.user);
+  if (!user) {
+    throw createHttpError(404, 'Người dùng không tồn tại');
+  }
+
+  user.membershipLevel = targetMembership;
+
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 30);
+  user.membershipExpiresAt = expiresAt;
+
+  if (targetMembership === MEMBERSHIP_LEVEL.VIP) {
+    user.aiTokens = (user.aiTokens ?? 0) + VIP_AI_TOKENS;
+  }
+
+  await user.save();
+
+  sendMail({
+    to: user.email,
+    subject: `Chúc mừng! Bạn đã nâng cấp lên ${targetMembership}`,
+    template: 'membership-upgrade',
+    templateData: {
+      name: user.name,
+      targetMembership,
+      orderCode: payment.orderCode.toString(),
+      amount: payment.amount.toLocaleString('vi-VN'),
+      activationDate: new Date().toLocaleDateString('vi-VN')
+    }
+  });
+};
 
 export const PaymentService = {
   createPayment: async (data: CreatePaymentRequest, userId: string) => {
@@ -45,19 +89,6 @@ export const PaymentService = {
           'Không thể hạ cấp từ VIP xuống tài khoản thường'
         );
       }
-
-      //   const existingPendingPayment = await PaymentModel.findOne({
-      //     user: userId,
-      //     status: PAYMENT_STATUS.PENDING,
-      //     targetMembership: { $exists: true }
-      //   });
-
-      //   if (existingPendingPayment) {
-      //     throw createHttpError(
-      //       400,
-      //       'Bạn đang có giao dịch nâng cấp đang chờ xử lý. Vui lòng hoàn tất hoặc hủy giao dịch hiện tại trước khi tạo giao dịch mới'
-      //     );
-      //   }
     }
 
     const orderCode = generateOrderCode();
@@ -98,7 +129,7 @@ export const PaymentService = {
     return payment.checkoutUrl;
   },
 
-  updateMembershipPaymentStatus: async (data: UpdatePaymentStatusRequest) => {
+  updatePaymentStatus: async (data: UpdatePaymentStatusRequest) => {
     const payment = await PaymentModel.findOne({
       orderCode: data.orderCode
     }).populate({
@@ -113,37 +144,36 @@ export const PaymentService = {
       );
     }
 
+    if (payment.status !== PAYMENT_STATUS.PENDING) {
+      throw createHttpError(
+        400,
+        'Giao dịch này đã được xử lý và không thể thay đổi trạng thái'
+      );
+    }
+
     payment.status = data.status;
 
     if (data.status === PAYMENT_STATUS.COMPLETED) {
       payment.completedAt = new Date();
       payment.cancellationReason = undefined;
 
-      const user = await UserModel.findById(payment.user);
-      if (!user) {
-        throw createHttpError(404, 'Người dùng không tồn tại');
-      }
+      await applyMembershipUpgrade(
+        payment,
+        payment.targetMembership as MembershipLevel
+      );
 
-      user.membershipLevel = payment.targetMembership;
-      await user.save();
-
-      await sendMail({
-        to: user.email,
-        subject: `🎉 Chúc mừng! Bạn đã nâng cấp lên ${payment.targetMembership}`,
-        template: 'membership-upgrade',
-        templateData: {
-          name: user.name,
-          targetMembership: payment.targetMembership,
-          orderCode: data.orderCode.toString(),
-          amount: payment.amount.toLocaleString('vi-VN'),
-          activationDate: payment.completedAt
-            ? payment.completedAt.toLocaleDateString('vi-VN')
-            : new Date().toLocaleDateString('vi-VN')
-        }
-      });
+      // Close the PayOS link so the user cannot pay it again after manual completion
+      await payOS.paymentRequests.cancel(
+        payment.orderCode,
+        'Đã xác nhận thủ công bởi admin'
+      );
     } else if (data.status === PAYMENT_STATUS.CANCELLED) {
-      payment.cancellationReason = data.cancellationReason?.trim();
+      const reason = data.cancellationReason?.trim();
+      payment.cancellationReason = reason;
       payment.completedAt = undefined;
+
+      // Cancel the PayOS payment link so the user can no longer pay it
+      await payOS.paymentRequests.cancel(payment.orderCode, reason);
     }
 
     await payment.save();
@@ -154,7 +184,7 @@ export const PaymentService = {
     return payment;
   },
 
-  getMembershipPaymentByOrderCode: async (orderCode: number) => {
+  getPaymentByOrderCode: async (orderCode: number) => {
     if (!Number.isFinite(orderCode) || orderCode <= 0) {
       throw createHttpError(400, 'orderCode must be a positive number');
     }
@@ -168,41 +198,83 @@ export const PaymentService = {
     });
 
     if (!payment) {
-      throw createHttpError(404, 'Membership payment not found');
+      throw createHttpError(404, 'Payment not found');
     }
 
     return payment;
   },
 
-  listPaymentsByUser: async (userId: string) => {
-    const trimmedUserId = typeof userId === 'string' ? userId.trim() : '';
-    if (!trimmedUserId || !Types.ObjectId.isValid(trimmedUserId)) {
+  listPaymentsByUser: async (
+    userId: string,
+    parsed: QueryOptions
+  ): Promise<PaginateResponse<Payment>> => {
+    if (!userId || !validateObjectId(userId)) {
       throw createHttpError(400, 'Invalid userId');
     }
 
-    return PaymentModel.find({
-      user: new Types.ObjectId(trimmedUserId)
-    })
-      .sort({ createdAt: -1 })
-      .populate({
-        path: 'user',
-        select: 'name email membershipLevel'
-      });
+    const options = buildPaginateOptions(parsed);
+    const filter = {
+      ...parsed.filter,
+      user: toObjectId(userId)
+    };
+
+    const result = await PaymentModel.paginate(filter, {
+      ...options,
+      populate: { path: 'user', select: 'name email membershipLevel' }
+    });
+
+    return result as unknown as PaginateResponse<Payment>;
   },
 
-  listMembershipPayments: async (status?: PaymentStatus) => {
-    const filter: any = {
+  listPayments: async (
+    parsed: QueryOptions
+  ): Promise<PaginateResponse<Payment>> => {
+    const options = buildPaginateOptions(parsed);
+    const filter = {
+      ...parsed.filter,
       targetMembership: { $exists: true }
     };
 
-    if (status) {
-      filter.status = status;
+    const result = await PaymentModel.paginate(filter, {
+      ...options,
+      populate: { path: 'user', select: 'name email membershipLevel' }
+    });
+
+    return result as unknown as PaginateResponse<Payment>;
+  },
+
+  confirmPayment: async (orderCode: number, userId: string) => {
+    const payment = await PaymentModel.findOne({ orderCode });
+    if (!payment) {
+      throw createHttpError(404, 'Không tìm thấy giao dịch');
     }
 
-    return PaymentModel.find(filter).sort({ createdAt: -1 }).populate({
-      path: 'user',
-      select: 'name email membershipLevel'
-    });
+    if (payment.user?.toString() !== userId) {
+      throw createHttpError(403, 'Bạn không có quyền xác nhận giao dịch này');
+    }
+
+    // Already finalized — return current state, no double processing
+    if (payment.status !== PAYMENT_STATUS.PENDING) {
+      return payment;
+    }
+
+    // Query PayOS for the real payment status
+    const paymentLink = await payOS.paymentRequests.get(orderCode);
+
+    if (paymentLink.status !== 'PAID') {
+      throw createHttpError(400, 'Thanh toán chưa hoàn tất');
+    }
+
+    payment.status = PAYMENT_STATUS.COMPLETED;
+    payment.completedAt = new Date();
+    payment.cancellationReason = undefined;
+
+    if (payment.targetMembership) {
+      await applyMembershipUpgrade(payment, payment.targetMembership);
+    }
+
+    await payment.save();
+    return payment;
   }
 };
 

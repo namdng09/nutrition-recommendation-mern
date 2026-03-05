@@ -3,4 +3,5 @@ export const MEMBERSHIP_LEVEL = {
   VIP: 'Tài khoản VIP'
 } as const;
 
-export type Role = (typeof MEMBERSHIP_LEVEL)[keyof typeof MEMBERSHIP_LEVEL];
+export type MembershipLevel =
+  (typeof MEMBERSHIP_LEVEL)[keyof typeof MEMBERSHIP_LEVEL];
