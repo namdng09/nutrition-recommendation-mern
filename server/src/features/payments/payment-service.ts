@@ -219,10 +219,14 @@ export const PaymentService = {
     });
   },
 
-  confirmPayment: async (orderCode: number) => {
+  confirmPayment: async (orderCode: number, userId: string) => {
     const payment = await PaymentModel.findOne({ orderCode });
     if (!payment) {
       throw createHttpError(404, 'Không tìm thấy giao dịch');
+    }
+
+    if (payment.user?.toString() !== userId) {
+      throw createHttpError(403, 'Bạn không có quyền xác nhận giao dịch này');
     }
 
     // Already finalized — return current state, no double processing

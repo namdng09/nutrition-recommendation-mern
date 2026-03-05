@@ -69,8 +69,9 @@ export const PaymentController = {
 
   confirmPayment: async (req: Request, res: Response) => {
     const orderCode = Number(req.query.orderCode);
+    const userId = req.user!._id.toString();
 
-    const result = await PaymentService.confirmPayment(orderCode);
+    const result = await PaymentService.confirmPayment(orderCode, userId);
 
     res
       .status(200)
