@@ -4,7 +4,6 @@ import {
 } from '@payos/node';
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
-import { Types } from 'mongoose';
 
 import type { MembershipLevel } from '~/shared/constants/membership-level';
 import { MEMBERSHIP_LEVEL } from '~/shared/constants/membership-level';
@@ -12,7 +11,12 @@ import { PAYMENT_STATUS } from '~/shared/constants/payment-status';
 import { UserModel } from '~/shared/database/models';
 import type { Payment } from '~/shared/database/models/payment-model';
 import { PaymentModel } from '~/shared/database/models/payment-model';
-import { buildPaginateOptions, type PaginateResponse } from '~/shared/utils';
+import {
+  buildPaginateOptions,
+  type PaginateResponse,
+  toObjectId,
+  validateObjectId
+} from '~/shared/utils';
 import { sendMail } from '~/shared/utils/email/mailer';
 import { payOS } from '~/shared/utils/payos';
 
@@ -204,15 +208,14 @@ export const PaymentService = {
     userId: string,
     parsed: QueryOptions
   ): Promise<PaginateResponse<Payment>> => {
-    const trimmedUserId = typeof userId === 'string' ? userId.trim() : '';
-    if (!trimmedUserId || !Types.ObjectId.isValid(trimmedUserId)) {
+    if (!userId || !validateObjectId(userId)) {
       throw createHttpError(400, 'Invalid userId');
     }
 
     const options = buildPaginateOptions(parsed);
     const filter = {
       ...parsed.filter,
-      user: new Types.ObjectId(trimmedUserId)
+      user: toObjectId(userId)
     };
 
     const result = await PaymentModel.paginate(filter, {
