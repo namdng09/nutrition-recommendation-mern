@@ -5,6 +5,7 @@ import collectionRoute from '~/features/collections/collection-route';
 import dishRoute from '~/features/dishes/dish-route';
 import groceryRoute from '~/features/groceries/grocery-route';
 import ingredientRoute from '~/features/ingredients/ingredient-route';
+import paymentRoute from '~/features/payments/payment-route';
 import postRoute from '~/features/posts/post-route';
 import scheduleRoute from '~/features/schedules/schedule-route';
 import userRoute from '~/features/users/user-route';
@@ -19,5 +20,6 @@ router.use('/collections', collectionRoute);
 router.use('/schedules', scheduleRoute);
 router.use('/posts', postRoute);
 router.use('/groceries', groceryRoute);
+router.use('/payments', paymentRoute);
 
 export default router;

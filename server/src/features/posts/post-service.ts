@@ -1,37 +1,24 @@
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
+import { type HydratedDocument } from 'mongoose';
 
 import { ROLE } from '~/shared/constants/role';
-import type { Post } from '~/shared/database/models/post-model';
+import type { Post, PostComment } from '~/shared/database/models/post-model';
 import { PostModel } from '~/shared/database/models/post-model';
 import {
   buildPaginateOptions,
   deleteImage,
   type PaginateResponse,
+  toObjectId,
   uploadImage,
   validateObjectId
 } from '~/shared/utils';
 
-import {
+import type {
   CreateCommentRequest,
-  createCommentRequestSchema,
   CreatePostRequest,
-  createPostRequestSchema,
-  UpdatePostRequest,
-  updatePostRequestSchema
+  UpdatePostRequest
 } from './post-dto';
-
-const generateSlug = (title: string): string => {
-  return title
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/đ/g, 'd')
-    .replace(/[^a-z0-9\s-]/g, '')
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
-};
 
 export const PostService = {
   createPost: async (
@@ -42,20 +29,11 @@ export const PostService = {
     data: CreatePostRequest,
     images?: Express.Multer.File[]
   ) => {
-    const validation = createPostRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
     const slug = generateSlug(data.title);
 
-    // Check if slug already exists
     const existingPost = await PostModel.findOne({ slug });
-    if (existingPost) {
+    if (existingPost)
       throw createHttpError(400, 'Bài viết với tiêu đề này đã tồn tại');
-    }
 
     const newPost = await PostModel.create({
       author: {
@@ -73,27 +51,10 @@ export const PostService = {
       slug
     });
 
-    if (!newPost) {
-      throw createHttpError(500, 'Tạo bài viết thất bại');
-    }
+    if (!newPost) throw createHttpError(500, 'Tạo bài viết thất bại');
 
     if (images && images.length > 0) {
-      const imageUrls: string[] = [];
-
-      for (let i = 0; i < images.length; i++) {
-        const uploadResult = await uploadImage(
-          images[i].buffer,
-          `${newPost._id.toString()}-${i}`
-        );
-
-        if (uploadResult.success && uploadResult.data) {
-          imageUrls.push(uploadResult.data.secure_url);
-        } else {
-          throw createHttpError(500, 'Tải ảnh lên thất bại');
-        }
-      }
-
-      newPost.images = imageUrls;
+      newPost.images = await savePostImages(newPost._id.toString(), images);
       await newPost.save();
     }
 
@@ -103,41 +64,26 @@ export const PostService = {
   viewPosts: async (parsed: QueryOptions): Promise<PaginateResponse<Post>> => {
     const { filter } = parsed;
     const options = buildPaginateOptions(parsed);
-
     const result = await PostModel.paginate(filter, options);
-
     return result as unknown as PaginateResponse<Post>;
   },
 
   viewPostDetail: async (id: string) => {
-    if (!validateObjectId(id)) {
+    if (!validateObjectId(id))
       throw createHttpError(400, 'ID bài viết không hợp lệ');
-    }
 
     const post = await PostModel.findById(id);
+    if (!post) throw createHttpError(404, 'Không tìm thấy bài viết');
 
-    if (!post) {
-      throw createHttpError(404, 'Không tìm thấy bài viết');
-    }
-
-    // Increment views
-    post.views = (post.views || 0) + 1;
-    await post.save();
-
+    await incrementViews(post);
     return post;
   },
 
   viewPostBySlug: async (slug: string) => {
     const post = await PostModel.findOne({ slug, isPublished: true });
+    if (!post) throw createHttpError(404, 'Không tìm thấy bài viết');
 
-    if (!post) {
-      throw createHttpError(404, 'Không tìm thấy bài viết');
-    }
-
-    // Increment views
-    post.views = (post.views || 0) + 1;
-    await post.save();
-
+    await incrementViews(post);
     return post;
   },
 
@@ -148,146 +94,69 @@ export const PostService = {
     data: UpdatePostRequest,
     images?: Express.Multer.File[]
   ) => {
-    const validation = updatePostRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
-    if (!validateObjectId(id)) {
+    if (!validateObjectId(id))
       throw createHttpError(400, 'ID bài viết không hợp lệ');
-    }
 
     const post = await PostModel.findById(id);
+    if (!post) throw createHttpError(404, 'Không tìm thấy bài viết');
 
-    if (!post) {
-      throw createHttpError(404, 'Không tìm thấy bài viết');
-    }
+    checkPostPermission(post, userId, userRole, 'cập nhật');
 
-    // Check permission
-    const isAuthor = post.author?._id.toString() === userId;
-    const isAdmin = userRole === ROLE.ADMIN;
-
-    if (!isAuthor && !isAdmin) {
-      throw createHttpError(403, 'Bạn không có quyền cập nhật bài viết này');
-    }
-
-    // Update slug if title changed
     if (data.title && data.title !== post.title) {
       const newSlug = generateSlug(data.title);
       const existingPost = await PostModel.findOne({
         slug: newSlug,
         _id: { $ne: id }
       });
-      if (existingPost) {
+      if (existingPost)
         throw createHttpError(400, 'Bài viết với tiêu đề này đã tồn tại');
-      }
       post.slug = newSlug;
     }
 
-    // Update fields
-    if (data.title) post.title = data.title;
-    if (data.content) post.content = data.content;
-    if (data.tags !== undefined) post.tags = data.tags;
-    if (data.category) post.category = data.category;
-
-    // Update publish status
-    if (data.isPublished !== undefined) {
-      post.isPublished = data.isPublished;
-      if (data.isPublished && !post.publishedAt) {
-        post.publishedAt = new Date();
-      }
-    }
+    applyPostFields(post, data);
 
     if (images && images.length > 0) {
-      // Delete old images
-      if (post.images && post.images.length > 0) {
-        for (let i = 0; i < post.images.length; i++) {
-          await deleteImage(`${post._id.toString()}-${i}`);
-        }
-      }
-
-      // Upload new images
-      const imageUrls: string[] = [];
-
-      for (let i = 0; i < images.length; i++) {
-        const uploadResult = await uploadImage(
-          images[i].buffer,
-          `${post._id.toString()}-${i}`
-        );
-
-        if (uploadResult.success && uploadResult.data) {
-          imageUrls.push(uploadResult.data.secure_url);
-        } else {
-          throw createHttpError(500, 'Tải ảnh lên thất bại');
-        }
-      }
-
-      post.images = imageUrls;
+      await deletePostImages(post._id.toString(), post.images?.length ?? 0);
+      post.images = await savePostImages(post._id.toString(), images);
     }
 
     await post.save();
-
     return post;
   },
 
   deletePost: async (id: string, userId: string, userRole: string) => {
-    if (!validateObjectId(id)) {
+    if (!validateObjectId(id))
       throw createHttpError(400, 'ID bài viết không hợp lệ');
-    }
 
     const post = await PostModel.findById(id);
+    if (!post) throw createHttpError(404, 'Không tìm thấy bài viết');
 
-    if (!post) {
-      throw createHttpError(404, 'Không tìm thấy bài viết');
-    }
+    checkPostPermission(post, userId, userRole, 'xóa');
 
-    // Check permission
-    const isAuthor = post.author?._id.toString() === userId;
-    const isAdmin = userRole === ROLE.ADMIN;
-
-    if (!isAuthor && !isAdmin) {
-      throw createHttpError(403, 'Bạn không có quyền xóa bài viết này');
-    }
-
-    // Delete images
-    if (post.images && post.images.length > 0) {
-      for (let i = 0; i < post.images.length; i++) {
-        await deleteImage(`${post._id.toString()}-${i}`);
-      }
-    }
-
+    await deletePostImages(post._id.toString(), post.images?.length ?? 0);
     await PostModel.findByIdAndDelete(id);
   },
 
   likePost: async (id: string, userId: string) => {
-    if (!validateObjectId(id)) {
+    if (!validateObjectId(id))
       throw createHttpError(400, 'ID bài viết không hợp lệ');
-    }
 
-    const post = await PostModel.findById(id);
+    const post = await PostModel.findById(id, { likes: 1 });
+    if (!post) throw createHttpError(404, 'Không tìm thấy bài viết');
 
-    if (!post) {
-      throw createHttpError(404, 'Không tìm thấy bài viết');
-    }
+    const alreadyLiked = post.likes.some(like => like.toString() === userId);
+    const userObjectId = toObjectId(userId);
 
-    const userIdObj = userId as any;
-    const likeIndex = post.likes.findIndex(like => like.toString() === userId);
-
-    if (likeIndex > -1) {
-      // Unlike
-      post.likes.splice(likeIndex, 1);
-    } else {
-      // Like
-      post.likes.push(userIdObj);
-    }
-
-    await post.save();
+    await PostModel.findByIdAndUpdate(
+      id,
+      alreadyLiked
+        ? { $pull: { likes: userObjectId } }
+        : { $addToSet: { likes: userObjectId } }
+    );
 
     return {
-      liked: likeIndex === -1,
-      likesCount: post.likes.length
+      liked: !alreadyLiked,
+      likesCount: alreadyLiked ? post.likes.length - 1 : post.likes.length + 1
     };
   },
 
@@ -298,26 +167,15 @@ export const PostService = {
     userAvatar: string,
     data: CreateCommentRequest
   ) => {
-    const validation = createCommentRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
-    if (!validateObjectId(id)) {
+    if (!validateObjectId(id))
       throw createHttpError(400, 'ID bài viết không hợp lệ');
-    }
 
     const post = await PostModel.findById(id);
+    if (!post) throw createHttpError(404, 'Không tìm thấy bài viết');
 
-    if (!post) {
-      throw createHttpError(404, 'Không tìm thấy bài viết');
-    }
-
-    const comment = {
+    const comment: PostComment = {
       author: {
-        _id: userId as any,
+        _id: toObjectId(userId),
         name: userName,
         avatar: userAvatar || ''
       },
@@ -325,7 +183,7 @@ export const PostService = {
       createdAt: new Date()
     };
 
-    post.comments.push(comment as any);
+    post.comments.push(comment);
     await post.save();
 
     return comment;
@@ -337,30 +195,23 @@ export const PostService = {
     userId: string,
     userRole: string
   ) => {
-    if (!validateObjectId(postId)) {
+    if (!validateObjectId(postId))
       throw createHttpError(400, 'ID bài viết không hợp lệ');
-    }
+
+    if (!validateObjectId(commentId))
+      throw createHttpError(400, 'ID bình luận không hợp lệ');
 
     const post = await PostModel.findById(postId);
-
-    if (!post) {
-      throw createHttpError(404, 'Không tìm thấy bài viết');
-    }
-
-    if (!validateObjectId(commentId)) {
-      throw createHttpError(400, 'ID bình luận không hợp lệ');
-    }
+    if (!post) throw createHttpError(404, 'Không tìm thấy bài viết');
 
     const commentIndex = post.comments.findIndex(
-      (comment: any) => comment._id.toString() === commentId
+      comment => comment._id?.toString() === commentId
     );
-
-    if (commentIndex === -1) {
+    if (commentIndex === -1)
       throw createHttpError(404, 'Không tìm thấy bình luận');
-    }
 
-    const comment = post.comments[commentIndex] as any;
-    const isCommentAuthor = comment.author._id.toString() === userId;
+    const comment = post.comments[commentIndex] as PostComment;
+    const isCommentAuthor = comment.author?._id?.toString() === userId;
     const isPostAuthor = post.author?._id.toString() === userId;
     const isAdmin = userRole === ROLE.ADMIN;
 
@@ -372,3 +223,74 @@ export const PostService = {
     await post.save();
   }
 };
+
+async function savePostImages(
+  postId: string,
+  images: Express.Multer.File[]
+): Promise<string[]> {
+  const imageUrls: string[] = [];
+
+  for (let i = 0; i < images.length; i++) {
+    const uploadResult = await uploadImage(images[i].buffer, `${postId}-${i}`);
+    if (uploadResult.success && uploadResult.data) {
+      imageUrls.push(uploadResult.data.secure_url);
+    } else {
+      throw createHttpError(500, 'Tải ảnh lên thất bại');
+    }
+  }
+
+  return imageUrls;
+}
+
+async function deletePostImages(postId: string, count: number): Promise<void> {
+  for (let i = 0; i < count; i++) {
+    await deleteImage(`${postId}-${i}`);
+  }
+}
+
+function applyPostFields(
+  post: HydratedDocument<Post>,
+  data: UpdatePostRequest
+): void {
+  if (data.title) post.title = data.title;
+  if (data.content) post.content = data.content;
+  if (data.tags !== undefined) post.tags = data.tags;
+  if (data.category) post.category = data.category;
+
+  if (data.isPublished !== undefined) {
+    post.isPublished = data.isPublished;
+    if (data.isPublished && !post.publishedAt) {
+      post.publishedAt = new Date();
+    }
+  }
+}
+
+function checkPostPermission(
+  post: HydratedDocument<Post>,
+  userId: string,
+  userRole: string,
+  action: string
+): void {
+  const isAuthor = post.author?._id.toString() === userId;
+  const isAdmin = userRole === ROLE.ADMIN;
+  if (!isAuthor && !isAdmin) {
+    throw createHttpError(403, `Bạn không có quyền ${action} bài viết này`);
+  }
+}
+
+async function incrementViews(post: HydratedDocument<Post>): Promise<void> {
+  post.views = (post.views || 0) + 1;
+  await post.save();
+}
+
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+}

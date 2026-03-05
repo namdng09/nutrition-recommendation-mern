@@ -16,6 +16,7 @@ import { GENDER } from '~/shared/constants/gender';
 import { MEAL_COMPLEXITY } from '~/shared/constants/meal-complexity';
 import { MEAL_SIZE } from '~/shared/constants/meal-size';
 import { MEAL_TYPE } from '~/shared/constants/meal-type';
+import { MEMBERSHIP_LEVEL } from '~/shared/constants/membership-level';
 import { ROLE } from '~/shared/constants/role';
 import { USER_TARGET } from '~/shared/constants/user-target';
 
@@ -90,6 +91,9 @@ const userSchema = new Schema(
       default: ROLE.USER
     },
     dob: { type: Date },
+    membershipLevel: { type: String, enum: Object.values(MEMBERSHIP_LEVEL) },
+    membershipExpiresAt: { type: Date },
+    aiTokens: { type: Number, default: 0 },
     height: { type: Number },
     bodyfat: { type: String, enum: Object.values(BODYFAT) },
     diet: { type: String, enum: Object.values(DIET) },

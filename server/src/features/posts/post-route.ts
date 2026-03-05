@@ -18,12 +18,11 @@ import {
 
 const router = Router();
 
-// Post CRUD operations
 router.post(
   '/',
   authenticate(),
   authorize([ROLE.USER, ROLE.NUTRITIONIST, ROLE.ADMIN]),
-  handleMultipleImagesUpload('images', 5), // Max 5 images
+  handleMultipleImagesUpload('images', 5),
   validate(createPostRequestSchema.shape),
   asyncHandler(PostController.createPost)
 );
@@ -32,6 +31,7 @@ router.get('/', asyncHandler(PostController.viewPosts));
 
 router.get('/:id', asyncHandler(PostController.viewPostDetail));
 
+// Not used
 router.get('/slug/:slug', asyncHandler(PostController.viewPostBySlug));
 
 router.put(

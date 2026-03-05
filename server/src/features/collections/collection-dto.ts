@@ -1,29 +1,12 @@
 import { z } from 'zod';
 
-const parseJSON = (val: any) => {
-  if (typeof val === 'string') {
-    try {
-      return JSON.parse(val);
-    } catch {
-      return val;
-    }
-  }
-  return val;
-};
-
-const parseBoolean = (val: any) => {
-  if (typeof val === 'string') {
-    if (val === 'true') return true;
-    if (val === 'false') return false;
-  }
-  return val;
-};
+import { booleanSchema, parseJSON } from '~/shared/utils/dto-parsers';
 
 export const createCollectionRequestSchema = z.object({
   name: z.string().trim().min(2, 'Tên phải có ít nhất 2 ký tự'),
   description: z.string().trim().optional(),
   image: z.file().optional(),
-  isPublic: z.preprocess(parseBoolean, z.coerce.boolean()).optional(),
+  isPublic: booleanSchema.optional(),
   tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
   dishes: z
     .preprocess(
@@ -41,7 +24,7 @@ export const updateCollectionRequestSchema = z.object({
   name: z.string().trim().min(2, 'Tên phải có ít nhất 2 ký tự').optional(),
   description: z.string().trim().optional(),
   image: z.file().optional(),
-  isPublic: z.preprocess(parseBoolean, z.coerce.boolean()).optional(),
+  isPublic: booleanSchema.optional(),
   tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
   dishes: z.preprocess(parseJSON, z.array(z.string().trim())).optional()
 });
@@ -68,4 +51,12 @@ export const removeDishFromCollectionRequestSchema = z.object({
 
 export type RemoveDishFromCollectionRequest = z.infer<
   typeof removeDishFromCollectionRequestSchema
+>;
+
+export const deleteBulkCollectionRequestSchema = z.object({
+  ids: z.array(z.string().trim().min(1)).min(1, 'Cần ít nhất một ID bộ sưu tập')
+});
+
+export type DeleteBulkCollectionRequest = z.infer<
+  typeof deleteBulkCollectionRequestSchema
 >;

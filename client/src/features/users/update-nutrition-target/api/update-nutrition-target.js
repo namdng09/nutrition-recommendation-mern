@@ -4,7 +4,7 @@ import apiClient from '~/lib/api-client';
 import { QUERY_KEYS } from '~/lib/query-keys';
 
 const updateNutritionTarget = async data => {
-  const response = await apiClient.put('/api/users/me', data);
+  const response = await apiClient.put('/api/users/me/nutrition-target', data);
   return response.data;
 };
 
