@@ -5,7 +5,7 @@ import apiClient from '~/lib/api-client';
 import { QUERY_KEYS } from '~/lib/query-keys';
 
 const addGroceryIngredient = async ({ groceryId, ingredients }) => {
-  const res = await apiClient.put(`/api/groceries/${groceryId}/ingredients`, {
+  const res = await apiClient.post(`/api/groceries/${groceryId}/ingredients`, {
     ingredients
   });
   return res.data;

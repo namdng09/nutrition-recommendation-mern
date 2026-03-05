@@ -1,7 +1,13 @@
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
+import type { HydratedDocument } from 'mongoose';
 
-import { IngredientModel } from '~/shared/database/models';
+import {
+  DishModel,
+  GroceryModel,
+  IngredientModel,
+  UserModel
+} from '~/shared/database/models';
 import type { Ingredient } from '~/shared/database/models/ingredient-model';
 import {
   buildPaginateOptions,
@@ -13,9 +19,7 @@ import {
 
 import {
   CreateIngredientRequest,
-  createIngredientRequestSchema,
-  UpdateIngredientRequest,
-  updateIngredientRequestSchema
+  UpdateIngredientRequest
 } from './ingredient-dto';
 
 export const IngredientService = {
@@ -23,13 +27,6 @@ export const IngredientService = {
     data: CreateIngredientRequest,
     image?: Express.Multer.File
   ) => {
-    const validation = createIngredientRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
     const existingIngredient = await IngredientModel.findOne({
       name: data.name
     });
@@ -39,38 +36,51 @@ export const IngredientService = {
     }
 
     const newIngredient = await IngredientModel.create(data);
-    if (!newIngredient) {
-      throw createHttpError(500, 'Tạo nguyên liệu thất bại');
-    }
 
-    if (image) {
-      const uploadResult = await uploadImage(
-        image.buffer,
-        newIngredient._id.toString()
-      );
-      if (uploadResult.success && uploadResult.data) {
-        newIngredient.image = uploadResult.data.secure_url;
-        await newIngredient.save();
-      } else {
-        throw createHttpError(500, 'Tải ảnh lên thất bại');
-      }
-    }
+    if (image) await saveIngredientImage(newIngredient, image);
 
     return newIngredient;
   },
 
   viewIngredients: async (
-    parsed: QueryOptions
+    parsed: QueryOptions,
+    userId?: string
   ): Promise<PaginateResponse<Ingredient>> => {
-    const { filter } = parsed;
     const options = buildPaginateOptions(parsed);
+    let { filter } = parsed;
+
+    let favoriteIngredientIds: Set<string> = new Set();
+
+    if (userId) {
+      const user = await UserModel.findById(
+        userId,
+        'blockIngredients favoriteIngredients'
+      ).lean();
+
+      if (user?.blockIngredients?.length) {
+        filter = { ...filter, _id: { $nin: user.blockIngredients } };
+      }
+
+      if (user?.favoriteIngredients?.length) {
+        favoriteIngredientIds = new Set(
+          user.favoriteIngredients.map((id: unknown) => String(id))
+        );
+      }
+    }
 
     const result = await IngredientModel.paginate(filter, options);
 
-    return result as unknown as PaginateResponse<Ingredient>;
+    const paginatedResult = result as unknown as PaginateResponse<Ingredient>;
+
+    paginatedResult.docs = paginatedResult.docs.map(doc => ({
+      ...((doc as any).toObject?.() ?? doc),
+      isFavorited: favoriteIngredientIds.has(String((doc as any)._id))
+    })) as any;
+
+    return paginatedResult;
   },
 
-  viewIngredientDetail: async (id: string) => {
+  viewIngredientDetail: async (id: string, userId?: string) => {
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
     }
@@ -81,7 +91,17 @@ export const IngredientService = {
       throw createHttpError(404, 'Không tìm thấy nguyên liệu');
     }
 
-    return ingredient;
+    let isFavorited = false;
+    if (userId) {
+      const user = await UserModel.findById(
+        userId,
+        'favoriteIngredients'
+      ).lean();
+      isFavorited =
+        user?.favoriteIngredients?.some(fId => String(fId) === id) ?? false;
+    }
+
+    return { ...ingredient.toObject(), isFavorited };
   },
 
   updateIngredient: async (
@@ -89,13 +109,6 @@ export const IngredientService = {
     data: UpdateIngredientRequest,
     image?: Express.Multer.File
   ) => {
-    const validation = updateIngredientRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
     }
@@ -114,29 +127,16 @@ export const IngredientService = {
     const updatedIngredient = await IngredientModel.findByIdAndUpdate(
       id,
       data,
-      {
-        new: true
-      }
+      { new: true }
     );
 
     if (!updatedIngredient) {
       throw createHttpError(404, 'Không tìm thấy nguyên liệu');
     }
 
-    if (image) {
-      await deleteImage(updatedIngredient._id.toString());
+    if (image) await replaceIngredientImage(updatedIngredient, image);
 
-      const uploadResult = await uploadImage(
-        image.buffer,
-        updatedIngredient._id.toString()
-      );
-      if (uploadResult.success && uploadResult.data) {
-        updatedIngredient.image = uploadResult.data.secure_url;
-        await updatedIngredient.save();
-      } else {
-        throw createHttpError(500, 'Tải ảnh lên thất bại');
-      }
-    }
+    await cascadeIngredientSnapshot(updatedIngredient);
 
     return updatedIngredient;
   },
@@ -146,14 +146,87 @@ export const IngredientService = {
       throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
     }
 
-    const deletedIngredient = await IngredientModel.findByIdAndDelete(id);
+    const ingredient = await IngredientModel.findById(id);
 
-    if (!deletedIngredient) {
+    if (!ingredient) {
       throw createHttpError(404, 'Không tìm thấy nguyên liệu');
     }
 
-    await deleteImage(deletedIngredient._id.toString());
+    await deleteImage(ingredient._id.toString());
+    await ingredient.deleteOne();
 
-    return deletedIngredient;
+    return ingredient;
+  },
+
+  deleteBulk: async (ids: string[]) => {
+    ids.forEach(id => {
+      if (!validateObjectId(id)) {
+        throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
+      }
+    });
+
+    await Promise.all(ids.map(id => deleteImage(id)));
+
+    const result = await IngredientModel.deleteMany({ _id: { $in: ids } });
+
+    return result;
   }
 };
+
+async function saveIngredientImage(
+  ingredient: HydratedDocument<Ingredient>,
+  file: Express.Multer.File
+) {
+  const uploadResult = await uploadImage(
+    file.buffer,
+    ingredient._id.toString()
+  );
+
+  if (uploadResult.success && uploadResult.data) {
+    ingredient.image = uploadResult.data.secure_url;
+    await ingredient.save();
+  } else {
+    throw createHttpError(500, 'Tải ảnh lên thất bại');
+  }
+}
+
+async function replaceIngredientImage(
+  ingredient: HydratedDocument<Ingredient>,
+  file: Express.Multer.File
+) {
+  await deleteImage(ingredient._id.toString());
+  await saveIngredientImage(ingredient, file);
+}
+
+async function cascadeIngredientSnapshot(
+  ingredient: HydratedDocument<Ingredient>
+) {
+  const { _id, name, image, description, allergens } = ingredient;
+  const query = { 'ingredients.ingredientId': _id };
+  // elem = each array element where ingredientId matches; $[elem] targets all of them, not just the first
+  const arrayFilters = [{ 'elem.ingredientId': _id }];
+
+  await DishModel.updateMany(
+    query,
+    {
+      $set: {
+        'ingredients.$[elem].name': name,
+        'ingredients.$[elem].image': image,
+        'ingredients.$[elem].description': description,
+        'ingredients.$[elem].allergens': allergens
+      }
+    },
+    { arrayFilters }
+  );
+
+  await GroceryModel.updateMany(
+    query,
+    {
+      $set: {
+        'ingredients.$[elem].name': name,
+        'ingredients.$[elem].image': image
+      }
+    },
+    { arrayFilters }
+  );
+}

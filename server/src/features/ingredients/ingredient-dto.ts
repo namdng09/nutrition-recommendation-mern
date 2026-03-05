@@ -5,26 +5,24 @@ import { NUTRITION_MINERAL } from '~/shared/constants/nutrition-minerals';
 import { NUTRIENTS } from '~/shared/constants/nutrition-nutrients';
 import { NUTRITION_VITAMIN } from '~/shared/constants/nutrition-vitamin';
 import { UNIT } from '~/shared/constants/unit';
-
-const enumValues = <T extends Record<string, string>>(values: T) =>
-  z.enum(Object.values(values) as [string, ...string[]]);
+import { booleanSchema, parseJSON } from '~/shared/utils/dto-parsers';
 
 const nutrientItemSchema = z.object({
-  label: enumValues(NUTRIENTS),
+  label: z.enum(Object.values(NUTRIENTS), 'Chất dinh dưỡng không hợp lệ'),
   value: z.coerce.number().min(0),
-  unit: z.enum(Object.values(UNIT))
+  unit: z.enum(Object.values(UNIT), 'Đơn vị chất dinh dưỡng không hợp lệ')
 });
 
 const mineralItemSchema = z.object({
-  label: enumValues(NUTRITION_MINERAL),
+  label: z.enum(Object.values(NUTRITION_MINERAL), 'Khoáng chất không hợp lệ'),
   value: z.coerce.number().min(0),
-  unit: z.enum(Object.values(UNIT))
+  unit: z.enum(Object.values(UNIT), 'Đơn vị khoáng chất không hợp lệ')
 });
 
 const vitaminItemSchema = z.object({
-  label: enumValues(NUTRITION_VITAMIN),
+  label: z.enum(Object.values(NUTRITION_VITAMIN), 'Vitamin không hợp lệ'),
   value: z.coerce.number().min(0),
-  unit: z.enum(Object.values(UNIT))
+  unit: z.enum(Object.values(UNIT), 'Đơn vị vitamin không hợp lệ')
 });
 
 const detailNutritionSchema = z.object({
@@ -33,35 +31,11 @@ const detailNutritionSchema = z.object({
   vitamins: z.array(vitaminItemSchema).optional()
 });
 
-const baseUnitSchema = z.object({
-  amount: z.coerce.number().min(0),
-  unit: z.string().trim().min(1)
-});
-
-const parseBoolean = (val: any) => {
-  if (typeof val === 'string') {
-    if (val === 'true') return true;
-    if (val === 'false') return false;
-  }
-  return val;
-};
-
 const unitSchema = z.object({
   value: z.coerce.number().min(0),
   unit: z.string().trim().min(1),
-  isDefault: z.preprocess(parseBoolean, z.coerce.boolean())
+  isDefault: booleanSchema
 });
-
-const parseJSON = (val: any) => {
-  if (typeof val === 'string') {
-    try {
-      return JSON.parse(val);
-    } catch {
-      return val;
-    }
-  }
-  return val;
-};
 
 export const createIngredientRequestSchema = z.object({
   name: z
@@ -71,38 +45,46 @@ export const createIngredientRequestSchema = z.object({
   description: z.string().trim().optional(),
   categories: z.preprocess(
     parseJSON,
-    z.array(z.enum(Object.values(INGREDIENT_CATEGORY)))
+    z.array(
+      z.enum(
+        Object.values(INGREDIENT_CATEGORY),
+        'Danh mục nguyên liệu không hợp lệ'
+      ),
+      'Danh mục nguyên liệu là bắt buộc'
+    )
   ),
-  baseUnit: z.preprocess(parseJSON, baseUnitSchema),
+  baseUnit: z.preprocess(
+    parseJSON,
+    z.object(
+      {
+        amount: z.coerce.number().min(0),
+        unit: z.string().trim().min(1)
+      },
+      'Đơn vị cơ bản là bắt buộc'
+    )
+  ),
   units: z.preprocess(parseJSON, z.array(unitSchema)).optional(),
   allergens: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
   nutrition: z.preprocess(parseJSON, detailNutritionSchema).optional(),
   image: z.file().optional(),
-  isActive: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
+  isActive: booleanSchema.optional()
 });
 
 export type CreateIngredientRequest = z.infer<
   typeof createIngredientRequestSchema
 >;
 
-export const updateIngredientRequestSchema = z.object({
-  name: z
-    .string('Tên nguyên liệu không hợp lệ')
-    .trim()
-    .min(2, 'Tên nguyên liệu phải có ít nhất 2 ký tự')
-    .optional(),
-  description: z.string().trim().optional(),
-  categories: z
-    .preprocess(parseJSON, z.array(z.enum(Object.values(INGREDIENT_CATEGORY))))
-    .optional(),
-  baseUnit: z.preprocess(parseJSON, baseUnitSchema).optional(),
-  units: z.preprocess(parseJSON, z.array(unitSchema)).optional(),
-  allergens: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
-  nutrition: z.preprocess(parseJSON, detailNutritionSchema).optional(),
-  image: z.file().optional(),
-  isActive: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
-});
+export const updateIngredientRequestSchema =
+  createIngredientRequestSchema.partial();
 
 export type UpdateIngredientRequest = z.infer<
   typeof updateIngredientRequestSchema
 >;
+
+export const deleteBulkRequestSchema = z.object({
+  ids: z
+    .array(z.string().trim().min(1, 'ID nguyên liệu không được để trống'))
+    .min(1, 'Cần ít nhất một ID nguyên liệu')
+});
+
+export type DeleteBulkRequest = z.infer<typeof deleteBulkRequestSchema>;
