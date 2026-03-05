@@ -30,7 +30,7 @@ router.get(
   '/',
   authenticate(),
   authorize([ROLE.ADMIN]),
-  asyncHandler(PaymentController.listMembershipPayments)
+  asyncHandler(PaymentController.listPayments)
 );
 
 router.get(
@@ -58,7 +58,7 @@ router.get(
   '/:orderCode',
   authenticate(),
   authorize([ROLE.ADMIN]),
-  asyncHandler(PaymentController.getMembershipPaymentByOrderCode)
+  asyncHandler(PaymentController.getPaymentByOrderCode)
 );
 
 router.put(

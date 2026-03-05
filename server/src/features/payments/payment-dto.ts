@@ -37,13 +37,3 @@ export const updatePaymentStatusRequestSchema = z.object({
 export type UpdatePaymentStatusRequest = z.infer<
   typeof updatePaymentStatusRequestSchema
 > & { orderCode: number };
-
-export const listMembershipPaymentsRequestSchema = z.object({
-  status: z
-    .enum(Object.values(PAYMENT_STATUS), 'Trạng thái thanh toán không hợp lệ')
-    .optional()
-});
-
-export type ListMembershipPaymentsRequest = z.infer<
-  typeof listMembershipPaymentsRequestSchema
->;

@@ -2,15 +2,17 @@ import {
   type CreatePaymentLinkRequest,
   type CreatePaymentLinkResponse
 } from '@payos/node';
+import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
 import { Types } from 'mongoose';
 
 import type { MembershipLevel } from '~/shared/constants/membership-level';
 import { MEMBERSHIP_LEVEL } from '~/shared/constants/membership-level';
-import type { PaymentStatus } from '~/shared/constants/payment-status';
 import { PAYMENT_STATUS } from '~/shared/constants/payment-status';
 import { UserModel } from '~/shared/database/models';
+import type { Payment } from '~/shared/database/models/payment-model';
 import { PaymentModel } from '~/shared/database/models/payment-model';
+import { buildPaginateOptions, type PaginateResponse } from '~/shared/utils';
 import { sendMail } from '~/shared/utils/email/mailer';
 import { payOS } from '~/shared/utils/payos';
 
@@ -178,7 +180,7 @@ export const PaymentService = {
     return payment;
   },
 
-  getMembershipPaymentByOrderCode: async (orderCode: number) => {
+  getPaymentByOrderCode: async (orderCode: number) => {
     if (!Number.isFinite(orderCode) || orderCode <= 0) {
       throw createHttpError(400, 'orderCode must be a positive number');
     }
@@ -192,41 +194,50 @@ export const PaymentService = {
     });
 
     if (!payment) {
-      throw createHttpError(404, 'Membership payment not found');
+      throw createHttpError(404, 'Payment not found');
     }
 
     return payment;
   },
 
-  listPaymentsByUser: async (userId: string) => {
+  listPaymentsByUser: async (
+    userId: string,
+    parsed: QueryOptions
+  ): Promise<PaginateResponse<Payment>> => {
     const trimmedUserId = typeof userId === 'string' ? userId.trim() : '';
     if (!trimmedUserId || !Types.ObjectId.isValid(trimmedUserId)) {
       throw createHttpError(400, 'Invalid userId');
     }
 
-    return PaymentModel.find({
+    const options = buildPaginateOptions(parsed);
+    const filter = {
+      ...parsed.filter,
       user: new Types.ObjectId(trimmedUserId)
-    })
-      .sort({ createdAt: -1 })
-      .populate({
-        path: 'user',
-        select: 'name email membershipLevel'
-      });
+    };
+
+    const result = await PaymentModel.paginate(filter, {
+      ...options,
+      populate: { path: 'user', select: 'name email membershipLevel' }
+    });
+
+    return result as unknown as PaginateResponse<Payment>;
   },
 
-  listMembershipPayments: async (status?: PaymentStatus) => {
-    const filter: Record<string, unknown> = {
+  listPayments: async (
+    parsed: QueryOptions
+  ): Promise<PaginateResponse<Payment>> => {
+    const options = buildPaginateOptions(parsed);
+    const filter = {
+      ...parsed.filter,
       targetMembership: { $exists: true }
     };
 
-    if (status) {
-      filter.status = status;
-    }
-
-    return PaymentModel.find(filter).sort({ createdAt: -1 }).populate({
-      path: 'user',
-      select: 'name email membershipLevel'
+    const result = await PaymentModel.paginate(filter, {
+      ...options,
+      populate: { path: 'user', select: 'name email membershipLevel' }
     });
+
+    return result as unknown as PaginateResponse<Payment>;
   },
 
   confirmPayment: async (orderCode: number, userId: string) => {
