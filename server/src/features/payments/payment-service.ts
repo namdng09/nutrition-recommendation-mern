@@ -83,19 +83,6 @@ export const PaymentService = {
           'Không thể hạ cấp từ VIP xuống tài khoản thường'
         );
       }
-
-      //   const existingPendingPayment = await PaymentModel.findOne({
-      //     user: userId,
-      //     status: PAYMENT_STATUS.PENDING,
-      //     targetMembership: { $exists: true }
-      //   });
-
-      //   if (existingPendingPayment) {
-      //     throw createHttpError(
-      //       400,
-      //       'Bạn đang có giao dịch nâng cấp đang chờ xử lý. Vui lòng hoàn tất hoặc hủy giao dịch hiện tại trước khi tạo giao dịch mới'
-      //     );
-      //   }
     }
 
     const orderCode = generateOrderCode();
@@ -246,24 +233,17 @@ export const PaymentService = {
     // Query PayOS for the real payment status
     const paymentLink = await payOS.paymentRequests.get(orderCode);
 
-    if (paymentLink.status === 'PAID') {
-      payment.status = PAYMENT_STATUS.COMPLETED;
-      payment.completedAt = new Date();
-      payment.cancellationReason = undefined;
-
-      if (payment.targetMembership) {
-        await applyMembershipUpgrade(payment, payment.targetMembership);
-      }
-    } else if (
-      paymentLink.status === 'CANCELLED' ||
-      paymentLink.status === 'EXPIRED' ||
-      paymentLink.status === 'FAILED'
-    ) {
-      payment.status = PAYMENT_STATUS.CANCELLED;
-      payment.cancellationReason =
-        paymentLink.cancellationReason ?? paymentLink.status;
+    if (paymentLink.status !== 'PAID') {
+      throw createHttpError(400, 'Thanh toán chưa hoàn tất');
     }
-    // PENDING / PROCESSING / UNDERPAID — leave as PENDING, let user retry
+
+    payment.status = PAYMENT_STATUS.COMPLETED;
+    payment.completedAt = new Date();
+    payment.cancellationReason = undefined;
+
+    if (payment.targetMembership) {
+      await applyMembershipUpgrade(payment, payment.targetMembership);
+    }
 
     await payment.save();
     return payment;
