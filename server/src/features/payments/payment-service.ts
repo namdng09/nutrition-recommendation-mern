@@ -155,9 +155,19 @@ export const PaymentService = {
         payment,
         payment.targetMembership as MembershipLevel
       );
+
+      // Close the PayOS link so the user cannot pay it again after manual completion
+      await payOS.paymentRequests.cancel(
+        payment.orderCode,
+        'Đã xác nhận thủ công bởi admin'
+      );
     } else if (data.status === PAYMENT_STATUS.CANCELLED) {
-      payment.cancellationReason = data.cancellationReason?.trim();
+      const reason = data.cancellationReason?.trim();
+      payment.cancellationReason = reason;
       payment.completedAt = undefined;
+
+      // Cancel the PayOS payment link so the user can no longer pay it
+      await payOS.paymentRequests.cancel(payment.orderCode, reason);
     }
 
     await payment.save();
