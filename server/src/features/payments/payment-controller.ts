@@ -15,11 +15,11 @@ export const PaymentController = {
     return res.redirect(result);
   },
 
-  approveMembershipUpgrade: async (req: Request, res: Response) => {
+  updatePaymentStatus: async (req: Request, res: Response) => {
     const orderCode = Number(req.params.orderCode);
     const data = req.body;
 
-    const result = await PaymentService.approveMembershipUpgrade({
+    const result = await PaymentService.updatePaymentStatus({
       orderCode,
       ...data
     });

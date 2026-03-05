@@ -28,7 +28,7 @@ export type CreatePaymentRequest = z.infer<typeof createPaymentRequestSchema>;
 
 export const updatePaymentStatusRequestSchema = z.object({
   status: z.enum(
-    Object.values(PAYMENT_STATUS),
+    [PAYMENT_STATUS.COMPLETED, PAYMENT_STATUS.CANCELLED],
     'Trạng thái thanh toán không hợp lệ'
   ),
   cancellationReason: z.string('Lý do hủy không hợp lệ').trim().optional()

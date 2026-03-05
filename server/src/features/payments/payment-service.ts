@@ -5,6 +5,7 @@ import {
 import createHttpError from 'http-errors';
 import { Types } from 'mongoose';
 
+import type { MembershipLevel } from '~/shared/constants/membership-level';
 import { MEMBERSHIP_LEVEL } from '~/shared/constants/membership-level';
 import type { PaymentStatus } from '~/shared/constants/payment-status';
 import { PAYMENT_STATUS } from '~/shared/constants/payment-status';
@@ -18,19 +19,30 @@ import {
   UpdatePaymentStatusRequest
 } from './payment-dto';
 
+const VIP_AI_TOKENS = 100;
+
 const applyMembershipUpgrade = async (
   payment: InstanceType<typeof PaymentModel>,
-  targetMembership: string
+  targetMembership: MembershipLevel
 ) => {
   const user = await UserModel.findById(payment.user);
   if (!user) {
     throw createHttpError(404, 'Người dùng không tồn tại');
   }
 
-  user.membershipLevel = targetMembership as any;
+  user.membershipLevel = targetMembership;
+
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 30);
+  user.membershipExpiresAt = expiresAt;
+
+  if (targetMembership === MEMBERSHIP_LEVEL.VIP) {
+    user.aiTokens = (user.aiTokens ?? 0) + VIP_AI_TOKENS;
+  }
+
   await user.save();
 
-  await sendMail({
+  sendMail({
     to: user.email,
     subject: `Chúc mừng! Bạn đã nâng cấp lên ${targetMembership}`,
     template: 'membership-upgrade',
@@ -124,7 +136,7 @@ export const PaymentService = {
     return payment.checkoutUrl;
   },
 
-  approveMembershipUpgrade: async (data: UpdatePaymentStatusRequest) => {
+  updatePaymentStatus: async (data: UpdatePaymentStatusRequest) => {
     const payment = await PaymentModel.findOne({
       orderCode: data.orderCode
     }).populate({
@@ -139,13 +151,23 @@ export const PaymentService = {
       );
     }
 
+    if (payment.status !== PAYMENT_STATUS.PENDING) {
+      throw createHttpError(
+        400,
+        'Giao dịch này đã được xử lý và không thể thay đổi trạng thái'
+      );
+    }
+
     payment.status = data.status;
 
     if (data.status === PAYMENT_STATUS.COMPLETED) {
       payment.completedAt = new Date();
       payment.cancellationReason = undefined;
 
-      await applyMembershipUpgrade(payment, payment.targetMembership as string);
+      await applyMembershipUpgrade(
+        payment,
+        payment.targetMembership as MembershipLevel
+      );
     } else if (data.status === PAYMENT_STATUS.CANCELLED) {
       payment.cancellationReason = data.cancellationReason?.trim();
       payment.completedAt = undefined;
@@ -196,7 +218,7 @@ export const PaymentService = {
   },
 
   listMembershipPayments: async (status?: PaymentStatus) => {
-    const filter: any = {
+    const filter: Record<string, unknown> = {
       targetMembership: { $exists: true }
     };
 
@@ -230,10 +252,7 @@ export const PaymentService = {
       payment.cancellationReason = undefined;
 
       if (payment.targetMembership) {
-        await applyMembershipUpgrade(
-          payment,
-          payment.targetMembership as string
-        );
+        await applyMembershipUpgrade(payment, payment.targetMembership);
       }
     } else if (
       paymentLink.status === 'CANCELLED' ||

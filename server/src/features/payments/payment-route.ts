@@ -67,7 +67,7 @@ router.put(
   authorize([ROLE.ADMIN]),
   parseFormData,
   validate(updatePaymentStatusRequestSchema.shape),
-  asyncHandler(PaymentController.approveMembershipUpgrade)
+  asyncHandler(PaymentController.updatePaymentStatus)
 );
 
 export default router;
