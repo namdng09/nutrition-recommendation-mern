@@ -36,6 +36,7 @@ router.get(
 router.get(
   '/user',
   authenticate(),
+  authorize([ROLE.USER]),
   asyncHandler(PaymentController.listPaymentsByUser)
 );
 
@@ -44,6 +45,13 @@ router.get(
   authenticate(),
   authorize([ROLE.ADMIN]),
   asyncHandler(PaymentController.listPaymentsByUser)
+);
+
+router.post(
+  '/confirm',
+  authenticate(),
+  authorize([ROLE.USER]),
+  asyncHandler(PaymentController.confirmPayment)
 );
 
 router.get(
@@ -59,7 +67,7 @@ router.put(
   authorize([ROLE.ADMIN]),
   parseFormData,
   validate(updatePaymentStatusRequestSchema.shape),
-  asyncHandler(PaymentController.updateMembershipPaymentStatus)
+  asyncHandler(PaymentController.approveMembershipUpgrade)
 );
 
 export default router;

@@ -15,11 +15,11 @@ export const PaymentController = {
     return res.redirect(result);
   },
 
-  updateMembershipPaymentStatus: async (req: Request, res: Response) => {
+  approveMembershipUpgrade: async (req: Request, res: Response) => {
     const orderCode = Number(req.params.orderCode);
     const data = req.body;
 
-    const result = await PaymentService.updateMembershipPaymentStatus({
+    const result = await PaymentService.approveMembershipUpgrade({
       orderCode,
       ...data
     });
@@ -65,5 +65,15 @@ export const PaymentController = {
           result
         )
       );
+  },
+
+  confirmPayment: async (req: Request, res: Response) => {
+    const orderCode = Number(req.query.orderCode);
+
+    const result = await PaymentService.confirmPayment(orderCode);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Xác nhận thanh toán thành công', result));
   }
 };
