@@ -1,6 +1,6 @@
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
-import type { HydratedDocument, Types } from 'mongoose';
+import type { HydratedDocument, PaginateResult, Types } from 'mongoose';
 
 import { ROLE } from '~/shared/constants/role';
 import {
@@ -13,7 +13,6 @@ import type { Dish } from '~/shared/database/models/dish-model';
 import {
   buildPaginateOptions,
   deleteImage,
-  type PaginateResponse,
   uploadImage,
   validateObjectId
 } from '~/shared/utils';
@@ -58,7 +57,7 @@ export const CollectionService = {
   viewCollections: async (
     parsed: QueryOptions,
     userId?: string
-  ): Promise<PaginateResponse<Collection>> => {
+  ): Promise<PaginateResult<Collection>> => {
     const { filter } = parsed;
     const options = buildPaginateOptions(parsed);
 
@@ -79,14 +78,12 @@ export const CollectionService = {
 
     const result = await CollectionModel.paginate(filter, options);
 
-    const paginatedResult = result as unknown as PaginateResponse<Collection>;
-
-    paginatedResult.docs = paginatedResult.docs.map(doc => ({
+    result.docs = result.docs.map(doc => ({
       ...((doc as any).toObject?.() ?? doc),
       isFavorited: favoriteCollectionIds.has(String((doc as any)._id))
     })) as any;
 
-    return paginatedResult;
+    return result;
   },
 
   viewCollectionDetail: async (id: string, userId?: string) => {
