@@ -20,6 +20,9 @@ export const useRejectCertificate = ({ onSuccess, onError } = {}) => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.USER(variables.id)
       });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.PENDING_CERTIFICATES_COUNT
+      });
       onSuccess?.(response);
     },
     onError

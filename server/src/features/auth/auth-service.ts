@@ -149,7 +149,8 @@ export const AuthService = {
         await UserModel.findByIdAndUpdate(newUser._id, {
           certificate: {
             name: certName,
-            url: certUpload.data.secure_url,
+            fileUrl: certUpload.data.secure_url,
+            publicId: certUpload.data.public_id,
             status: CERTIFICATE_STATUS.PENDING
           }
         });

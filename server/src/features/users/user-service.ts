@@ -380,6 +380,12 @@ export const UserService = {
     return result as unknown as PaginateResponse<User>;
   },
 
+  pendingCertificatesCount: async (): Promise<number> => {
+    return UserModel.countDocuments({
+      'certificate.status': CERTIFICATE_STATUS.PENDING
+    });
+  },
+
   viewProfile: async (id: string) => {
     const user = await UserModel.findById(id)
       .populate({
@@ -670,7 +676,8 @@ export const UserService = {
 
     user.certificate = {
       name: data.certificateName,
-      url: uploadResult.data.secure_url,
+      fileUrl: uploadResult.data.secure_url,
+      publicId: uploadResult.data.public_id,
       status: CERTIFICATE_STATUS.PENDING,
       rejectionReason: undefined
     } as any;

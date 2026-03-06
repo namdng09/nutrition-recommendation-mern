@@ -1,4 +1,4 @@
-import { Eye, Trash2 } from 'lucide-react';
+import { BadgeCheck, Clock, Eye, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
@@ -6,9 +6,25 @@ import { DataTableColumnHeader } from '~/components/admin/data-table-column-head
 import CommonTable from '~/components/common-table';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '~/components/ui/tooltip';
 import DeleteBulkUsersDialog from '~/features/users/delete-user/components/admin/delete-bulk-users-dialog';
 import DeleteUserDialog from '~/features/users/delete-user/components/admin/delete-user-dialog';
 import { useUsers } from '~/features/users/view-users/api/view-users';
+
+const CERT_STATUS_ICON = {
+  Pending: { Icon: Clock, className: 'text-yellow-500', label: 'Chờ duyệt' },
+  Approved: {
+    Icon: BadgeCheck,
+    className: 'text-green-500',
+    label: 'Đã duyệt'
+  },
+  Rejected: { Icon: XCircle, className: 'text-red-500', label: 'Đã từ chối' }
+};
 
 const UsersTable = () => {
   const navigate = useNavigate();
@@ -65,7 +81,34 @@ const UsersTable = () => {
       accessorKey: 'name',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Tên' />
-      )
+      ),
+      cell: ({ row }) => {
+        const user = row.original;
+        const certStatus = user.certificate?.status;
+        const certInfo =
+          user.role === 'Nutritionist' && certStatus
+            ? CERT_STATUS_ICON[certStatus]
+            : null;
+        return (
+          <div className='flex items-center gap-1.5'>
+            <span>{user.name}</span>
+            {certInfo && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <certInfo.Icon
+                      className={`h-3.5 w-3.5 shrink-0 ${certInfo.className}`}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent side='top'>
+                    <p>Chứng chỉ: {certInfo.label}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
+        );
+      }
     },
     {
       accessorKey: 'email',

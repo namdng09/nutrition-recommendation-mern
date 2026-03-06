@@ -216,6 +216,13 @@ router.post(
   asyncHandler(UserController.uploadCertificate)
 );
 
+router.get(
+  '/pending-certificates/count',
+  authenticate(),
+  authorize([ROLE.ADMIN]),
+  asyncHandler(UserController.pendingCertificatesCount)
+);
+
 router.put(
   '/:id/certificate/approve',
   authenticate(),

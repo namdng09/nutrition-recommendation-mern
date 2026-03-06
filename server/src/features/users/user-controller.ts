@@ -26,6 +26,19 @@ export const UserController = {
       .json(ApiResponse.success('Người dùng được lấy thành công', result));
   },
 
+  pendingCertificatesCount: async (_req: Request, res: Response) => {
+    const count = await UserService.pendingCertificatesCount();
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success(
+          'Số lượng chứng chỉ chờ duyệt được lấy thành công',
+          { count }
+        )
+      );
+  },
+
   viewProfile: async (req: Request, res: Response) => {
     const id = req.user?._id.toString();
 
