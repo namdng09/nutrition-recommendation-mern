@@ -261,16 +261,23 @@ export const PaymentService = {
     // Query PayOS for the real payment status
     const paymentLink = await payOS.paymentRequests.get(orderCode);
 
-    if (paymentLink.status !== 'PAID') {
+    if (paymentLink.status === 'PAID') {
+      payment.status = PAYMENT_STATUS.COMPLETED;
+      payment.completedAt = new Date();
+      payment.cancellationReason = undefined;
+
+      if (payment.targetMembership) {
+        await applyMembershipUpgrade(payment, payment.targetMembership);
+      }
+    } else if (
+      paymentLink.status === 'CANCELLED' ||
+      paymentLink.status === 'FAILED'
+    ) {
+      payment.status = PAYMENT_STATUS.CANCELLED;
+      payment.cancellationReason = 'Thanh toán đã bị hủy hoặc thất bại';
+      payment.completedAt = undefined;
+    } else {
       throw createHttpError(400, 'Thanh toán chưa hoàn tất');
-    }
-
-    payment.status = PAYMENT_STATUS.COMPLETED;
-    payment.completedAt = new Date();
-    payment.cancellationReason = undefined;
-
-    if (payment.targetMembership) {
-      await applyMembershipUpgrade(payment, payment.targetMembership);
     }
 
     await payment.save();
