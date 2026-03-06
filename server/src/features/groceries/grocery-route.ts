@@ -11,11 +11,11 @@ import { asyncHandler } from '~/shared/utils';
 
 import { GroceryController } from './grocery-controller';
 import {
-  addIngredientsRequestSchema,
+  addGroceryIngredientRequestSchema,
   createGroceryRequestSchema,
-  removeIngredientsRequestSchema,
-  updateGroceryRequestSchema,
-  updateIngredientInGrocerySchema
+  removeGroceryIngredientRequestSchema,
+  updateGroceryIngredientRequestSchema,
+  updateGroceryRequestSchema
 } from './grocery-dto';
 
 const router = Router();
@@ -23,7 +23,7 @@ const router = Router();
 router.post(
   '/',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
+  authorize([ROLE.USER]),
   parseFormData,
   validate(createGroceryRequestSchema.shape),
   asyncHandler(GroceryController.createGrocery)
@@ -32,58 +32,59 @@ router.post(
 router.get(
   '/',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
+  authorize([ROLE.USER]),
   asyncHandler(GroceryController.viewGroceries)
 );
 
+// Not used
 router.get(
   '/:id',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
+  authorize([ROLE.USER]),
   asyncHandler(GroceryController.viewGroceryDetail)
 );
 
 router.put(
   '/:id',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
+  authorize([ROLE.USER]),
   parseFormData,
   validate(updateGroceryRequestSchema.shape),
   asyncHandler(GroceryController.updateGrocery)
 );
 
-router.put(
+router.delete(
+  '/:id',
+  authenticate(),
+  authorize([ROLE.USER]),
+  asyncHandler(GroceryController.deleteGrocery)
+);
+
+router.post(
   '/:id/ingredients',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
+  authorize([ROLE.USER]),
   parseFormData,
-  validate(addIngredientsRequestSchema.shape),
+  validate(addGroceryIngredientRequestSchema.shape),
   asyncHandler(GroceryController.addIngredientsInGrocery)
 );
 
 router.put(
-  '/:groceryId/ingredients/:ingredientId',
+  '/:id/ingredients/:ingredientId',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
+  authorize([ROLE.USER]),
   parseFormData,
-  validate(updateIngredientInGrocerySchema.shape),
+  validate(updateGroceryIngredientRequestSchema.shape),
   asyncHandler(GroceryController.updateIngredientInGrocery)
 );
 
 router.delete(
   '/:id/ingredients',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
+  authorize([ROLE.USER]),
   parseFormData,
-  validate(removeIngredientsRequestSchema.shape),
+  validate(removeGroceryIngredientRequestSchema.shape),
   asyncHandler(GroceryController.removeIngredientsInGrocery)
-);
-
-router.delete(
-  '/:id',
-  authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
-  asyncHandler(GroceryController.deleteGrocery)
 );
 
 export default router;

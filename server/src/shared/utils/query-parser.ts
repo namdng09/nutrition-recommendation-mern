@@ -4,6 +4,11 @@ import {
 } from '@quarks/mongoose-query-parser';
 import type { ParsedQs } from 'qs';
 
+import {
+  buildVietnameseInsensitiveRegex,
+  removeVietnameseDiacritics
+} from './vietnamese-normalizer';
+
 /**
  * Parse URL query parameters into MongoDB-friendly query options
  *
@@ -61,5 +66,41 @@ export const parseQuery = (
       }
     }
   });
-  return parser.parse(query);
+  const result = parser.parse(query);
+  result.filter = transformVietnameseSearchFilter(result.filter);
+  return result;
 };
+
+/**
+ * Post-processes parsed filters into diacritic-insensitive RegExp conditions.
+ *
+ * This avoids deep nested aggregation expressions and remains compatible with
+ * MongoDB Atlas BSON depth constraints.
+ */
+function transformVietnameseSearchFilter(
+  filter: Record<string, any>
+): Record<string, any> {
+  const transformed = { ...filter };
+
+  for (const [key, value] of Object.entries(filter)) {
+    // Skip MongoDB operator keys like $or, $and, $expr, etc.
+    if (key.startsWith('$')) continue;
+
+    if (typeof value === 'string') {
+      transformed[key] = buildVietnameseInsensitiveRegex(value, 'i');
+      continue;
+    }
+
+    if (value instanceof RegExp) {
+      // Preserve explicit regex syntax from caller (e.g. ?name=/beef/i).
+      // Remove Vietnamese diacritics in the source to keep query behavior
+      // consistent with string search where possible.
+      transformed[key] = new RegExp(
+        removeVietnameseDiacritics(value.source),
+        value.flags
+      );
+    }
+  }
+
+  return transformed;
+}

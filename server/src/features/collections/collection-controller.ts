@@ -9,8 +9,8 @@ export const CollectionController = {
   createCollection: async (req: Request, res: Response) => {
     const data = req.body;
     const image = req.file;
-    const userId = req.user?._id.toString();
-    const userName = req.user?.name;
+    const userId = req.user!._id.toString();
+    const userName = req.user!.name;
 
     const result = await CollectionService.createCollection(
       userId,
@@ -26,8 +26,9 @@ export const CollectionController = {
 
   viewCollections: async (req: Request, res: Response) => {
     const parsed = parseQuery(req.query);
+    const userId = req.user?._id.toString();
 
-    const result = await CollectionService.viewCollections(parsed);
+    const result = await CollectionService.viewCollections(parsed, userId);
 
     res
       .status(200)
@@ -36,8 +37,9 @@ export const CollectionController = {
 
   viewCollectionDetail: async (req: Request, res: Response) => {
     const id = req.params.id;
+    const userId = req.user?._id.toString();
 
-    const result = await CollectionService.viewCollectionDetail(id);
+    const result = await CollectionService.viewCollectionDetail(id, userId);
 
     res
       .status(200)
@@ -48,7 +50,7 @@ export const CollectionController = {
     const id = req.params.id;
     const data = req.body;
     const image = req.file;
-    const userId = req.user?._id.toString();
+    const userId = req.user!._id.toString();
 
     const result = await CollectionService.updateCollection(
       id,
@@ -64,17 +66,30 @@ export const CollectionController = {
 
   deleteCollection: async (req: Request, res: Response) => {
     const id = req.params.id;
-    const userId = req.user?._id.toString();
+    const userId = req.user!._id.toString();
+    const userRole = req.user!.role;
 
-    await CollectionService.deleteCollection(id, userId);
+    await CollectionService.deleteCollection(id, userId, userRole);
 
     res.status(200).json(ApiResponse.success('Xóa bộ sưu tập thành công'));
+  },
+
+  deleteBulk: async (req: Request, res: Response) => {
+    const { ids } = req.body;
+    const userId = req.user!._id.toString();
+    const userRole = req.user!.role;
+
+    const result = await CollectionService.deleteBulk(ids, userId, userRole);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Xóa các bộ sưu tập thành công', result));
   },
 
   addDishToCollection: async (req: Request, res: Response) => {
     const id = req.params.id;
     const data = req.body;
-    const userId = req.user?._id.toString();
+    const userId = req.user!._id.toString();
 
     const result = await CollectionService.addDishToCollection(
       id,
@@ -92,7 +107,7 @@ export const CollectionController = {
   removeDishFromCollection: async (req: Request, res: Response) => {
     const id = req.params.id;
     const data = req.body;
-    const userId = req.user?._id.toString();
+    const userId = req.user!._id.toString();
 
     const result = await CollectionService.removeDishFromCollection(
       id,

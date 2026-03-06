@@ -1,5 +1,6 @@
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
+import type { HydratedDocument } from 'mongoose';
 
 import {
   DishModel,
@@ -7,7 +8,9 @@ import {
   IngredientModel,
   ScheduleModel
 } from '~/shared/database/models';
+import type { Dish } from '~/shared/database/models/dish-model';
 import type { Grocery } from '~/shared/database/models/grocery-model';
+import type { Schedule } from '~/shared/database/models/schedule-model';
 import {
   buildPaginateOptions,
   type PaginateResponse,
@@ -15,11 +18,11 @@ import {
 } from '~/shared/utils';
 
 import {
-  AddIngredientsRequest,
+  AddGroceryIngredientRequest,
   CreateGroceryRequest,
-  RemoveIngredientsRequest,
-  UpdateGroceryRequest,
-  UpdateIngredientInGroceryRequest
+  RemoveGroceryIngredientRequest,
+  UpdateGroceryIngredientRequest,
+  UpdateGroceryRequest
 } from './grocery-dto';
 
 type GroceryIngredient = {
@@ -29,72 +32,12 @@ type GroceryIngredient = {
   isPurchased: boolean;
 };
 
-const buildIngredientsFromDates = async (
-  userId: string,
-  dates: Date[]
-): Promise<GroceryIngredient[]> => {
-  if (dates.length === 0) return [];
-
-  const dateFilters = dates.map(date => {
-    const start = new Date(date);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(date);
-    end.setHours(23, 59, 59, 999);
-    return { date: { $gte: start, $lte: end } };
-  });
-
-  const schedules = await ScheduleModel.find({
-    'user._id': userId,
-    $or: dateFilters
-  }).select({ meals: 1 });
-
-  const dishIds = new Set<string>();
-  schedules.forEach(schedule => {
-    schedule.meals?.forEach(meal => {
-      meal.dishes?.forEach(dish => {
-        const dishId = dish.dishId?.toString();
-        if (dishId) {
-          dishIds.add(dishId);
-        }
-      });
-    });
-  });
-
-  if (dishIds.size === 0) return [];
-
-  const dishes = await DishModel.find({
-    _id: { $in: Array.from(dishIds) }
-  }).select({ ingredients: 1 });
-
-  const ingredientMap = new Map<string, GroceryIngredient>();
-  dishes.forEach(dish => {
-    dish.ingredients?.forEach(ingredient => {
-      const ingredientId = ingredient.ingredientId?.toString();
-      if (!ingredientId || ingredientMap.has(ingredientId)) {
-        return;
-      }
-      ingredientMap.set(ingredientId, {
-        ingredientId,
-        name: ingredient.name,
-        image: ingredient.image ?? '',
-        isPurchased: false
-      });
-    });
-  });
-
-  return Array.from(ingredientMap.values());
-};
-
 export const GroceryService = {
   createGrocery: async (
     userId: string,
     userName: string,
     data: CreateGroceryRequest
   ) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-    }
-
     const selectedDates = data.date ?? [];
     const ingredientDetails = await buildIngredientsFromDates(
       userId,
@@ -121,10 +64,6 @@ export const GroceryService = {
     userId: string,
     parsed: QueryOptions
   ): Promise<PaginateResponse<Grocery>> => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-    }
-
     const { filter } = parsed;
     const options = buildPaginateOptions(parsed);
 
@@ -136,14 +75,39 @@ export const GroceryService = {
 
     const result = await GroceryModel.paginate(userFilter, options);
 
-    return result as unknown as PaginateResponse<Grocery>;
+    const allIngredientIds = (result.docs as unknown as Grocery[]).flatMap(g =>
+      g.ingredients.map(i => i.ingredientId)
+    );
+    const foundIngredients = await IngredientModel.find(
+      { _id: { $in: allIngredientIds } },
+      { _id: 1 }
+    ).lean();
+    const existingIngredientIds = new Set(
+      foundIngredients.map(i => i._id.toString())
+    );
+
+    const annotatedDocs = (
+      result.docs as unknown as HydratedDocument<Grocery>[]
+    ).map(g => {
+      const grocObj = g.toObject();
+      return {
+        ...grocObj,
+        ingredients: grocObj.ingredients.map(i => ({
+          ...i,
+          isDeleted:
+            !i.ingredientId ||
+            !existingIngredientIds.has(i.ingredientId.toString())
+        }))
+      };
+    });
+
+    return {
+      ...result,
+      docs: annotatedDocs
+    } as unknown as PaginateResponse<Grocery>;
   },
 
   viewGroceryDetail: async (userId: string, id: string) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-    }
-
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID danh sách mua sắm không hợp lệ');
     }
@@ -165,52 +129,8 @@ export const GroceryService = {
     groceryId: string,
     data: UpdateGroceryRequest
   ) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-    }
-
     if (!validateObjectId(groceryId)) {
       throw createHttpError(400, 'Định dạng ID danh sách mua sắm không hợp lệ');
-    }
-
-    const updateData: any = { ...data };
-
-    if (data.date) {
-      updateData.ingredients = await buildIngredientsFromDates(
-        userId,
-        data.date
-      );
-    }
-
-    // If ingredients are updated, fetch their details
-    if (!data.date && data.ingredients) {
-      const ingredientDetails = await Promise.all(
-        data.ingredients.map(async ing => {
-          if (!validateObjectId(ing.ingredientId)) {
-            throw createHttpError(
-              400,
-              `ID nguyên liệu không hợp lệ: ${ing.ingredientId}`
-            );
-          }
-
-          const ingredient = await IngredientModel.findById(ing.ingredientId);
-          if (!ingredient) {
-            throw createHttpError(
-              404,
-              `Không tìm thấy nguyên liệu với ID: ${ing.ingredientId}`
-            );
-          }
-
-          return {
-            ingredientId: ingredient._id,
-            name: ingredient.name,
-            image: ingredient.image ?? '',
-            isPurchased: ing.isPurchased ?? false
-          };
-        })
-      );
-
-      updateData.ingredients = ingredientDetails;
     }
 
     const updatedGrocery = await GroceryModel.findOneAndUpdate(
@@ -218,7 +138,7 @@ export const GroceryService = {
         _id: groceryId,
         'user._id': userId
       },
-      updateData,
+      data,
       {
         new: true
       }
@@ -232,10 +152,6 @@ export const GroceryService = {
   },
 
   deleteGrocery: async (userId: string, id: string) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-    }
-
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID danh sách mua sắm không hợp lệ');
     }
@@ -255,12 +171,8 @@ export const GroceryService = {
   addIngredientsInGrocery: async (
     userId: string,
     groceryId: string,
-    data: AddIngredientsRequest
+    data: AddGroceryIngredientRequest
   ) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-    }
-
     if (!validateObjectId(groceryId)) {
       throw createHttpError(400, 'Định dạng ID danh sách mua sắm không hợp lệ');
     }
@@ -274,57 +186,28 @@ export const GroceryService = {
       throw createHttpError(404, 'Không tìm thấy danh sách mua sắm');
     }
 
-    const ingredientIds = data.ingredients;
-    const uniqueIds = new Set(ingredientIds);
-    if (ingredientIds.length !== uniqueIds.size) {
+    const uniqueIds = new Set(data.ingredients);
+    if (data.ingredients.length !== uniqueIds.size) {
       throw createHttpError(
         400,
         'Không được có nguyên liệu trùng lặp trong danh sách'
       );
     }
 
-    ingredientIds.forEach(id => {
-      if (!validateObjectId(id)) {
-        throw createHttpError(400, `ID nguyên liệu không hợp lệ: ${id}`);
-      }
-    });
+    const ingredientDetails = await resolveIngredientSnapshots(
+      data.ingredients
+    );
 
-    const ingredients = await IngredientModel.find({
-      _id: { $in: ingredientIds }
-    });
-
-    if (ingredients.length !== ingredientIds.length) {
-      const foundIds = new Set(ingredients.map(item => item._id.toString()));
-      const missingId = ingredientIds.find(id => !foundIds.has(id));
-      throw createHttpError(
-        404,
-        `Không tìm thấy nguyên liệu với ID: ${missingId}`
+    for (const ing of ingredientDetails) {
+      const existing = grocery.ingredients.find(
+        item => item.ingredientId?.toString() === ing.ingredientId
       );
-    }
-
-    const ingredientDetails = ingredients.map(ingredient => ({
-      ingredientId: ingredient._id.toString(),
-      name: ingredient.name,
-      image: ingredient.image ?? '',
-      isPurchased: false
-    }));
-
-    // Check for duplicates and merge or add new ingredients
-    for (const newIng of ingredientDetails) {
-      const existingIndex = grocery.ingredients.findIndex(
-        item => item.ingredientId?.toString() === newIng.ingredientId.toString()
-      );
-
-      if (existingIndex !== -1) {
-        if (newIng.isPurchased !== undefined) {
-          grocery.ingredients[existingIndex].isPurchased = newIng.isPurchased;
-        }
+      if (existing) {
+        existing.isPurchased = ing.isPurchased;
       } else {
-        // Add new ingredient
-        grocery.ingredients.push(newIng);
+        grocery.ingredients.push(ing);
       }
     }
-
     await grocery.save();
 
     return grocery;
@@ -334,12 +217,8 @@ export const GroceryService = {
     userId: string,
     groceryId: string,
     ingredientId: string,
-    data: UpdateIngredientInGroceryRequest
+    data: UpdateGroceryIngredientRequest
   ) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-    }
-
     if (!validateObjectId(groceryId)) {
       throw createHttpError(400, 'Định dạng ID danh sách mua sắm không hợp lệ');
     }
@@ -380,12 +259,8 @@ export const GroceryService = {
   removeIngredientsInGrocery: async (
     userId: string,
     groceryId: string,
-    data: RemoveIngredientsRequest
+    data: RemoveGroceryIngredientRequest
   ) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-    }
-
     if (!validateObjectId(groceryId)) {
       throw createHttpError(400, 'Định dạng ID danh sách mua sắm không hợp lệ');
     }
@@ -399,24 +274,20 @@ export const GroceryService = {
       throw createHttpError(404, 'Không tìm thấy danh sách mua sắm');
     }
 
-    // Check for duplicate ingredientId in request
-    const uniqueIds = new Set(data.ingredients);
-    if (data.ingredients.length !== uniqueIds.size) {
-      throw createHttpError(
-        400,
-        'Không được có ID nguyên liệu trùng lặp trong danh sách'
-      );
-    }
+    const initialCount = grocery.ingredients.length;
 
-    // Remove ingredients by filtering
-    for (let i = grocery.ingredients.length - 1; i >= 0; i--) {
-      if (
-        data.ingredients.includes(
-          grocery.ingredients[i].ingredientId?.toString() || ''
-        )
-      ) {
-        grocery.ingredients.splice(i, 1);
-      }
+    grocery.set(
+      'ingredients',
+      grocery.ingredients.filter(
+        ing => !data.ingredients.includes(ing.ingredientId?.toString() ?? '')
+      )
+    );
+
+    if (grocery.ingredients.length === initialCount) {
+      throw createHttpError(
+        404,
+        'Không tìm thấy nguyên liệu nào trong danh sách mua sắm'
+      );
     }
 
     await grocery.save();
@@ -424,3 +295,100 @@ export const GroceryService = {
     return grocery;
   }
 };
+
+async function resolveIngredientSnapshots(
+  ingredientIds: string[]
+): Promise<GroceryIngredient[]> {
+  for (const id of ingredientIds) {
+    if (!validateObjectId(id)) {
+      throw createHttpError(400, `ID nguyên liệu không hợp lệ: ${id}`);
+    }
+  }
+
+  const ingredients = await IngredientModel.find({
+    _id: { $in: ingredientIds }
+  });
+
+  if (ingredients.length !== ingredientIds.length) {
+    const foundIds = new Set(ingredients.map(item => item._id.toString()));
+    const missingId = ingredientIds.find(id => !foundIds.has(id));
+    throw createHttpError(
+      404,
+      `Không tìm thấy nguyên liệu với ID: ${missingId}`
+    );
+  }
+
+  return ingredients.map(ingredient => ({
+    ingredientId: ingredient._id.toString(),
+    name: ingredient.name,
+    image: ingredient.image ?? '',
+    isPurchased: false
+  }));
+}
+
+async function buildIngredientsFromDates(
+  userId: string,
+  dates: Date[]
+): Promise<GroceryIngredient[]> {
+  if (dates.length === 0) return [];
+
+  const schedules = await ScheduleModel.find({
+    'user._id': userId,
+    $or: buildDateRangeFilters(dates)
+  }).select({ meals: 1 });
+
+  const dishIds = collectDishIds(schedules);
+  if (dishIds.length === 0) return [];
+
+  const dishes = await DishModel.find({
+    _id: { $in: dishIds }
+  }).select({ ingredients: 1 });
+
+  return collectIngredientSnapshots(dishes);
+}
+
+function buildDateRangeFilters(dates: Date[]) {
+  return dates.map(date => {
+    const start = new Date(date);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(date);
+    end.setHours(23, 59, 59, 999);
+    return { date: { $gte: start, $lte: end } };
+  });
+}
+
+function collectDishIds(schedules: HydratedDocument<Schedule>[]): string[] {
+  const dishIds = new Set<string>();
+
+  const allDishes = schedules.flatMap(
+    schedule => schedule.meals?.flatMap(meal => meal.dishes ?? []) ?? []
+  );
+
+  for (const dish of allDishes) {
+    const dishId = dish.dishId?.toString();
+    if (dishId) dishIds.add(dishId);
+  }
+  return Array.from(dishIds);
+}
+
+function collectIngredientSnapshots(
+  dishes: HydratedDocument<Dish>[]
+): GroceryIngredient[] {
+  const ingredientMap = new Map<string, GroceryIngredient>();
+  const allIngredients = dishes.flatMap(dish => dish.ingredients ?? []);
+  for (const ingredient of allIngredients) {
+    const ingredientId = ingredient.ingredientId?.toString();
+    const shouldAddIngredient =
+      ingredientId && !ingredientMap.has(ingredientId);
+
+    if (shouldAddIngredient) {
+      ingredientMap.set(ingredientId, {
+        ingredientId,
+        name: ingredient.name,
+        image: ingredient.image ?? '',
+        isPurchased: false
+      });
+    }
+  }
+  return Array.from(ingredientMap.values());
+}

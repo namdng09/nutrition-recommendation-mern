@@ -78,6 +78,14 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/groceries/page'))
           },
           {
+            path: 'payment/success',
+            Component: lazy(() => import('~/app/payment/success/page'))
+          },
+          {
+            path: 'payment/cancel',
+            Component: lazy(() => import('~/app/payment/error/page'))
+          },
+          {
             path: 'profile',
             Component: () => (
               <PrivateRoute
