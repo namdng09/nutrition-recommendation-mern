@@ -265,5 +265,46 @@ export const UserController = {
       .json(
         ApiResponse.success('Nguyên liệu bị chặn được xóa thành công', result)
       );
+  },
+
+  uploadCertificate: async (req: Request, res: Response) => {
+    const userId = req.user?._id.toString();
+    const data = req.body;
+    const files = req.files as Record<string, Express.Multer.File[]>;
+    const file =
+      files?.['certificate']?.[0] ??
+      (req.file as Express.Multer.File | undefined);
+
+    if (!file) {
+      res.status(400).json(ApiResponse.error('Vui lòng tải lên tệp chứng chỉ'));
+      return;
+    }
+
+    const result = await UserService.uploadCertificate(userId, data, file);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Tải lên chứng chỉ thành công', result));
+  },
+
+  approveCertificate: async (req: Request, res: Response) => {
+    const userId = req.params.id;
+
+    const result = await UserService.approveCertificate(userId);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Phê duyệt chứng chỉ thành công', result));
+  },
+
+  rejectCertificate: async (req: Request, res: Response) => {
+    const userId = req.params.id;
+    const data = req.body;
+
+    const result = await UserService.rejectCertificate(userId, data);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Từ chối chứng chỉ thành công', result));
   }
 };

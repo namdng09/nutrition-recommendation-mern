@@ -1,5 +1,6 @@
 import {
   Activity,
+  Award,
   Calendar,
   CircleOff,
   Heart,
@@ -8,7 +9,7 @@ import {
   User,
   Utensils
 } from 'lucide-react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router';
 
 import {
@@ -24,14 +25,16 @@ import {
   SidebarMenuItem,
   SidebarRail
 } from '~/components/ui/sidebar';
+import { ROLE } from '~/constants/role';
 import { logout } from '~/store/features/auth-slice';
 
 export function ProfileSidebar({ ...props }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+  const user = useSelector(state => state.auth.user);
 
-  const navItems = [
+  const baseNavItems = [
     {
       title: 'Thông tin cá nhân',
       url: '/profile',
@@ -73,6 +76,19 @@ export function ProfileSidebar({ ...props }) {
       icon: Calendar
     }
   ];
+
+  const nutritionistNavItems =
+    user?.role === ROLE.NUTRITIONIST
+      ? [
+          {
+            title: 'Chứng chỉ',
+            url: '/profile/certificate',
+            icon: Award
+          }
+        ]
+      : [];
+
+  const navItems = [...baseNavItems, ...nutritionistNavItems];
 
   const handleLogout = async () => {
     await dispatch(logout());

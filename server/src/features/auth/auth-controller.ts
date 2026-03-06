@@ -53,10 +53,14 @@ export const AuthController = {
 
   signUp: async (req: Request, res: Response) => {
     const signUpData = req.body;
-    const avatar = req.file;
+    const files = req.files as
+      | Record<string, Express.Multer.File[]>
+      | undefined;
+    const avatar = files?.['avatar']?.[0];
+    const certificate = files?.['certificate']?.[0];
 
     const { accessToken, refreshToken, hasOnboarded } =
-      await AuthService.signUp(signUpData, avatar);
+      await AuthService.signUp(signUpData, avatar, certificate);
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,

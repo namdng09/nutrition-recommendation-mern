@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { ROLE } from '~/shared/constants/role';
+
 export const loginRequestSchema = z.object({
   email: z.email('Email không hợp lệ'),
   password: z
@@ -27,7 +29,13 @@ export const signUpRequestSchema = z.object({
   avatar: z.file().optional(),
   password: z
     .string('Mật khẩu là bắt buộc')
-    .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
+    .min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+  role: z
+    .enum([ROLE.USER, ROLE.NUTRITIONIST], {
+      error: 'Vai trò không hợp lệ'
+    })
+    .optional()
+    .default(ROLE.USER)
 });
 
 export type SignUpRequest = z.infer<typeof signUpRequestSchema>;

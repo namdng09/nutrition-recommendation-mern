@@ -7,7 +7,11 @@ import {
   parseFormData,
   validate
 } from '~/shared/middlewares';
-import { asyncHandler, handleSingleImageUpload } from '~/shared/utils';
+import {
+  asyncHandler,
+  handleCertificateUpload,
+  handleSingleImageUpload
+} from '~/shared/utils';
 
 import { UserController } from './user-controller';
 import {
@@ -20,13 +24,15 @@ import {
   favoriteIngredientRequestSchema,
   nutritionTargetRequestSchema,
   onboardingRequestSchema,
+  rejectCertificateRequestSchema,
   updateAllergensSchema,
   updateNutritionTargetSchema,
   updatePhysicalStatsSchema,
   updateProfileSchema,
   updateRestrictionsSchema,
   updateScheduleSettingsSchema,
-  updateUserRequestSchema
+  updateUserRequestSchema,
+  uploadCertificateRequestSchema
 } from './user-dto';
 
 const router = Router();
@@ -199,6 +205,31 @@ router.delete(
   parseFormData,
   validate(blockIngredientRequestSchema.shape),
   asyncHandler(UserController.removeBlockIngredient)
+);
+
+router.post(
+  '/me/certificate',
+  authenticate(),
+  authorize([ROLE.NUTRITIONIST]),
+  handleCertificateUpload('certificate'),
+  validate(uploadCertificateRequestSchema.shape),
+  asyncHandler(UserController.uploadCertificate)
+);
+
+router.put(
+  '/:id/certificate/approve',
+  authenticate(),
+  authorize([ROLE.ADMIN]),
+  asyncHandler(UserController.approveCertificate)
+);
+
+router.put(
+  '/:id/certificate/reject',
+  authenticate(),
+  authorize([ROLE.ADMIN]),
+  parseFormData,
+  validate(rejectCertificateRequestSchema.shape),
+  asyncHandler(UserController.rejectCertificate)
 );
 
 router.get(
