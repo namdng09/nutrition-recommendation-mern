@@ -1,6 +1,6 @@
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
-import type { HydratedDocument } from 'mongoose';
+import type { HydratedDocument, PaginateResult } from 'mongoose';
 
 import { ROLE } from '~/shared/constants/role';
 import {
@@ -14,7 +14,6 @@ import type { Dish } from '~/shared/database/models/dish-model';
 import {
   buildPaginateOptions,
   deleteImage,
-  type PaginateResponse,
   uploadImage,
   validateObjectId
 } from '~/shared/utils';
@@ -60,7 +59,7 @@ export const DishService = {
   viewDishes: async (
     parsed: QueryOptions,
     userId?: string
-  ): Promise<PaginateResponse<Dish>> => {
+  ): Promise<PaginateResult<Dish>> => {
     const options = buildPaginateOptions(parsed);
     let { filter } = parsed;
 
@@ -85,14 +84,12 @@ export const DishService = {
 
     const result = await DishModel.paginate(filter, options);
 
-    const paginatedResult = result as unknown as PaginateResponse<Dish>;
-
-    paginatedResult.docs = paginatedResult.docs.map(doc => ({
+    result.docs = result.docs.map(doc => ({
       ...((doc as any).toObject?.() ?? doc),
       isFavorited: favoriteDishIds.has(String((doc as any)._id))
     })) as any;
 
-    return paginatedResult;
+    return result;
   },
 
   viewDishDetail: async (id: string, userId?: string) => {
