@@ -154,7 +154,40 @@ export const AuthService = {
             status: CERTIFICATE_STATUS.PENDING
           }
         });
+        sendMail({
+          to: newUser.email,
+          subject: 'Chứng chỉ của bạn đang chờ duyệt',
+          template: 'certificate-pending',
+          templateData: {
+            name: newUser.name,
+            certificateName: certName
+          }
+        }).catch(err => {
+          console.error(
+            'Không thể gửi email thông báo chờ duyệt chứng chỉ:',
+            err
+          );
+        });
       }
+    }
+
+    // Send welcome email for all new registrations
+    if (data.role === ROLE.NUTRITIONIST) {
+      sendMail({
+        to: newUser.email,
+        subject: 'Chào mừng bạn đến với PNRS',
+        template: 'nutritionist-welcome',
+        templateData: {
+          name: newUser.name,
+          email: newUser.email,
+          loginUrl: `${process.env.CLIENT_URL}/auth/sign-in`
+        }
+      }).catch(err => {
+        console.error(
+          'Không thể gửi email chào mừng chuyên gia dinh dưỡng:',
+          err
+        );
+      });
     }
 
     const { accessToken, refreshToken } = generateToken({

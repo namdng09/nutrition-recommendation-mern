@@ -359,9 +359,13 @@ export const UserService = {
       subject: 'Chào mừng bạn đến với nền tảng của chúng tôi',
       template: 'create-user',
       templateData: {
+        name: newUser.name,
         email: newUser.email,
-        password
+        password,
+        loginUrl: `${process.env.CLIENT_URL}/auth/sign-in`
       }
+    }).catch(err => {
+      console.error('Không thể gửi email chào mừng người dùng:', err);
     });
 
     return newUser;
@@ -683,6 +687,18 @@ export const UserService = {
     } as any;
 
     await user.save();
+
+    sendMail({
+      to: user.email,
+      subject: 'Chứng chỉ của bạn đang chờ duyệt',
+      template: 'certificate-pending',
+      templateData: {
+        name: user.name,
+        certificateName: data.certificateName
+      }
+    }).catch(err => {
+      console.error('Không thể gửi email thông báo chờ duyệt chứng chỉ:', err);
+    });
 
     return user;
   },
