@@ -318,7 +318,12 @@ const CreateIngredientForm = () => {
                   <FormItem>
                     <FormLabel className='text-xs'>Nhóm nguyên liệu</FormLabel>
                     <div className='space-y-3'>
-                      <Select onValueChange={handleAddCategory}>
+                      <Select
+                        onValueChange={value => {
+                          handleAddCategory(value);
+                        }}
+                        value=''
+                      >
                         <FormControl>
                           <SelectTrigger className='h-9'>
                             <SelectValue placeholder='Chọn danh mục' />
@@ -369,7 +374,12 @@ const CreateIngredientForm = () => {
                   <FormItem>
                     <FormLabel className='text-xs'>Chất gây dị ứng</FormLabel>
                     <div className='space-y-3'>
-                      <Select onValueChange={handleAddAllergen}>
+                      <Select
+                        onValueChange={value => {
+                          handleAddAllergen(value);
+                        }}
+                        value=''
+                      >
                         <FormControl>
                           <SelectTrigger className='h-9'>
                             <SelectValue placeholder='Chọn chất gây dị ứng...' />
