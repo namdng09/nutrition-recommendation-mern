@@ -1,190 +1,165 @@
-import mongoose from 'mongoose';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi
-} from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { createIngredientRequestSchema } from '~/features/ingredients/ingredient-dto';
 import { IngredientService } from '~/features/ingredients/ingredient-service';
 import { INGREDIENT_CATEGORY } from '~/shared/constants/ingredient-category';
 import { UNIT } from '~/shared/constants/unit';
 import { IngredientModel } from '~/shared/database/models';
+import { uploadImage } from '~/shared/utils';
 
-// Mock Cloudinary upload
-vi.mock('~/shared/utils/cloudinary', () => ({
-  uploadImage: vi.fn().mockResolvedValue({
-    success: true,
-    data: {
-      secure_url:
-        'https://res.cloudinary.com/test/image/upload/v1234567890/test-image.jpg',
-      public_id: 'test-image',
-      format: 'jpg'
-    }
-  }),
-  deleteImage: vi.fn().mockResolvedValue({ success: true })
+vi.mock('~/shared/database/models', () => ({
+  IngredientModel: {
+    findOne: vi.fn(),
+    create: vi.fn()
+  }
 }));
 
-// Import mocked functions to customize per test
-import * as cloudinaryUtils from '~/shared/utils/cloudinary';
+vi.mock('~/shared/utils', async importOriginal => {
+  const actual = await importOriginal<typeof import('~/shared/utils')>();
+  return {
+    ...actual,
+    uploadImage: vi.fn(),
+    deleteImage: vi.fn()
+  };
+});
+
+const mockFindOne = vi.mocked(IngredientModel.findOne);
+const mockCreate = vi.mocked(IngredientModel.create);
+const mockUploadImage = vi.mocked(uploadImage);
+
+const validData = {
+  name: 'Thịt bò',
+  description: 'Thịt bò Úc',
+  categories: [INGREDIENT_CATEGORY.MEAT],
+  baseUnit: { amount: 100, unit: UNIT.GRAM },
+  allergens: []
+};
 
 describe('IngredientService.createIngredient', () => {
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe('validation', () => {
+    // Tests DTO schema directly — no service, no DB involved
+
+    it('should fail when name is missing', () => {
+      const { name: _, ...data } = validData;
+      const result = createIngredientRequestSchema.safeParse(data);
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Tên nguyên liệu không hợp lệ'
       );
-    }
-  });
+    });
 
-  beforeEach(async () => {
-    // Clean up database before each test
-    await IngredientModel.deleteMany({});
+    it('should fail when name is not a string', () => {
+      const result = createIngredientRequestSchema.safeParse({
+        ...validData,
+        name: 1234
+      });
 
-    // Reset mocks
-    vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValue({
-      success: true,
-      data: {
-        secure_url:
-          'https://res.cloudinary.com/test/image/upload/v1234567890/test-image.jpg',
-        public_id: 'test-image',
-        format: 'jpg'
-      } as any
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Tên nguyên liệu không hợp lệ'
+      );
+    });
+
+    it('should fail when name is too short', () => {
+      const result = createIngredientRequestSchema.safeParse({
+        ...validData,
+        name: 'A'
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Tên nguyên liệu phải có ít nhất 2 ký tự'
+      );
     });
   });
 
-  afterEach(async () => {
-    // Clean up after each test
-    await IngredientModel.deleteMany({});
-  });
+  describe('business logic', () => {
+    it('should throw 409 when ingredient name already exists', async () => {
+      mockFindOne.mockResolvedValue({ name: validData.name } as any);
 
-  afterAll(async () => {
-    // Close connection
-    await mongoose.connection.close();
-  });
-
-  // Branch - Happy case
-  it('should create ingredient successfully', async () => {
-    const ingredientData = {
-      name: 'Thịt bò',
-      description: 'Thịt bò Úc',
-      categories: [INGREDIENT_CATEGORY.MEAT],
-      baseUnit: { amount: 100, unit: UNIT.GRAM },
-      allergens: []
-    };
-
-    const fakeImage = {
-      buffer: Buffer.from('fake-image-data'),
-      originalname: 'test-image.jpg'
-    } as Express.Multer.File;
-
-    const ingredient = await IngredientService.createIngredient(
-      ingredientData,
-      fakeImage
-    );
-
-    expect(ingredient).toBeDefined();
-    expect(ingredient.name).toBe('Thịt bò');
-    expect(ingredient.image).toBeDefined();
-    expect(ingredient.image).toContain('https://res.cloudinary.com');
-  });
-
-  // Branch - Missing name
-  it('should throw error when name is missing', async () => {
-    const ingredientData = {
-      description: 'Cà chua tươi',
-      categories: [INGREDIENT_CATEGORY.VEGETABLES],
-      baseUnit: { amount: 100, unit: UNIT.GRAM },
-      allergens: []
-    };
-
-    await expect(
-      IngredientService.createIngredient(ingredientData as any, undefined)
-    ).rejects.toThrow('Tên nguyên liệu không hợp lệ');
-  });
-
-  // Branch - Invalid name type
-  it('should throw error when name is not a string', async () => {
-    const ingredientData = {
-      name: 1234,
-      description: 'Cà chua tươi',
-      categories: [INGREDIENT_CATEGORY.VEGETABLES],
-      baseUnit: { amount: 100, unit: UNIT.GRAM },
-      allergens: []
-    };
-
-    await expect(
-      IngredientService.createIngredient(ingredientData as any, undefined)
-    ).rejects.toThrow('Tên nguyên liệu không hợp lệ');
-  });
-
-  // Branch - Name too short
-  it('should throw error when name is too short', async () => {
-    const ingredientData = {
-      name: 'A',
-      description: 'Cà chua tươi',
-      categories: [INGREDIENT_CATEGORY.VEGETABLES],
-      baseUnit: { amount: 100, unit: UNIT.GRAM },
-      allergens: []
-    };
-
-    await expect(
-      IngredientService.createIngredient(ingredientData as any, undefined)
-    ).rejects.toThrow('Tên nguyên liệu phải có ít nhất 2 ký tự');
-  });
-
-  // Branch - Image upload failure
-  it('should throw error when image upload fails', async () => {
-    // Mock uploadImage to fail
-    vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValueOnce({
-      success: false,
-      data: null
-    } as any);
-
-    const ingredientData = {
-      name: 'Cá hồi',
-      description: 'Cá hồi Na Uy',
-      categories: [INGREDIENT_CATEGORY.SEAFOOD],
-      baseUnit: { amount: 100, unit: UNIT.GRAM },
-      allergens: []
-    };
-
-    const fakeImage = {
-      buffer: Buffer.from('fake-image-data'),
-      originalname: 'test-image.jpg'
-    } as Express.Multer.File;
-
-    await expect(
-      IngredientService.createIngredient(ingredientData, fakeImage)
-    ).rejects.toThrow('Tải ảnh lên thất bại');
-  });
-
-  // Branch - Duplicate name
-  it('should throw error when ingredient name already exists', async () => {
-    await IngredientModel.create({
-      name: 'Thịt gà',
-      description: 'Thịt gà tươi',
-      categories: [INGREDIENT_CATEGORY.MEAT],
-      baseUnit: { amount: 100, unit: UNIT.GRAM },
-      allergens: []
+      await expect(
+        IngredientService.createIngredient(validData)
+      ).rejects.toMatchObject({
+        status: 409,
+        message: 'Nguyên liệu với tên này đã tồn tại'
+      });
     });
 
-    // Create another ingredient with same name
-    const ingredientData = {
-      name: 'Thịt gà',
-      description: 'Thịt gà khác',
-      categories: [INGREDIENT_CATEGORY.MEAT],
-      baseUnit: { amount: 100, unit: UNIT.GRAM },
-      allergens: []
-    };
+    it('should create ingredient successfully without image', async () => {
+      mockFindOne.mockResolvedValue(null);
+      const mockIngredient = {
+        _id: { toString: () => 'abc123' },
+        ...validData
+      };
+      mockCreate.mockResolvedValue(mockIngredient as any);
 
-    await expect(
-      IngredientService.createIngredient(ingredientData, undefined)
-    ).rejects.toThrow('Nguyên liệu với tên này đã tồn tại');
+      const result = await IngredientService.createIngredient(validData);
+
+      expect(result).toEqual(mockIngredient);
+      expect(mockUploadImage).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('system', () => {
+    it('should throw 500 when image upload fails', async () => {
+      mockFindOne.mockResolvedValue(null);
+      mockCreate.mockResolvedValue({
+        _id: { toString: () => 'abc123' },
+        ...validData,
+        save: vi.fn()
+      } as any);
+      mockUploadImage.mockResolvedValue({ success: false, data: null } as any);
+
+      const fakeImage = {
+        buffer: Buffer.from('fake-image-data')
+      } as Express.Multer.File;
+
+      await expect(
+        IngredientService.createIngredient(validData, fakeImage)
+      ).rejects.toMatchObject({
+        status: 500,
+        message: 'Tải ảnh lên thất bại'
+      });
+    });
+
+    it('should create ingredient successfully with image', async () => {
+      const mockSave = vi.fn();
+      const mockIngredient = {
+        _id: { toString: () => 'abc123' },
+        ...validData,
+        image: '',
+        save: mockSave
+      };
+
+      mockFindOne.mockResolvedValue(null);
+      mockCreate.mockResolvedValue(mockIngredient as any);
+      mockUploadImage.mockResolvedValue({
+        success: true,
+        data: {
+          secure_url:
+            'https://res.cloudinary.com/test/image/upload/v1234567890/test-image.jpg'
+        }
+      } as any);
+
+      const fakeImage = {
+        buffer: Buffer.from('fake-image-data')
+      } as Express.Multer.File;
+
+      const result = await IngredientService.createIngredient(
+        validData,
+        fakeImage
+      );
+
+      expect(mockIngredient.image).toBe(
+        'https://res.cloudinary.com/test/image/upload/v1234567890/test-image.jpg'
+      );
+      expect(mockSave).toHaveBeenCalled();
+      expect(result).toEqual(mockIngredient);
+    });
   });
 });
