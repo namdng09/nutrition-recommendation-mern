@@ -311,12 +311,42 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/admin/manage-dishes/page'))
           },
           {
+            path: 'manage-dishes/:id',
+            Component: lazy(() => import('~/app/admin/manage-dishes/[id]/page'))
+          },
+
+          //admin manage ingredients
+          {
             path: 'manage-ingredients/',
             Component: lazy(() => import('~/app/admin/manage-ingredients/page'))
           },
           {
+            path: 'manage-ingredients/:id',
+            Component: lazy(
+              () => import('~/app/admin/manage-ingredients/[id]/page')
+            )
+          },
+
+          //admin manage collections
+          {
             path: 'manage-collections/',
             Component: lazy(() => import('~/app/admin/manage-collections/page'))
+          },
+          {
+            path: 'manage-collections/:id',
+            Component: lazy(
+              () => import('~/app/admin/manage-collections/[id]/page')
+            )
+          },
+
+          //admin manage posts
+          {
+            path: 'manage-posts/',
+            Component: lazy(() => import('~/app/admin/manage-posts/page'))
+          },
+          {
+            path: 'manage-posts/:id',
+            Component: lazy(() => import('~/app/admin/manage-posts/[id]/page'))
           }
         ]
       },

@@ -61,6 +61,11 @@ export function AdminSidebar({ ...props }) {
           title: 'Bộ sưu tập',
           url: '/admin/manage-collections',
           icon: Package
+        },
+        {
+          title: 'Bài viết',
+          url: '/admin/manage-posts',
+          icon: StickyNote
         }
       ]
     }

@@ -52,7 +52,14 @@ const AdminLayout = () => {
     segments.forEach((segment, index) => {
       currentPath += `/${segment}`;
       const isMongoId = /^[0-9a-fA-F]{24}$/.test(segment);
+
       if (isMongoId) {
+        // Nếu là MongoDB ID, thêm breadcrumb "Chi tiết"
+        items.push({
+          title: 'Chi tiết',
+          href: currentPath,
+          isLast: true
+        });
         return;
       }
 
@@ -66,10 +73,7 @@ const AdminLayout = () => {
           href: currentPath,
           isLast: false
         });
-      } else if (
-        index === segments.length - 1 ||
-        (isMongoId && index === segments.length - 2)
-      ) {
+      } else if (index === segments.length - 1) {
         items.push({
           title: title,
           href: currentPath,
