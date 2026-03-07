@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-export const signUpSchema = yup.object({
+const baseSignUpSchema = {
   email: yup
     .string()
     .email('Sai định dạng email')
@@ -25,4 +25,28 @@ export const signUpSchema = yup.object({
       if (!value || !value[0]) return true;
       return value[0].type.startsWith('image/');
     })
+};
+
+export const userSignUpSchema = yup.object(baseSignUpSchema);
+
+export const nutritionistSignUpSchema = yup.object({
+  ...baseSignUpSchema,
+  certificateName: yup.string().required('Vui lòng nhập tên chứng chỉ'),
+  certificate: yup
+    .mixed()
+    .required('Vui lòng tải lên chứng chỉ của bạn')
+    .test('fileSize', 'Dung lượng file quá lớn (tối đa 10MB)', value => {
+      if (!value || !value[0]) return false;
+      return value[0].size <= 10 * 1024 * 1024;
+    })
+    .test('fileType', 'Chỉ cho phép file hình ảnh hoặc PDF', value => {
+      if (!value || !value[0]) return false;
+      return (
+        value[0].type.startsWith('image/') ||
+        value[0].type === 'application/pdf'
+      );
+    })
 });
+
+// Keep legacy export for backwards compatibility
+export const signUpSchema = userSignUpSchema;

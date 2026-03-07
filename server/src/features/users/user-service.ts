@@ -4,8 +4,10 @@ import createHttpError from 'http-errors';
 import type { HydratedDocument } from 'mongoose';
 
 import { ACTIVITY_LEVEL } from '~/shared/constants/activity-level';
+import { CERTIFICATE_STATUS } from '~/shared/constants/certificate-status';
 import { DIET } from '~/shared/constants/diet';
 import { GENDER } from '~/shared/constants/gender';
+import { ROLE } from '~/shared/constants/role';
 import { USER_TARGET } from '~/shared/constants/user-target';
 import {
   AuthModel,
@@ -18,11 +20,13 @@ import type { User } from '~/shared/database/models/user-model';
 import {
   buildPaginateOptions,
   deleteAvatar,
+  deleteCertificate,
   generateToken,
   hashPassword,
   type PaginateResponse,
   sendMail,
   uploadAvatar,
+  uploadCertificate,
   validateObjectId
 } from '~/shared/utils';
 
@@ -30,13 +34,15 @@ import {
   CreateUserRequest,
   NutritionTargetRequest,
   OnboardingRequest,
+  RejectCertificateRequest,
   UpdateAllergens,
   UpdateNutritionTarget,
   UpdatePhysicalStats,
   UpdateProfile,
   UpdateRestrictions,
   UpdateScheduleSettings,
-  UpdateUserRequest
+  UpdateUserRequest,
+  UploadCertificateRequest
 } from './user-dto';
 
 type UpdateProfileRequest =
@@ -353,9 +359,13 @@ export const UserService = {
       subject: 'Chào mừng bạn đến với nền tảng của chúng tôi',
       template: 'create-user',
       templateData: {
+        name: newUser.name,
         email: newUser.email,
-        password
+        password,
+        loginUrl: `${process.env.CLIENT_URL}/auth/sign-in`
       }
+    }).catch(err => {
+      console.error('Không thể gửi email chào mừng người dùng:', err);
     });
 
     return newUser;
@@ -372,6 +382,12 @@ export const UserService = {
     }
 
     return result as unknown as PaginateResponse<User>;
+  },
+
+  pendingCertificatesCount: async (): Promise<number> => {
+    return UserModel.countDocuments({
+      'certificate.status': CERTIFICATE_STATUS.PENDING
+    });
   },
 
   viewProfile: async (id: string) => {
@@ -628,6 +644,140 @@ export const UserService = {
     ]);
 
     return result;
+  },
+
+  uploadCertificate: async (
+    userId: string,
+    data: UploadCertificateRequest,
+    file: Express.Multer.File
+  ) => {
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      throw createHttpError(404, 'Không tìm thấy người dùng');
+    }
+
+    if (user.role !== ROLE.NUTRITIONIST) {
+      throw createHttpError(
+        403,
+        'Chỉ chuyên gia dinh dưỡng mới có thể tải lên chứng chỉ'
+      );
+    }
+
+    // Delete old rejected certificate from Cloudinary before re-uploading
+    if (
+      user.certificate &&
+      user.certificate.status === CERTIFICATE_STATUS.REJECTED
+    ) {
+      await deleteCertificate(userId);
+    }
+
+    const uploadResult = await uploadCertificate(file.buffer, userId);
+
+    if (!uploadResult.success || !uploadResult.data) {
+      throw createHttpError(500, 'Không thể tải lên chứng chỉ');
+    }
+
+    user.certificate = {
+      name: data.certificateName,
+      fileUrl: uploadResult.data.secure_url,
+      publicId: uploadResult.data.public_id,
+      status: CERTIFICATE_STATUS.PENDING,
+      rejectionReason: undefined
+    } as any;
+
+    await user.save();
+
+    sendMail({
+      to: user.email,
+      subject: 'Chứng chỉ của bạn đang chờ duyệt',
+      template: 'certificate-pending',
+      templateData: {
+        name: user.name,
+        certificateName: data.certificateName
+      }
+    }).catch(err => {
+      console.error('Không thể gửi email thông báo chờ duyệt chứng chỉ:', err);
+    });
+
+    return user;
+  },
+
+  approveCertificate: async (userId: string) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
+    }
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      throw createHttpError(404, 'Không tìm thấy người dùng');
+    }
+
+    if (!user.certificate) {
+      throw createHttpError(404, 'Người dùng chưa có chứng chỉ');
+    }
+
+    if (user.certificate.status === CERTIFICATE_STATUS.APPROVED) {
+      throw createHttpError(400, 'Chứng chỉ đã được phê duyệt trước đó');
+    }
+
+    user.certificate.status = CERTIFICATE_STATUS.APPROVED;
+    user.certificate.rejectionReason = undefined as any;
+    await user.save();
+
+    sendMail({
+      to: user.email,
+      subject: 'Chứng chỉ của bạn đã được phê duyệt',
+      template: 'certificate-approved',
+      templateData: {
+        name: user.name,
+        certificateName: user.certificate.name
+      }
+    }).catch(err => {
+      console.error('Không thể gửi email phê duyệt chứng chỉ:', err);
+    });
+
+    return user;
+  },
+
+  rejectCertificate: async (userId: string, data: RejectCertificateRequest) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
+    }
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      throw createHttpError(404, 'Không tìm thấy người dùng');
+    }
+
+    if (!user.certificate) {
+      throw createHttpError(404, 'Người dùng chưa có chứng chỉ');
+    }
+
+    if (user.certificate.status === CERTIFICATE_STATUS.REJECTED) {
+      throw createHttpError(400, 'Chứng chỉ đã bị từ chối trước đó');
+    }
+
+    user.certificate.status = CERTIFICATE_STATUS.REJECTED;
+    user.certificate.rejectionReason = data.rejectionReason;
+    await user.save();
+
+    sendMail({
+      to: user.email,
+      subject: 'Chứng chỉ của bạn bị từ chối',
+      template: 'certificate-rejected',
+      templateData: {
+        name: user.name,
+        certificateName: user.certificate.name,
+        rejectionReason: data.rejectionReason
+      }
+    }).catch(err => {
+      console.error('Không thể gửi email từ chối chứng chỉ:', err);
+    });
+
+    return user;
   }
 };
 

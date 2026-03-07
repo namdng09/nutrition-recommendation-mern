@@ -2,6 +2,7 @@ export const QUERY_KEYS = {
   PROFILE: ['profile'],
   USERS: ['users'],
   USER: id => ['user', id],
+  PENDING_CERTIFICATES_COUNT: ['pending-certificates-count'],
   INGREDIENTS: ['ingredients'],
   INGREDIENT: id => ['ingredient', id],
   COLLECTIONS: ['collections'],
