@@ -5,7 +5,8 @@ import {
   HiOutlineDotsVertical,
   HiOutlinePhotograph,
   HiOutlineTrash,
-  HiOutlineUserGroup
+  HiOutlineUserGroup,
+  HiSparkles
 } from 'react-icons/hi';
 import { IoCafe, IoFastFood, IoLeaf, IoMoon, IoSunny } from 'react-icons/io5';
 import { Link } from 'react-router';
@@ -33,7 +34,12 @@ const getMealIcon = (type = '') => {
   return MEAL_CONFIG[key || 'default'].icon;
 };
 
-export default function ScheduleTodayCard({ schedule, selectedDate }) {
+export default function ScheduleTodayCard({
+  schedule,
+  selectedDate,
+  onGenerateAI,
+  isGeneratingAI
+}) {
   const { data: profile } = useProfileForPage();
   const targetCalories = profile?.nutritionTarget?.caloriesTarget ?? undefined;
 
@@ -50,6 +56,34 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
         </div>
 
         <div className='flex items-center gap-3'>
+          <button
+            onClick={onGenerateAI}
+            disabled={isGeneratingAI}
+            className='
+  flex items-center gap-2
+  h-9 px-4
+  rounded-full
+  border border-primary/20
+  bg-primary/10
+  text-primary
+  text-[12px] font-black
+  tracking-tight
+  shadow-sm
+  transition-all
+  hover:bg-primary hover:text-primary-foreground
+  hover:shadow-md
+  active:scale-[0.97]
+  disabled:opacity-60 disabled:cursor-not-allowed
+'
+          >
+            {isGeneratingAI ? (
+              <div className='h-3.5 w-3.5 border-2 border-current border-t-transparent animate-spin rounded-full' />
+            ) : (
+              <HiSparkles size={14} />
+            )}
+            AI gợi ý
+          </button>
+
           {targetCalories && (
             <div className='flex flex-col items-end gap-0.5'>
               <span className='text-[10px] font-black uppercase tracking-[0.2em] text-[#2D6A4F]/60 px-1'>
@@ -110,7 +144,7 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
               {meal.dishes.length > 0 ? (
                 meal.dishes.map(dish => (
                   <div
-                    key={dish._id}
+                    key={dish.dishId}
                     className='relative group flex items-center gap-3'
                   >
                     <DishCheckin
@@ -170,9 +204,7 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
                         dishId={dish.dishId}
                       >
                         <button
-                          className='flex h-7 w-7 items-center justify-center rounded-full 
-             bg-destructive text-white shadow 
-             hover:scale-110 hover:bg-destructive/90 transition'
+                          className='flex h-7 w-7 items-center justify-center rounded-full bg-destructive text-white shadow hover:scale-110 hover:bg-destructive/90 transition'
                           title='Xoá món'
                         >
                           <HiOutlineTrash size={14} />
@@ -189,15 +221,7 @@ export default function ScheduleTodayCard({ schedule, selectedDate }) {
             </div>
 
             {meal.notes && meal.notes.trim() !== '' && (
-              <div
-                className='
-      group mt-4 relative overflow-hidden
-      rounded-[20px] border-2 border-primary/10
-      bg-primary/3
-      px-4 py-3.5
-      transition-all duration-300
-    '
-              >
+              <div className='group mt-4 relative overflow-hidden rounded-[20px] border-2 border-primary/10 bg-primary/3 px-4 py-3.5 transition-all duration-300'>
                 <div className='absolute left-0 top-0 bottom-0 w-1 bg-primary/20' />
 
                 <div className='flex gap-3'>
