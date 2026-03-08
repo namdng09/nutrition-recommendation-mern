@@ -12,8 +12,9 @@ export default function DishModal({
   scheduleId,
   scheduleMeals
 }) {
-  const { data } = useDishes();
+  const { data } = useDishes({ limit: 1000 });
   const dishes = data?.docs || [];
+
   const updateMealsMutation = useUpdateScheduleMeals();
   if (!open) return null;
 
@@ -84,7 +85,8 @@ export default function DishModal({
         <div className='max-h-[500px] overflow-y-auto p-4 space-y-3 custom-scrollbar'>
           {dishes.map(dish => {
             const calories =
-              dish.ingredients?.[0]?.nutrients?.calories?.value ?? 0;
+              dish.nutrition?.nutrients?.find(n => n.label === 'Năng lượng')
+                ?.value ?? 0;
             const totalTime =
               (dish.preparationTime ?? 0) + (dish.cookTime ?? 0);
 
