@@ -161,7 +161,7 @@ ${dishCatalogBlock}
      - servings must be integer between ${
        MEAL_RECOMMENDATION_PROMPT_CONFIG.minServings
      } and ${MEAL_RECOMMENDATION_PROMPT_CONFIG.maxServings}.
-     - Avoid repeating the same dish across many meals unless necessary.
+     - Do not repeat the same dishId across different meals in the same day unless there are not enough unique dishes.
      - Respect allergens, meal constraints, user goal, and nutrition balance.
      - Do NOT invent new fields.
      

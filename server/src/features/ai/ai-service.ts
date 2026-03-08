@@ -350,7 +350,7 @@ const getCandidateDishes = async (
 
   const dishes = await DishModel.find({
     isActive: true,
-    $or: [{ isPublic: true }, { 'user._id': user._id }]
+    isPublic: true
   })
     .select(
       'name image servings nutrition categories nutritionFocus tags preparationTime cookTime ingredients'
@@ -758,39 +758,62 @@ const materializeMeals = ({
       image?: string;
       nutrition: DishNutrition;
     }> = [];
+    const seenInMeal = new Set<string>();
+    const deferredAiDuplicates: Array<{
+      dish: DishCandidate;
+      servings: number;
+    }> = [];
+
+    const addDishToMeal = (dish: DishCandidate, servings: number) => {
+      if (selectedDishRows.length >= dishCount) return;
+      if (seenInMeal.has(dish._id)) return;
+
+      seenInMeal.add(dish._id);
+      usedDishIds.add(dish._id);
+      selectedDishRows.push(toDishResponse(dish, servings));
+    };
 
     if (aiMeal) {
-      const seenInMeal = new Set<string>();
+      const seenInAiMeal = new Set<string>();
+
       for (const item of aiMeal.dishes) {
         if (selectedDishRows.length >= dishCount) break;
-        if (seenInMeal.has(item.dishId)) continue;
+        if (seenInAiMeal.has(item.dishId)) continue;
+        seenInAiMeal.add(item.dishId);
 
         const dish = dishesById.get(item.dishId);
         if (!dish) continue;
 
         const servings = normalizeServings(item.servings, dish.servings);
-        seenInMeal.add(item.dishId);
-        usedDishIds.add(item.dishId);
-        selectedDishRows.push(toDishResponse(dish, servings));
+        if (usedDishIds.has(item.dishId)) {
+          deferredAiDuplicates.push({ dish, servings });
+          continue;
+        }
+
+        addDishToMeal(dish, servings);
       }
     }
 
     if (selectedDishRows.length < dishCount) {
       const fallbackCandidates = candidatesByMealType.get(slot.mealType) ?? [];
 
+      // Phase 1: prefer unused dishes to reduce same-day repetition.
       for (const dish of fallbackCandidates) {
         if (selectedDishRows.length >= dishCount) break;
-        if (selectedDishRows.some(item => item.dishId === dish._id)) continue;
-        if (
-          usedDishIds.has(dish._id) &&
-          fallbackCandidates.length > dishCount
-        ) {
-          continue;
-        }
-        usedDishIds.add(dish._id);
-        selectedDishRows.push(
-          toDishResponse(dish, normalizeServings(1, dish.servings))
-        );
+        if (usedDishIds.has(dish._id)) continue;
+        addDishToMeal(dish, normalizeServings(1, dish.servings));
+      }
+
+      // Phase 2: if still not enough dishes, allow AI duplicates.
+      for (const item of deferredAiDuplicates) {
+        if (selectedDishRows.length >= dishCount) break;
+        addDishToMeal(item.dish, item.servings);
+      }
+
+      // Phase 3: final fallback allows repeats to satisfy dishCount.
+      for (const dish of fallbackCandidates) {
+        if (selectedDishRows.length >= dishCount) break;
+        addDishToMeal(dish, normalizeServings(1, dish.servings));
       }
     }
 
