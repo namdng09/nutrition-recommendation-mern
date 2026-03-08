@@ -2,6 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { ArrowLeft } from 'lucide-react';
 import React, { useRef } from 'react';
 import { useForm } from 'react-hook-form';
+import { FaGoogle } from 'react-icons/fa';
 import {
   HiOutlineCamera,
   HiOutlineEnvelope,
@@ -21,12 +22,12 @@ import {
   FormMessage
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
+import { useOAuth } from '~/hooks/useOAuth';
 
 import { userSignUpSchema } from '../schemas/sign-up-schema';
-
 const UserSignUpForm = ({ onSubmit, onBack, isLoading }) => {
   const fileInputRef = useRef(null);
-
+  const { navigateToProvider } = useOAuth();
   const form = useForm({
     resolver: yupResolver(userSignUpSchema),
     defaultValues: {
@@ -56,6 +57,16 @@ const UserSignUpForm = ({ onSubmit, onBack, isLoading }) => {
         >
           <ArrowLeft className='h-5 w-5' />
           Quay lại
+        </Button>
+
+        <br />
+        <Button
+          variant='outline'
+          className='w-full rounded-xl border border-border bg-background/60 hover:bg-accent text-primary shadow-sm'
+          onClick={() => navigateToProvider('google')}
+        >
+          <FaGoogle className='mr-2 h-4 w-4' />
+          Tiếp tục với Google
         </Button>
         <FormField
           control={form.control}
