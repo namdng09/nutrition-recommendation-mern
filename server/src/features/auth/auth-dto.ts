@@ -35,7 +35,9 @@ export const signUpRequestSchema = z.object({
       error: 'Vai trò không hợp lệ'
     })
     .optional()
-    .default(ROLE.USER)
+    .default(ROLE.USER),
+  certificateName: z.string().optional(),
+  certificate: z.file().optional()
 });
 
 export type SignUpRequest = z.infer<typeof signUpRequestSchema>;
