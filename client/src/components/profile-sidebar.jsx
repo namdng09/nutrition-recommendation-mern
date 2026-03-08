@@ -1,3 +1,4 @@
+// components/profile-sidebar.jsx
 import {
   Activity,
   Award,
@@ -5,6 +6,7 @@ import {
   CircleOff,
   Heart,
   LogOut,
+  Menu,
   Target,
   User,
   Utensils
@@ -23,9 +25,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail
+  SidebarRail,
+  SidebarTrigger
 } from '~/components/ui/sidebar';
 import { ROLE } from '~/constants/role';
+import { useIsMobile } from '~/hooks/use-mobile';
 import { logout } from '~/store/features/auth-slice';
 
 export function ProfileSidebar({ ...props }) {
@@ -33,6 +37,7 @@ export function ProfileSidebar({ ...props }) {
   const dispatch = useDispatch();
   const location = useLocation();
   const user = useSelector(state => state.auth.user);
+  const isMobile = useIsMobile();
 
   const baseNavItems = [
     {
@@ -96,77 +101,88 @@ export function ProfileSidebar({ ...props }) {
   };
 
   return (
-    <Sidebar collapsible='icon' {...props}>
-      <SidebarHeader className='transition-all duration-300 ease-in-out'>
-        <div className='flex items-center gap-2 transition-all duration-300 ease-in-out group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0'>
-          <div className='flex aspect-square size-8 items-center justify-center transition-all duration-300 ease-in-out'>
-            <User className='h-6 w-6 text-primary' />
-          </div>
-          <div className='grid flex-1 text-left text-sm leading-tight transition-all duration-300 ease-in-out group-data-[collapsible=icon]:hidden group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0 overflow-hidden'>
-            <span className='truncate font-semibold transition-all duration-300 ease-in-out'>
-              Cài đặt hồ sơ
-            </span>
-            <span className='truncate text-xs text-muted-foreground transition-all duration-300 ease-in-out'>
-              Quản lý tài khoản
-            </span>
-          </div>
+    <>
+      {/* Mobile Toggle Button - Fixed Position */}
+      {isMobile && (
+        <div className='fixed top-20 left-4 z-50 md:hidden'>
+          <SidebarTrigger className='h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-lg'>
+            <Menu className='h-5 w-5' />
+          </SidebarTrigger>
         </div>
-      </SidebarHeader>
+      )}
 
-      <SidebarContent className='transition-all duration-300 ease-in-out'>
-        <SidebarGroup className='transition-all duration-300 ease-in-out'>
-          <SidebarGroupLabel className='transition-all duration-300 ease-in-out group-data-[collapsible=icon]:hidden group-data-[collapsible=icon]:opacity-0'>
-            Cài đặt
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {navItems.map(item => {
-                const Icon = item.icon;
-                const isActive = location.pathname === item.url;
-                return (
-                  <SidebarMenuItem
-                    key={item.title}
-                    className='transition-all duration-300 ease-in-out'
-                  >
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive}
-                      tooltip={item.title}
+      <Sidebar collapsible={isMobile ? 'offcanvas' : 'icon'} {...props}>
+        <SidebarHeader className='transition-all duration-300 ease-in-out'>
+          <div className='flex items-center gap-2 transition-all duration-300 ease-in-out group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0'>
+            <div className='flex aspect-square size-8 items-center justify-center transition-all duration-300 ease-in-out'>
+              <User className='h-6 w-6 text-primary' />
+            </div>
+            <div className='grid flex-1 text-left text-sm leading-tight transition-all duration-300 ease-in-out group-data-[collapsible=icon]:hidden group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0 overflow-hidden'>
+              <span className='truncate font-semibold transition-all duration-300 ease-in-out'>
+                Cài đặt hồ sơ
+              </span>
+              <span className='truncate text-xs text-muted-foreground transition-all duration-300 ease-in-out'>
+                Quản lý tài khoản
+              </span>
+            </div>
+          </div>
+        </SidebarHeader>
+
+        <SidebarContent className='transition-all duration-300 ease-in-out'>
+          <SidebarGroup className='transition-all duration-300 ease-in-out'>
+            <SidebarGroupLabel className='transition-all duration-300 ease-in-out group-data-[collapsible=icon]:hidden group-data-[collapsible=icon]:opacity-0'>
+              Cài đặt
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {navItems.map(item => {
+                  const Icon = item.icon;
+                  const isActive = location.pathname === item.url;
+                  return (
+                    <SidebarMenuItem
+                      key={item.title}
                       className='transition-all duration-300 ease-in-out'
                     >
-                      <Link to={item.url}>
-                        <Icon className='transition-all duration-300 ease-in-out text-primary' />
-                        <span className='transition-all duration-300 ease-in-out group-data-[collapsible=icon]:hidden group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0 overflow-hidden'>
-                          {item.title}
-                        </span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive}
+                        tooltip={item.title}
+                        className='transition-all duration-300 ease-in-out'
+                      >
+                        <Link to={item.url}>
+                          <Icon className='transition-all duration-300 ease-in-out text-primary' />
+                          <span className='transition-all duration-300 ease-in-out group-data-[collapsible=icon]:hidden group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0 overflow-hidden'>
+                            {item.title}
+                          </span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
 
-      <SidebarFooter className='transition-all duration-300 ease-in-out'>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              tooltip='Đăng xuất'
-              onClick={handleLogout}
-              className='transition-all duration-300 ease-in-out cursor-pointer text-destructive hover:text-destructive hover:bg-destructive/10'
-            >
-              <LogOut className='transition-all duration-300 ease-in-out' />
-              <span className='transition-all duration-300 ease-in-out group-data-[collapsible=icon]:hidden group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0 overflow-hidden'>
-                Đăng xuất
-              </span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
+        <SidebarFooter className='transition-all duration-300 ease-in-out'>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                tooltip='Đăng xuất'
+                onClick={handleLogout}
+                className='transition-all duration-300 ease-in-out cursor-pointer text-destructive hover:text-destructive hover:bg-destructive/10'
+              >
+                <LogOut className='transition-all duration-300 ease-in-out' />
+                <span className='transition-all duration-300 ease-in-out group-data-[collapsible=icon]:hidden group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0 overflow-hidden'>
+                  Đăng xuất
+                </span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
 
-      <SidebarRail />
-    </Sidebar>
+        {!isMobile && <SidebarRail />}
+      </Sidebar>
+    </>
   );
 }

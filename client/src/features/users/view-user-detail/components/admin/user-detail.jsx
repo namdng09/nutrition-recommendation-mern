@@ -459,16 +459,28 @@ const UserDetail = ({ id }) => {
                     )}
                   </div>
 
-                  {cert.url && (
-                    <a
-                      href={cert.url}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='inline-flex items-center gap-1.5 text-sm text-primary hover:underline underline-offset-4'
-                    >
-                      <ExternalLink className='h-4 w-4' />
-                      Xem tệp chứng chỉ
-                    </a>
+                  {cert.fileUrl && (
+                    <div className='space-y-2'>
+                      <p className='text-sm text-muted-foreground'>
+                        Ảnh chứng chỉ
+                      </p>
+                      <div className='relative w-full max-w-2xl rounded-lg border overflow-hidden bg-muted'>
+                        <img
+                          src={cert.fileUrl}
+                          alt={cert.name || 'Chứng chỉ'}
+                          className='w-full h-auto object-contain'
+                        />
+                      </div>
+                      <a
+                        href={cert.fileUrl}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='inline-flex items-center gap-1.5 text-sm text-primary hover:underline underline-offset-4'
+                      >
+                        <ExternalLink className='h-4 w-4' />
+                        Xem ảnh kích thước đầy đủ
+                      </a>
+                    </div>
                   )}
 
                   {cert.status === CERTIFICATE_STATUS.REJECTED &&
