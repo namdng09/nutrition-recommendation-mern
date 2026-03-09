@@ -13,7 +13,7 @@ export const UserController = {
 
     res
       .status(201)
-      .json(ApiResponse.success('User created successfully', result));
+      .json(ApiResponse.success('Người dùng được tạo thành công', result));
   },
 
   viewUsers: async (req: Request, res: Response) => {
@@ -23,28 +23,28 @@ export const UserController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Users retrieved successfully', result));
+      .json(ApiResponse.success('Người dùng được lấy thành công', result));
   },
 
   viewProfile: async (req: Request, res: Response) => {
-    const id = req.user?.id;
+    const id = req.user?._id.toString();
 
     const result = await UserService.viewProfile(id);
 
     res
       .status(200)
-      .json(ApiResponse.success('Profile retrieved successfully', result));
+      .json(ApiResponse.success('Hồ sơ được lấy thành công', result));
   },
 
   onboardUser: async (req: Request, res: Response) => {
-    const id = req.user?.id;
+    const id = req.user?._id.toString();
     const data = req.body;
 
     const result = await UserService.onboardUser(id, data);
 
     res
       .status(200)
-      .json(ApiResponse.success('Onboarding completed successfully', result));
+      .json(ApiResponse.success('Onboarding hoàn thành thành công', result));
   },
 
   calculateNutritionTarget: async (req: Request, res: Response) => {
@@ -55,7 +55,10 @@ export const UserController = {
     res
       .status(200)
       .json(
-        ApiResponse.success('Nutrition target calculated successfully', result)
+        ApiResponse.success(
+          'Mục tiêu dinh dưỡng được tính toán thành công',
+          result
+        )
       );
   },
 
@@ -68,7 +71,7 @@ export const UserController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('Profile updated successfully', result));
+      .json(ApiResponse.success('Hồ sơ được cập nhật thành công', result));
   },
 
   viewUserDetail: async (req: Request, res: Response) => {
@@ -78,7 +81,7 @@ export const UserController = {
 
     res
       .status(200)
-      .json(ApiResponse.success('User retrieved successfully', result));
+      .json(ApiResponse.success('Người dùng được lấy thành công', result));
   },
 
   updateUser: async (req: Request, res: Response) => {
@@ -86,59 +89,35 @@ export const UserController = {
     const data = req.body;
     const currentUserId = req.user?._id.toString();
 
-    if (id === currentUserId && data.isActive === 'false') {
-      return res
-        .status(400)
-        .json(ApiResponse.failed('Admin cannot deactivate own account'));
-    }
-
-    const result = await UserService.updateUser(id, data);
+    const result = await UserService.updateUser(id, data, currentUserId);
 
     res
       .status(200)
-      .json(ApiResponse.success('User updated successfully', result));
+      .json(ApiResponse.success('Người dùng được cập nhật thành công', result));
   },
 
   deleteUser: async (req: Request, res: Response) => {
     const id = req.params.id;
     const currentUserId = req.user?._id.toString();
 
-    if (id === currentUserId) {
-      return res
-        .status(400)
-        .json(ApiResponse.failed('Admin cannot delete own account'));
-    }
-
-    const result = await UserService.deleteUser(id);
+    const result = await UserService.deleteUser(id, currentUserId);
 
     res
       .status(200)
-      .json(ApiResponse.success('User deleted successfully', result));
+      .json(ApiResponse.success('Người dùng được xóa thành công', result));
   },
 
   deleteBulk: async (req: Request, res: Response) => {
     const { ids } = req.body;
     const currentUserId = req.user?._id.toString();
 
-    if (!Array.isArray(ids) || ids.length === 0) {
-      return res
-        .status(400)
-        .json(ApiResponse.failed('Invalid user IDs provided'));
-    }
-
-    if (ids.includes(currentUserId)) {
-      return res
-        .status(400)
-        .json(ApiResponse.failed('Cannot delete your own account'));
-    }
-
-    const result = await UserService.deleteBulk(ids);
+    const result = await UserService.deleteBulk(ids, currentUserId);
 
     res
       .status(200)
       .json(
         ApiResponse.success(
-          `${result.deletedCount} user(s) deleted successfully`,
+          `${result.deletedCount} người dùng được xóa thành công`,
           result
         )
       );
@@ -148,39 +127,31 @@ export const UserController = {
     const userId = req.user?._id.toString();
     const { dishId } = req.body;
 
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
-
     const result = await UserService.addFavoriteDish(userId, dishId);
 
     res
       .status(200)
-      .json(ApiResponse.success('Favorite dish added successfully', result));
+      .json(
+        ApiResponse.success('Món ăn yêu thích được thêm thành công', result)
+      );
   },
 
   removeFavoriteDish: async (req: Request, res: Response) => {
     const userId = req.user?._id.toString();
     const { dishId } = req.body;
 
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
-
     const result = await UserService.removeFavoriteDish(userId, dishId);
 
     res
       .status(200)
-      .json(ApiResponse.success('Favorite dish removed successfully', result));
+      .json(
+        ApiResponse.success('Món ăn yêu thích được xóa thành công', result)
+      );
   },
 
   addFavoriteIngredient: async (req: Request, res: Response) => {
     const userId = req.user?._id.toString();
     const { ingredientId } = req.body;
-
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
 
     const result = await UserService.addFavoriteIngredient(
       userId,
@@ -190,17 +161,16 @@ export const UserController = {
     res
       .status(200)
       .json(
-        ApiResponse.success('Favorite ingredient added successfully', result)
+        ApiResponse.success(
+          'Nguyên liệu yêu thích được thêm thành công',
+          result
+        )
       );
   },
 
   removeFavoriteIngredient: async (req: Request, res: Response) => {
     const userId = req.user?._id.toString();
     const { ingredientId } = req.body;
-
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
 
     const result = await UserService.removeFavoriteIngredient(
       userId,
@@ -210,17 +180,13 @@ export const UserController = {
     res
       .status(200)
       .json(
-        ApiResponse.success('Favorite ingredient removed successfully', result)
+        ApiResponse.success('Nguyên liệu yêu thích được xóa thành công', result)
       );
   },
 
   addFavoriteCollection: async (req: Request, res: Response) => {
     const userId = req.user?._id.toString();
     const { collectionId } = req.body;
-
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
 
     const result = await UserService.addFavoriteCollection(
       userId,
@@ -230,17 +196,13 @@ export const UserController = {
     res
       .status(200)
       .json(
-        ApiResponse.success('Favorite collection added successfully', result)
+        ApiResponse.success('Bộ sưu tập yêu thích được thêm thành công', result)
       );
   },
 
   removeFavoriteCollection: async (req: Request, res: Response) => {
     const userId = req.user?._id.toString();
     const { collectionId } = req.body;
-
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
 
     const result = await UserService.removeFavoriteCollection(
       userId,
@@ -250,7 +212,7 @@ export const UserController = {
     res
       .status(200)
       .json(
-        ApiResponse.success('Favorite collection removed successfully', result)
+        ApiResponse.success('Bộ sưu tập yêu thích được xóa thành công', result)
       );
   },
 
@@ -258,56 +220,40 @@ export const UserController = {
     const userId = req.user?._id.toString();
     const { dishId } = req.body;
 
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
-
     const result = await UserService.addBlockDish(userId, dishId);
 
     res
       .status(200)
-      .json(ApiResponse.success('Blocked dish added successfully', result));
+      .json(ApiResponse.success('Món ăn bị chặn được thêm thành công', result));
   },
 
   removeBlockDish: async (req: Request, res: Response) => {
     const userId = req.user?._id.toString();
     const { dishId } = req.body;
 
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
-
     const result = await UserService.removeBlockDish(userId, dishId);
 
     res
       .status(200)
-      .json(ApiResponse.success('Blocked dish removed successfully', result));
+      .json(ApiResponse.success('Món ăn bị chặn được xóa thành công', result));
   },
 
   addBlockIngredient: async (req: Request, res: Response) => {
     const userId = req.user?._id.toString();
     const { ingredientId } = req.body;
 
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
-
     const result = await UserService.addBlockIngredient(userId, ingredientId);
 
     res
       .status(200)
       .json(
-        ApiResponse.success('Blocked ingredient added successfully', result)
+        ApiResponse.success('Nguyên liệu bị chặn được thêm thành công', result)
       );
   },
 
   removeBlockIngredient: async (req: Request, res: Response) => {
     const userId = req.user?._id.toString();
     const { ingredientId } = req.body;
-
-    if (!userId) {
-      return res.status(401).json(ApiResponse.failed('Unauthorized'));
-    }
 
     const result = await UserService.removeBlockIngredient(
       userId,
@@ -317,7 +263,7 @@ export const UserController = {
     res
       .status(200)
       .json(
-        ApiResponse.success('Blocked ingredient removed successfully', result)
+        ApiResponse.success('Nguyên liệu bị chặn được xóa thành công', result)
       );
   }
 };

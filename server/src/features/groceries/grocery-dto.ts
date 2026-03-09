@@ -1,43 +1,22 @@
 import { z } from 'zod';
 
-const parseBoolean = (val: any) => {
-  if (typeof val === 'string') {
-    if (val === 'true') return true;
-    if (val === 'false') return false;
-  }
-  return val;
-};
+import { booleanSchema, parseJSON } from '~/shared/utils/dto-parsers';
 
-const parseJSON = (val: any) => {
-  if (typeof val === 'string') {
-    try {
-      return JSON.parse(val);
-    } catch {
-      return val;
-    }
-  }
-  return val;
-};
-
-const parseDate = (val: any) => {
+const parseDate = (val: unknown) => {
   if (typeof val === 'string' || val instanceof Date) {
-    return new Date(val);
+    const date = new Date(val as string | Date);
+    if (isNaN(date.getTime())) {
+      throw new Error('Ngày không hợp lệ');
+    }
+    return date;
   }
-  return val;
+  throw new Error('Ngày không hợp lệ');
 };
 
 const dateSchema = z.preprocess(
   parseDate,
   z.date({ message: 'Ngày không hợp lệ' })
 );
-
-const ingredientItemSchema = z.object({
-  ingredientId: z
-    .string({ message: 'ID nguyên liệu không hợp lệ' })
-    .trim()
-    .min(1),
-  isPurchased: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
-});
 
 export const createGroceryRequestSchema = z.object({
   name: z
@@ -56,15 +35,12 @@ export const updateGroceryRequestSchema = z.object({
     .min(2, 'Tên danh sách mua sắm phải có ít nhất 2 ký tự')
     .optional(),
   date: z.preprocess(parseJSON, z.array(dateSchema)).optional(),
-  ingredients: z
-    .preprocess(parseJSON, z.array(ingredientItemSchema))
-    .optional(),
   notes: z.string().trim().optional()
 });
 
 export type UpdateGroceryRequest = z.infer<typeof updateGroceryRequestSchema>;
 
-export const addIngredientsRequestSchema = z.object({
+export const addGroceryIngredientRequestSchema = z.object({
   ingredients: z.preprocess(
     parseJSON,
     z
@@ -73,9 +49,11 @@ export const addIngredientsRequestSchema = z.object({
   )
 });
 
-export type AddIngredientsRequest = z.infer<typeof addIngredientsRequestSchema>;
+export type AddGroceryIngredientRequest = z.infer<
+  typeof addGroceryIngredientRequestSchema
+>;
 
-export const removeIngredientsRequestSchema = z.object({
+export const removeGroceryIngredientRequestSchema = z.object({
   ingredients: z.preprocess(
     parseJSON,
     z
@@ -84,14 +62,14 @@ export const removeIngredientsRequestSchema = z.object({
   )
 });
 
-export type RemoveIngredientsRequest = z.infer<
-  typeof removeIngredientsRequestSchema
+export type RemoveGroceryIngredientRequest = z.infer<
+  typeof removeGroceryIngredientRequestSchema
 >;
 
-export const updateIngredientInGrocerySchema = z.object({
-  isPurchased: z.preprocess(parseBoolean, z.coerce.boolean()).optional()
+export const updateGroceryIngredientRequestSchema = z.object({
+  isPurchased: booleanSchema.optional()
 });
 
-export type UpdateIngredientInGroceryRequest = z.infer<
-  typeof updateIngredientInGrocerySchema
+export type UpdateGroceryIngredientRequest = z.infer<
+  typeof updateGroceryIngredientRequestSchema
 >;

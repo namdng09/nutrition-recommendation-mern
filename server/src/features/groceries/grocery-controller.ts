@@ -89,7 +89,7 @@ export const GroceryController = {
   },
 
   updateIngredientInGrocery: async (req: Request, res: Response) => {
-    const groceryId = req.params.groceryId;
+    const groceryId = req.params.id;
     const ingredientId = req.params.ingredientId;
     const data = req.body;
     const userId = req.user!._id.toString();

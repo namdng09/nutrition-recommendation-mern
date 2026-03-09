@@ -4,6 +4,11 @@ import {
 } from '@quarks/mongoose-query-parser';
 import type { ParsedQs } from 'qs';
 
+import {
+  buildVietnameseInsensitiveRegex,
+  hasVietnameseDiacritics
+} from './vietnamese-normalizer';
+
 /**
  * Parse URL query parameters into MongoDB-friendly query options
  *
@@ -61,5 +66,49 @@ export const parseQuery = (
       }
     }
   });
-  return parser.parse(query);
+  const result = parser.parse(query);
+  result.filter = transformVietnameseSearchFilter(result.filter);
+  return result;
 };
+
+/**
+ * Post-processes parsed filters into diacritic-insensitive RegExp conditions.
+ *
+ * This avoids deep nested aggregation expressions and remains compatible with
+ * MongoDB Atlas BSON depth constraints.
+ */
+function transformValue(value: any): any {
+  if (typeof value === 'string') {
+    return hasVietnameseDiacritics(value)
+      ? new RegExp(value, 'i')
+      : buildVietnameseInsensitiveRegex(value, 'i');
+  }
+
+  if (value instanceof RegExp) {
+    return hasVietnameseDiacritics(value.source)
+      ? value
+      : buildVietnameseInsensitiveRegex(value.source, value.flags);
+  }
+
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    !(value instanceof RegExp)
+  ) {
+    return transformVietnameseSearchFilter(value);
+  }
+
+  return value;
+}
+
+function transformVietnameseSearchFilter(
+  filter: Record<string, any>
+): Record<string, any> {
+  const transformed: Record<string, any> = {};
+
+  for (const [key, value] of Object.entries(filter)) {
+    transformed[key] = key.startsWith('$') ? value : transformValue(value);
+  }
+
+  return transformed;
+}

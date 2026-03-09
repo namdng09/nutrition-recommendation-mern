@@ -4,8 +4,7 @@ import apiClient from '~/lib/api-client';
 import { QUERY_KEYS } from '~/lib/query-keys';
 
 const addDishesToCollection = async ({ id, dishIds }) => {
-  // FIX: Change from POST to PUT to match backend route
-  const response = await apiClient.put(`/api/collections/${id}/dishes`, {
+  const response = await apiClient.post(`/api/collections/${id}/dishes`, {
     dishIds
   });
   return response.data;
