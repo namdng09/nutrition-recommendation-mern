@@ -28,7 +28,7 @@ const Hero = () => {
 
         <div className='mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4'>
           <Link
-            to='/schedules/day'
+            to='/auth/login'
             className='group flex justify-center items-center gap-2 bg-primary text-primary-foreground font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-xl shadow-lg shadow-primary/20 active:scale-95 transition'
           >
             Bắt đầu miễn phí

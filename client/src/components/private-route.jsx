@@ -20,7 +20,10 @@ const PrivateRoute = ({ children, allowedRoles }) => {
         </p>
         <Button className='rounded-full px-8'>
           <Link to='/'>Back to Home</Link>
-        </Button>{' '}
+        </Button>
+        <Button variant='outline' className='rounded-full px-8'>
+          <Link to='/auth/login'>Back to Login</Link>
+        </Button>
       </div>
     );
   }
