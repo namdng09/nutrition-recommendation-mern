@@ -164,20 +164,18 @@ export default function DayScheduleContent({
         Trống lịch
       </p>
 
-      <button
-        disabled={isCreating}
+      <div
         onClick={handleCreate}
-        className='flex flex-col items-center gap-4
-        transition-transform hover:scale-105'
+        className='flex flex-col items-center gap-4 transition-transform hover:scale-105 cursor-pointer'
       >
         <div
           className='h-16 w-16 rounded-full
-          bg-card
-          flex items-center justify-center
-          border border-border
-          shadow-md
-          hover:bg-primary hover:text-primary-foreground
-          transition-all'
+    bg-card
+    flex items-center justify-center
+    border border-border
+    shadow-md
+    hover:bg-primary hover:text-primary-foreground
+    transition-all'
         >
           {isCreating ? (
             <div className='h-6 w-6 border-2 border-current border-t-transparent animate-spin rounded-full' />
@@ -189,7 +187,7 @@ export default function DayScheduleContent({
         <button disabled={!!schedule || isCreating} onClick={handleCreate}>
           Lên kế hoạch
         </button>
-      </button>
+      </div>
     </div>
   );
 }

@@ -5,7 +5,7 @@ import {
 import type { ParsedQs } from 'qs';
 
 import {
-  buildMongoNormalizationExpr,
+  buildVietnameseInsensitiveRegex,
   removeVietnameseDiacritics
 } from './vietnamese-normalizer';
 
@@ -72,59 +72,33 @@ export const parseQuery = (
 };
 
 /**
- * Post-processes a parsed MongoDB filter to replace any RegExp field conditions
- * with diacritic-insensitive equivalents using $expr + $regexMatch +
- * $replaceAll normalization chain.
+ * Post-processes parsed filters into diacritic-insensitive RegExp conditions.
  *
- * This allows queries like name=/ca rot/i to match documents storing "Cà Rốt"
- * without requiring any schema changes or pre-normalized fields.
+ * This avoids deep nested aggregation expressions and remains compatible with
+ * MongoDB Atlas BSON depth constraints.
  */
 function transformVietnameseSearchFilter(
   filter: Record<string, any>
 ): Record<string, any> {
   const transformed = { ...filter };
-  const exprConditions: object[] = [];
 
   for (const [key, value] of Object.entries(filter)) {
     // Skip MongoDB operator keys like $or, $and, $expr, etc.
     if (key.startsWith('$')) continue;
 
-    if (value instanceof RegExp) {
-      const normalizedPattern = removeVietnameseDiacritics(value.source);
-      exprConditions.push({
-        $regexMatch: {
-          input: buildMongoNormalizationExpr(`$${key}`),
-          regex: normalizedPattern,
-          options: value.flags
-        }
-      });
-      delete transformed[key];
-    } else if (typeof value === 'string') {
-      const normalizedPattern = removeVietnameseDiacritics(value);
-      exprConditions.push({
-        $regexMatch: {
-          input: buildMongoNormalizationExpr(`$${key}`),
-          regex: normalizedPattern,
-          options: 'i'
-        }
-      });
-      delete transformed[key];
+    if (typeof value === 'string') {
+      transformed[key] = buildVietnameseInsensitiveRegex(value, 'i');
+      continue;
     }
-  }
 
-  if (exprConditions.length === 1) {
-    if (transformed.$expr) {
-      transformed.$expr = { $and: [transformed.$expr, exprConditions[0]] };
-    } else {
-      transformed.$expr = exprConditions[0];
-    }
-  } else if (exprConditions.length > 1) {
-    if (transformed.$expr) {
-      transformed.$expr = {
-        $and: [transformed.$expr, ...exprConditions]
-      };
-    } else {
-      transformed.$expr = { $and: exprConditions };
+    if (value instanceof RegExp) {
+      // Preserve explicit regex syntax from caller (e.g. ?name=/beef/i).
+      // Remove Vietnamese diacritics in the source to keep query behavior
+      // consistent with string search where possible.
+      transformed[key] = new RegExp(
+        removeVietnameseDiacritics(value.source),
+        value.flags
+      );
     }
   }
 

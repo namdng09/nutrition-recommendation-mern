@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import aiRoute from '~/features/ai/ai-route';
 import authRoute from '~/features/auth/auth-route';
 import collectionRoute from '~/features/collections/collection-route';
 import dishRoute from '~/features/dishes/dish-route';
@@ -20,6 +21,7 @@ router.use('/collections', collectionRoute);
 router.use('/schedules', scheduleRoute);
 router.use('/posts', postRoute);
 router.use('/groceries', groceryRoute);
+router.use('/ai', aiRoute);
 router.use('/payments', paymentRoute);
 
 export default router;
