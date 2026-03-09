@@ -12,6 +12,13 @@ export function removeVietnameseDiacritics(text: string): string {
     .replace(/đ/g, 'd');
 }
 
+/**
+ * Checks if a string contains Vietnamese diacritics
+ */
+export function hasVietnameseDiacritics(text: string): boolean {
+  return /[\u0300-\u036fđ]/.test(text.normalize('NFD'));
+}
+
 const VIETNAMESE_CHAR_GROUPS: Record<string, string> = {
   a: 'aàáảãạăắằẳẵặâấầẩẫậ',
   d: 'dđ',
