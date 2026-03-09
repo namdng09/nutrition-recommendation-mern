@@ -6,7 +6,7 @@ import type { ParsedQs } from 'qs';
 
 import {
   buildVietnameseInsensitiveRegex,
-  removeVietnameseDiacritics
+  hasVietnameseDiacritics
 } from './vietnamese-normalizer';
 
 /**
@@ -77,29 +77,37 @@ export const parseQuery = (
  * This avoids deep nested aggregation expressions and remains compatible with
  * MongoDB Atlas BSON depth constraints.
  */
+function transformValue(value: any): any {
+  if (typeof value === 'string') {
+    return hasVietnameseDiacritics(value)
+      ? new RegExp(value, 'i')
+      : buildVietnameseInsensitiveRegex(value, 'i');
+  }
+
+  if (value instanceof RegExp) {
+    return hasVietnameseDiacritics(value.source)
+      ? value
+      : buildVietnameseInsensitiveRegex(value.source, value.flags);
+  }
+
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    !(value instanceof RegExp)
+  ) {
+    return transformVietnameseSearchFilter(value);
+  }
+
+  return value;
+}
+
 function transformVietnameseSearchFilter(
   filter: Record<string, any>
 ): Record<string, any> {
-  const transformed = { ...filter };
+  const transformed: Record<string, any> = {};
 
   for (const [key, value] of Object.entries(filter)) {
-    // Skip MongoDB operator keys like $or, $and, $expr, etc.
-    if (key.startsWith('$')) continue;
-
-    if (typeof value === 'string') {
-      transformed[key] = buildVietnameseInsensitiveRegex(value, 'i');
-      continue;
-    }
-
-    if (value instanceof RegExp) {
-      // Preserve explicit regex syntax from caller (e.g. ?name=/beef/i).
-      // Remove Vietnamese diacritics in the source to keep query behavior
-      // consistent with string search where possible.
-      transformed[key] = new RegExp(
-        removeVietnameseDiacritics(value.source),
-        value.flags
-      );
-    }
+    transformed[key] = key.startsWith('$') ? value : transformValue(value);
   }
 
   return transformed;
