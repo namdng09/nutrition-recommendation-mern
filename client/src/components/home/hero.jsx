@@ -4,9 +4,11 @@ import {
   HiOutlineCheckBadge,
   HiSparkles
 } from 'react-icons/hi2';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router';
 
 const Hero = () => {
+  const user = useSelector(state => state.auth.user);
   return (
     <section className='relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 md:py-16 grid md:grid-cols-2 gap-10 md:gap-16 items-center bg-background overflow-hidden'>
       <div className='relative z-10 order-2 md:order-1'>
@@ -28,7 +30,7 @@ const Hero = () => {
 
         <div className='mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4'>
           <Link
-            to='/auth/login'
+            to={user ? '/schedules/day' : '/auth/login'}
             className='group flex justify-center items-center gap-2 bg-primary text-primary-foreground font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-xl shadow-lg shadow-primary/20 active:scale-95 transition'
           >
             Bắt đầu miễn phí
