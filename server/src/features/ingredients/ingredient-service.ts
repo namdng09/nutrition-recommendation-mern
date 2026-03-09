@@ -1,6 +1,6 @@
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
-import type { HydratedDocument } from 'mongoose';
+import type { HydratedDocument, PaginateResult } from 'mongoose';
 
 import {
   DishModel,
@@ -12,7 +12,6 @@ import type { Ingredient } from '~/shared/database/models/ingredient-model';
 import {
   buildPaginateOptions,
   deleteImage,
-  type PaginateResponse,
   uploadImage,
   validateObjectId
 } from '~/shared/utils';
@@ -45,7 +44,7 @@ export const IngredientService = {
   viewIngredients: async (
     parsed: QueryOptions,
     userId?: string
-  ): Promise<PaginateResponse<Ingredient>> => {
+  ): Promise<PaginateResult<Ingredient>> => {
     const options = buildPaginateOptions(parsed);
     let { filter } = parsed;
 
@@ -70,14 +69,12 @@ export const IngredientService = {
 
     const result = await IngredientModel.paginate(filter, options);
 
-    const paginatedResult = result as unknown as PaginateResponse<Ingredient>;
-
-    paginatedResult.docs = paginatedResult.docs.map(doc => ({
+    result.docs = result.docs.map(doc => ({
       ...((doc as any).toObject?.() ?? doc),
       isFavorited: favoriteIngredientIds.has(String((doc as any)._id))
     })) as any;
 
-    return paginatedResult;
+    return result;
   },
 
   viewIngredientDetail: async (id: string, userId?: string) => {

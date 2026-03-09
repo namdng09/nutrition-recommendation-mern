@@ -1,6 +1,6 @@
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
-import type { HydratedDocument } from 'mongoose';
+import type { HydratedDocument, PaginateResult } from 'mongoose';
 
 import {
   DishModel,
@@ -11,11 +11,7 @@ import {
 import type { Dish } from '~/shared/database/models/dish-model';
 import type { Grocery } from '~/shared/database/models/grocery-model';
 import type { Schedule } from '~/shared/database/models/schedule-model';
-import {
-  buildPaginateOptions,
-  type PaginateResponse,
-  validateObjectId
-} from '~/shared/utils';
+import { buildPaginateOptions, validateObjectId } from '~/shared/utils';
 
 import {
   AddGroceryIngredientRequest,
@@ -63,7 +59,7 @@ export const GroceryService = {
   viewGroceries: async (
     userId: string,
     parsed: QueryOptions
-  ): Promise<PaginateResponse<Grocery>> => {
+  ): Promise<PaginateResult<Grocery>> => {
     const { filter } = parsed;
     const options = buildPaginateOptions(parsed);
 
@@ -104,7 +100,7 @@ export const GroceryService = {
     return {
       ...result,
       docs: annotatedDocs
-    } as unknown as PaginateResponse<Grocery>;
+    } as unknown as PaginateResult<Grocery>;
   },
 
   viewGroceryDetail: async (userId: string, id: string) => {
