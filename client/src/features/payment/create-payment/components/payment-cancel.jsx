@@ -1,8 +1,22 @@
+import { useEffect } from 'react';
 import { HiArrowLeft, HiLockClosed, HiXCircle } from 'react-icons/hi2';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
+
+import { useConfirmPayment } from '../../confirm-payment/api/confirm-payment';
 
 const PaymentCancel = () => {
   const navigate = useNavigate();
+
+  const [searchParams] = useSearchParams();
+
+  const { mutate: confirmPayment } = useConfirmPayment();
+
+  useEffect(() => {
+    const orderCode = searchParams.get('orderCode');
+    if (!orderCode) return;
+
+    confirmPayment({ orderCode });
+  }, [searchParams, confirmPayment]);
 
   return (
     <div className='min-h-screen flex items-center justify-center px-4 bg-background'>
