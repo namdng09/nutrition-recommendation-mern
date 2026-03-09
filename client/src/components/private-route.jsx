@@ -15,7 +15,7 @@ const PrivateRoute = ({ children, allowedRoles }) => {
   if (!user || !allowedRoles.includes(user.role)) {
     return (
       <div className='flex min-h-[60vh] items-center justify-center px-4 py-10 transition-colors duration-300'>
-        <div className='w-full max-w-md rounded-[2.5rem] border border-border bg-card p-10 text-center shadow-2xl shadow-primary/10 backdrop-blur-sm dark:shadow-none'>
+        <div className='w-full max-w-md border border-border bg-card p-10 text-center shadow-2xl shadow-primary/10 backdrop-blur-sm dark:shadow-none'>
           <div className='relative mx-auto mb-8 flex h-24 w-24 items-center justify-center'>
             <div className='absolute inset-0 rounded-full bg-primary/20 blur-3xl opacity-60 animate-pulse' />
             <div className='relative flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/5 border border-primary/10 shadow-sm'>

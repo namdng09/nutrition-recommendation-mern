@@ -85,7 +85,17 @@ const router = createBrowserRouter([
           },
           {
             path: 'groceries',
-            Component: lazy(() => import('~/app/groceries/page'))
+            Component: () => (
+              <PrivateRoute allowedRoles={[ROLE.USER]}>
+                <Outlet />
+              </PrivateRoute>
+            ),
+            children: [
+              {
+                index: true,
+                Component: lazy(() => import('~/app/groceries/page'))
+              }
+            ]
           },
           {
             path: 'payment/success',
