@@ -118,6 +118,10 @@ const userSchema = new Schema(
     allergens: [{ type: String, enum: Object.values(ALLERGEN) }],
     activityLevel: { type: String, enum: Object.values(ACTIVITY_LEVEL) },
     medicalHistory: { type: [String], default: [] },
+    loginStreak: {
+      count: { type: Number, default: 0 },
+      lastLoginDate: { type: Date }
+    },
     setting: { type: Map, of: Schema.Types.Mixed, default: {} },
     aiConfig: { type: Map, of: Schema.Types.Mixed, default: {} },
     hasOnboarded: { type: Boolean, default: false },

@@ -11,6 +11,8 @@ import {
   UserModel
 } from '~/shared/database/models';
 import type { Dish } from '~/shared/database/models/dish-model';
+import { eventBus } from '~/shared/events/event-bus';
+import { EVENTS } from '~/shared/events/event-types';
 import {
   buildPaginateOptions,
   deleteImage,
@@ -52,6 +54,11 @@ export const DishService = {
     });
 
     if (image) await saveDishImage(newDish, image);
+
+    eventBus.emit(EVENTS.DISH_CREATED, {
+      userId,
+      dishId: newDish._id.toString()
+    });
 
     return newDish;
   },
