@@ -18,113 +18,117 @@ export type AchievementDefinition = {
 };
 
 export const ACHIEVEMENTS = {
-  // Full Circle — Ecosystem Mastery
+  // Vòng Tròn Hoàn Chỉnh — Thành thạo toàn bộ hệ sinh thái
   THE_PLANNER: {
     key: 'THE_PLANNER',
-    name: 'The Planner',
+    name: 'Nhà Lên Kế Hoạch',
     description:
-      'Successfully complete 5 "Full Cycles" (Schedule → Grocery → Complete).',
+      'Hoàn thành thành công 5 "Vòng Tròn Hoàn Chỉnh" (Lịch → Mua sắm → Hoàn thành).',
     category: ACHIEVEMENT_CATEGORY.FULL_CIRCLE,
     icon: ''
   },
   THE_DISCIPLINED: {
     key: 'THE_DISCIPLINED',
-    name: 'The Disciplined',
-    description: 'Successfully complete 20 "Full Cycles".',
+    name: 'Người Kỷ Luật',
+    description: 'Hoàn thành thành công 20 "Vòng Tròn Hoàn Chỉnh".',
     category: ACHIEVEMENT_CATEGORY.FULL_CIRCLE,
     icon: ''
   },
   LIFESTYLE_ARCHITECT: {
     key: 'LIFESTYLE_ARCHITECT',
-    name: 'Lifestyle Architect',
-    description: 'Successfully complete 50 "Full Cycles".',
+    name: 'Kiến Trúc Sư Lối Sống',
+    description: 'Hoàn thành thành công 50 "Vòng Tròn Hoàn Chỉnh".',
     category: ACHIEVEMENT_CATEGORY.FULL_CIRCLE,
     icon: ''
   },
 
-  // Diverse Palate — Nutritional Exploration
+  // Khẩu Vị Đa Dạng — Khám phá dinh dưỡng
   INGREDIENT_EXPLORER: {
     key: 'INGREDIENT_EXPLORER',
-    name: 'Ingredient Explorer',
-    description: 'Use 20 unique ingredients across all logged meals.',
+    name: 'Nhà Thám Hiểm Nguyên Liệu',
+    description:
+      'Sử dụng 20 nguyên liệu độc nhất trong tất cả các bữa ăn đã ghi nhận.',
     category: ACHIEVEMENT_CATEGORY.DIVERSE_PALATE,
     icon: ''
   },
   VARIETY_SEEKER: {
     key: 'VARIETY_SEEKER',
-    name: 'Variety Seeker',
+    name: 'Người Tìm Kiếm Sự Đa Dạng',
     description:
-      'Log meals from 5 different dish categories (e.g., Vegan, Keto).',
+      'Ghi nhận bữa ăn từ 5 danh mục món ăn khác nhau (ví dụ: Thuần chay, Keto).',
     category: ACHIEVEMENT_CATEGORY.DIVERSE_PALATE,
     icon: ''
   },
   NUTRITIONAL_POLYMATH: {
     key: 'NUTRITIONAL_POLYMATH',
-    name: 'Nutritional Polymath',
-    description: 'Use 50 unique ingredients across all logged meals.',
+    name: 'Chuyên Gia Dinh Dưỡng Toàn Diện',
+    description:
+      'Sử dụng 50 nguyên liệu độc nhất trong tất cả các bữa ăn đã ghi nhận.',
     category: ACHIEVEMENT_CATEGORY.DIVERSE_PALATE,
     icon: ''
   },
 
-  // Social Catalyst — Community Influence
+  // Chất Xúc Tác Cộng Đồng — Ảnh hưởng xã hội
   SPARK_OF_INTEREST: {
     key: 'SPARK_OF_INTEREST',
-    name: 'Spark of Interest',
-    description: 'Your posts receive a total of 50 likes.',
+    name: 'Tia Sáng Hứng Khởi',
+    description: 'Các bài đăng của bạn nhận được tổng cộng 50 lượt thích.',
     category: ACHIEVEMENT_CATEGORY.SOCIAL,
     icon: ''
   },
   HELPFUL_PEER: {
     key: 'HELPFUL_PEER',
-    name: 'Helpful Peer',
-    description: "Your comments on others' posts receive a total of 10 likes.",
+    name: 'Người Bạn Hữu Ích',
+    description:
+      'Các bình luận của bạn trên bài đăng của người khác nhận được tổng cộng 10 lượt thích.',
     category: ACHIEVEMENT_CATEGORY.SOCIAL,
     icon: ''
   },
   COMMUNITY_BEACON: {
     key: 'COMMUNITY_BEACON',
-    name: 'Community Beacon',
-    description: 'Your posts receive a total of 200 likes and 50 comments.',
+    name: 'Ngọn Đuốc Cộng Đồng',
+    description:
+      'Các bài đăng của bạn nhận được tổng cộng 200 lượt thích và 50 bình luận.',
     category: ACHIEVEMENT_CATEGORY.SOCIAL,
     icon: ''
   },
 
-  // Target Specialist — Goal Adherence
+  // Chuyên Gia Mục Tiêu — Kiên trì với mục tiêu
   ON_THE_MARK: {
     key: 'ON_THE_MARK',
-    name: 'On the Mark',
-    description: 'Hit your target macro/calorie range for 7 total days.',
+    name: 'Đúng Mục Tiêu',
+    description: 'Đạt ngưỡng macro/calo mục tiêu trong tổng cộng 7 ngày.',
     category: ACHIEVEMENT_CATEGORY.TARGET,
     icon: ''
   },
   PHASE_MASTER: {
     key: 'PHASE_MASTER',
-    name: 'Phase Master',
-    description: 'Hit your target macro/calorie range for 30 total days.',
+    name: 'Bậc Thầy Giai Đoạn',
+    description: 'Đạt ngưỡng macro/calo mục tiêu trong tổng cộng 30 ngày.',
     category: ACHIEVEMENT_CATEGORY.TARGET,
     icon: ''
   },
   UNYIELDING_PROGRESS: {
     key: 'UNYIELDING_PROGRESS',
-    name: 'Unyielding Progress',
-    description: 'Maintain a 14-day streak of hitting your nutrition target.',
+    name: 'Tiến Bộ Bền Bỉ',
+    description: 'Duy trì chuỗi 14 ngày liên tiếp đạt mục tiêu dinh dưỡng.',
     category: ACHIEVEMENT_CATEGORY.TARGET,
     icon: ''
   },
 
-  // Grocery Guru — Kitchen Efficiency
+  // Chuyên Gia Mua Sắm — Hiệu quả trong bếp
   KITCHEN_MANAGER: {
     key: 'KITCHEN_MANAGER',
-    name: 'Kitchen Manager',
-    description: 'Successfully clear/complete 10 full grocery lists.',
+    name: 'Quản Lý Bếp',
+    description: 'Hoàn thành thành công 10 danh sách mua sắm.',
     category: ACHIEVEMENT_CATEGORY.GROCERY,
     icon: ''
   },
   BULK_ORGANIZER: {
     key: 'BULK_ORGANIZER',
-    name: 'Bulk Organizer',
+    name: 'Người Tổ Chức Hàng Loạt',
     description:
-      'Add and check off a total of 100 items in the grocery module.',
+      'Thêm và đánh dấu hoàn thành tổng cộng 100 mục trong danh sách mua sắm.',
     category: ACHIEVEMENT_CATEGORY.GROCERY,
     icon: ''
   }
