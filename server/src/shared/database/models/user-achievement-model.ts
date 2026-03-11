@@ -1,24 +1,20 @@
 import mongoose, { InferSchemaType, Schema } from 'mongoose';
 
-import { ACHIEVEMENT_KEYS } from '~/shared/constants/achievements';
-
 const userAchievementSchema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    achievementKey: {
-      type: String,
-      enum: ACHIEVEMENT_KEYS,
+    achievementId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Achievement',
       required: true
-    },
-    unlockedAt: { type: Date, required: true, default: Date.now },
-    progress: { type: Schema.Types.Mixed, default: {} }
+    }
   },
   {
-    timestamps: false
+    timestamps: true
   }
 );
 
-userAchievementSchema.index({ userId: 1, achievementKey: 1 }, { unique: true });
+userAchievementSchema.index({ userId: 1, achievementId: 1 }, { unique: true });
 
 export type UserAchievement = InferSchemaType<typeof userAchievementSchema>;
 

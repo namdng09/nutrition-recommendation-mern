@@ -18,6 +18,7 @@ import { MEAL_SIZE } from '~/shared/constants/meal-size';
 import { MEAL_TYPE } from '~/shared/constants/meal-type';
 import { MEMBERSHIP_LEVEL } from '~/shared/constants/membership-level';
 import { ROLE } from '~/shared/constants/role';
+import { USER_RANK } from '~/shared/constants/user-rank';
 import { USER_TARGET } from '~/shared/constants/user-target';
 
 const macroRangeSchema = new Schema(
@@ -122,6 +123,7 @@ const userSchema = new Schema(
       count: { type: Number, default: 0 },
       lastLoginDate: { type: Date }
     },
+    rank: { type: String, enum: Object.values(USER_RANK) },
     setting: { type: Map, of: Schema.Types.Mixed, default: {} },
     aiConfig: { type: Map, of: Schema.Types.Mixed, default: {} },
     hasOnboarded: { type: Boolean, default: false },
