@@ -124,6 +124,12 @@ const userSchema = new Schema(
       lastLoginDate: { type: Date }
     },
     rank: { type: String, enum: Object.values(USER_RANK) },
+    achievements: [
+      {
+        key: { type: String },
+        unlockedAt: { type: Date, default: Date.now }
+      }
+    ],
     setting: { type: Map, of: Schema.Types.Mixed, default: {} },
     aiConfig: { type: Map, of: Schema.Types.Mixed, default: {} },
     hasOnboarded: { type: Boolean, default: false },

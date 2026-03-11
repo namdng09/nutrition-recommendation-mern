@@ -1,19 +1,13 @@
-import {
-  type AchievementKey,
-  ACHIEVEMENTS,
-  getUserTier
-} from '~/shared/constants/achievements';
-import { UserAchievementModel } from '~/shared/database/models';
+import { ACHIEVEMENTS } from '~/shared/constants/achievement';
+import { UserModel } from '~/shared/database/models/user-model';
 
 export const AchievementService = {
-  unlock: async (
-    userId: string,
-    achievementKey: AchievementKey
-  ): Promise<void> => {
-    await UserAchievementModel.updateOne(
-      { userId, achievementKey },
-      { $setOnInsert: { userId, achievementKey, unlockedAt: new Date() } },
-      { upsert: true }
+  unlock: async (userId: string, achievementKey: string): Promise<void> => {
+    await UserModel.updateOne(
+      { _id: userId, 'achievements.key': { $ne: achievementKey } },
+      {
+        $push: { achievements: { key: achievementKey, unlockedAt: new Date() } }
+      }
     );
   },
 
@@ -22,14 +16,9 @@ export const AchievementService = {
   },
 
   getUserAchievements: async (userId: string) => {
-    const unlocked = await UserAchievementModel.find(
-      { userId },
-      { achievementKey: 1, unlockedAt: 1, _id: 0 }
-    ).lean();
-
-    const unlockedKeys = new Set(unlocked.map(r => r.achievementKey));
+    const user = await UserModel.findById(userId, 'achievements').lean();
+    const unlockedKeys = new Set((user?.achievements ?? []).map(r => r.key));
     const unlockedCount = unlockedKeys.size;
-    const tier = getUserTier(unlockedCount);
 
     const achievements = Object.values(ACHIEVEMENTS).map(def => ({
       key: def.key,
@@ -37,13 +26,13 @@ export const AchievementService = {
       description: def.description,
       unlocked: unlockedKeys.has(def.key),
       unlockedAt:
-        unlocked.find(r => r.achievementKey === def.key)?.unlockedAt ?? null
+        (user?.achievements ?? []).find(r => r.key === def.key)?.unlockedAt ??
+        null
     }));
 
     return {
       achievements,
-      unlockedCount,
-      tier
+      unlockedCount
     };
   }
 };
