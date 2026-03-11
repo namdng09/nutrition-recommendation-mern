@@ -1,7 +1,7 @@
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import generatePassword from 'generate-password';
 import createHttpError from 'http-errors';
-import type { HydratedDocument } from 'mongoose';
+import type { HydratedDocument, PaginateResult } from 'mongoose';
 
 import { ACTIVITY_LEVEL } from '~/shared/constants/activity-level';
 import { CERTIFICATE_STATUS } from '~/shared/constants/certificate-status';
@@ -23,7 +23,6 @@ import {
   deleteCertificate,
   generateToken,
   hashPassword,
-  type PaginateResponse,
   sendMail,
   uploadAvatar,
   uploadCertificate,
@@ -371,7 +370,7 @@ export const UserService = {
     return newUser;
   },
 
-  viewUsers: async (parsed: QueryOptions): Promise<PaginateResponse<User>> => {
+  viewUsers: async (parsed: QueryOptions): Promise<PaginateResult<User>> => {
     const { filter } = parsed;
     const options = buildPaginateOptions(parsed);
 
@@ -381,7 +380,7 @@ export const UserService = {
       throw createHttpError(404, 'Không tìm thấy người dùng nào');
     }
 
-    return result as unknown as PaginateResponse<User>;
+    return result;
   },
 
   pendingCertificatesCount: async (): Promise<number> => {

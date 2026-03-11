@@ -1,6 +1,6 @@
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
-import { type HydratedDocument } from 'mongoose';
+import { type HydratedDocument, type PaginateResult } from 'mongoose';
 
 import { ROLE } from '~/shared/constants/role';
 import type { Post, PostComment } from '~/shared/database/models/post-model';
@@ -8,7 +8,6 @@ import { PostModel } from '~/shared/database/models/post-model';
 import {
   buildPaginateOptions,
   deleteImage,
-  type PaginateResponse,
   toObjectId,
   uploadImage,
   validateObjectId
@@ -61,11 +60,11 @@ export const PostService = {
     return newPost;
   },
 
-  viewPosts: async (parsed: QueryOptions): Promise<PaginateResponse<Post>> => {
+  viewPosts: async (parsed: QueryOptions): Promise<PaginateResult<Post>> => {
     const { filter } = parsed;
     const options = buildPaginateOptions(parsed);
     const result = await PostModel.paginate(filter, options);
-    return result as unknown as PaginateResponse<Post>;
+    return result;
   },
 
   viewPostDetail: async (id: string) => {

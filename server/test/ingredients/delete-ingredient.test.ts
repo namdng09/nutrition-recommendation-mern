@@ -1,96 +1,87 @@
-import mongoose from 'mongoose';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi
-} from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { IngredientService } from '~/features/ingredients/ingredient-service';
-import { INGREDIENT_CATEGORY } from '~/shared/constants/ingredient-category';
-import { UNIT } from '~/shared/constants/unit';
 import { IngredientModel } from '~/shared/database/models';
+import { deleteImage, validateObjectId } from '~/shared/utils';
 
-// Mock Cloudinary delete
-vi.mock('~/shared/utils/cloudinary', () => ({
-  uploadImage: vi.fn().mockResolvedValue({
-    success: true,
-    data: {
-      secure_url:
-        'https://res.cloudinary.com/test/image/upload/v1234567890/test-image.jpg',
-      public_id: 'test-image',
-      format: 'jpg'
-    }
-  }),
-  deleteImage: vi.fn().mockResolvedValue({ success: true })
+vi.mock('~/shared/database/models', () => ({
+  IngredientModel: {
+    findByIdAndDelete: vi.fn(),
+    findById: vi.fn()
+  }
 }));
 
+vi.mock('~/shared/utils', async importOriginal => {
+  const actual = await importOriginal<typeof import('~/shared/utils')>();
+  return {
+    ...actual,
+    validateObjectId: vi.fn(),
+    deleteImage: vi.fn()
+  };
+});
+
+const mockFindById = vi.mocked(IngredientModel.findById);
+const mockValidateObjectId = vi.mocked(validateObjectId);
+const mockDeleteImage = vi.mocked(deleteImage);
+
+const VALID_ID = 'abc123';
+const mockIngredient = {
+  _id: { toString: () => VALID_ID },
+  name: 'Cà chua',
+  deleteOne: vi.fn()
+};
+
 describe('IngredientService.deleteIngredient', () => {
-  let ingredientId: string;
-
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
-      );
-    }
+  afterEach(() => {
+    vi.clearAllMocks();
+    mockIngredient.deleteOne.mockClear();
   });
 
-  beforeEach(async () => {
-    // Create test ingredient
-    const ingredient = await IngredientModel.create({
-      name: 'Cà chua',
-      description: 'Cà chua tươi',
-      categories: [INGREDIENT_CATEGORY.VEGETABLES],
-      baseUnit: { amount: 100, unit: UNIT.GRAM },
-      allergens: [],
-      isActive: true
+  describe('business logic', () => {
+    it('should throw 400 when id format is invalid', async () => {
+      mockValidateObjectId.mockReturnValue(false);
+
+      await expect(
+        IngredientService.deleteIngredient('invalid-id')
+      ).rejects.toMatchObject({
+        status: 400,
+        message: 'Định dạng ID nguyên liệu không hợp lệ'
+      });
     });
-    ingredientId = ingredient._id.toString();
+
+    it('should throw 404 when ingredient does not exist', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindById.mockResolvedValue(null);
+
+      await expect(
+        IngredientService.deleteIngredient(VALID_ID)
+      ).rejects.toMatchObject({
+        status: 404,
+        message: 'Không tìm thấy nguyên liệu'
+      });
+    });
+
+    it('should delete ingredient successfully', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindById.mockResolvedValue(mockIngredient as any);
+
+      const result = await IngredientService.deleteIngredient(VALID_ID);
+
+      expect(result).toBeDefined();
+      expect(result._id.toString()).toBe(VALID_ID);
+      expect(result.name).toBe('Cà chua');
+    });
   });
 
-  afterEach(async () => {
-    // Clean up after each test
-    await IngredientModel.deleteMany({});
-  });
+  describe('system', () => {
+    it('should call deleteImage after deleting ingredient', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindById.mockResolvedValue(mockIngredient as any);
 
-  afterAll(async () => {
-    // Close connection
-    await mongoose.connection.close();
-  });
+      await IngredientService.deleteIngredient(VALID_ID);
 
-  // Branch - Happy case
-  it('should delete ingredient successfully', async () => {
-    const deletedIngredient =
-      await IngredientService.deleteIngredient(ingredientId);
-
-    expect(deletedIngredient).toBeDefined();
-    expect(deletedIngredient._id.toString()).toBe(ingredientId);
-    expect(deletedIngredient.name).toBe('Cà chua');
-
-    // Verify ingredient is deleted from database
-    const foundIngredient = await IngredientModel.findById(ingredientId);
-    expect(foundIngredient).toBeNull();
-  });
-
-  // Branch - Invalid ID format
-  it('should throw error when id format is invalid', async () => {
-    await expect(
-      IngredientService.deleteIngredient('invalid-id')
-    ).rejects.toThrow('Định dạng ID nguyên liệu không hợp lệ');
-  });
-
-  // Branch - Ingredient not found
-  it('should throw error when ingredient does not exist', async () => {
-    const nonExistentId = new mongoose.Types.ObjectId().toString();
-
-    await expect(
-      IngredientService.deleteIngredient(nonExistentId)
-    ).rejects.toThrow('Không tìm thấy nguyên liệu');
+      expect(mockDeleteImage).toHaveBeenCalledWith(VALID_ID);
+      expect(mockIngredient.deleteOne).toHaveBeenCalled();
+    });
   });
 });

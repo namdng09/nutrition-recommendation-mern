@@ -4,6 +4,7 @@ import {
 } from '@payos/node';
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
+import type { PaginateResult } from 'mongoose';
 
 import type { MembershipLevel } from '~/shared/constants/membership-level';
 import { MEMBERSHIP_LEVEL } from '~/shared/constants/membership-level';
@@ -13,7 +14,6 @@ import type { Payment } from '~/shared/database/models/payment-model';
 import { PaymentModel } from '~/shared/database/models/payment-model';
 import {
   buildPaginateOptions,
-  type PaginateResponse,
   toObjectId,
   validateObjectId
 } from '~/shared/utils';
@@ -207,7 +207,7 @@ export const PaymentService = {
   listPaymentsByUser: async (
     userId: string,
     parsed: QueryOptions
-  ): Promise<PaginateResponse<Payment>> => {
+  ): Promise<PaginateResult<Payment>> => {
     if (!userId || !validateObjectId(userId)) {
       throw createHttpError(400, 'Invalid userId');
     }
@@ -223,12 +223,12 @@ export const PaymentService = {
       populate: { path: 'user', select: 'name email membershipLevel' }
     });
 
-    return result as unknown as PaginateResponse<Payment>;
+    return result;
   },
 
   listPayments: async (
     parsed: QueryOptions
-  ): Promise<PaginateResponse<Payment>> => {
+  ): Promise<PaginateResult<Payment>> => {
     const options = buildPaginateOptions(parsed);
     const filter = {
       ...parsed.filter,
@@ -240,7 +240,7 @@ export const PaymentService = {
       populate: { path: 'user', select: 'name email membershipLevel' }
     });
 
-    return result as unknown as PaginateResponse<Payment>;
+    return result;
   },
 
   confirmPayment: async (orderCode: number, userId: string) => {
@@ -261,16 +261,23 @@ export const PaymentService = {
     // Query PayOS for the real payment status
     const paymentLink = await payOS.paymentRequests.get(orderCode);
 
-    if (paymentLink.status !== 'PAID') {
+    if (paymentLink.status === 'PAID') {
+      payment.status = PAYMENT_STATUS.COMPLETED;
+      payment.completedAt = new Date();
+      payment.cancellationReason = undefined;
+
+      if (payment.targetMembership) {
+        await applyMembershipUpgrade(payment, payment.targetMembership);
+      }
+    } else if (
+      paymentLink.status === 'CANCELLED' ||
+      paymentLink.status === 'FAILED'
+    ) {
+      payment.status = PAYMENT_STATUS.CANCELLED;
+      payment.cancellationReason = 'Thanh toán đã bị hủy hoặc thất bại';
+      payment.completedAt = undefined;
+    } else {
       throw createHttpError(400, 'Thanh toán chưa hoàn tất');
-    }
-
-    payment.status = PAYMENT_STATUS.COMPLETED;
-    payment.completedAt = new Date();
-    payment.cancellationReason = undefined;
-
-    if (payment.targetMembership) {
-      await applyMembershipUpgrade(payment, payment.targetMembership);
     }
 
     await payment.save();

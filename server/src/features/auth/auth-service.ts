@@ -6,6 +6,8 @@ import { ROLE } from '~/shared/constants/role';
 import { TOKEN_TYPE } from '~/shared/constants/token-type';
 import { AuthModel, UserModel } from '~/shared/database/models';
 import type { User } from '~/shared/database/models/user-model';
+import { eventBus } from '~/shared/events/event-bus';
+import { EVENTS } from '~/shared/events/event-types';
 import {
   comparePassword,
   generateResetPasswordToken,
@@ -28,6 +30,34 @@ import {
   signUpRequestSchema,
   type SignUpResponse
 } from './auth-dto';
+
+// Updates loginStreak on the user document in-place (does not save).
+// Rules: same-day login → no change; consecutive day → streak++;
+// gap > 1 day → reset to 1.
+function updateLoginStreak(user: {
+  loginStreak?: { count: number; lastLoginDate?: Date | null } | null;
+}) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
+  const last = user.loginStreak?.lastLoginDate
+    ? new Date(user.loginStreak.lastLoginDate)
+    : null;
+  if (last) last.setHours(0, 0, 0, 0);
+
+  if (!last || last < yesterday) {
+    user.loginStreak = { count: 1, lastLoginDate: today };
+  } else if (last.getTime() === yesterday.getTime()) {
+    user.loginStreak = {
+      count: (user.loginStreak?.count ?? 0) + 1,
+      lastLoginDate: today
+    };
+  }
+  // else last === today → already logged in today, no change
+}
 
 export const AuthService = {
   login: async (data: LoginRequest): Promise<LoginResponse> => {
@@ -63,10 +93,18 @@ export const AuthService = {
       );
     }
 
+    updateLoginStreak(user);
+    await user.save();
+
     const { accessToken, refreshToken } = generateToken({
       id: user._id.toString(),
       role: user.role,
       hasOnboarded: user.hasOnboarded
+    });
+
+    eventBus.emit(EVENTS.USER_LOGGED_IN, {
+      userId: user._id.toString(),
+      loginStreak: user.loginStreak?.count ?? 1
     });
 
     return {
@@ -99,10 +137,18 @@ export const AuthService = {
       await auth.save();
     }
 
+    updateLoginStreak(user);
+    await user.save();
+
     const { accessToken, refreshToken } = generateToken({
       id: user._id.toString(),
       role: user.role,
       hasOnboarded: user.hasOnboarded
+    });
+
+    eventBus.emit(EVENTS.USER_LOGGED_IN, {
+      userId: user._id.toString(),
+      loginStreak: user.loginStreak?.count ?? 1
     });
 
     return {
