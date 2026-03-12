@@ -2,8 +2,8 @@ import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
 import type { HydratedDocument, PaginateResult } from 'mongoose';
 
+import { ActivityModel } from '~/shared/database/models';
 import type { Activity } from '~/shared/database/models/activity-model';
-import { ActivityModel } from '~/shared/database/models/activity-model';
 import {
   buildPaginateOptions,
   deleteActivityTutorial,

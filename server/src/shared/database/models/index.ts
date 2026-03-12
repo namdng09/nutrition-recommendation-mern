@@ -1,3 +1,4 @@
+export * from './activity-model';
 export * from './auth-model';
 export * from './collection-model';
 export * from './dish-model';
