@@ -159,4 +159,40 @@ export const deleteAvatar = async (
   return deleteImage(publicId);
 };
 
+/**
+ * Upload activity tutorial image to Cloudinary
+ * @param file - File buffer
+ * @param activityId - Activity ID to use as filename
+ * @returns Promise with upload result
+ */
+export const uploadActivityTutorial = async (
+  file: Buffer,
+  activityId: string
+): Promise<UploadResult> => {
+  const tutorialOptions = {
+    folder: 'activity-tutorials',
+    public_id: activityId,
+    overwrite: true,
+    invalidate: true,
+    transformation: [
+      { width: 1280, crop: 'limit' },
+      { quality: 'auto', format: 'auto' }
+    ]
+  };
+
+  return uploadImage(file, tutorialOptions);
+};
+
+/**
+ * Delete activity tutorial image from Cloudinary
+ * @param activityId - Activity ID (used as public_id)
+ * @returns Promise with deletion result
+ */
+export const deleteActivityTutorial = async (
+  activityId: string
+): Promise<{ success: boolean; error?: string }> => {
+  const publicId = `activity-tutorials/${activityId}`;
+  return deleteImage(publicId);
+};
+
 export default cloudinary;
