@@ -5,8 +5,8 @@ import {
 import type { ParsedQs } from 'qs';
 
 import {
-  buildMongoNormalizationExpr,
-  removeVietnameseDiacritics
+  buildVietnameseInsensitiveRegex,
+  hasVietnameseDiacritics
 } from './vietnamese-normalizer';
 
 /**
@@ -72,60 +72,42 @@ export const parseQuery = (
 };
 
 /**
- * Post-processes a parsed MongoDB filter to replace any RegExp field conditions
- * with diacritic-insensitive equivalents using $expr + $regexMatch +
- * $replaceAll normalization chain.
+ * Post-processes parsed filters into diacritic-insensitive RegExp conditions.
  *
- * This allows queries like name=/ca rot/i to match documents storing "Cà Rốt"
- * without requiring any schema changes or pre-normalized fields.
+ * This avoids deep nested aggregation expressions and remains compatible with
+ * MongoDB Atlas BSON depth constraints.
  */
+function transformValue(value: any): any {
+  if (typeof value === 'string') {
+    return hasVietnameseDiacritics(value)
+      ? new RegExp(value, 'i')
+      : buildVietnameseInsensitiveRegex(value, 'i');
+  }
+
+  if (value instanceof RegExp) {
+    return hasVietnameseDiacritics(value.source)
+      ? value
+      : buildVietnameseInsensitiveRegex(value.source, value.flags);
+  }
+
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    !(value instanceof RegExp)
+  ) {
+    return transformVietnameseSearchFilter(value);
+  }
+
+  return value;
+}
+
 function transformVietnameseSearchFilter(
   filter: Record<string, any>
 ): Record<string, any> {
-  const transformed = { ...filter };
-  const exprConditions: object[] = [];
+  const transformed: Record<string, any> = {};
 
   for (const [key, value] of Object.entries(filter)) {
-    // Skip MongoDB operator keys like $or, $and, $expr, etc.
-    if (key.startsWith('$')) continue;
-
-    if (value instanceof RegExp) {
-      const normalizedPattern = removeVietnameseDiacritics(value.source);
-      exprConditions.push({
-        $regexMatch: {
-          input: buildMongoNormalizationExpr(`$${key}`),
-          regex: normalizedPattern,
-          options: value.flags
-        }
-      });
-      delete transformed[key];
-    } else if (typeof value === 'string') {
-      const normalizedPattern = removeVietnameseDiacritics(value);
-      exprConditions.push({
-        $regexMatch: {
-          input: buildMongoNormalizationExpr(`$${key}`),
-          regex: normalizedPattern,
-          options: 'i'
-        }
-      });
-      delete transformed[key];
-    }
-  }
-
-  if (exprConditions.length === 1) {
-    if (transformed.$expr) {
-      transformed.$expr = { $and: [transformed.$expr, exprConditions[0]] };
-    } else {
-      transformed.$expr = exprConditions[0];
-    }
-  } else if (exprConditions.length > 1) {
-    if (transformed.$expr) {
-      transformed.$expr = {
-        $and: [transformed.$expr, ...exprConditions]
-      };
-    } else {
-      transformed.$expr = { $and: exprConditions };
-    }
+    transformed[key] = key.startsWith('$') ? value : transformValue(value);
   }
 
   return transformed;

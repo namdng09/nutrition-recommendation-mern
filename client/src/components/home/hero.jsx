@@ -4,6 +4,7 @@ import {
   HiOutlineCheckBadge,
   HiSparkles
 } from 'react-icons/hi2';
+import { Link } from 'react-router';
 
 const Hero = () => {
   return (
@@ -26,10 +27,13 @@ const Hero = () => {
         </p>
 
         <div className='mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4'>
-          <button className='group flex justify-center items-center gap-2 bg-primary text-primary-foreground font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-xl shadow-lg shadow-primary/20 active:scale-95 transition'>
+          <Link
+            to='/schedules/day'
+            className='group flex justify-center items-center gap-2 bg-primary text-primary-foreground font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-xl shadow-lg shadow-primary/20 active:scale-95 transition'
+          >
             Bắt đầu miễn phí
             <HiOutlineArrowRight className='group-hover:translate-x-1 transition-transform' />
-          </button>
+          </Link>
 
           <button className='flex justify-center items-center gap-2 bg-secondary text-secondary-foreground font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-xl border border-border hover:bg-muted transition'>
             Xem cách hoạt động

@@ -13,93 +13,59 @@ export function removeVietnameseDiacritics(text: string): string {
 }
 
 /**
- * Builds a MongoDB aggregation expression that normalizes a stored string
- * field at query time by replacing all Vietnamese diacritic characters with
- * their ASCII base equivalents.
- *
- * Starts with $toLower then chains 67 $replaceAll calls — one per lowercase
- * Vietnamese character. This allows diacritic-insensitive partial matching
- * via $regexMatch inside $expr without any schema changes.
- *
- * Example: stored "Cà Rốt" → expression evaluates to "ca rot" at query time.
- *
- * @param fieldPath - MongoDB field path with $ prefix, e.g. "$name"
+ * Checks if a string contains Vietnamese diacritics
  */
-export function buildMongoNormalizationExpr(fieldPath: string): object {
-  const replacements: Array<[string, string]> = [
-    ['à', 'a'],
-    ['á', 'a'],
-    ['ả', 'a'],
-    ['ã', 'a'],
-    ['ạ', 'a'],
-    ['ă', 'a'],
-    ['ắ', 'a'],
-    ['ằ', 'a'],
-    ['ẳ', 'a'],
-    ['ẵ', 'a'],
-    ['ặ', 'a'],
-    ['â', 'a'],
-    ['ấ', 'a'],
-    ['ầ', 'a'],
-    ['ẩ', 'a'],
-    ['ẫ', 'a'],
-    ['ậ', 'a'],
-    ['đ', 'd'],
-    ['è', 'e'],
-    ['é', 'e'],
-    ['ẻ', 'e'],
-    ['ẽ', 'e'],
-    ['ẹ', 'e'],
-    ['ê', 'e'],
-    ['ế', 'e'],
-    ['ề', 'e'],
-    ['ể', 'e'],
-    ['ễ', 'e'],
-    ['ệ', 'e'],
-    ['ì', 'i'],
-    ['í', 'i'],
-    ['ỉ', 'i'],
-    ['ĩ', 'i'],
-    ['ị', 'i'],
-    ['ò', 'o'],
-    ['ó', 'o'],
-    ['ỏ', 'o'],
-    ['õ', 'o'],
-    ['ọ', 'o'],
-    ['ô', 'o'],
-    ['ố', 'o'],
-    ['ồ', 'o'],
-    ['ổ', 'o'],
-    ['ỗ', 'o'],
-    ['ộ', 'o'],
-    ['ơ', 'o'],
-    ['ớ', 'o'],
-    ['ờ', 'o'],
-    ['ở', 'o'],
-    ['ỡ', 'o'],
-    ['ợ', 'o'],
-    ['ù', 'u'],
-    ['ú', 'u'],
-    ['ủ', 'u'],
-    ['ũ', 'u'],
-    ['ụ', 'u'],
-    ['ư', 'u'],
-    ['ứ', 'u'],
-    ['ừ', 'u'],
-    ['ử', 'u'],
-    ['ữ', 'u'],
-    ['ự', 'u'],
-    ['ỳ', 'y'],
-    ['ý', 'y'],
-    ['ỷ', 'y'],
-    ['ỹ', 'y'],
-    ['ỵ', 'y']
-  ];
+export function hasVietnameseDiacritics(text: string): boolean {
+  return /[\u0300-\u036fđ]/.test(text.normalize('NFD'));
+}
 
-  return replacements.reduce(
-    (expr, [find, replacement]) => ({
-      $replaceAll: { input: expr, find, replacement }
-    }),
-    { $toLower: fieldPath } as object
-  );
+const VIETNAMESE_CHAR_GROUPS: Record<string, string> = {
+  a: 'aàáảãạăắằẳẵặâấầẩẫậ',
+  d: 'dđ',
+  e: 'eèéẻẽẹêếềểễệ',
+  i: 'iìíỉĩị',
+  o: 'oòóỏõọôốồổỗộơớờởỡợ',
+  u: 'uùúủũụưứừửữự',
+  y: 'yỳýỷỹỵ'
+};
+
+const REGEX_META_CHAR_PATTERN = /[\\^$.*+?()[\]{}|]/;
+
+function escapeRegexChar(char: string): string {
+  if (REGEX_META_CHAR_PATTERN.test(char)) {
+    return `\\${char}`;
+  }
+  return char;
+}
+
+/**
+ * Builds a regex source string that matches Vietnamese characters with or
+ * without diacritics.
+ *
+ * Example: "ca rot" =>
+ * "[c][aàáảãạăắằẳẵặâấầẩẫậ] r[oòóỏõọôốồổỗộơớờởỡợ]t"
+ */
+export function buildVietnameseInsensitivePattern(text: string): string {
+  const normalized = removeVietnameseDiacritics(text);
+
+  return Array.from(normalized)
+    .map(char => {
+      const variants = VIETNAMESE_CHAR_GROUPS[char];
+      if (variants) {
+        return `[${variants}]`;
+      }
+      return escapeRegexChar(char);
+    })
+    .join('');
+}
+
+/**
+ * Builds a case-insensitive regex for Vietnamese diacritic-insensitive search.
+ */
+export function buildVietnameseInsensitiveRegex(
+  text: string,
+  flags = 'i'
+): RegExp {
+  const normalizedFlags = flags.includes('i') ? flags : `${flags}i`;
+  return new RegExp(buildVietnameseInsensitivePattern(text), normalizedFlags);
 }

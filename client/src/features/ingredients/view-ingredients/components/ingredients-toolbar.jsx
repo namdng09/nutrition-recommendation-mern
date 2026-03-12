@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaLeaf } from 'react-icons/fa';
 
 import { Input } from '~/components/ui/input';
@@ -10,6 +10,20 @@ export default function IngredientsToolbar({
   page,
   totalPages
 }) {
+  const [inputValue, setInputValue] = useState(name);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onNameChange(inputValue);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [inputValue, onNameChange]);
+
+  useEffect(() => {
+    setInputValue(name);
+  }, [name]);
+
   return (
     <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
       <div className='flex items-start gap-3'>
@@ -27,8 +41,8 @@ export default function IngredientsToolbar({
 
       <div className='flex w-full gap-2 sm:w-auto'>
         <Input
-          value={name}
-          onChange={e => onNameChange(e.target.value)}
+          value={inputValue}
+          onChange={e => setInputValue(e.target.value)}
           placeholder='Tìm kiếm tên nguyên liệu...'
           className='w-full sm:w-72'
         />
