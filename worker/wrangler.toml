@@ -1,13 +1,13 @@
 #:schema node_modules/wrangler/config-schema.json
 #Command to run to add prerender token: npx wrangler secret put PRERENDER_TOKEN
 
-name = "my-seo-worker"
+name = "my-real-seo-worker"
 main = "index.ts"
 compatibility_date = "2025-02-08"
 
 # 1. Routing: Worker runs on requests matching this pattern
 routes = [
-  { pattern = "eatdee.dpdns.org/*", zone_id = "e5b81d5e626a09405ca0db63457e6298" }
+  { pattern = "eatdee.net/*", zone_id = "1311fe6cc03895593e5ba6dad388bf17" }
 ]
 
 # 2. Variables: Public config (Non-sensitive)

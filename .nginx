@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name eatdee.dpdns.org;
+    server_name eatdee.net;
 
     # Frontend: React Static Files
     root /home/cattamthe/nutrition-recommendation-mern/client/dist;
