@@ -5,22 +5,22 @@ import mongoose, {
 } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
-import { ACTIVITY_DIFFICULTY } from '~/shared/constants/activity-difficulty';
-import { ACTIVITY_TYPE } from '~/shared/constants/activity-type';
+import { EXERCISE_DIFFICULTY } from '~/shared/constants/exercise-difficulty';
+import { EXERCISE_TYPE } from '~/shared/constants/exercise-type';
 
-const activitySchema = new Schema(
+const exerciseSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
     tutorial: { type: String, default: '' },
     instructions: { type: String, required: true },
     difficulty: {
       type: String,
-      enum: Object.values(ACTIVITY_DIFFICULTY),
+      enum: Object.values(EXERCISE_DIFFICULTY),
       required: true
     },
     type: {
       type: String,
-      enum: Object.values(ACTIVITY_TYPE),
+      enum: Object.values(EXERCISE_TYPE),
       required: true
     },
     muscles: [
@@ -42,13 +42,13 @@ const activitySchema = new Schema(
   }
 );
 
-activitySchema.plugin(mongoosePaginate);
+exerciseSchema.plugin(mongoosePaginate);
 
-activitySchema.index({ name: 1 }, { unique: true });
+exerciseSchema.index({ name: 1 }, { unique: true });
 
-export type Activity = InferSchemaType<typeof activitySchema>;
+export type Exercise = InferSchemaType<typeof exerciseSchema>;
 
-export const ActivityModel = mongoose.model(
-  'Activity',
-  activitySchema
-) as PaginateModel<Activity>;
+export const ExerciseModel = mongoose.model(
+  'Exercise',
+  exerciseSchema
+) as PaginateModel<Exercise>;

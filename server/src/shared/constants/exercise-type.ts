@@ -1,4 +1,4 @@
-export const ACTIVITY_TYPE = {
+export const EXERCISE_TYPE = {
   STRENGTH: 'Strength',
   STRETCHING: 'Stretching',
   POWER: 'Power',
@@ -9,4 +9,4 @@ export const ACTIVITY_TYPE = {
   YOGA: 'Yoga'
 } as const;
 
-export type ActivityType = (typeof ACTIVITY_TYPE)[keyof typeof ACTIVITY_TYPE];
+export type ExerciseType = (typeof EXERCISE_TYPE)[keyof typeof EXERCISE_TYPE];
