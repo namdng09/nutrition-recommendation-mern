@@ -1,7 +1,6 @@
 import React from 'react';
-import { useLocation } from 'react-router';
+import { Navigate, useLocation, useNavigate } from 'react-router';
 import { Outlet } from 'react-router';
-import { useNavigate } from 'react-router';
 
 import { AdminProfileDropdown } from '~/components/admin/admin-profile-dropdown';
 import { AdminSidebar } from '~/components/admin/admin-sidebar.jsx';
@@ -26,12 +25,29 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from '~/components/ui/tooltip';
+import CERTIFICATE_STATUS from '~/constants/certificate-status';
+import { ROLE } from '~/constants/role';
 import { usePendingCertificatesCount } from '~/features/users/manage-certificate/api/pending-certificates-count';
+import { useProfile } from '~/features/users/view-profile/api/view-profile';
 
 const AdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { data: profile, isLoading: isProfileLoading } = useProfile();
   const { data: pendingCount = 0 } = usePendingCertificatesCount();
+
+  // Redirect unapproved nutritionists away from the management panel
+  const isNutritionist = profile?.role === ROLE.NUTRITIONIST;
+  const isCertApproved =
+    profile?.certificate?.status === CERTIFICATE_STATUS.APPROVED;
+
+  if (isNutritionist && !isProfileLoading && !isCertApproved) {
+    return <Navigate to='/profile/certificate' replace />;
+  }
+
+  if (isProfileLoading) {
+    return null; // Or a loading spinner
+  }
 
   const getBreadcrumbItems = () => {
     const path = location.pathname;
