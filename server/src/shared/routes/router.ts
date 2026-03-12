@@ -11,6 +11,7 @@ import paymentRoute from '~/features/payments/payment-route';
 import postRoute from '~/features/posts/post-route';
 import scheduleRoute from '~/features/schedules/schedule-route';
 import userRoute from '~/features/users/user-route';
+import workoutRouter from '~/features/workouts/workout-route';
 
 const router = Router();
 
@@ -25,5 +26,6 @@ router.use('/groceries', groceryRoute);
 router.use('/ai', aiRoute);
 router.use('/payments', paymentRoute);
 router.use('/exercises', exerciseRouter);
+router.use('/workouts', workoutRouter);
 
 export default router;
