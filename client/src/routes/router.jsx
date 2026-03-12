@@ -134,6 +134,10 @@ const router = createBrowserRouter([
                 Component: lazy(() => import('~/app/profile/blocks/page'))
               },
               {
+                path: 'achievements',
+                Component: lazy(() => import('~/app/profile/achievements/page'))
+              },
+              {
                 path: 'certificate',
                 Component: lazy(() => import('~/app/profile/certificate/page'))
               }

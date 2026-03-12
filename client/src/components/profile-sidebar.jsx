@@ -8,6 +8,7 @@ import {
   LogOut,
   Menu,
   Target,
+  Trophy,
   User,
   Utensils
 } from 'lucide-react';
@@ -74,6 +75,11 @@ export function ProfileSidebar({ ...props }) {
       title: 'Món ăn bị chặn',
       url: '/profile/blocks',
       icon: CircleOff
+    },
+    {
+      title: 'Thành tựu',
+      url: '/profile/achievements',
+      icon: Trophy
     },
     {
       title: 'Lịch trình bữa ăn',
