@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-import { createBrowserRouter } from 'react-router';
+import { createBrowserRouter, Outlet } from 'react-router';
 
 import PrivateRoute from '~/components/private-route';
 import { ROLE } from '~/constants/role';
@@ -54,12 +54,22 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/dishes/[id]/page'))
           },
           {
-            path: 'schedules/day',
-            Component: lazy(() => import('~/app/schedules/[day]/page'))
-          },
-          {
-            path: 'schedules/week',
-            Component: lazy(() => import('~/app/schedules/[week]/page'))
+            path: 'schedules',
+            Component: () => (
+              <PrivateRoute allowedRoles={[ROLE.USER]}>
+                <Outlet />
+              </PrivateRoute>
+            ),
+            children: [
+              {
+                path: 'day',
+                Component: lazy(() => import('~/app/schedules/[day]/page'))
+              },
+              {
+                path: 'week',
+                Component: lazy(() => import('~/app/schedules/[week]/page'))
+              }
+            ]
           },
           {
             path: 'posts',
@@ -75,7 +85,17 @@ const router = createBrowserRouter([
           },
           {
             path: 'groceries',
-            Component: lazy(() => import('~/app/groceries/page'))
+            Component: () => (
+              <PrivateRoute allowedRoles={[ROLE.USER]}>
+                <Outlet />
+              </PrivateRoute>
+            ),
+            children: [
+              {
+                index: true,
+                Component: lazy(() => import('~/app/groceries/page'))
+              }
+            ]
           },
           {
             path: 'payment/success',
