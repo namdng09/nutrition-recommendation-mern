@@ -6,6 +6,8 @@ import { Navigate, Outlet, useLocation } from 'react-router';
 import { Toaster } from '~/components/ui/sonner';
 import { Spinner } from '~/components/ui/spinner';
 import { ROLE } from '~/constants/role';
+import useAchievementSse from '~/hooks/useAchievementSse';
+import { getStoredAccessToken } from '~/lib/auth-tokens';
 import {
   initializeAuth,
   setupSessionExpiredListener
@@ -16,6 +18,9 @@ const AppLayout = () => {
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const location = useLocation();
+
+  const accessToken = getStoredAccessToken();
+  useAchievementSse(accessToken, !loading && !!user);
 
   useEffect(() => {
     dispatch(initializeAuth());
