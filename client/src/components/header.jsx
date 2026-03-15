@@ -1,12 +1,4 @@
-import {
-  ChevronDown,
-  LogOut,
-  Menu,
-  Settings,
-  Sparkles,
-  User,
-  X
-} from 'lucide-react';
+import { ChevronDown, LogOut, Menu, Sparkles, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { FaUserPlus } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
@@ -203,28 +195,50 @@ const Header = () => {
       <div
         className={cn(
           'md:hidden overflow-hidden bg-background/95 backdrop-blur-xl transition-all duration-300 ease-in-out border-b border-border',
-          mobileMenuOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'
+          mobileMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
         )}
       >
         <div className='px-4 pb-6 pt-2 space-y-4'>
           <div className='grid gap-1'>
-            {NAV_LINKS.map(link => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                onClick={() => setMobileMenuOpen(false)}
-                className={({ isActive }) =>
-                  cn(
-                    'flex items-center rounded-xl px-4 py-3 text-base font-bold transition-all',
-                    isActive
-                      ? 'bg-primary text-primary-foreground shadow-md'
-                      : 'text-muted-foreground hover:bg-primary/5 hover:text-primary'
-                  )
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
+            {NAV_LINKS.flatMap(link => {
+              if (link.children) {
+                return link.children.map(child => (
+                  <NavLink
+                    key={child.to}
+                    to={child.to}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={({ isActive }) =>
+                      cn(
+                        'flex items-center rounded-xl px-4 py-3 text-base font-bold transition-all',
+                        isActive
+                          ? 'bg-primary text-primary-foreground shadow-md'
+                          : 'text-muted-foreground hover:bg-primary/5 hover:text-primary'
+                      )
+                    }
+                  >
+                    {child.label}
+                  </NavLink>
+                ));
+              }
+
+              return (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={({ isActive }) =>
+                    cn(
+                      'flex items-center rounded-xl px-4 py-3 text-base font-bold transition-all',
+                      isActive
+                        ? 'bg-primary text-primary-foreground shadow-md'
+                        : 'text-muted-foreground hover:bg-primary/5 hover:text-primary'
+                    )
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              );
+            })}
           </div>
 
           {!user && (
