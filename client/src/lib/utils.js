@@ -197,24 +197,22 @@ export const getNutritionValue = (dish, label) =>
 
 export const formatInstructions = text => {
   if (!text) return '—';
+  let t = String(text);
 
-  return (
-    String(text)
-      // Convert escaped newlines to real newline
-      .replace(/\\r?\\n/g, '\n')
+  // If the string contains escaped newline sequences like "\n" (two chars),
+  // convert them to real newlines.
+  t = t.replace(/\\r?\\n/g, '\n').replace(/\\n/g, '\n');
 
-      // Normalize CRLF -> LF
-      .replace(/\r\n/g, '\n')
+  // Collapse 3+ newlines to max 2 for cleaner spacing
+  t = t.replace(/\n{3,}/g, '\n\n');
 
-      // Collapse many empty lines
-      .replace(/\n{3,}/g, '\n\n')
+  // Trim whitespace on each line
+  t = t
+    .split('\n')
+    .map(line => line.trim())
+    .join('\n');
 
-      // Trim spaces on each line
-      .split('\n')
-      .map(line => line.trim())
-      .join('\n')
-      .trim()
-  );
+  return t;
 };
 
 /**
