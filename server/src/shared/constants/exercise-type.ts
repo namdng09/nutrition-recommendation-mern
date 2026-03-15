@@ -1,11 +1,11 @@
 export const EXERCISE_TYPE = {
-  STRENGTH: 'Strength',
-  STRETCHING: 'Stretching',
-  POWER: 'Power',
+  STRENGTH: 'Sức mạnh',
+  STRETCHING: 'Kéo giãn',
+  POWER: 'Cường độ',
   OLYMPIC: 'Olympic',
-  EXPLOSIVE: 'Explosive',
-  MOBILITY: 'Mobility',
-  DYNAMIC: 'Dynamic',
+  EXPLOSIVE: 'Bùng nổ',
+  MOBILITY: 'Linh hoạt',
+  DYNAMIC: 'Động',
   YOGA: 'Yoga'
 } as const;
 

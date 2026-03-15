@@ -7,6 +7,7 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 
 import { EXERCISE_DIFFICULTY } from '~/shared/constants/exercise-difficulty';
 import { EXERCISE_TYPE } from '~/shared/constants/exercise-type';
+import { WORKOUT_COUNTER_TYPE } from '~/shared/constants/workout-counter-type';
 
 const exerciseSchema = new Schema(
   {
@@ -21,6 +22,11 @@ const exerciseSchema = new Schema(
     type: {
       type: String,
       enum: Object.values(EXERCISE_TYPE),
+      required: true
+    },
+    logType: {
+      type: String,
+      enum: Object.values(WORKOUT_COUNTER_TYPE),
       required: true
     },
     muscles: [

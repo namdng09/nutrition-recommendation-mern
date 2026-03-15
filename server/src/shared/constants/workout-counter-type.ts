@@ -1,7 +1,7 @@
 export const WORKOUT_COUNTER_TYPE = {
-  DISTANCE: 'Distance',
-  WEIGHT_AND_REPS: 'WeightAndReps',
-  DURATION: 'Duration'
+  DISTANCE: 'Quãng đường',
+  WEIGHT_AND_REPS: 'Cân nặng và số lần tập',
+  DURATION: 'Thời gian'
 } as const;
 
 export type WorkoutCounterType =
