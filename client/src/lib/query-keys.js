@@ -15,5 +15,6 @@ export const QUERY_KEYS = {
   DISH_NUTRITION_DETAIL: id => ['dish_nutrition_detail', id],
   GROCERIES: ['groceries'],
   PAYMENTS: ['payments'],
-  EXERCISES: ['exercises']
+  EXERCISES: ['exercises'],
+  EXERCISE: id => ['exercise', id]
 };
