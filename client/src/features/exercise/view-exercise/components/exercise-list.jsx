@@ -6,6 +6,7 @@ import {
   HiOutlineClock,
   HiOutlineLightningBolt
 } from 'react-icons/hi';
+import { Link } from 'react-router';
 
 import { getPreviewImage, isGifUrl } from '~/lib/utils';
 
@@ -31,7 +32,8 @@ export default function ExerciseList() {
           const preview = getPreviewImage(ex.tutorial);
 
           return (
-            <div
+            <Link
+              to={`/exercises/${ex._id}`}
               key={ex._id}
               className='group flex flex-col rounded-3xl border border-border bg-card shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden'
             >
@@ -106,7 +108,7 @@ export default function ExerciseList() {
                 XEM CHI TIẾT
                 <HiChevronDoubleRight className='transition-transform group-hover:translate-x-1' />
               </button>
-            </div>
+            </Link>
           );
         })}
       </div>
