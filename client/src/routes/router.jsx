@@ -58,6 +58,10 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/exercises/page'))
           },
           {
+            path: 'exercises/:id',
+            Component: lazy(() => import('~/app/exercises/[id]/page'))
+          },
+          {
             path: 'schedules',
             Component: () => (
               <PrivateRoute allowedRoles={[ROLE.USER]}>
