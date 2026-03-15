@@ -39,11 +39,25 @@ export const getRoleLabel = value => {
 export const NAV_LINKS = [
   { to: '/', label: 'Trang Chủ' },
   { to: '/schedules/day', label: 'Thời gian biểu' },
-  { to: '/collections', label: 'Gợi ý bữa ăn' },
-  { to: '/dishes', label: 'Món ăn' },
-  { to: '/ingredients', label: 'Nguyên liệu' },
+
+  {
+    label: 'Dinh dưỡng',
+    children: [
+      { to: '/collections', label: 'Gợi ý bữa ăn' },
+      { to: '/dishes', label: 'Món ăn' },
+      { to: '/ingredients', label: 'Nguyên liệu' }
+    ]
+  },
+
   { to: '/posts', label: 'Blogs' },
-  { to: '/groceries', label: 'Mua sắm' }
+
+  {
+    label: 'Khác',
+    children: [
+      { to: '/groceries', label: 'Mua sắm' },
+      { to: '/exercises', label: 'Bài tập' }
+    ]
+  }
 ];
 
 // ingredients pie chart
@@ -180,3 +194,62 @@ export const filterNutrients = (nutrition, keywords = []) =>
 // dish list kcal (calories)
 export const getNutritionValue = (dish, label) =>
   dish?.nutrition?.nutrients?.find(n => n.label === label)?.value ?? 0;
+
+export const formatInstructions = text => {
+  if (!text) return '—';
+
+  return (
+    String(text)
+      // Convert escaped newlines to real newline
+      .replace(/\\r?\\n/g, '\n')
+
+      // Normalize CRLF -> LF
+      .replace(/\r\n/g, '\n')
+
+      // Collapse many empty lines
+      .replace(/\n{3,}/g, '\n\n')
+
+      // Trim spaces on each line
+      .split('\n')
+      .map(line => line.trim())
+      .join('\n')
+      .trim()
+  );
+};
+
+/**
+ * Check if URL is an image file
+ */
+export const isImageUrl = url => {
+  if (!url || typeof url !== 'string') return false;
+  return /\.(gif|jpe?g|png|webp|svg|avif)(\?.*)?$/i.test(url);
+};
+
+/**
+ * Check if URL is a GIF file
+ */
+export const isGifUrl = url => {
+  if (!url || typeof url !== 'string') return false;
+  return /\.gif(\?.*)?$/i.test(url);
+};
+
+/**
+ * Get preview image (static image instead of gif)
+ */
+export const getPreviewImage = url => {
+  if (!url) return url;
+
+  if (isGifUrl(url)) {
+    return url.replace(/\.gif(\?.*)?$/i, '.jpg');
+  }
+
+  return url;
+};
+
+/**
+ * Get hover image (gif animation if available)
+ */
+export const getHoverImage = url => {
+  if (!url) return url;
+  return url;
+};
