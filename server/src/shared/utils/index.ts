@@ -10,3 +10,4 @@ export * from './paginate-options';
 export * from './paginate-response';
 export * from './query-parser';
 export * from './validate-object-id';
+export * from './vietnamese-normalizer';

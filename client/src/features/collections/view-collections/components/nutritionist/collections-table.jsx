@@ -1,4 +1,4 @@
-import { Eye, Heart, Trash2, Users } from 'lucide-react';
+import { Eye, Trash2, Users } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
@@ -10,7 +10,9 @@ import DeleteBulkCollectionsDialog from '~/features/collections/delete-collectio
 import DeleteCollectionDialog from '~/features/collections/delete-collection/components/nutritionist/delete-collection-dialog';
 import { useCollections } from '~/features/collections/view-collections/api/view-collection';
 
-const CollectionsTable = () => {
+const CollectionsTable = ({
+  viewDetailPath = '/nutritionist/manage-collections'
+}) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -146,9 +148,8 @@ const CollectionsTable = () => {
           <Button
             variant='ghost'
             size='icon'
-            onClick={() =>
-              navigate(`/nutritionist/manage-collections/${row.original._id}`)
-            }
+            onClick={() => navigate(`${viewDetailPath}/${row.original._id}`)}
+            title='Xem chi tiết'
           >
             <Eye className='h-4 w-4' />
           </Button>
@@ -156,6 +157,7 @@ const CollectionsTable = () => {
             variant='ghost'
             size='icon'
             onClick={() => handleDelete(row.original)}
+            title='Xóa'
           >
             <Trash2 className='h-4 w-4 text-destructive' />
           </Button>

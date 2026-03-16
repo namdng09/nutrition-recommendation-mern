@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router';
 
 import { useIngredients } from '../api/view-ingredient';
@@ -12,7 +12,11 @@ export default function IngredientsList() {
   const name = searchParams.get('name') ?? '';
   const page = Number(searchParams.get('page') ?? 1);
 
-  const params = useMemo(() => ({ page, limit: 10, name }), [page, name]);
+  const params = useMemo(() => {
+    const p = { page, limit: 10 };
+    if (name) p.name = name;
+    return p;
+  }, [page, name]);
   const { data } = useIngredients(params);
 
   const docs = data?.docs ?? [];
@@ -21,15 +25,18 @@ export default function IngredientsList() {
     <div className='mx-auto w-full max-w-5xl space-y-4'>
       <IngredientsToolbar
         name={name}
-        onNameChange={val => {
-          setSearchParams(prev => {
-            const next = new URLSearchParams(prev);
-            if (val) next.set('name', val);
-            else next.delete('name');
-            next.set('page', '1');
-            return next;
-          });
-        }}
+        onNameChange={useCallback(
+          val => {
+            setSearchParams(prev => {
+              const next = new URLSearchParams(prev);
+              if (val) next.set('name', val);
+              else next.delete('name');
+              next.set('page', '1');
+              return next;
+            });
+          },
+          [setSearchParams]
+        )}
         totalDocs={data?.totalDocs ?? 0}
         page={data?.page ?? 1}
         totalPages={data?.totalPages ?? 1}

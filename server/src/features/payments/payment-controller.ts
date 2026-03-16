@@ -12,7 +12,11 @@ export const PaymentController = {
 
     const result = await PaymentService.createPayment(data, userId);
 
-    return res.redirect(result);
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Cập nhật trạng thái thanh toán thành công', result)
+      );
   },
 
   updatePaymentStatus: async (req: Request, res: Response) => {

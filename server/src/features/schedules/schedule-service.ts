@@ -3,7 +3,13 @@ import createHttpError from 'http-errors';
 
 import { MEAL_TYPE } from '~/shared/constants/meal-type';
 import { ROLE } from '~/shared/constants/role';
-import { DishModel, ScheduleModel, UserModel } from '~/shared/database/models';
+import { WORKOUT_COUNTER_TYPE } from '~/shared/constants/workout-counter-type';
+import {
+  DishModel,
+  ExerciseModel,
+  ScheduleModel,
+  UserModel
+} from '~/shared/database/models';
 import type { Schedule } from '~/shared/database/models/schedule-model';
 import { eventBus } from '~/shared/events/event-bus';
 import { EVENTS } from '~/shared/events/event-types';
@@ -14,6 +20,8 @@ import {
 } from '~/shared/utils';
 
 import {
+  AddScheduleWorkoutExerciseRequest,
+  addScheduleWorkoutExerciseRequestSchema,
   CreateScheduleRequest,
   createScheduleRequestSchema,
   UpdateScheduleDishStatusRequest,
@@ -21,7 +29,9 @@ import {
   UpdateScheduleMealsRequest,
   updateScheduleMealsRequestSchema,
   UpdateScheduleRequest,
-  updateScheduleRequestSchema
+  updateScheduleRequestSchema,
+  UpdateScheduleWorkoutExerciseRequest,
+  updateScheduleWorkoutExerciseRequestSchema
 } from './schedule-dto';
 
 type ScheduleMeal = {
@@ -45,6 +55,54 @@ type DishNutrition = {
   minerals?: NutritionItem[] | null;
   vitamins?: NutritionItem[] | null;
 } | null;
+
+type ScheduleWorkout = UpdateScheduleRequest['workout'];
+type ScheduleWorkoutInput = NonNullable<ScheduleWorkout>;
+type ScheduleWorkoutExerciseInput = ScheduleWorkoutInput[number];
+
+const validateWorkoutTargets = (
+  logType: string,
+  item: ScheduleWorkoutExerciseInput
+) => {
+  if (logType === WORKOUT_COUNTER_TYPE.DISTANCE) {
+    if (!item.distanceTarget) {
+      throw createHttpError(400, 'Bài tập Distance cần distanceTarget');
+    }
+    if (item.weightAndRepsTarget || item.durationTarget) {
+      throw createHttpError(
+        400,
+        'Bài tập Distance chỉ được dùng distanceTarget'
+      );
+    }
+  }
+
+  if (logType === WORKOUT_COUNTER_TYPE.WEIGHT_AND_REPS) {
+    if (!item.weightAndRepsTarget) {
+      throw createHttpError(
+        400,
+        'Bài tập WeightAndReps cần weightAndRepsTarget'
+      );
+    }
+    if (item.distanceTarget || item.durationTarget) {
+      throw createHttpError(
+        400,
+        'Bài tập WeightAndReps chỉ được dùng weightAndRepsTarget'
+      );
+    }
+  }
+
+  if (logType === WORKOUT_COUNTER_TYPE.DURATION) {
+    if (!item.durationTarget) {
+      throw createHttpError(400, 'Bài tập Duration cần durationTarget');
+    }
+    if (item.distanceTarget || item.weightAndRepsTarget) {
+      throw createHttpError(
+        400,
+        'Bài tập Duration chỉ được dùng durationTarget'
+      );
+    }
+  }
+};
 
 const mealTypeValues = Object.values(MEAL_TYPE) as MealType[];
 
@@ -129,6 +187,71 @@ const addNutritionItemsTotal = (
   }
 };
 
+const ensureUniqueWorkoutExerciseIds = (items: ScheduleWorkoutInput) => {
+  const ids = new Set<string>();
+  items.forEach(item => {
+    const key = item.exerciseId.trim();
+    if (ids.has(key)) {
+      throw createHttpError(409, `Bài tập ${key} đã tồn tại trong workout`);
+    }
+    ids.add(key);
+  });
+};
+
+async function resolveScheduleWorkoutExercises(items: ScheduleWorkoutInput) {
+  ensureUniqueWorkoutExerciseIds(items);
+
+  return Promise.all(
+    items.map(async item => {
+      if (!validateObjectId(item.exerciseId)) {
+        throw createHttpError(
+          400,
+          `Định dạng ID bài tập không hợp lệ: ${item.exerciseId}`
+        );
+      }
+
+      const exercise = await ExerciseModel.findById(item.exerciseId);
+
+      if (!exercise) {
+        throw createHttpError(
+          404,
+          `Không tìm thấy bài tập với ID: ${item.exerciseId}`
+        );
+      }
+
+      const exerciseLogType = exercise.logType;
+      if (!exerciseLogType) {
+        throw createHttpError(
+          400,
+          `Bài tập ${exercise.name} chưa có logType mặc định`
+        );
+      }
+
+      if (item.logType && item.logType !== exerciseLogType) {
+        throw createHttpError(
+          400,
+          `logType của bài tập ${exercise.name} phải là ${exerciseLogType}`
+        );
+      }
+
+      const resolvedLogType = item.logType ?? exerciseLogType;
+      validateWorkoutTargets(resolvedLogType, item);
+
+      return {
+        exerciseId: exercise._id,
+        exerciseName: exercise.name,
+        exerciseType: exercise.type,
+        exerciseTutorial: exercise.tutorial ?? '',
+        logType: resolvedLogType,
+        distanceTarget: item.distanceTarget,
+        weightAndRepsTarget: item.weightAndRepsTarget,
+        durationTarget: item.durationTarget,
+        isCompleted: item.isCompleted ?? false
+      };
+    })
+  );
+}
+
 export const ScheduleService = {
   createSchedule: async (
     userId: string,
@@ -157,6 +280,10 @@ export const ScheduleService = {
       dishes: []
     }));
 
+    const workout = data.workout
+      ? await resolveScheduleWorkoutExercises(data.workout)
+      : [];
+
     const newSchedule = await ScheduleModel.create({
       user: {
         _id: userId,
@@ -164,7 +291,8 @@ export const ScheduleService = {
       },
       date: data.date,
       dayOfWeek: data.dayOfWeek,
-      meals
+      meals,
+      workout
     });
 
     if (!newSchedule) {
@@ -333,15 +461,180 @@ export const ScheduleService = {
 
     validateDishIds(data.meals);
 
-    const updatedSchedule = await ScheduleModel.findByIdAndUpdate(id, data, {
-      new: true
-    });
+    const updatePayload: Record<string, unknown> = { ...data };
+
+    if (typeof data.workout !== 'undefined') {
+      updatePayload.workout = await resolveScheduleWorkoutExercises(
+        data.workout
+      );
+    }
+
+    const updatedSchedule = await ScheduleModel.findByIdAndUpdate(
+      id,
+      updatePayload,
+      {
+        new: true
+      }
+    );
 
     if (!updatedSchedule) {
       throw createHttpError(404, 'Không tìm thấy lịch ăn');
     }
 
     return updatedSchedule;
+  },
+
+  addScheduleWorkoutExercise: async (
+    id: string,
+    userId: string,
+    data: AddScheduleWorkoutExerciseRequest
+  ) => {
+    const validation = addScheduleWorkoutExerciseRequestSchema.safeParse(data);
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0];
+      throw createHttpError(400, firstError.message);
+    }
+
+    if (!validateObjectId(id)) {
+      throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
+    }
+
+    const schedule = await ScheduleModel.findById(id);
+
+    if (!schedule) {
+      throw createHttpError(404, 'Không tìm thấy lịch ăn');
+    }
+
+    if (schedule.user?._id.toString() !== userId) {
+      throw createHttpError(403, 'Bạn không có quyền cập nhật lịch ăn này');
+    }
+
+    const existingExercise = schedule.workout.find(
+      item => item.exerciseId?.toString() === data.exerciseId
+    );
+
+    if (existingExercise) {
+      throw createHttpError(409, 'Bài tập đã tồn tại trong workout');
+    }
+
+    const [resolvedExercise] = await resolveScheduleWorkoutExercises([data]);
+
+    schedule.workout.push(resolvedExercise);
+    await schedule.save();
+
+    return schedule;
+  },
+
+  updateScheduleWorkoutExercise: async (
+    id: string,
+    userId: string,
+    exerciseId: string,
+    data: UpdateScheduleWorkoutExerciseRequest
+  ) => {
+    const validation =
+      updateScheduleWorkoutExerciseRequestSchema.safeParse(data);
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0];
+      throw createHttpError(400, firstError.message);
+    }
+
+    if (!validateObjectId(id)) {
+      throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
+    }
+
+    if (!validateObjectId(exerciseId)) {
+      throw createHttpError(400, 'Định dạng ID bài tập không hợp lệ');
+    }
+
+    const schedule = await ScheduleModel.findById(id);
+
+    if (!schedule) {
+      throw createHttpError(404, 'Không tìm thấy lịch ăn');
+    }
+
+    if (schedule.user?._id.toString() !== userId) {
+      throw createHttpError(403, 'Bạn không có quyền cập nhật lịch ăn này');
+    }
+
+    const workoutExercise = schedule.workout.find(
+      item => item.exerciseId?.toString() === exerciseId
+    );
+
+    if (!workoutExercise) {
+      throw createHttpError(404, 'Không tìm thấy bài tập trong workout');
+    }
+
+    const existingWeightAndRepsTarget = workoutExercise.weightAndRepsTarget
+      ? {
+          reps: workoutExercise.weightAndRepsTarget.reps,
+          sets: workoutExercise.weightAndRepsTarget.sets,
+          weight:
+            typeof workoutExercise.weightAndRepsTarget.weight === 'number'
+              ? workoutExercise.weightAndRepsTarget.weight
+              : undefined
+        }
+      : undefined;
+
+    const mergedPayload: ScheduleWorkoutExerciseInput = {
+      exerciseId,
+      logType: data.logType ?? workoutExercise.logType,
+      distanceTarget:
+        data.distanceTarget ?? workoutExercise.distanceTarget ?? undefined,
+      weightAndRepsTarget:
+        data.weightAndRepsTarget ?? existingWeightAndRepsTarget ?? undefined,
+      durationTarget:
+        data.durationTarget ?? workoutExercise.durationTarget ?? undefined,
+      isCompleted: data.isCompleted ?? workoutExercise.isCompleted ?? false
+    };
+
+    const [resolvedExercise] = await resolveScheduleWorkoutExercises([
+      mergedPayload
+    ]);
+
+    Object.assign(workoutExercise, resolvedExercise);
+
+    await schedule.save();
+
+    return schedule;
+  },
+
+  removeScheduleWorkoutExercise: async (
+    id: string,
+    userId: string,
+    exerciseId: string
+  ) => {
+    if (!validateObjectId(id)) {
+      throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
+    }
+
+    if (!validateObjectId(exerciseId)) {
+      throw createHttpError(400, 'Định dạng ID bài tập không hợp lệ');
+    }
+
+    const schedule = await ScheduleModel.findById(id);
+
+    if (!schedule) {
+      throw createHttpError(404, 'Không tìm thấy lịch ăn');
+    }
+
+    if (schedule.user?._id.toString() !== userId) {
+      throw createHttpError(403, 'Bạn không có quyền cập nhật lịch ăn này');
+    }
+
+    const workoutExerciseIndex = schedule.workout.findIndex(
+      item => item.exerciseId?.toString() === exerciseId
+    );
+
+    if (workoutExerciseIndex === -1) {
+      throw createHttpError(404, 'Không tìm thấy bài tập trong workout');
+    }
+
+    schedule.workout.splice(workoutExerciseIndex, 1);
+    await schedule.save();
+
+    return schedule;
   },
 
   updateScheduleMeals: async (

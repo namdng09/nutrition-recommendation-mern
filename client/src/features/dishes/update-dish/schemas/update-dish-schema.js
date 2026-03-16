@@ -21,6 +21,19 @@ export const NUTRITION_FOCUS_OPTIONS = [
   { value: 'Ít muối', label: 'Ít muối' }
 ];
 
+export const UNIT_OPTIONS = [
+  'g',
+  'kg',
+  'mg',
+  'μg',
+  'ml',
+  'l',
+  'oz',
+  'lb',
+  'kcal',
+  'IU'
+];
+
 const unitSchema = yup.object({
   quantity: yup.number().min(0, 'Số lượng không được âm').optional(),
   unit: yup.string().optional(),
@@ -34,10 +47,12 @@ const ingredientSchema = yup.object({
     .of(unitSchema)
     .min(1, 'Phải có ít nhất 1 đơn vị')
     .test(
-      'has-default',
-      'Phải chọn ít nhất 1 đơn vị làm mặc định',
+      'has-one-default',
+      'Phải chọn đúng 1 đơn vị làm mặc định',
       function (value) {
-        return value && value.some(unit => unit.isDefault === true);
+        if (!value) return false;
+        const defaultUnits = value.filter(unit => unit.isDefault === true);
+        return defaultUnits.length === 1;
       }
     )
     .optional()
@@ -85,6 +100,13 @@ export const updateDishSchema = yup.object({
     .nullable()
     .transform(value => value || [])
     .default([]),
+  nutrition: yup
+    .object({
+      nutrients: yup.object().optional(),
+      minerals: yup.object().optional(),
+      vitamins: yup.object().optional()
+    })
+    .optional(),
   preparationTime: yup
     .number()
     .min(0, 'Thời gian chuẩn bị không được âm')
@@ -98,11 +120,10 @@ export const updateDishSchema = yup.object({
     .transform(value => value || [])
     .default([]),
   image: yup.mixed().optional(),
-  isActive: yup.string().oneOf(['true', 'false']).optional(),
-  isPublic: yup.string().oneOf(['true', 'false']).optional()
+  isActive: yup.boolean().optional(),
+  isPublic: yup.boolean().optional()
 });
 
-// Helper to get unit for nutrients/minerals/vitamins
 export const NUTRITION_UNITS = {
   // Nutrients
   'Năng lượng': 'kcal',
@@ -142,3 +163,46 @@ export const NUTRITION_UNITS = {
   'Vitamin E': 'mg',
   'Vitamin K': 'μg'
 };
+
+export const NUTRIENTS_LIST = [
+  'Năng lượng',
+  'Nước',
+  'Protein',
+  'Chất béo',
+  'Tinh bột',
+  'Chất xơ',
+  'Tro',
+  'Đường',
+  'Cholesterol',
+  'Phytosterol'
+];
+
+export const MINERALS_LIST = [
+  'Calci',
+  'Sắt',
+  'Magiê',
+  'Mangan',
+  'Phospho',
+  'Kali',
+  'Natri',
+  'Kẽm',
+  'Đồng',
+  'Selen'
+];
+
+export const VITAMINS_LIST = [
+  'Vitamin C',
+  'Vitamin B1',
+  'Vitamin B2',
+  'Vitamin PP',
+  'Vitamin B5',
+  'Vitamin B6',
+  'Folat',
+  'Vitamin B9',
+  'Vitamin H',
+  'Vitamin B12',
+  'Vitamin A',
+  'Vitamin D',
+  'Vitamin E',
+  'Vitamin K'
+];

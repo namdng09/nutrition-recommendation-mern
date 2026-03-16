@@ -43,6 +43,26 @@ export function AdminSidebar({ ...props }) {
           icon: Users
         }
       ]
+    },
+    {
+      title: 'Quản lý món ăn',
+      items: [
+        {
+          title: 'Món ăn',
+          url: '/admin/manage-dishes',
+          icon: Ham
+        },
+        {
+          title: 'Nguyên liệu',
+          url: '/admin/manage-ingredients',
+          icon: Apple
+        },
+        {
+          title: 'Bộ sưu tập',
+          url: '/admin/manage-collections',
+          icon: Package
+        }
+      ]
     }
   ];
 

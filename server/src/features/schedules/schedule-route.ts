@@ -11,10 +11,12 @@ import { asyncHandler } from '~/shared/utils';
 
 import { ScheduleController } from './schedule-controller';
 import {
+  addScheduleWorkoutExerciseRequestSchema,
   createScheduleRequestSchema,
   updateScheduleDishStatusRequestSchema,
   updateScheduleMealsRequestSchema,
-  updateScheduleRequestSchema
+  updateScheduleRequestSchema,
+  updateScheduleWorkoutExerciseRequestSchema
 } from './schedule-dto';
 
 const router = Router();
@@ -45,6 +47,24 @@ router.put(
   asyncHandler(ScheduleController.updateSchedule)
 );
 
+router.post(
+  '/:id/workout/exercises',
+  authenticate(),
+  authorize([ROLE.USER]),
+  parseFormData,
+  validate(addScheduleWorkoutExerciseRequestSchema.shape),
+  asyncHandler(ScheduleController.addScheduleWorkoutExercise)
+);
+
+router.put(
+  '/:id/workout/exercises/:exerciseId',
+  authenticate(),
+  authorize([ROLE.USER]),
+  parseFormData,
+  validate(updateScheduleWorkoutExerciseRequestSchema.shape),
+  asyncHandler(ScheduleController.updateScheduleWorkoutExercise)
+);
+
 router.put(
   '/:id/meals',
   authenticate(),
@@ -68,6 +88,13 @@ router.delete(
   authenticate(),
   authorize([ROLE.USER]),
   asyncHandler(ScheduleController.deleteSchedule)
+);
+
+router.delete(
+  '/:id/workout/exercises/:exerciseId',
+  authenticate(),
+  authorize([ROLE.USER]),
+  asyncHandler(ScheduleController.removeScheduleWorkoutExercise)
 );
 
 router.delete(

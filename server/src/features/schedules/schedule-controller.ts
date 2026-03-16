@@ -53,6 +53,42 @@ export const ScheduleController = {
       .json(ApiResponse.success('Cập nhật lịch ăn thành công', result));
   },
 
+  addScheduleWorkoutExercise: async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const data = req.body;
+    const userId = req.user!._id.toString();
+
+    const result = await ScheduleService.addScheduleWorkoutExercise(
+      id,
+      userId,
+      data
+    );
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Thêm bài tập vào workout thành công', result));
+  },
+
+  updateScheduleWorkoutExercise: async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const exerciseId = req.params.exerciseId;
+    const data = req.body;
+    const userId = req.user!._id.toString();
+
+    const result = await ScheduleService.updateScheduleWorkoutExercise(
+      id,
+      userId,
+      exerciseId,
+      data
+    );
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Cập nhật bài tập trong workout thành công', result)
+      );
+  },
+
   updateScheduleMeals: async (req: Request, res: Response) => {
     const id = req.params.id;
     const data = req.body;
@@ -131,5 +167,21 @@ export const ScheduleController = {
       .json(
         ApiResponse.success('Xóa tất cả món ăn trong bữa thành công', result)
       );
+  },
+
+  removeScheduleWorkoutExercise: async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const exerciseId = req.params.exerciseId;
+    const userId = req.user!._id.toString();
+
+    const result = await ScheduleService.removeScheduleWorkoutExercise(
+      id,
+      userId,
+      exerciseId
+    );
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Xóa bài tập khỏi workout thành công', result));
   }
 };

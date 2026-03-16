@@ -190,6 +190,7 @@ const CreateDishForm = () => {
   const availableFocus = NUTRITION_FOCUS_OPTIONS.filter(
     opt => !selectedFocus.includes(opt.value)
   );
+
   const handleAddCategory = category => {
     const currentCategories = form.getValues('categories') || [];
     if (!currentCategories.includes(category)) {
@@ -247,7 +248,7 @@ const CreateDishForm = () => {
         {
           quantity: defaultUnit.amount,
           unit: defaultUnit.unit,
-          isDefault: true // First unit (gram) is always default and cannot be removed
+          isDefault: true // First unit is always default
         }
       ]
     });
@@ -256,28 +257,6 @@ const CreateDishForm = () => {
     setIngredientSearch('');
   };
 
-  const handleAddIngredientAllergen = (ingredientIndex, allergen) => {
-    const currentAllergens =
-      form.getValues(`ingredients.${ingredientIndex}.allergens`) || [];
-    if (!currentAllergens.includes(allergen)) {
-      form.setValue(`ingredients.${ingredientIndex}.allergens`, [
-        ...currentAllergens,
-        allergen
-      ]);
-    }
-  };
-
-  const handleRemoveIngredientAllergen = (
-    ingredientIndex,
-    allergenToRemove
-  ) => {
-    const currentAllergens =
-      form.getValues(`ingredients.${ingredientIndex}.allergens`) || [];
-    form.setValue(
-      `ingredients.${ingredientIndex}.allergens`,
-      currentAllergens.filter(a => a !== allergenToRemove)
-    );
-  };
   const handleAddIngredientUnit = ingredientIndex => {
     const currentUnits =
       form.getValues(`ingredients.${ingredientIndex}.units`) || [];
@@ -288,7 +267,7 @@ const CreateDishForm = () => {
   };
 
   const handleRemoveIngredientUnit = (ingredientIndex, unitIndex) => {
-    // Prevent removing the first (gram) unit
+    // Prevent removing the first unit
     if (unitIndex === 0) {
       toast.error('Không thể xóa đơn vị gram mặc định');
       return;
@@ -302,31 +281,25 @@ const CreateDishForm = () => {
       return;
     }
 
+    // If removing the default unit, set first unit as default
+    const isRemovingDefault = currentUnits[unitIndex]?.isDefault;
     const newUnits = currentUnits.filter((_, idx) => idx !== unitIndex);
+
+    if (isRemovingDefault && newUnits.length > 0) {
+      newUnits[0].isDefault = true;
+    }
+
     form.setValue(`ingredients.${ingredientIndex}.units`, newUnits);
   };
 
   const handleSetDefaultUnit = (ingredientIndex, unitIndex) => {
-    // Only the first unit can be default
-    if (unitIndex !== 0) {
-      toast.error('Chỉ đơn vị đầu tiên có thể là mặc định');
-      return;
-    }
-  };
-
-  const handleToggleDefaultUnit = (ingredientIndex, unitIndex) => {
-    // First unit (gram) is always default and cannot be changed
-    if (unitIndex === 0) {
-      toast.error('Đơn vị gram luôn là mặc định');
-      return;
-    }
-
     const currentUnits =
       form.getValues(`ingredients.${ingredientIndex}.units`) || [];
 
+    // Set only one unit as default (radio behavior)
     const updatedUnits = currentUnits.map((unit, idx) => ({
       ...unit,
-      isDefault: idx === unitIndex ? !unit.isDefault : unit.isDefault
+      isDefault: idx === unitIndex
     }));
 
     form.setValue(`ingredients.${ingredientIndex}.units`, updatedUnits);
@@ -377,13 +350,14 @@ const CreateDishForm = () => {
     console.log('=== FORM SUBMIT DEBUG ===');
     console.log('Raw form data:', data);
 
-    // Validate at least one default unit per ingredient
-    const hasInvalidIngredient = data.ingredients.some(
-      ing => !ing.units.some(unit => unit.isDefault)
-    );
+    // Validate exactly one default unit per ingredient
+    const hasInvalidIngredient = data.ingredients.some(ing => {
+      const defaultUnits = ing.units.filter(unit => unit.isDefault);
+      return defaultUnits.length !== 1;
+    });
 
     if (hasInvalidIngredient) {
-      toast.error('Mỗi nguyên liệu phải có 1 đơn vị mặc định');
+      toast.error('Mỗi nguyên liệu phải có đúng 1 đơn vị mặc định');
       return;
     }
 
@@ -723,11 +697,11 @@ const CreateDishForm = () => {
                       <FormControl>
                         <Input
                           type='number'
-                          min=''
-                          placeholder=''
+                          min='0'
+                          placeholder='0'
                           {...field}
                           onChange={e =>
-                            field.onChange(parseInt(e.target.value) || '')
+                            field.onChange(parseInt(e.target.value) || 0)
                           }
                         />
                       </FormControl>
@@ -745,11 +719,11 @@ const CreateDishForm = () => {
                       <FormControl>
                         <Input
                           type='number'
-                          min=''
-                          placeholder=''
+                          min='0'
+                          placeholder='0'
                           {...field}
                           onChange={e =>
-                            field.onChange(parseInt(e.target.value) || '')
+                            field.onChange(parseInt(e.target.value) || 0)
                           }
                         />
                       </FormControl>
@@ -874,6 +848,7 @@ const CreateDishForm = () => {
                     );
                     const units =
                       form.watch(`ingredients.${ingredientIndex}.units`) || [];
+                    const defaultUnitIndex = units.findIndex(u => u.isDefault);
 
                     return (
                       <Card key={field.id}>
@@ -915,7 +890,7 @@ const CreateDishForm = () => {
                               </div>
                             </div>
 
-                            {/* Units */}
+                            {/* Units with Radio Selection */}
                             <div className='space-y-2'>
                               <div className='flex items-center justify-between'>
                                 <label className='text-xs font-medium'>
@@ -936,118 +911,106 @@ const CreateDishForm = () => {
                                 </Button>
                               </div>
 
-                              {units.map((unit, unitIndex) => (
-                                <div
-                                  key={unitIndex}
-                                  className='flex items-center gap-2'
-                                >
-                                  {/* Quantity Input - EDITABLE for all units */}
-                                  <FormField
-                                    control={form.control}
-                                    name={`ingredients.${ingredientIndex}.units.${unitIndex}.quantity`}
-                                    render={({ field }) => (
-                                      <FormItem className='flex-1'>
-                                        <FormControl>
-                                          <Input
-                                            type='number'
-                                            step='0.01'
-                                            min='0'
-                                            placeholder='Số lượng'
-                                            className='h-8'
-                                            {...field}
-                                            onChange={e =>
-                                              field.onChange(
-                                                parseFloat(e.target.value) || ''
-                                              )
-                                            }
-                                          />
-                                        </FormControl>
-                                      </FormItem>
-                                    )}
-                                  />
-
-                                  {/* Unit Input - DISABLED for first unit (gram) only */}
-                                  <FormField
-                                    control={form.control}
-                                    name={`ingredients.${ingredientIndex}.units.${unitIndex}.unit`}
-                                    render={({ field }) => (
-                                      <FormItem className='flex-1'>
-                                        <FormControl>
-                                          <Input
-                                            placeholder='Đơn vị (vd: g, ml, muỗng)'
-                                            className='h-8'
-                                            disabled={unitIndex === 0}
-                                            {...field}
-                                          />
-                                        </FormControl>
-                                      </FormItem>
-                                    )}
-                                  />
-
-                                  {/* Default Status */}
-                                  <FormField
-                                    control={form.control}
-                                    name={`ingredients.${ingredientIndex}.units.${unitIndex}.isDefault`}
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormControl>
-                                          {unitIndex === 0 ? (
-                                            // First unit (gram) is always default - show as badge
-                                            <Badge
-                                              variant='default'
-                                              className='h-8 whitespace-nowrap px-3'
-                                            >
-                                              Mặc định
-                                            </Badge>
-                                          ) : (
-                                            // Other units can toggle default status
-                                            <Button
-                                              type='button'
-                                              variant={
-                                                field.value
-                                                  ? 'default'
-                                                  : 'outline'
-                                              }
-                                              size='sm'
-                                              className='h-8 whitespace-nowrap px-3'
-                                              onClick={() =>
-                                                handleToggleDefaultUnit(
-                                                  ingredientIndex,
-                                                  unitIndex
-                                                )
-                                              }
-                                            >
-                                              {field.value
-                                                ? 'Mặc định'
-                                                : 'Chọn'}
-                                            </Button>
-                                          )}
-                                        </FormControl>
-                                      </FormItem>
-                                    )}
-                                  />
-
-                                  {/* Delete button - DISABLED for first unit (gram) */}
-                                  {unitIndex > 0 ? (
-                                    <Button
-                                      type='button'
-                                      variant='ghost'
-                                      size='icon'
-                                      className='h-8 w-8'
-                                      onClick={() =>
-                                        handleRemoveIngredientUnit(
-                                          ingredientIndex,
-                                          unitIndex
-                                        )
-                                      }
+                              <RadioGroup
+                                value={defaultUnitIndex.toString()}
+                                onValueChange={value => {
+                                  handleSetDefaultUnit(
+                                    ingredientIndex,
+                                    parseInt(value)
+                                  );
+                                }}
+                              >
+                                <div className='space-y-2'>
+                                  {units.map((unit, unitIndex) => (
+                                    <div
+                                      key={unitIndex}
+                                      className='flex items-center gap-2'
                                     >
-                                      <Trash2 className='h-4 w-4' />
-                                    </Button>
-                                  ) : (
-                                    <div className='h-8 w-8' />
-                                  )}
+                                      {/* Radio Button for Default Selection */}
+                                      <div className='flex items-center'>
+                                        <RadioGroupItem
+                                          value={unitIndex.toString()}
+                                          id={`ingredient-${ingredientIndex}-unit-${unitIndex}`}
+                                          className='h-4 w-4'
+                                        />
+                                      </div>
+
+                                      {/* Quantity Input */}
+                                      <FormField
+                                        control={form.control}
+                                        name={`ingredients.${ingredientIndex}.units.${unitIndex}.quantity`}
+                                        render={({ field }) => (
+                                          <FormItem className='flex-1'>
+                                            <FormControl>
+                                              <Input
+                                                type='number'
+                                                step='0.01'
+                                                min='0'
+                                                placeholder='Số lượng'
+                                                className='h-8'
+                                                {...field}
+                                                onChange={e =>
+                                                  field.onChange(
+                                                    parseFloat(
+                                                      e.target.value
+                                                    ) || ''
+                                                  )
+                                                }
+                                              />
+                                            </FormControl>
+                                          </FormItem>
+                                        )}
+                                      />
+
+                                      {/* Unit Input - DISABLED for first unit only */}
+                                      <FormField
+                                        control={form.control}
+                                        name={`ingredients.${ingredientIndex}.units.${unitIndex}.unit`}
+                                        render={({ field }) => (
+                                          <FormItem className='flex-1'>
+                                            <FormControl>
+                                              <Input
+                                                placeholder='Đơn vị (vd: g, ml, muỗng)'
+                                                className='h-8'
+                                                disabled={unitIndex === 0}
+                                                {...field}
+                                              />
+                                            </FormControl>
+                                          </FormItem>
+                                        )}
+                                      />
+
+                                      {/* Label for Radio */}
+                                      <label
+                                        htmlFor={`ingredient-${ingredientIndex}-unit-${unitIndex}`}
+                                        className='text-xs text-muted-foreground cursor-pointer whitespace-nowrap min-w-[60px] border px-2 py-1 rounded-md'
+                                      >
+                                        {unit.isDefault ? 'Mặc định' : 'Chọn'}
+                                      </label>
+
+                                      {/* Delete button - HIDDEN for first unit */}
+                                      {unitIndex > 0 ? (
+                                        <Button
+                                          type='button'
+                                          variant='ghost'
+                                          size='icon'
+                                          className='h-8 w-8'
+                                          onClick={() =>
+                                            handleRemoveIngredientUnit(
+                                              ingredientIndex,
+                                              unitIndex
+                                            )
+                                          }
+                                        >
+                                          <Trash2 className='h-4 w-4' />
+                                        </Button>
+                                      ) : (
+                                        <div className='h-8 w-8' />
+                                      )}
+                                    </div>
+                                  ))}
                                 </div>
-                              ))}
+                              </RadioGroup>
                             </div>
                           </div>
                         </CardContent>
@@ -1065,7 +1028,7 @@ const CreateDishForm = () => {
 
             <Separator />
 
-            {/* Nutrition Section - Updated UI */}
+            {/* Nutrition Section */}
             <div className='space-y-4'>
               <h3 className='text-sm font-semibold'>Thông tin dinh dưỡng</h3>
 
