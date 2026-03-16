@@ -112,8 +112,8 @@ export function ProfileSidebar({ ...props }) {
     <>
       {/* Mobile Toggle Button - Fixed Position */}
       {isMobile && (
-        <div className='fixed top-20 z-50 md:hidden'>
-          <SidebarTrigger className='h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-lg '>
+        <div className='fixed left-0 top-20 z-50 md:hidden'>
+          <SidebarTrigger className='h-10 w-10 -translate-x-1/2 rounded-full bg-primary text-primary-foreground shadow-lg'>
             <Menu className='h-5 w-5' />
           </SidebarTrigger>
         </div>
