@@ -80,6 +80,14 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/posts/[id]/page'))
           },
           {
+            path: 'nutritionists',
+            Component: lazy(() => import('~/app/nutritionists/page'))
+          },
+          {
+            path: 'nutritionists/:id',
+            Component: lazy(() => import('~/app/nutritionists/[id]/page'))
+          },
+          {
             path: 'dishes/:id/nutrition',
             Component: lazy(() => import('~/app/dishes/[id]/nutrition/page'))
           },
@@ -105,6 +113,7 @@ const router = createBrowserRouter([
             path: 'payment/cancel',
             Component: lazy(() => import('~/app/payment/error/page'))
           },
+
           {
             path: 'profile',
             Component: () => (
