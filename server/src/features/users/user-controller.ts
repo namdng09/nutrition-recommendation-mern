@@ -97,6 +97,21 @@ export const UserController = {
       .json(ApiResponse.success('Người dùng được lấy thành công', result));
   },
 
+  viewNutritionistProfile: async (req: Request, res: Response) => {
+    const id = req.params.id;
+
+    const result = await UserService.viewNutritionistProfile(id);
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success(
+          'Lấy hồ sơ chuyên gia dinh dưỡng thành công',
+          result
+        )
+      );
+  },
+
   updateUser: async (req: Request, res: Response) => {
     const id = req.params.id;
     const data = req.body;

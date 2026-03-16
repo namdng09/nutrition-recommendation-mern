@@ -240,6 +240,12 @@ router.put(
 );
 
 router.get(
+  '/:id/profile',
+  authenticate(),
+  asyncHandler(UserController.viewNutritionistProfile)
+);
+
+router.get(
   '/:id',
   authenticate(),
   authorize([ROLE.ADMIN]),

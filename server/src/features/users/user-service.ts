@@ -556,6 +556,29 @@ export const UserService = {
     return user;
   },
 
+  viewNutritionistProfile: async (id: string) => {
+    if (!validateObjectId(id)) {
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
+    }
+
+    const user = await UserModel.findById(id).select(
+      'name avatar role certificate'
+    );
+
+    if (!user) {
+      throw createHttpError(404, 'Không tìm thấy người dùng');
+    }
+
+    if (user.role !== ROLE.NUTRITIONIST) {
+      throw createHttpError(
+        403,
+        'Người dùng này không phải chuyên gia dinh dưỡng'
+      );
+    }
+
+    return user;
+  },
+
   updateUser: async (
     id: string,
     data: UpdateUserRequest,

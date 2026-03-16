@@ -159,4 +159,84 @@ export const deleteAvatar = async (
   return deleteImage(publicId);
 };
 
+/**
+ * Upload certificate (image or PDF) to Cloudinary
+ * Uses resource_type: 'auto' to support both images and PDFs
+ * @param file - File buffer
+ * @param userId - User ID to use as filename (overwrites previous cert)
+ * @returns Promise with upload result
+ */
+export const uploadCertificate = async (
+  file: Buffer,
+  userId: string
+): Promise<UploadResult> => {
+  const certOptions = {
+    resource_type: 'auto' as const,
+    folder: 'certificates',
+    public_id: userId,
+    overwrite: true,
+    invalidate: true
+  };
+
+  try {
+    const result: UploadApiResponse = await new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          certOptions,
+          (
+            error: UploadApiErrorResponse | undefined,
+            result: UploadApiResponse | undefined
+          ) => {
+            if (error) reject(error);
+            else if (result) resolve(result);
+            else reject(new Error('Upload failed'));
+          }
+        )
+        .end(file);
+    });
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('Cloudinary certificate upload error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Upload failed'
+    };
+  }
+};
+
+/**
+ * Delete certificate from Cloudinary
+ * @param userId - User ID (used as public_id under certificates/)
+ * @returns Promise with deletion result
+ */
+export const deleteCertificate = async (
+  userId: string
+): Promise<{ success: boolean; error?: string }> => {
+  try {
+    // Try both image and raw resource types since we don't know which was uploaded
+    const [imageResult, rawResult] = await Promise.allSettled([
+      cloudinary.uploader.destroy(`certificates/${userId}`, {
+        resource_type: 'image'
+      }),
+      cloudinary.uploader.destroy(`certificates/${userId}`, {
+        resource_type: 'raw'
+      })
+    ]);
+
+    const imageOk =
+      imageResult.status === 'fulfilled' && imageResult.value.result === 'ok';
+    const rawOk =
+      rawResult.status === 'fulfilled' && rawResult.value.result === 'ok';
+
+    return { success: imageOk || rawOk };
+  } catch (error) {
+    console.error('Cloudinary certificate delete error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Delete failed'
+    };
+  }
+};
+
 export default cloudinary;
