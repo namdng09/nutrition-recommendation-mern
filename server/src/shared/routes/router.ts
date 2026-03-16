@@ -5,6 +5,7 @@ import aiRoute from '~/features/ai/ai-route';
 import authRoute from '~/features/auth/auth-route';
 import collectionRoute from '~/features/collections/collection-route';
 import dishRoute from '~/features/dishes/dish-route';
+import exerciseRouter from '~/features/exercises/exercise-route';
 import groceryRoute from '~/features/groceries/grocery-route';
 import ingredientRoute from '~/features/ingredients/ingredient-route';
 import paymentRoute from '~/features/payments/payment-route';
@@ -25,5 +26,6 @@ router.use('/posts', postRoute);
 router.use('/groceries', groceryRoute);
 router.use('/ai', aiRoute);
 router.use('/payments', paymentRoute);
+router.use('/exercises', exerciseRouter);
 
 export default router;
