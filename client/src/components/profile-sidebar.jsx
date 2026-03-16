@@ -27,7 +27,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-  SidebarTrigger
+  SidebarTrigger,
+  useSidebar
 } from '~/components/ui/sidebar';
 import { ROLE } from '~/constants/role';
 import { useIsMobile } from '~/hooks/use-mobile';
@@ -39,6 +40,7 @@ export function ProfileSidebar({ ...props }) {
   const location = useLocation();
   const user = useSelector(state => state.auth.user);
   const isMobile = useIsMobile();
+  const { setOpenMobile } = useSidebar();
 
   const baseNavItems = [
     {
@@ -110,20 +112,24 @@ export function ProfileSidebar({ ...props }) {
     <>
       {/* Mobile Toggle Button - Fixed Position */}
       {isMobile && (
-        <div className='fixed top-20 left-4 z-50 md:hidden'>
-          <SidebarTrigger className='h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-lg'>
+        <div className='fixed top-20 z-50 md:hidden'>
+          <SidebarTrigger className='h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-lg '>
             <Menu className='h-5 w-5' />
           </SidebarTrigger>
         </div>
       )}
 
-      <Sidebar collapsible={isMobile ? 'offcanvas' : 'icon'} {...props}>
+      <Sidebar
+        collapsible={isMobile ? 'offcanvas' : 'icon'}
+        className='md:top-20 md:h-[calc(100svh-5rem)]'
+        {...props}
+      >
         <SidebarHeader className='transition-all duration-300 ease-in-out'>
           <div className='flex items-center gap-2 transition-all duration-300 ease-in-out group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0'>
             <div className='flex aspect-square size-8 items-center justify-center transition-all duration-300 ease-in-out'>
               <User className='h-6 w-6 text-primary' />
             </div>
-            <div className='grid flex-1 text-left text-sm leading-tight transition-all duration-300 ease-in-out group-data-[collapsible=icon]:hidden group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0 overflow-hidden'>
+            <div className='mt-6 grid flex-1 text-left text-sm leading-tight transition-all duration-300 ease-in-out group-data-[collapsible=icon]:hidden group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0 overflow-hidden'>
               <span className='truncate font-semibold transition-all duration-300 ease-in-out'>
                 Cài đặt hồ sơ
               </span>
@@ -155,7 +161,10 @@ export function ProfileSidebar({ ...props }) {
                         tooltip={item.title}
                         className='transition-all duration-300 ease-in-out'
                       >
-                        <Link to={item.url}>
+                        <Link
+                          to={item.url}
+                          onClick={() => isMobile && setOpenMobile(false)}
+                        >
                           <Icon className='transition-all duration-300 ease-in-out text-primary' />
                           <span className='transition-all duration-300 ease-in-out group-data-[collapsible=icon]:hidden group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0 overflow-hidden'>
                             {item.title}
