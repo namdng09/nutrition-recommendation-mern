@@ -26,6 +26,21 @@ export const UserController = {
       .json(ApiResponse.success('Người dùng được lấy thành công', result));
   },
 
+  viewNutritionists: async (req: Request, res: Response) => {
+    const parsed = parseQuery(req.query);
+
+    const result = await UserService.viewNutritionists(parsed);
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success(
+          'Lấy danh sách chuyên gia dinh dưỡng thành công',
+          result
+        )
+      );
+  },
+
   pendingCertificatesCount: async (_req: Request, res: Response) => {
     const count = await UserService.pendingCertificatesCount();
 

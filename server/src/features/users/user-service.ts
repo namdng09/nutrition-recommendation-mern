@@ -383,6 +383,24 @@ export const UserService = {
     return result;
   },
 
+  viewNutritionists: async (
+    parsed: QueryOptions
+  ): Promise<PaginateResult<User>> => {
+    const { filter } = parsed;
+    const options = buildPaginateOptions(parsed);
+
+    const result = await UserModel.paginate(
+      { ...filter, role: ROLE.NUTRITIONIST },
+      { ...options, select: 'name avatar role certificate' }
+    );
+
+    if (!result || result.totalDocs === 0) {
+      throw createHttpError(404, 'Không tìm thấy chuyên gia dinh dưỡng nào');
+    }
+
+    return result;
+  },
+
   pendingCertificatesCount: async (): Promise<number> => {
     return UserModel.countDocuments({
       'certificate.status': CERTIFICATE_STATUS.PENDING

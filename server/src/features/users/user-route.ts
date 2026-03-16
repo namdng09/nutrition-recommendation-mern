@@ -239,9 +239,10 @@ router.put(
   asyncHandler(UserController.rejectCertificate)
 );
 
+router.get('/nutritionists', asyncHandler(UserController.viewNutritionists));
+
 router.get(
   '/:id/profile',
-  authenticate(),
   asyncHandler(UserController.viewNutritionistProfile)
 );
 
