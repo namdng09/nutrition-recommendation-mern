@@ -17,6 +17,7 @@ const apiClient = axios.create({
 
 let isRefreshing = false;
 let failedQueue = [];
+let isLoggingOut = false; // Track if we're in logout process
 
 export const AUTH_SESSION_EXPIRED_EVENT = 'auth:session-expired';
 
@@ -40,6 +41,7 @@ const processQueue = (error, token = null) => {
 };
 
 export const resetAuthState = () => {
+  isLoggingOut = true; // Mark as logging out
   isRefreshing = false;
   failedQueue.forEach(({ reject }) => {
     reject(new axios.Cancel('Authentication cancelled'));
@@ -66,6 +68,11 @@ apiClient.interceptors.response.use(
     const isUnauthorized = error.response?.status === 401;
     const alreadyRetried = originalRequest._retry;
     const isPublic = isPublicEndpoint(originalRequest.url);
+
+    // If we're logging out or no token, don't try to refresh - just reject
+    if (isLoggingOut || !getStoredAccessToken()) {
+      return Promise.reject(error);
+    }
 
     if (!isUnauthorized || alreadyRetried || isPublic) {
       return Promise.reject(error);

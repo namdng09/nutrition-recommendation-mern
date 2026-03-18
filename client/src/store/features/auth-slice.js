@@ -80,6 +80,7 @@ export const authSlice = createSlice({
         state.user = decoded;
         state.sessionExpired = false;
         state.initialized = true;
+        resetAuthState(); // Reset logout state on login
       } catch (error) {
         state.user = null;
       }
