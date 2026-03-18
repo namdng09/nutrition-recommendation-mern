@@ -24,11 +24,11 @@ export const useCreateSchedule = ({ onSuccess } = {}) => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.SCHEDULES
       });
-      toast.success(res.message || 'Schedule created successfully');
+      toast.success(res.message || 'Tạo lịch thành công');
       onSuccess?.(res.data);
     },
     onError: err => {
-      toast.error(err.response?.data?.message || 'Failed to create schedule');
+      toast.error(err.response?.data?.message || 'Tạo lịch thất bại');
     }
   });
 };
