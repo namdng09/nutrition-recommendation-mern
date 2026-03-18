@@ -76,14 +76,14 @@ export const ACHIEVEMENTS = {
     category: ACHIEVEMENT_CATEGORY.SOCIAL,
     icon: ''
   },
-  HELPFUL_PEER: {
-    key: 'HELPFUL_PEER',
-    name: 'Người Bạn Hữu Ích',
-    description:
-      'Các bình luận của bạn trên bài đăng của người khác nhận được tổng cộng 10 lượt thích.',
-    category: ACHIEVEMENT_CATEGORY.SOCIAL,
-    icon: ''
-  },
+  // HELPFUL_PEER: {
+  //   key: 'HELPFUL_PEER',
+  //   name: 'Người Bạn Hữu Ích',
+  //   description:
+  //     'Các bình luận của bạn trên bài đăng của người khác nhận được tổng cộng 10 lượt thích.',
+  //   category: ACHIEVEMENT_CATEGORY.SOCIAL,
+  //   icon: ''
+  // },
   COMMUNITY_BEACON: {
     key: 'COMMUNITY_BEACON',
     name: 'Ngọn Đuốc Cộng Đồng',
