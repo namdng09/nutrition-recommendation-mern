@@ -12,5 +12,6 @@ export const nutritionistProfileSchema = yup.object({
   professionalBio: yup
     .string()
     .max(500, 'Tiểu sử không được vượt quá 500 ký tự')
-    .optional()
+    .nullable()
+    .transform(value => value || '')
 });

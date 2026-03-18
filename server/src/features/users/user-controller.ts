@@ -343,6 +343,22 @@ export const UserController = {
       );
   },
 
+  updateUserNutritionistProfile: async (req: Request, res: Response) => {
+    const userId = req.params.id;
+    const data = req.body;
+
+    const result = await UserService.updateUserNutritionistProfile(
+      userId,
+      data
+    );
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Hồ sơ dinh dưỡng được cập nhật thành công', result)
+      );
+  },
+
   approveCertificate: async (req: Request, res: Response) => {
     const userId = req.params.id;
 

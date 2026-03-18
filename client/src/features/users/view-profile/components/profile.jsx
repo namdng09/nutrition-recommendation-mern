@@ -110,6 +110,20 @@ const Profile = () => {
     navigate('/');
   };
 
+  const handleSaveAll = async e => {
+    e.preventDefault();
+
+    if (profile?.role === ROLE.NUTRITIONIST) {
+      const nutritionistFormValid = await nutritionistForm.trigger();
+      if (!nutritionistFormValid) return;
+      nutritionistForm.handleSubmit(handleSaveNutritionistProfile)();
+    }
+
+    const userFormValid = await form.trigger();
+    if (!userFormValid) return;
+    form.handleSubmit(handleSave)();
+  };
+
   return (
     <div className='w-full px-4 py-6 sm:px-6 lg:px-8'>
       <div className='mx-auto max-w-4xl space-y-6'>
@@ -356,12 +370,13 @@ const Profile = () => {
                 </div>
 
                 <Button
-                  type='submit'
-                  disabled={isUpdating}
+                  type='button'
+                  disabled={isUpdating || isUpdatingNutritionist}
                   size='default'
                   className='min-w-[140px]'
+                  onClick={handleSaveAll}
                 >
-                  {isUpdating ? (
+                  {isUpdating || isUpdatingNutritionist ? (
                     <>
                       <Spinner className='h-4 w-4 mr-2' />
                       Đang lưu...

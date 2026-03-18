@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { format } from 'date-fns';
 import {
   ArrowLeft,
@@ -49,7 +48,7 @@ import { STATUS_OPTIONS } from '~/constants/status';
 import DeleteUserDialog from '~/features/users/delete-user/components/admin/delete-user-dialog';
 import { useApproveCertificate } from '~/features/users/manage-certificate/api/approve-certificate';
 import { useRejectCertificate } from '~/features/users/manage-certificate/api/reject-certificate';
-import { useUpdateNutritionistProfile } from '~/features/users/update-nutritionist-profile/api/update-nutritionist-profile';
+import { useUpdateUserNutritionistProfile } from '~/features/users/update-nutritionist-profile/api/update-nutritionist-profile';
 import { nutritionistProfileSchema } from '~/features/users/update-nutritionist-profile/schemas/nutritionist-profile-schema';
 import { useUpdateUser } from '~/features/users/update-user/api/update-user';
 import { updateUserSchema } from '~/features/users/update-user/schemas/update-user-schema';
@@ -128,7 +127,7 @@ const UserDetail = ({ id }) => {
   const {
     mutate: updateNutritionistProfile,
     isPending: isUpdatingNutritionist
-  } = useUpdateNutritionistProfile({
+  } = useUpdateUserNutritionistProfile({
     onSuccess: response => {
       toast.success(response.message || 'Cập nhật hồ sơ dinh dưỡng thành công');
     },
@@ -183,6 +182,21 @@ const UserDetail = ({ id }) => {
 
   const handleToggleActive = () => {
     updateUser({ id, data: { isActive: !user.isActive } });
+  };
+
+  const handleSaveAll = async e => {
+    e.preventDefault();
+
+    const userFormValid = await form.trigger();
+    if (!userFormValid) return;
+
+    if (user?.role === ROLE.NUTRITIONIST) {
+      const nutritionistFormValid = await nutritionistForm.trigger();
+      if (!nutritionistFormValid) return;
+      nutritionistForm.handleSubmit(handleSaveNutritionistProfile)();
+    }
+
+    form.handleSubmit(handleSave)();
   };
 
   const handleBack = () => {
@@ -248,10 +262,10 @@ const UserDetail = ({ id }) => {
           </Button>
           <Button
             size='sm'
-            onClick={form.handleSubmit(handleSave)}
-            disabled={isUpdating}
+            onClick={handleSaveAll}
+            disabled={isUpdating || isUpdatingNutritionist}
           >
-            {isUpdating ? (
+            {isUpdating || isUpdatingNutritionist ? (
               <Spinner className='h-4 w-4 mr-1' />
             ) : (
               <Save className='h-4 w-4 mr-1' />
@@ -528,26 +542,6 @@ const UserDetail = ({ id }) => {
                   </FormItem>
                 )}
               />
-
-              <div className='flex justify-end pt-4'>
-                <Button
-                  type='submit'
-                  disabled={isUpdatingNutritionist}
-                  size='sm'
-                >
-                  {isUpdatingNutritionist ? (
-                    <>
-                      <Spinner className='h-4 w-4 mr-1' />
-                      Đang lưu...
-                    </>
-                  ) : (
-                    <>
-                      <Save className='h-4 w-4 mr-1' />
-                      Lưu hồ sơ
-                    </>
-                  )}
-                </Button>
-              </div>
             </form>
           </Form>
         </div>
@@ -559,12 +553,25 @@ const UserDetail = ({ id }) => {
           const cert = user.certificate;
           const certConfig = cert ? certStatusConfig[cert.status] : null;
           const CertIcon = certConfig?.icon;
+
+          const handleRejectCert = () => {
+            if (!rejectReason.trim()) {
+              toast.error('Vui lòng nhập lý do từ chối');
+              return;
+            }
+            rejectCertificate({ id, rejectionReason: rejectReason });
+          };
+
+          const handleCancelReject = () => {
+            setShowRejectInput(false);
+            setRejectReason('');
+          };
+
           return (
             <div className='bg-card rounded-lg border p-6 mt-6'>
               <h2 className='text-lg font-semibold mb-4'>
                 Chứng chỉ nghề nghiệp
               </h2>
-
               {!cert ? (
                 <p className='text-sm text-muted-foreground'>
                   Chuyên gia này chưa nộp chứng chỉ nào.
@@ -588,7 +595,6 @@ const UserDetail = ({ id }) => {
                       </Badge>
                     )}
                   </div>
-
                   {cert.fileUrl && (
                     <div className='space-y-2'>
                       <p className='text-sm text-muted-foreground'>
@@ -612,7 +618,6 @@ const UserDetail = ({ id }) => {
                       </a>
                     </div>
                   )}
-
                   {cert.status === CERTIFICATE_STATUS.REJECTED &&
                     cert.rejectionReason && (
                       <div className='rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950/30'>
@@ -624,7 +629,6 @@ const UserDetail = ({ id }) => {
                         </p>
                       </div>
                     )}
-
                   {cert.status !== CERTIFICATE_STATUS.APPROVED && (
                     <div className='flex flex-wrap gap-2 pt-2 border-t'>
                       <Button
@@ -639,7 +643,6 @@ const UserDetail = ({ id }) => {
                         )}
                         Phê duyệt
                       </Button>
-
                       {!showRejectInput ? (
                         <Button
                           size='sm'
@@ -663,16 +666,7 @@ const UserDetail = ({ id }) => {
                             <Button
                               size='sm'
                               variant='destructive'
-                              onClick={() => {
-                                if (!rejectReason.trim()) {
-                                  toast.error('Vui lòng nhập lý do từ chối');
-                                  return;
-                                }
-                                rejectCertificate({
-                                  id,
-                                  rejectionReason: rejectReason
-                                });
-                              }}
+                              onClick={handleRejectCert}
                               disabled={isRejecting}
                             >
                               {isRejecting ? (
@@ -685,10 +679,7 @@ const UserDetail = ({ id }) => {
                             <Button
                               size='sm'
                               variant='outline'
-                              onClick={() => {
-                                setShowRejectInput(false);
-                                setRejectReason('');
-                              }}
+                              onClick={handleCancelReject}
                               disabled={isRejecting}
                             >
                               Hủy

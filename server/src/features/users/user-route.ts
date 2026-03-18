@@ -271,6 +271,15 @@ router.put(
   asyncHandler(UserController.updateUser)
 );
 
+router.put(
+  '/:id/nutritionist-profile',
+  authenticate(),
+  authorize([ROLE.ADMIN]),
+  parseFormData,
+  validate(updateNutritionistProfileSchema.shape),
+  asyncHandler(UserController.updateUserNutritionistProfile)
+);
+
 router.delete(
   '/:id',
   authenticate(),
