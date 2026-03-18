@@ -41,7 +41,7 @@ const Header = () => {
   }, [isMobile]);
 
   const handleLogout = async () => {
-    dispatch(logout());
+    await dispatch(logout());
     navigate('/');
   };
 

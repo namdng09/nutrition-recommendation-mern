@@ -21,7 +21,7 @@ const OnboardingHeader = () => {
   const { data: profile } = useProfile();
 
   const handleLogout = async () => {
-    dispatch(logout());
+    await dispatch(logout());
     navigate('/');
   };
 

@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { format } from 'date-fns';
 import {
   ArrowLeft,
