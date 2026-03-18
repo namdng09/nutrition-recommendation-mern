@@ -13,21 +13,10 @@ export const AuthController = {
     const { accessToken, refreshToken, hasOnboarded } =
       await AuthService.login(loginData);
 
-    console.log('=== LOGIN DEBUG ===');
-    console.log('NODE_ENV:', process.env.NODE_ENV);
-    console.log('SERVER_URL:', process.env.SERVER_URL);
-    console.log('Secure flag:', process.env.SERVER_URL?.startsWith('https'));
-    console.log(
-      'SameSite:',
-      process.env.NODE_ENV === 'production' ? 'strict' : 'none'
-    );
-    console.log('Origin:', req.headers.origin);
-    console.log('===================');
-
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.SERVER_URL?.startsWith('https'),
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'none',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -87,7 +76,7 @@ export const AuthController = {
   logout: async (req: Request, res: Response) => {
     res.clearCookie('refreshToken', {
       httpOnly: true,
-      secure: process.env.SERVER_URL?.startsWith('https'),
+      secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'none'
     });
 
@@ -95,12 +84,6 @@ export const AuthController = {
   },
 
   refreshAccessToken: async (req: Request, res: Response) => {
-    console.log('=== REFRESH DEBUG ===');
-    console.log('Cookies received:', req.cookies);
-    console.log('Origin:', req.headers.origin);
-    console.log('Referer:', req.headers.referer);
-    console.log('=====================');
-
     const { refreshToken } = req.cookies;
 
     const accessToken = await AuthService.refreshAccessToken(refreshToken);
