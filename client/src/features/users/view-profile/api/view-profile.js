@@ -16,7 +16,8 @@ export const useProfile = () => {
   return useQuery({
     queryKey: QUERY_KEYS.PROFILE,
     queryFn: fetchProfile,
-    enabled: !!user && !!getStoredAccessToken()
+    enabled: !!user && !!getStoredAccessToken(),
+    retry: false
   });
 };
 
@@ -26,6 +27,7 @@ export const useProfileForPage = () => {
   return useSuspenseQuery({
     queryKey: QUERY_KEYS.PROFILE,
     queryFn: fetchProfile,
-    enabled: !!user && !!getStoredAccessToken()
+    enabled: !!user && !!getStoredAccessToken(),
+    retry: false
   });
 };

@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Camera, LogOut, Save, User } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
@@ -27,6 +27,7 @@ import { useUpdateProfile } from '~/features/users/update-profile/api/update-pro
 import { updateProfileSchema } from '~/features/users/update-profile/schemas/update-profile-schema';
 import { useProfileForPage } from '~/features/users/view-profile/api/view-profile';
 import { resetAuthState } from '~/lib/api-client';
+import { getStoredAccessToken } from '~/lib/auth-tokens';
 import { clearAuthTokens } from '~/lib/auth-tokens';
 import { logout } from '~/store/features/auth-slice';
 
@@ -34,6 +35,7 @@ const Profile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const user = useSelector(state => state.auth.user);
 
   const { data: profile } = useProfileForPage();
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile({
@@ -113,6 +115,11 @@ const Profile = () => {
     dispatch(logout()).catch(() => {});
     navigate('/');
   };
+
+  // Don't render if not logged in
+  if (!user || !getStoredAccessToken()) {
+    return null;
+  }
 
   return (
     <div className='w-full px-4 py-6 sm:px-6 lg:px-8'>
