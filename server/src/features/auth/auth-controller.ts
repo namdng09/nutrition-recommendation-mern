@@ -13,6 +13,15 @@ export const AuthController = {
     const { accessToken, refreshToken, hasOnboarded } =
       await AuthService.login(loginData);
 
+    console.log('=== LOGIN SETTING COOKIE ===');
+    console.log('secure:', false);
+    console.log(
+      'sameSite:',
+      process.env.NODE_ENV === 'production' ? 'lax' : 'none'
+    );
+    console.log('refreshToken exists:', !!refreshToken);
+    console.log('=============================');
+
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: false, // Cloudflare handles HTTPS, so no need for Secure flag
@@ -84,6 +93,12 @@ export const AuthController = {
   },
 
   refreshAccessToken: async (req: Request, res: Response) => {
+    console.log('=== REFRESH REQUEST DEBUG ===');
+    console.log('Raw cookie header:', req.headers.cookie);
+    console.log('Parsed cookies:', req.cookies);
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('=============================');
+
     const { refreshToken } = req.cookies;
 
     const accessToken = await AuthService.refreshAccessToken(refreshToken);
