@@ -39,6 +39,11 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
+export const resetAuthState = () => {
+  isRefreshing = false;
+  failedQueue = [];
+};
+
 apiClient.interceptors.request.use(
   config => {
     const token = getStoredAccessToken();

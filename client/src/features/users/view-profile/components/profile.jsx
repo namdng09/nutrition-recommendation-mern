@@ -19,6 +19,10 @@ import {
 import { Input } from '~/components/ui/input';
 import { Separator } from '~/components/ui/separator';
 import { Spinner } from '~/components/ui/spinner';
+import { Textarea } from '~/components/ui/textarea';
+import { ROLE } from '~/constants/role';
+import { useUpdateNutritionistProfile } from '~/features/users/update-nutritionist-profile/api/update-nutritionist-profile';
+import { nutritionistProfileSchema } from '~/features/users/update-nutritionist-profile/schemas/nutritionist-profile-schema';
 import { useUpdateProfile } from '~/features/users/update-profile/api/update-profile';
 import { updateProfileSchema } from '~/features/users/update-profile/schemas/update-profile-schema';
 import { useProfileForPage } from '~/features/users/view-profile/api/view-profile';
@@ -39,6 +43,11 @@ const Profile = () => {
     }
   });
 
+  const {
+    mutate: updateNutritionistProfile,
+    isPending: isUpdatingNutritionist
+  } = useUpdateNutritionistProfile();
+
   const [avatarPreview, setAvatarPreview] = useState(null);
 
   const form = useForm({
@@ -51,8 +60,37 @@ const Profile = () => {
       : undefined
   });
 
+  const nutritionistForm = useForm({
+    resolver: yupResolver(nutritionistProfileSchema),
+    values: profile?.nutritionistProfile
+      ? {
+          workplace: profile.nutritionistProfile.workplace || '',
+          graduatedUniversity:
+            profile.nutritionistProfile.graduatedUniversity || '',
+          professionalBio: profile.nutritionistProfile.professionalBio || ''
+        }
+      : {
+          workplace: '',
+          graduatedUniversity: '',
+          professionalBio: ''
+        }
+  });
+
   const handleSave = data => {
     updateProfile(data);
+  };
+
+  const handleSaveNutritionistProfile = data => {
+    updateNutritionistProfile(data, {
+      onSuccess: () => {
+        toast.success('Hồ sơ dinh dưỡng được cập nhật thành công');
+      },
+      onError: error => {
+        toast.error(
+          error?.response?.data?.message || 'Cập nhật hồ sơ dinh dưỡng thất bại'
+        );
+      }
+    });
   };
 
   const handleAvatarClick = () => {
@@ -70,6 +108,20 @@ const Profile = () => {
   const handleLogout = async () => {
     await dispatch(logout());
     navigate('/');
+  };
+
+  const handleSaveAll = async e => {
+    e.preventDefault();
+
+    if (profile?.role === ROLE.NUTRITIONIST) {
+      const nutritionistFormValid = await nutritionistForm.trigger();
+      if (!nutritionistFormValid) return;
+      nutritionistForm.handleSubmit(handleSaveNutritionistProfile)();
+    }
+
+    const userFormValid = await form.trigger();
+    if (!userFormValid) return;
+    form.handleSubmit(handleSave)();
   };
 
   return (
@@ -205,6 +257,102 @@ const Profile = () => {
                 </div>
 
                 <Separator />
+
+                {/* Nutritionist Profile Section */}
+                {profile?.role === ROLE.NUTRITIONIST && (
+                  <div className='p-6 space-y-6'>
+                    <div className='space-y-1'>
+                      <h3 className='text-base font-semibold'>
+                        Hồ sơ chuyên gia dinh dưỡng
+                      </h3>
+                      <p className='text-sm text-muted-foreground'>
+                        Thông tin nghề nghiệp và chuyên môn của bạn
+                      </p>
+                    </div>
+
+                    <Form {...nutritionistForm}>
+                      <form
+                        onSubmit={nutritionistForm.handleSubmit(
+                          handleSaveNutritionistProfile
+                        )}
+                      >
+                        <div className='space-y-5'>
+                          <FormField
+                            control={nutritionistForm.control}
+                            name='workplace'
+                            render={({ field }) => (
+                              <FormItem className='grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3 sm:gap-4 items-start sm:items-center'>
+                                <FormLabel className='text-sm font-medium pt-2 sm:pt-0'>
+                                  Nơi làm việc{' '}
+                                  <span className='text-destructive'>*</span>
+                                </FormLabel>
+                                <div className='space-y-2'>
+                                  <FormControl>
+                                    <Input
+                                      placeholder='Nhập nơi làm việc'
+                                      className='rounded-xl border-border focus-visible:ring-primary'
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </div>
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={nutritionistForm.control}
+                            name='graduatedUniversity'
+                            render={({ field }) => (
+                              <FormItem className='grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3 sm:gap-4 items-start sm:items-center'>
+                                <FormLabel className='text-sm font-medium pt-2 sm:pt-0'>
+                                  Trường đại học{' '}
+                                  <span className='text-destructive'>*</span>
+                                </FormLabel>
+                                <div className='space-y-2'>
+                                  <FormControl>
+                                    <Input
+                                      placeholder='Nhập trường đại học'
+                                      className='rounded-xl border-border focus-visible:ring-primary'
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </div>
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={nutritionistForm.control}
+                            name='professionalBio'
+                            render={({ field }) => (
+                              <FormItem className='grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3 sm:gap-4 items-start'>
+                                <FormLabel className='text-sm font-medium pt-2'>
+                                  Tiểu sử
+                                </FormLabel>
+                                <div className='space-y-2'>
+                                  <FormControl>
+                                    <Textarea
+                                      placeholder='Mô tả ngắn về chuyên môn và kinh nghiệm của bạn'
+                                      className='rounded-xl border-border focus-visible:ring-primary resize-none'
+                                      rows={4}
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                  <p className='text-xs text-muted-foreground'>
+                                    Tối đa 500 ký tự
+                                  </p>
+                                </div>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </form>
+                    </Form>
+                  </div>
+                )}
               </div>
 
               {/* Footer */}
@@ -222,12 +370,13 @@ const Profile = () => {
                 </div>
 
                 <Button
-                  type='submit'
-                  disabled={isUpdating}
+                  type='button'
+                  disabled={isUpdating || isUpdatingNutritionist}
                   size='default'
                   className='min-w-[140px]'
+                  onClick={handleSaveAll}
                 >
-                  {isUpdating ? (
+                  {isUpdating || isUpdatingNutritionist ? (
                     <>
                       <Spinner className='h-4 w-4 mr-2' />
                       Đang lưu...

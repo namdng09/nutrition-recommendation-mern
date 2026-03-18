@@ -7,12 +7,11 @@ import IngredientsTableSkeleton from '~/features/ingredients/view-ingredients/co
 const Page = () => {
   return (
     <div className='space-y-4'>
-      {/* Filter - Hide Create Button */}
-      <IngredientsFilter hideCreateButton={true} />
+      <IngredientsFilter />
 
       {/* Table - View only mode */}
       <Suspense fallback={<IngredientsTableSkeleton />}>
-        <IngredientsTable viewDetailPath='/ingredients' />
+        <IngredientsTable />
       </Suspense>
     </div>
   );

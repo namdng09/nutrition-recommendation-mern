@@ -1,17 +1,21 @@
 import { Plus, Search, X } from 'lucide-react';
 import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import { Button } from '~/components/ui/button';
 import { Form, FormControl, FormField, FormItem } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
+import { ROLE } from '~/constants/role';
 import { buildQueryParams } from '~/lib/build-query-params';
-
 const IngredientsFilter = ({ hideCreateButton = false }) => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  // Lấy user từ Redux store
+  const user = useSelector(state => state.auth.user);
+  const isAdmin = user?.role === ROLE.ADMIN;
 
   const form = useForm({
     values: {
@@ -42,7 +46,8 @@ const IngredientsFilter = ({ hideCreateButton = false }) => {
   };
 
   const hasFilters = form.watch('name');
-
+  // Ẩn nút tạo nếu là admin hoặc prop hideCreateButton = true
+  const shouldHideCreateButton = hideCreateButton || isAdmin;
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSearch)} className='space-y-4'>
@@ -85,7 +90,7 @@ const IngredientsFilter = ({ hideCreateButton = false }) => {
             )}
           </div>
 
-          {!hideCreateButton && (
+          {!shouldHideCreateButton && (
             <Button
               type='button'
               onClick={() =>

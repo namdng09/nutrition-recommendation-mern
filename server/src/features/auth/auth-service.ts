@@ -1,6 +1,8 @@
 import createHttpError from 'http-errors';
 import { HydratedDocument } from 'mongoose';
 
+import { CERTIFICATE_STATUS } from '~/shared/constants/certificate-status';
+import { ROLE } from '~/shared/constants/role';
 import { TOKEN_TYPE } from '~/shared/constants/token-type';
 import { AuthModel, UserModel } from '~/shared/database/models';
 import type { User } from '~/shared/database/models/user-model';
@@ -13,6 +15,7 @@ import {
   hashPassword,
   sendMail,
   uploadAvatar,
+  uploadCertificate,
   verifyToken
 } from '~/shared/utils';
 
@@ -157,7 +160,8 @@ export const AuthService = {
 
   signUp: async (
     data: SignUpRequest,
-    avatar?: Express.Multer.File
+    avatar?: Express.Multer.File,
+    certificate?: Express.Multer.File
   ): Promise<SignUpResponse> => {
     const existingAuth = await AuthModel.findOne({
       provider: 'local',
@@ -178,6 +182,80 @@ export const AuthService = {
       localPassword: hashedPassword,
       verifyAt: new Date()
     });
+
+    // Upload certificate and set nutritionist profile for Nutritionist registrations
+    if (data.role === ROLE.NUTRITIONIST) {
+      const updates: any = {};
+
+      // Upload certificate
+      if (certificate) {
+        const certUpload = await uploadCertificate(
+          certificate.buffer,
+          newUser._id.toString()
+        );
+        if (certUpload.success && certUpload.data) {
+          const certName =
+            (data as any).certificateName || certificate.originalname;
+          updates.certificate = {
+            name: certName,
+            fileUrl: certUpload.data.secure_url,
+            publicId: certUpload.data.public_id,
+            status: CERTIFICATE_STATUS.PENDING
+          };
+        }
+      }
+
+      // Set nutritionist profile if provided
+      if (data.workplace || data.graduatedUniversity || data.professionalBio) {
+        updates.nutritionistProfile = {
+          workplace: data.workplace || '',
+          graduatedUniversity: data.graduatedUniversity || '',
+          professionalBio: data.professionalBio || ''
+        };
+      }
+
+      if (Object.keys(updates).length > 0) {
+        await UserModel.findByIdAndUpdate(newUser._id, updates);
+      }
+
+      // Send certificate pending email
+      if (certificate) {
+        sendMail({
+          to: newUser.email,
+          subject: 'Chứng chỉ của bạn đang chờ duyệt',
+          template: 'certificate-pending',
+          templateData: {
+            name: newUser.name,
+            certificateName:
+              (data as any).certificateName || certificate.originalname
+          }
+        }).catch(err => {
+          console.error(
+            'Không thể gửi email thông báo chờ duyệt chứng chỉ:',
+            err
+          );
+        });
+      }
+    }
+
+    // Send welcome email for all new registrations
+    if (data.role === ROLE.NUTRITIONIST) {
+      sendMail({
+        to: newUser.email,
+        subject: 'Chào mừng bạn đến với PNRS',
+        template: 'nutritionist-welcome',
+        templateData: {
+          name: newUser.name,
+          email: newUser.email,
+          loginUrl: `${process.env.CLIENT_URL}/auth/sign-in`
+        }
+      }).catch(err => {
+        console.error(
+          'Không thể gửi email chào mừng chuyên gia dinh dưỡng:',
+          err
+        );
+      });
+    }
 
     const { accessToken, refreshToken } = generateToken({
       id: newUser._id.toString(),

@@ -9,6 +9,7 @@ import { ACTIVITY_LEVEL } from '~/shared/constants/activity-level';
 import { ALLERGEN } from '~/shared/constants/allergen';
 import { AVAILABLE_TIME } from '~/shared/constants/available-time';
 import { BODYFAT } from '~/shared/constants/bodyfat';
+import { CERTIFICATE_STATUS } from '~/shared/constants/certificate-status';
 import { COOKING_PREFERENCE } from '~/shared/constants/cooking-preference';
 import { DIET } from '~/shared/constants/diet';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
@@ -20,6 +21,23 @@ import { MEMBERSHIP_LEVEL } from '~/shared/constants/membership-level';
 import { ROLE } from '~/shared/constants/role';
 import { USER_RANK } from '~/shared/constants/user-rank';
 import { USER_TARGET } from '~/shared/constants/user-target';
+
+const certificateSchema = new Schema(
+  {
+    fileUrl: { type: String, required: true },
+    publicId: { type: String, required: true },
+    name: { type: String, required: true },
+    status: {
+      type: String,
+      enum: Object.values(CERTIFICATE_STATUS),
+      default: CERTIFICATE_STATUS.PENDING
+    },
+    rejectionReason: { type: String },
+    submittedAt: { type: Date, default: Date.now },
+    reviewedAt: { type: Date }
+  },
+  { _id: false }
+);
 
 const macroRangeSchema = new Schema(
   {
@@ -79,6 +97,15 @@ const mealSettingSchema = new Schema(
   { _id: false }
 );
 
+const nutritionistProfileSchema = new Schema(
+  {
+    workplace: { type: String, required: true },
+    graduatedUniversity: { type: String, required: true },
+    professionalBio: { type: String }
+  },
+  { _id: false }
+);
+
 const userSchema = new Schema(
   {
     email: { type: String, required: true, unique: true },
@@ -133,7 +160,9 @@ const userSchema = new Schema(
     setting: { type: Map, of: Schema.Types.Mixed, default: {} },
     aiConfig: { type: Map, of: Schema.Types.Mixed, default: {} },
     hasOnboarded: { type: Boolean, default: false },
-    isActive: { type: Boolean, default: true }
+    isActive: { type: Boolean, default: true },
+    certificate: { type: certificateSchema, default: null },
+    nutritionistProfile: { type: nutritionistProfileSchema }
   },
   {
     timestamps: true
