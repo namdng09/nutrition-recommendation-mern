@@ -79,6 +79,7 @@ export const authSlice = createSlice({
         const decoded = jwtDecode(accessToken);
         state.user = decoded;
         state.sessionExpired = false;
+        state.initialized = true;
       } catch (error) {
         state.user = null;
       }

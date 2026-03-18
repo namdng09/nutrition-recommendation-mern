@@ -15,10 +15,8 @@ export const AuthController = {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure:
-        process.env.NODE_ENV === 'production' &&
-        process.env.SERVER_URL?.startsWith('https'),
-      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -39,10 +37,8 @@ export const AuthController = {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure:
-        process.env.NODE_ENV === 'production' &&
-        process.env.SERVER_URL?.startsWith('https'),
-      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -64,10 +60,8 @@ export const AuthController = {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure:
-        process.env.NODE_ENV === 'production' &&
-        process.env.SERVER_URL?.startsWith('https'),
-      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -82,10 +76,8 @@ export const AuthController = {
   logout: async (req: Request, res: Response) => {
     res.clearCookie('refreshToken', {
       httpOnly: true,
-      secure:
-        process.env.NODE_ENV === 'production' &&
-        process.env.SERVER_URL?.startsWith('https'),
-      sameSite: 'strict'
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'none'
     });
 
     res.status(200).json(ApiResponse.success('Đăng xuất thành công'));
