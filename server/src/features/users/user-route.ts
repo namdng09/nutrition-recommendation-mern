@@ -26,6 +26,7 @@ import {
   onboardingRequestSchema,
   rejectCertificateRequestSchema,
   updateAllergensSchema,
+  updateNutritionistProfileSchema,
   updateNutritionTargetSchema,
   updatePhysicalStatsSchema,
   updateProfileSchema,
@@ -125,6 +126,14 @@ router.put(
   parseFormData,
   validate(updateScheduleSettingsSchema.shape),
   asyncHandler(UserController.updateProfile)
+);
+
+router.put(
+  '/me/nutritionist-profile',
+  authenticate(),
+  parseFormData,
+  validate(updateNutritionistProfileSchema.shape),
+  asyncHandler(UserController.updateNutritionistProfile)
 );
 
 router.post(

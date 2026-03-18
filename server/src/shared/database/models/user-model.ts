@@ -97,6 +97,15 @@ const mealSettingSchema = new Schema(
   { _id: false }
 );
 
+const nutritionistProfileSchema = new Schema(
+  {
+    workplace: { type: String, required: true },
+    graduatedUniversity: { type: String, required: true },
+    professionalBio: { type: String }
+  },
+  { _id: false }
+);
+
 const userSchema = new Schema(
   {
     email: { type: String, required: true, unique: true },
@@ -152,7 +161,8 @@ const userSchema = new Schema(
     aiConfig: { type: Map, of: Schema.Types.Mixed, default: {} },
     hasOnboarded: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
-    certificate: { type: certificateSchema, default: null }
+    certificate: { type: certificateSchema, default: null },
+    nutritionistProfile: { type: nutritionistProfileSchema }
   },
   {
     timestamps: true

@@ -183,30 +183,51 @@ export const AuthService = {
       verifyAt: new Date()
     });
 
-    // Upload certificate for Nutritionist registrations
-    if (data.role === ROLE.NUTRITIONIST && certificate) {
-      const certUpload = await uploadCertificate(
-        certificate.buffer,
-        newUser._id.toString()
-      );
-      if (certUpload.success && certUpload.data) {
-        const certName =
-          (data as any).certificateName || certificate.originalname;
-        await UserModel.findByIdAndUpdate(newUser._id, {
-          certificate: {
+    // Upload certificate and set nutritionist profile for Nutritionist registrations
+    if (data.role === ROLE.NUTRITIONIST) {
+      const updates: any = {};
+
+      // Upload certificate
+      if (certificate) {
+        const certUpload = await uploadCertificate(
+          certificate.buffer,
+          newUser._id.toString()
+        );
+        if (certUpload.success && certUpload.data) {
+          const certName =
+            (data as any).certificateName || certificate.originalname;
+          updates.certificate = {
             name: certName,
             fileUrl: certUpload.data.secure_url,
             publicId: certUpload.data.public_id,
             status: CERTIFICATE_STATUS.PENDING
-          }
-        });
+          };
+        }
+      }
+
+      // Set nutritionist profile if provided
+      if (data.workplace || data.graduatedUniversity || data.professionalBio) {
+        updates.nutritionistProfile = {
+          workplace: data.workplace || '',
+          graduatedUniversity: data.graduatedUniversity || '',
+          professionalBio: data.professionalBio || ''
+        };
+      }
+
+      if (Object.keys(updates).length > 0) {
+        await UserModel.findByIdAndUpdate(newUser._id, updates);
+      }
+
+      // Send certificate pending email
+      if (certificate) {
         sendMail({
           to: newUser.email,
           subject: 'Chứng chỉ của bạn đang chờ duyệt',
           template: 'certificate-pending',
           templateData: {
             name: newUser.name,
-            certificateName: certName
+            certificateName:
+              (data as any).certificateName || certificate.originalname
           }
         }).catch(err => {
           console.error(

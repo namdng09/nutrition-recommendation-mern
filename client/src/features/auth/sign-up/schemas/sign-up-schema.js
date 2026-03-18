@@ -45,7 +45,13 @@ export const nutritionistSignUpSchema = yup.object({
         value[0].type.startsWith('image/') ||
         value[0].type === 'application/pdf'
       );
-    })
+    }),
+  workplace: yup.string().optional(),
+  graduatedUniversity: yup.string().optional(),
+  professionalBio: yup
+    .string()
+    .max(500, 'Tiểu sử không được vượt quá 500 ký tự')
+    .optional()
 });
 
 // Keep legacy export for backwards compatibility

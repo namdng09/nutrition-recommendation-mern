@@ -330,6 +330,19 @@ export const UserController = {
       .json(ApiResponse.success('Tải lên chứng chỉ thành công', result));
   },
 
+  updateNutritionistProfile: async (req: Request, res: Response) => {
+    const userId = req.user?._id.toString();
+    const data = req.body;
+
+    const result = await UserService.updateNutritionistProfile(userId, data);
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Hồ sơ dinh dưỡng được cập nhật thành công', result)
+      );
+  },
+
   approveCertificate: async (req: Request, res: Response) => {
     const userId = req.params.id;
 

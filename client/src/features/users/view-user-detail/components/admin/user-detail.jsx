@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { format } from 'date-fns';
 import {
   ArrowLeft,
@@ -48,6 +49,8 @@ import { STATUS_OPTIONS } from '~/constants/status';
 import DeleteUserDialog from '~/features/users/delete-user/components/admin/delete-user-dialog';
 import { useApproveCertificate } from '~/features/users/manage-certificate/api/approve-certificate';
 import { useRejectCertificate } from '~/features/users/manage-certificate/api/reject-certificate';
+import { useUpdateNutritionistProfile } from '~/features/users/update-nutritionist-profile/api/update-nutritionist-profile';
+import { nutritionistProfileSchema } from '~/features/users/update-nutritionist-profile/schemas/nutritionist-profile-schema';
 import { useUpdateUser } from '~/features/users/update-user/api/update-user';
 import { updateUserSchema } from '~/features/users/update-user/schemas/update-user-schema';
 import { useUserDetail } from '~/features/users/view-user-detail/api/view-user-detail';
@@ -122,6 +125,20 @@ const UserDetail = ({ id }) => {
       }
     });
 
+  const {
+    mutate: updateNutritionistProfile,
+    isPending: isUpdatingNutritionist
+  } = useUpdateNutritionistProfile({
+    onSuccess: response => {
+      toast.success(response.message || 'Cập nhật hồ sơ dinh dưỡng thành công');
+    },
+    onError: error => {
+      toast.error(
+        error.response?.data?.message || 'Cập nhật hồ sơ dinh dưỡng thất bại'
+      );
+    }
+  });
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [showRejectInput, setShowRejectInput] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
@@ -140,8 +157,28 @@ const UserDetail = ({ id }) => {
       : undefined
   });
 
+  const nutritionistForm = useForm({
+    resolver: yupResolver(nutritionistProfileSchema),
+    values: user?.nutritionistProfile
+      ? {
+          workplace: user.nutritionistProfile.workplace || '',
+          graduatedUniversity:
+            user.nutritionistProfile.graduatedUniversity || '',
+          professionalBio: user.nutritionistProfile.professionalBio || ''
+        }
+      : {
+          workplace: '',
+          graduatedUniversity: '',
+          professionalBio: ''
+        }
+  });
+
   const handleSave = data => {
     updateUser({ id, data });
+  };
+
+  const handleSaveNutritionistProfile = data => {
+    updateNutritionistProfile({ id, data });
   };
 
   const handleToggleActive = () => {
@@ -422,6 +459,99 @@ const UserDetail = ({ id }) => {
           </Button>
         </div>
       </div>
+
+      {/* Nutritionist Profile section — Nutritionist only */}
+      {user.role === ROLE.NUTRITIONIST && (
+        <div className='bg-card rounded-lg border p-6 mt-6'>
+          <h2 className='text-lg font-semibold mb-4'>
+            Hồ sơ chuyên gia dinh dưỡng
+          </h2>
+
+          <Form {...nutritionistForm}>
+            <form
+              onSubmit={nutritionistForm.handleSubmit(
+                handleSaveNutritionistProfile
+              )}
+              className='space-y-4'
+            >
+              <FormField
+                control={nutritionistForm.control}
+                name='workplace'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-muted-foreground'>
+                      Nơi làm việc <span className='text-destructive'>*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder='Nhập nơi làm việc' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={nutritionistForm.control}
+                name='graduatedUniversity'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-muted-foreground'>
+                      Trường đại học <span className='text-destructive'>*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder='Nhập trường đại học' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={nutritionistForm.control}
+                name='professionalBio'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-muted-foreground'>
+                      Tiểu sử
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Mô tả ngắn về chuyên môn và kinh nghiệm'
+                        {...field}
+                        rows={4}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                    <p className='text-xs text-muted-foreground'>
+                      Tối đa 500 ký tự
+                    </p>
+                  </FormItem>
+                )}
+              />
+
+              <div className='flex justify-end pt-4'>
+                <Button
+                  type='submit'
+                  disabled={isUpdatingNutritionist}
+                  size='sm'
+                >
+                  {isUpdatingNutritionist ? (
+                    <>
+                      <Spinner className='h-4 w-4 mr-1' />
+                      Đang lưu...
+                    </>
+                  ) : (
+                    <>
+                      <Save className='h-4 w-4 mr-1' />
+                      Lưu hồ sơ
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
+      )}
 
       {/* Certificate section — Nutritionist only */}
       {user.role === ROLE.NUTRITIONIST &&

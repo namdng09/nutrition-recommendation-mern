@@ -35,6 +35,7 @@ import {
   OnboardingRequest,
   RejectCertificateRequest,
   UpdateAllergens,
+  UpdateNutritionistProfile,
   UpdateNutritionTarget,
   UpdatePhysicalStats,
   UpdateProfile,
@@ -739,6 +740,29 @@ export const UserService = {
     }).catch(err => {
       console.error('Không thể gửi email thông báo chờ duyệt chứng chỉ:', err);
     });
+
+    return user;
+  },
+
+  updateNutritionistProfile: async (
+    userId: string,
+    data: UpdateNutritionistProfile
+  ) => {
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      throw createHttpError(404, 'Không tìm thấy người dùng');
+    }
+
+    if (user.role !== ROLE.NUTRITIONIST) {
+      throw createHttpError(
+        403,
+        'Chỉ chuyên gia dinh dưỡng mới có thể cập nhật hồ sơ'
+      );
+    }
+
+    user.nutritionistProfile = data;
+    await user.save();
 
     return user;
   },
