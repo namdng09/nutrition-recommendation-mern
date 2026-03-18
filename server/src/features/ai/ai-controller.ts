@@ -3,7 +3,11 @@ import createHttpError from 'http-errors';
 
 import { ApiResponse } from '~/shared/utils';
 
-import type { AskAgentRequest, RecommendDailyMealsRequest } from './ai-dto';
+import type {
+  AskAgentRequest,
+  RecommendDailyMealsRequest,
+  RecommendDailyWorkoutRequest
+} from './ai-dto';
 import { AiService } from './ai-service';
 
 export const AiController = {
@@ -27,5 +31,19 @@ export const AiController = {
     res
       .status(200)
       .json(ApiResponse.success('Tạo gợi ý bữa ăn thành công', result));
+  },
+
+  recommendDailyWorkout: async (req: Request, res: Response) => {
+    const userId = req.user?._id?.toString();
+    if (!userId) {
+      throw createHttpError(401, 'Unauthorized');
+    }
+
+    const payload = req.body as RecommendDailyWorkoutRequest;
+    const result = await AiService.recommendDailyWorkout(userId, payload);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Tạo gợi ý bài tập thành công', result));
   }
 };

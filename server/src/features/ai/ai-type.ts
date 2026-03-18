@@ -18,6 +18,18 @@ export interface IInputGenerateMeal {
   };
 }
 
+export interface IInputGenerateWorkout {
+  gender?: string;
+  age?: number;
+  height?: number;
+  weight?: number;
+  targetWeight?: number;
+  fitnessGoal?: string;
+  activityLevel?: string;
+  bodyfat?: string;
+  medicalHistory?: string[];
+}
+
 export interface IMealSlotPromptInput {
   mealType: string;
   mealSettingName: string;
@@ -45,4 +57,14 @@ export interface IDishCatalogPromptInput {
     value: number;
   }>;
   suggestedMealTypes: string[];
+}
+
+export interface IExerciseCatalogPromptInput {
+  id: string;
+  name: string;
+  difficulty: string;
+  type: string;
+  logType: string;
+  muscles: string[];
+  equipments: string[];
 }
