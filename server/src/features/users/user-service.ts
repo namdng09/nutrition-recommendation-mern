@@ -767,6 +767,33 @@ export const UserService = {
     return user;
   },
 
+  updateUserNutritionistProfile: async (
+    userId: string,
+    data: UpdateNutritionistProfile
+  ) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
+    }
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      throw createHttpError(404, 'Không tìm thấy người dùng');
+    }
+
+    if (user.role !== ROLE.NUTRITIONIST) {
+      throw createHttpError(
+        403,
+        'Người dùng này không phải là chuyên gia dinh dưỡng'
+      );
+    }
+
+    user.nutritionistProfile = data;
+    await user.save();
+
+    return user;
+  },
+
   approveCertificate: async (userId: string) => {
     if (!validateObjectId(userId)) {
       throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');

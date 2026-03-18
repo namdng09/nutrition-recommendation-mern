@@ -367,12 +367,13 @@ const Profile = () => {
                 </div>
 
                 <Button
-                  type='submit'
-                  disabled={isUpdating}
+                  type='button'
+                  disabled={isUpdating || isUpdatingNutritionist}
                   size='default'
                   className='min-w-[140px]'
+                  onClick={handleSaveAll}
                 >
-                  {isUpdating ? (
+                  {isUpdating || isUpdatingNutritionist ? (
                     <>
                       <Spinner className='h-4 w-4 mr-2' />
                       Đang lưu...
