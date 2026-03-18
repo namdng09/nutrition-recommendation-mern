@@ -1,7 +1,7 @@
 export const EXERCISE_DIFFICULTY = {
-  BEGINNER: 'Beginner',
-  INTERMEDIATE: 'Intermediate',
-  ADVANCED: 'Advanced'
+  BEGINNER: 'Cơ bản',
+  INTERMEDIATE: 'Trung bình',
+  ADVANCED: 'Nâng cao'
 } as const;
 
 export type ExerciseDifficulty =
