@@ -6,6 +6,8 @@ import mongoose, {
 import mongoosePaginate from 'mongoose-paginate-v2';
 
 import { EXERCISE_DIFFICULTY } from '~/shared/constants/exercise-difficulty';
+import { EXERCISE_EQUIPMENT_NAMES } from '~/shared/constants/exercise-equipments';
+import { EXERCISE_MUSCLE_NAMES } from '~/shared/constants/exercise-muscles';
 import { EXERCISE_TYPE } from '~/shared/constants/exercise-type';
 import { WORKOUT_COUNTER_TYPE } from '~/shared/constants/workout-counter-type';
 
@@ -31,13 +33,21 @@ const exerciseSchema = new Schema(
     },
     muscles: [
       {
-        name: { type: String, required: true },
+        name: {
+          type: String,
+          enum: EXERCISE_MUSCLE_NAMES,
+          required: true
+        },
         image: { type: String, default: '' }
       }
     ],
     equipments: [
       {
-        name: { type: String, required: true },
+        name: {
+          type: String,
+          enum: EXERCISE_EQUIPMENT_NAMES,
+          required: true
+        },
         image: { type: String, default: '' }
       }
     ],
