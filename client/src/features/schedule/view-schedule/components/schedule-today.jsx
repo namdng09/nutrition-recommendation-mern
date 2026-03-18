@@ -9,6 +9,7 @@ import ScheduleTodayDetail from '../../view-schedule-detail/components/schedule-
 import { useSchedules } from '../api/view-schedule';
 import ScheduleEmptyState from './schedule-empty-state';
 import ScheduleTodayCard from './schedule-today-card';
+import ScheduleTodayWorkout from './workout/schedule-today-workout';
 
 export default function ScheduleToday({ selectedDate = new Date() }) {
   const { data } = useSchedules({ limit: 1000 });
@@ -71,15 +72,21 @@ export default function ScheduleToday({ selectedDate = new Date() }) {
   }
 
   return (
-    <div className='w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10'>
-      <ScheduleTodayCard
-        schedule={schedule}
-        selectedDate={selectedDate}
-        onGenerateAI={handleGenerateAI}
-        isGeneratingAI={isGeneratingAI}
-      />
+    <div className='w-full max-w-7xl mx-auto space-y-10'>
+      <div className='grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-start'>
+        <div className='space-y-8 lg:sticky lg:top-6 self-start'>
+          <ScheduleTodayCard
+            schedule={schedule}
+            selectedDate={selectedDate}
+            onGenerateAI={handleGenerateAI}
+            isGeneratingAI={isGeneratingAI}
+          />
+        </div>
 
-      <ScheduleTodayDetail scheduleId={schedule._id} />
+        <ScheduleTodayDetail scheduleId={schedule._id} />
+      </div>
+
+      <ScheduleTodayWorkout schedule={schedule} />
     </div>
   );
 }
