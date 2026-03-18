@@ -1,4 +1,3 @@
-// components/profile-sidebar.jsx
 import {
   Activity,
   Award,
@@ -32,6 +31,8 @@ import {
 } from '~/components/ui/sidebar';
 import { ROLE } from '~/constants/role';
 import { useIsMobile } from '~/hooks/use-mobile';
+import { resetAuthState } from '~/lib/api-client';
+import { clearAuthTokens } from '~/lib/auth-tokens';
 import { logout } from '~/store/features/auth-slice';
 
 export function ProfileSidebar({ ...props }) {
@@ -104,7 +105,9 @@ export function ProfileSidebar({ ...props }) {
   const navItems = [...baseNavItems, ...nutritionistNavItems];
 
   const handleLogout = async () => {
-    await dispatch(logout());
+    clearAuthTokens();
+    resetAuthState();
+    dispatch(logout()).catch(() => {});
     navigate('/');
   };
 

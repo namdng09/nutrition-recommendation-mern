@@ -22,6 +22,8 @@ import {
 } from '~/components/ui/popover';
 import { useProfile } from '~/features/users/view-profile/api/view-profile';
 import { useIsMobile } from '~/hooks/use-mobile';
+import { resetAuthState } from '~/lib/api-client';
+import { clearAuthTokens } from '~/lib/auth-tokens';
 import { cn, NAV_LINKS } from '~/lib/utils';
 import { logout } from '~/store/features/auth-slice';
 
@@ -41,7 +43,9 @@ const Header = () => {
   }, [isMobile]);
 
   const handleLogout = async () => {
-    await dispatch(logout());
+    clearAuthTokens();
+    resetAuthState();
+    dispatch(logout()).catch(() => {});
     navigate('/');
   };
 

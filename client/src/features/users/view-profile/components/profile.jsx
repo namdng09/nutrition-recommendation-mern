@@ -26,6 +26,8 @@ import { nutritionistProfileSchema } from '~/features/users/update-nutritionist-
 import { useUpdateProfile } from '~/features/users/update-profile/api/update-profile';
 import { updateProfileSchema } from '~/features/users/update-profile/schemas/update-profile-schema';
 import { useProfileForPage } from '~/features/users/view-profile/api/view-profile';
+import { resetAuthState } from '~/lib/api-client';
+import { clearAuthTokens } from '~/lib/auth-tokens';
 import { logout } from '~/store/features/auth-slice';
 
 const Profile = () => {
@@ -106,7 +108,9 @@ const Profile = () => {
   };
 
   const handleLogout = async () => {
-    await dispatch(logout());
+    clearAuthTokens();
+    resetAuthState();
+    dispatch(logout()).catch(() => {});
     navigate('/');
   };
 

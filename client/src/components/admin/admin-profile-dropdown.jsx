@@ -10,6 +10,8 @@ import {
   PopoverTrigger
 } from '~/components/ui/popover';
 import { useProfile } from '~/features/users/view-profile/api/view-profile';
+import { resetAuthState } from '~/lib/api-client';
+import { clearAuthTokens } from '~/lib/auth-tokens';
 import { logout } from '~/store/features/auth-slice';
 
 export const AdminProfileDropdown = () => {
@@ -18,7 +20,9 @@ export const AdminProfileDropdown = () => {
   const { data: profile } = useProfile();
 
   const handleLogout = async () => {
-    await dispatch(logout());
+    clearAuthTokens();
+    resetAuthState();
+    dispatch(logout()).catch(() => {});
     navigate('/');
   };
 
