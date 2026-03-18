@@ -12,16 +12,18 @@ import {
 } from '~/store/features/auth-slice';
 
 const AppLayout = () => {
-  const { user, loading } = useSelector(state => state.auth);
+  const { user, loading, initialized } = useSelector(state => state.auth);
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const location = useLocation();
 
   useEffect(() => {
-    dispatch(initializeAuth());
+    if (!initialized) {
+      dispatch(initializeAuth());
+    }
     const cleanup = setupSessionExpiredListener(dispatch);
     return cleanup;
-  }, [dispatch]);
+  }, [dispatch, initialized]);
 
   if (loading) {
     return (
