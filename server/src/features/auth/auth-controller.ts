@@ -15,7 +15,7 @@ export const AuthController = {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false, // Cloudflare handles HTTPS, so no need for Secure flag
       sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
@@ -37,7 +37,7 @@ export const AuthController = {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false, // Cloudflare handles HTTPS, so no need for Secure flag
       sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
@@ -60,7 +60,7 @@ export const AuthController = {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false, // Cloudflare handles HTTPS, so no need for Secure flag
       sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
@@ -76,7 +76,7 @@ export const AuthController = {
   logout: async (req: Request, res: Response) => {
     res.clearCookie('refreshToken', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false,
       sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none'
     });
 
@@ -84,17 +84,7 @@ export const AuthController = {
   },
 
   refreshAccessToken: async (req: Request, res: Response) => {
-    console.log('=== REFRESH DEBUG ===');
-    console.log('Cookies:', req.cookies);
-    console.log('Origin:', req.headers.origin);
-    console.log('NODE_ENV:', process.env.NODE_ENV);
-    console.log('======================');
-
     const { refreshToken } = req.cookies;
-
-    if (!refreshToken) {
-      console.log('No refresh token in cookies!');
-    }
 
     const accessToken = await AuthService.refreshAccessToken(refreshToken);
 
