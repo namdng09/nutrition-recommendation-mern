@@ -3,6 +3,7 @@ import { useLocation } from 'react-router';
 
 import Features from '~/components/home/features';
 import Hero from '~/components/home/hero';
+import NutritionistList from '~/components/home/nutritionist-list';
 import PackagesSection from '~/components/home/package-section';
 import Stats from '~/components/home/stats';
 
@@ -29,6 +30,7 @@ const Page = () => {
     <div className='bg-background text-foreground scroll-smooth'>
       <Hero />
       <Stats />
+      <NutritionistList />
       <Features />
       <PackagesSection />
     </div>

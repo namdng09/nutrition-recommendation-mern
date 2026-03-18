@@ -391,8 +391,12 @@ export const UserService = {
     const options = buildPaginateOptions(parsed);
 
     const result = await UserModel.paginate(
-      { ...filter, role: ROLE.NUTRITIONIST },
-      { ...options, select: 'name avatar role certificate' }
+      {
+        ...filter,
+        role: ROLE.NUTRITIONIST,
+        'certificate.status': CERTIFICATE_STATUS.APPROVED
+      },
+      { ...options, select: 'name avatar role certificate nutritionistProfile' }
     );
 
     if (!result || result.totalDocs === 0) {
@@ -581,7 +585,7 @@ export const UserService = {
     }
 
     const user = await UserModel.findById(id).select(
-      'name avatar role certificate'
+      'name avatar role certificate nutritionistProfile'
     );
 
     if (!user) {
