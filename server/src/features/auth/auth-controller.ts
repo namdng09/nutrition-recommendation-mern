@@ -84,7 +84,17 @@ export const AuthController = {
   },
 
   refreshAccessToken: async (req: Request, res: Response) => {
+    console.log('=== REFRESH DEBUG ===');
+    console.log('Cookies:', req.cookies);
+    console.log('Origin:', req.headers.origin);
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('======================');
+
     const { refreshToken } = req.cookies;
+
+    if (!refreshToken) {
+      console.log('No refresh token in cookies!');
+    }
 
     const accessToken = await AuthService.refreshAccessToken(refreshToken);
 
