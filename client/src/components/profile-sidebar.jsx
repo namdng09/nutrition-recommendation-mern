@@ -105,8 +105,8 @@ export function ProfileSidebar({ ...props }) {
   const navItems = [...baseNavItems, ...nutritionistNavItems];
 
   const handleLogout = async () => {
-    clearAuthTokens();
-    resetAuthState();
+    resetAuthState(); // Cancel pending requests FIRST
+    clearAuthTokens(); // Then clear tokens
     dispatch(logout()).catch(() => {});
     navigate('/');
   };

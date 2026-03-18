@@ -43,8 +43,8 @@ const Header = () => {
   }, [isMobile]);
 
   const handleLogout = async () => {
-    clearAuthTokens();
-    resetAuthState();
+    resetAuthState(); // Cancel pending requests FIRST
+    clearAuthTokens(); // Then clear tokens
     dispatch(logout()).catch(() => {});
     navigate('/');
   };

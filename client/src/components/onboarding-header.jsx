@@ -23,8 +23,8 @@ const OnboardingHeader = () => {
   const { data: profile } = useProfile();
 
   const handleLogout = async () => {
-    clearAuthTokens();
-    resetAuthState();
+    resetAuthState(); // Cancel pending requests FIRST
+    clearAuthTokens(); // Then clear tokens
     dispatch(logout()).catch(() => {});
     navigate('/');
   };

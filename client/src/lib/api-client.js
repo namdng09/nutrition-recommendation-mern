@@ -41,6 +41,9 @@ const processQueue = (error, token = null) => {
 
 export const resetAuthState = () => {
   isRefreshing = false;
+  failedQueue.forEach(({ reject }) => {
+    reject(new axios.Cancel('Authentication cancelled'));
+  });
   failedQueue = [];
 };
 
