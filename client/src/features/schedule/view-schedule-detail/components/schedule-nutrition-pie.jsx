@@ -32,7 +32,7 @@ export default function ScheduleNutritionPie({ schedule }) {
   );
 
   return (
-    <div className='rounded-2xl p-5 shadow-sm'>
+    <div className='rounded-2xl border bg-card p-5 shadow-sm'>
       <div className='mb-3 flex items-center justify-between'>
         <h2 className='flex items-center gap-2 text-sm font-black tracking-wide'>
           <FaDrumstickBite className='text-primary' />
@@ -41,7 +41,7 @@ export default function ScheduleNutritionPie({ schedule }) {
         <span className='text-[10px] text-muted-foreground'>gram (g)</span>
       </div>
 
-      <div className='h-[400px] w-full'>
+      <div className='h-[320px] w-full sm:h-[360px]'>
         <ResponsiveContainer width='100%' height='100%'>
           <PieChart>
             <Pie
@@ -61,7 +61,7 @@ export default function ScheduleNutritionPie({ schedule }) {
         </ResponsiveContainer>
       </div>
 
-      <div className='mt-4 grid grid-cols-3 gap-3 text-xs'>
+      <div className='mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3 text-xs'>
         <div className='rounded-xl border p-3 text-center text-orange-light'>
           <div className='flex items-center justify-center gap-1 font-semibold'>
             <FaFireAlt className='text-lg' />
