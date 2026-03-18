@@ -12,7 +12,9 @@ import {
   CardHeader,
   CardTitle
 } from '~/components/ui/card';
+import CERTIFICATE_STATUS from '~/constants/certificate-status';
 import { ROLE } from '~/constants/role';
+import apiClient from '~/lib/api-client';
 import { loadUser } from '~/store/features/auth-slice';
 
 import { useLogin } from '../api/login';
@@ -35,12 +37,26 @@ const decodeToken = token => {
   }
 };
 
+const fetchProfileForRedirect = async accessToken => {
+  try {
+    const response = await apiClient.get('/api/users/me', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+    return response.data.data;
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+    return null;
+  }
+};
+
 const LoginCard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const loginMutation = useLogin({
-    onSuccess: (data, variables) => {
+    onSuccess: async (data, variables) => {
       const { accessToken, hasOnboarded } = data.data;
 
       const decodedToken = decodeToken(accessToken);
@@ -51,7 +67,14 @@ const LoginCard = () => {
       if (role === ROLE.ADMIN) {
         navigate('/admin');
       } else if (role === ROLE.NUTRITIONIST) {
-        navigate('/nutritionist');
+        // Fetch profile to check certificate status
+        const profile = await fetchProfileForRedirect(accessToken);
+
+        if (profile?.certificate?.status === CERTIFICATE_STATUS.APPROVED) {
+          navigate('/nutritionist');
+        } else {
+          navigate('/profile/certificate');
+        }
       } else {
         navigate(hasOnboarded ? '/' : '/onboarding');
       }

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import achievementRoute from '~/features/achievements/achievement-route';
 import aiRoute from '~/features/ai/ai-route';
 import authRoute from '~/features/auth/auth-route';
 import collectionRoute from '~/features/collections/collection-route';
@@ -14,6 +15,7 @@ import userRoute from '~/features/users/user-route';
 
 const router = Router();
 
+router.use('/achievements', achievementRoute);
 router.use('/auth', authRoute);
 router.use('/users', userRoute);
 router.use('/ingredients', ingredientRoute);

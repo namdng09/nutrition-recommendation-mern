@@ -11,6 +11,8 @@ import {
   UserModel
 } from '~/shared/database/models';
 import type { Schedule } from '~/shared/database/models/schedule-model';
+import { eventBus } from '~/shared/events/event-bus';
+import { EVENTS } from '~/shared/events/event-types';
 import {
   buildPaginateOptions,
   type PaginateResponse,
@@ -296,6 +298,11 @@ export const ScheduleService = {
     if (!newSchedule) {
       throw createHttpError(500, 'Tạo lịch ăn thất bại');
     }
+
+    eventBus.emit(EVENTS.SCHEDULE_CREATED, {
+      userId,
+      scheduleId: newSchedule._id.toString()
+    });
 
     return newSchedule;
   },
@@ -799,6 +806,14 @@ export const ScheduleService = {
     dish.isEaten = data.isEaten;
 
     await schedule.save();
+
+    if (data.isEaten) {
+      eventBus.emit(EVENTS.SCHEDULE_DISH_EATEN, {
+        userId,
+        dishId,
+        scheduleId: id
+      });
+    }
 
     return schedule;
   },

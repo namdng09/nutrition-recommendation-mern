@@ -13,6 +13,7 @@ import {
   SidebarMenuItem,
   SidebarRail
 } from '~/components/ui/sidebar';
+import CERTIFICATE_STATUS from '~/constants/certificate-status';
 import { ROLE } from '~/constants/role';
 import { useProfile } from '~/features/users/view-profile/api/view-profile';
 
@@ -22,6 +23,8 @@ export function AdminSidebar({ ...props }) {
   const { data: profile } = useProfile();
 
   const userRole = profile?.role;
+  const isCertApproved =
+    profile?.certificate?.status === CERTIFICATE_STATUS.APPROVED;
 
   const adminNavSections = [
     {
@@ -61,6 +64,11 @@ export function AdminSidebar({ ...props }) {
           title: 'Bộ sưu tập',
           url: '/admin/manage-collections',
           icon: Package
+        },
+        {
+          title: 'Bài viết',
+          url: '/admin/manage-posts',
+          icon: StickyNote
         }
       ]
     }
@@ -105,7 +113,11 @@ export function AdminSidebar({ ...props }) {
   ];
 
   const navSections =
-    userRole === ROLE.NUTRITIONIST ? nutritionistNavSections : adminNavSections;
+    userRole === ROLE.NUTRITIONIST
+      ? isCertApproved
+        ? nutritionistNavSections
+        : nutritionistNavSections.slice(0, 1) // Only show "Dashboard" if not approved
+      : adminNavSections;
 
   const handleNavigation = url => {
     navigate(url);

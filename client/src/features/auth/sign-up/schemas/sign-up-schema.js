@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-export const signUpSchema = yup.object({
+const baseSignUpSchema = {
   email: yup
     .string()
     .email('Sai định dạng email')
@@ -25,4 +25,40 @@ export const signUpSchema = yup.object({
       if (!value || !value[0]) return true;
       return value[0].type.startsWith('image/');
     })
+};
+
+export const userSignUpSchema = yup.object(baseSignUpSchema);
+
+export const nutritionistSignUpSchema = yup.object({
+  ...baseSignUpSchema,
+  certificateName: yup.string().required('Vui lòng nhập tên chứng chỉ'),
+  certificate: yup
+    .mixed()
+    .required('Vui lòng tải lên chứng chỉ của bạn')
+    .test('fileSize', 'Dung lượng file quá lớn (tối đa 10MB)', value => {
+      if (!value || !value[0]) return false;
+      return value[0].size <= 10 * 1024 * 1024;
+    })
+    .test('fileType', 'Chỉ cho phép file hình ảnh hoặc PDF', value => {
+      if (!value || !value[0]) return false;
+      return (
+        value[0].type.startsWith('image/') ||
+        value[0].type === 'application/pdf'
+      );
+    }),
+  workplace: yup
+    .string()
+    .required('Nơi làm việc là bắt buộc')
+    .min(2, 'Nơi làm việc phải có ít nhất 2 ký tự'),
+  graduatedUniversity: yup
+    .string()
+    .required('Trường đại học là bắt buộc')
+    .min(2, 'Trường đại học phải có ít nhất 2 ký tự'),
+  professionalBio: yup
+    .string()
+    .max(500, 'Tiểu sử không được vượt quá 500 ký tự')
+    .optional()
 });
+
+// Keep legacy export for backwards compatibility
+export const signUpSchema = userSignUpSchema;

@@ -160,39 +160,83 @@ export const deleteAvatar = async (
 };
 
 /**
- * Upload exercise tutorial image to Cloudinary
+ * Upload certificate (image or PDF) to Cloudinary
+ * Uses resource_type: 'auto' to support both images and PDFs
  * @param file - File buffer
- * @param exerciseId - Exercise ID to use as filename
+ * @param userId - User ID to use as filename (overwrites previous cert)
  * @returns Promise with upload result
  */
-export const uploadExerciseTutorial = async (
+export const uploadCertificate = async (
   file: Buffer,
-  exerciseId: string
+  userId: string
 ): Promise<UploadResult> => {
-  const tutorialOptions = {
-    folder: 'exercise-tutorials',
-    public_id: exerciseId,
+  const certOptions = {
+    resource_type: 'auto' as const,
+    folder: 'certificates',
+    public_id: userId,
     overwrite: true,
-    invalidate: true,
-    transformation: [
-      { width: 1280, crop: 'limit' },
-      { quality: 'auto', format: 'auto' }
-    ]
+    invalidate: true
   };
 
-  return uploadImage(file, tutorialOptions);
+  try {
+    const result: UploadApiResponse = await new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          certOptions,
+          (
+            error: UploadApiErrorResponse | undefined,
+            result: UploadApiResponse | undefined
+          ) => {
+            if (error) reject(error);
+            else if (result) resolve(result);
+            else reject(new Error('Upload failed'));
+          }
+        )
+        .end(file);
+    });
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('Cloudinary certificate upload error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Upload failed'
+    };
+  }
 };
 
 /**
- * Delete exercise tutorial image from Cloudinary
- * @param exerciseId - Exercise ID (used as public_id)
+ * Delete certificate from Cloudinary
+ * @param userId - User ID (used as public_id under certificates/)
  * @returns Promise with deletion result
  */
-export const deleteExerciseTutorial = async (
-  exerciseId: string
+export const deleteCertificate = async (
+  userId: string
 ): Promise<{ success: boolean; error?: string }> => {
-  const publicId = `exercise-tutorials/${exerciseId}`;
-  return deleteImage(publicId);
+  try {
+    // Try both image and raw resource types since we don't know which was uploaded
+    const [imageResult, rawResult] = await Promise.allSettled([
+      cloudinary.uploader.destroy(`certificates/${userId}`, {
+        resource_type: 'image'
+      }),
+      cloudinary.uploader.destroy(`certificates/${userId}`, {
+        resource_type: 'raw'
+      })
+    ]);
+
+    const imageOk =
+      imageResult.status === 'fulfilled' && imageResult.value.result === 'ok';
+    const rawOk =
+      rawResult.status === 'fulfilled' && rawResult.value.result === 'ok';
+
+    return { success: imageOk || rawOk };
+  } catch (error) {
+    console.error('Cloudinary certificate delete error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Delete failed'
+    };
+  }
 };
 
 export default cloudinary;

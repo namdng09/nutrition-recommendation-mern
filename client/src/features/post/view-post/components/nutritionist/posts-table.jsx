@@ -1,23 +1,34 @@
 import { Eye, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import { DataTableColumnHeader } from '~/components/admin/data-table-column-header';
 import CommonTable from '~/components/common-table';
 import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
+import { ROLE } from '~/constants/role';
 import DeleteBulkPostsDialog from '~/features/post/delete-post/components/nutritionist/delete-bulk-posts-dialog';
 import DeletePostDialog from '~/features/post/delete-post/components/nutritionist/delete-post-dialog';
 import { usePost } from '~/features/post/view-post/api/view-post';
 import { formatDate } from '~/lib/utils';
 
-const PostsTable = () => {
+const PostsTable = ({ viewDetailPath }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState(null);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
   const [selectedPostIds, setSelectedPostIds] = useState([]);
+
+  // Lấy user từ Redux store
+  const user = useSelector(state => state.auth.user);
+  const isAdmin = user?.role === ROLE.ADMIN;
+
+  // Xác định đường dẫn view detail dựa trên role hoặc prop
+  const detailPath =
+    viewDetailPath ||
+    (isAdmin ? '/admin/manage-posts' : '/nutritionist/manage-posts');
 
   const params = {
     page: parseInt(searchParams.get('page') || '1'),
@@ -38,6 +49,10 @@ const PostsTable = () => {
   const handleBulkAction = selectedPosts => {
     setSelectedPostIds(selectedPosts.map(post => post._id));
     setBulkDeleteDialogOpen(true);
+  };
+
+  const handleViewDetail = postId => {
+    navigate(`${detailPath}/${postId}`);
   };
 
   const columns = [
@@ -158,9 +173,8 @@ const PostsTable = () => {
           <Button
             variant='ghost'
             size='icon'
-            onClick={() =>
-              navigate(`/nutritionist/manage-posts/${row.original._id}`)
-            }
+            onClick={() => handleViewDetail(row.original._id)}
+            title='Xem chi tiết'
           >
             <Eye className='h-4 w-4' />
           </Button>
@@ -168,6 +182,7 @@ const PostsTable = () => {
             variant='ghost'
             size='icon'
             onClick={() => handleDelete(row.original)}
+            title='Xóa'
           >
             <Trash2 className='h-4 w-4 text-destructive' />
           </Button>

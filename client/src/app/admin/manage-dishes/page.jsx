@@ -7,12 +7,10 @@ import DishesTableSkeleton from '~/features/dishes/view-dishes/components/nutrit
 const Page = () => {
   return (
     <div className='space-y-4'>
-      {/* Filter - Hide Create Button */}
-      <DishesFilter hideCreateButton={true} />
+      <DishesFilter />
 
-      {/* Table - View only mode */}
       <Suspense fallback={<DishesTableSkeleton />}>
-        <DishesTable viewDetailPath='/dishes' />
+        <DishesTable />
       </Suspense>
     </div>
   );
