@@ -37,8 +37,8 @@ export const AuthController = {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.SERVER_URL?.startsWith('https'),
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'none',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -60,8 +60,8 @@ export const AuthController = {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.SERVER_URL?.startsWith('https'),
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'none',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -77,7 +77,7 @@ export const AuthController = {
     res.clearCookie('refreshToken', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'none'
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none'
     });
 
     res.status(200).json(ApiResponse.success('Đăng xuất thành công'));

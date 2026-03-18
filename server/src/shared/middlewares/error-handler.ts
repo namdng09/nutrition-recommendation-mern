@@ -17,7 +17,7 @@ export const errorHandler: ErrorRequestHandler = (
     res.clearCookie('refreshToken', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'none'
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none'
     });
   }
   if (status >= 400 && status < 500) {
