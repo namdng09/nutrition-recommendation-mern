@@ -54,6 +54,13 @@ describe('ExerciseService.updateExercise', () => {
         'Tên bài tập phải có ít nhất 2 ký tự'
       );
     });
+
+    it('should fail when name is not a string', () => {
+      const result = updateExerciseRequestSchema.safeParse({ name: 123 });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe('Tên bài tập không hợp lệ');
+    });
   });
 
   describe('business logic', () => {
