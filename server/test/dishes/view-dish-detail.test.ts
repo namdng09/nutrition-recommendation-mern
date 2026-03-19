@@ -1,132 +1,138 @@
-import mongoose from 'mongoose';
-import { vi } from 'vitest';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it
-} from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { DishService } from '~/features/dishes/dish-service';
-import { ALLERGEN } from '~/shared/constants/allergen';
-import { DISH_CATEGORY } from '~/shared/constants/dish-category';
-import { UNIT } from '~/shared/constants/unit';
-import { DishModel } from '~/shared/database/models';
+import {
+  DishModel,
+  IngredientModel,
+  UserModel
+} from '~/shared/database/models';
+import { validateObjectId } from '~/shared/utils';
+
+vi.mock('~/shared/database/models', () => ({
+  DishModel: {
+    findById: vi.fn()
+  },
+  IngredientModel: {
+    find: vi.fn()
+  },
+  UserModel: {
+    findById: vi.fn()
+  }
+}));
+
+vi.mock('~/shared/utils', async importOriginal => {
+  const actual = await importOriginal<typeof import('~/shared/utils')>();
+  return {
+    ...actual,
+    validateObjectId: vi.fn()
+  };
+});
+
+const mockFindByIdDish = vi.mocked(DishModel.findById);
+const mockFindIngredients = vi.mocked(IngredientModel.find);
+const mockFindByIdUser = vi.mocked(UserModel.findById);
+const mockValidateObjectId = vi.mocked(validateObjectId);
+
+const VALID_ID = 'dish123';
+const mockDish = {
+  _id: { toString: () => VALID_ID },
+  name: 'Phở bò',
+  description: 'Phở bò truyền thống',
+  ingredients: [
+    { ingredientId: 'ing1', name: 'Thịt bò', image: 'beef.jpg' },
+    { ingredientId: 'ing2', name: 'Bánh phở', image: 'noodles.jpg' }
+  ],
+  instructions: [
+    { step: 1, description: 'Luộc xương' },
+    { step: 2, description: 'Nấu nước dùng' }
+  ],
+  image: 'pho-bo.jpg',
+  isActive: true,
+  toObject: function () {
+    return this;
+  }
+};
 
 describe('DishService.viewDishDetail', () => {
-  let dishId: string;
-  let userId: string;
-
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
-      );
-    }
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
-  beforeEach(async () => {
-    // Clean up database before each test
-    await DishModel.deleteMany({});
-    userId = new mongoose.Types.ObjectId().toString();
+  describe('business logic', () => {
+    it('should throw 400 when id format is invalid', async () => {
+      mockValidateObjectId.mockReturnValue(false);
 
-    // Create a test dish for happy case
-    const dish = await DishModel.create({
-      user: { _id: userId, name: 'Test User' },
-      name: 'Phở bò',
-      description: 'Phở bò truyền thống Hà Nội với nước dùng trong, thơm',
-      categories: [DISH_CATEGORY.MAIN_COURSE, DISH_CATEGORY.SOUP],
-      ingredients: [
-        {
-          ingredientId: new mongoose.Types.ObjectId(),
-          name: 'Thịt bò',
-          description: 'Thịt bò Úc',
-          image: 'beef.jpg',
-          nutrients: {
-            calories: { value: 250, unit: UNIT.KILOCALORIE },
-            carbs: { value: 0, unit: UNIT.GRAM },
-            fat: { value: 15, unit: UNIT.GRAM },
-            protein: { value: 26, unit: UNIT.GRAM },
-            fiber: { value: 0, unit: UNIT.GRAM },
-            sodium: { value: 72, unit: UNIT.MILLIGRAM },
-            cholesterol: { value: 90, unit: UNIT.MILLIGRAM }
-          },
-          allergens: [],
-          baseUnit: { amount: 100, unit: UNIT.GRAM },
-          units: [
-            { value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true },
-            { value: 100, quantity: 1, unit: 'lát', isDefault: false }
-          ]
-        },
-        {
-          ingredientId: new mongoose.Types.ObjectId(),
-          name: 'Bánh phở',
-          description: 'Bánh phở tươi',
-          image: 'pho-noodles.jpg',
-          nutrients: {
-            calories: { value: 109, unit: UNIT.KILOCALORIE },
-            carbs: { value: 24, unit: UNIT.GRAM },
-            fat: { value: 0.2, unit: UNIT.GRAM },
-            protein: { value: 1.8, unit: UNIT.GRAM },
-            fiber: { value: 1, unit: UNIT.GRAM },
-            sodium: { value: 3, unit: UNIT.MILLIGRAM },
-            cholesterol: { value: 0, unit: UNIT.MILLIGRAM }
-          },
-          allergens: [ALLERGEN.GLUTEN],
-          baseUnit: { amount: 100, unit: UNIT.GRAM },
-          units: [{ value: 300, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ],
-      instructions: [
-        { step: 1, description: 'Luộc xương bò với hành, gừng đập dập' },
-        { step: 2, description: 'Nấu nước dùng với gia vị trong 3-4 tiếng' },
-        { step: 3, description: 'Trụng bánh phở và bày ra tô' },
-        { step: 4, description: 'Chan nước dùng nóng và thêm rau thơm' }
-      ],
-      image: 'pho-bo.jpg',
-      isActive: true,
-      isPublic: true,
-      preparationTime: 30,
-      cookTime: 240,
-      servings: 4,
-      tags: ['phở', 'bò', 'việt nam', 'truyền thống']
+      await expect(
+        DishService.viewDishDetail('invalid-id')
+      ).rejects.toMatchObject({
+        status: 400,
+        message: 'Định dạng ID món ăn không hợp lệ'
+      });
+
+      expect(mockFindByIdDish).not.toHaveBeenCalled();
     });
-    dishId = dish._id.toString();
-  });
 
-  afterAll(async () => {
-    // Clean up and close connection
-    await DishModel.deleteMany({});
-    await mongoose.connection.close();
-  });
+    it('should throw 404 when dish does not exist', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindByIdDish.mockResolvedValue(null);
 
-  // Branch - Happy case
-  it('should get dish detail successfully', async () => {
-    const dish = await DishService.viewDishDetail(dishId);
+      await expect(DishService.viewDishDetail(VALID_ID)).rejects.toMatchObject({
+        status: 404,
+        message: 'Không tìm thấy món ăn'
+      });
+    });
 
-    expect(dish).toBeDefined();
-    expect(dish._id.toString()).toBe(dishId);
-    expect(dish.name).toBe('Phở bò');
-    expect(dish.ingredients).toHaveLength(2);
-    expect(dish.instructions).toHaveLength(4);
-  });
+    it('should return dish detail successfully without userId', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindByIdDish.mockResolvedValue(mockDish as any);
+      mockFindIngredients.mockReturnValue({
+        lean: vi.fn().mockResolvedValue([{ _id: 'ing1' }, { _id: 'ing2' }])
+      } as any);
 
-  // Branch - Invalid ID format
-  it('should throw error when id format is invalid', async () => {
-    await expect(DishService.viewDishDetail('invalid-id')).rejects.toThrow(
-      'Định dạng ID món ăn không hợp lệ'
-    );
-  });
+      const result = await DishService.viewDishDetail(VALID_ID);
 
-  // Branch - Dish not found
-  it('should throw error when dish does not exist', async () => {
-    const nonExistentId = new mongoose.Types.ObjectId().toString();
-    await expect(DishService.viewDishDetail(nonExistentId)).rejects.toThrow(
-      'Không tìm thấy món ăn'
-    );
+      expect(result).toBeDefined();
+      expect(result._id.toString()).toBe(VALID_ID);
+      expect(result.name).toBe('Phở bò');
+      expect(result.ingredients).toBeDefined();
+      expect(result.isFavorited).toBe(false);
+    });
+
+    it('should return dish detail with favorite status when userId provided', async () => {
+      const userId = 'user123';
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindByIdDish.mockResolvedValue(mockDish as any);
+      mockFindIngredients.mockReturnValue({
+        lean: vi.fn().mockResolvedValue([{ _id: 'ing1' }, { _id: 'ing2' }])
+      } as any);
+      mockFindByIdUser.mockReturnValue({
+        lean: vi.fn().mockResolvedValue({
+          favoriteDishes: [VALID_ID]
+        })
+      } as any);
+
+      const result = await DishService.viewDishDetail(VALID_ID, userId);
+
+      expect(result).toBeDefined();
+      expect(result.isFavorited).toBe(true);
+    });
+
+    it('should mark deleted ingredients', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindByIdDish.mockResolvedValue(mockDish as any);
+      mockFindIngredients.mockReturnValue({
+        lean: vi.fn().mockResolvedValue([{ _id: 'ing1' }])
+      } as any);
+
+      const result = await DishService.viewDishDetail(VALID_ID);
+
+      expect(result).toBeDefined();
+      expect(result.ingredients).toContainEqual(
+        expect.objectContaining({
+          ingredientId: 'ing1',
+          isDeleted: false
+        })
+      );
+    });
   });
 });
