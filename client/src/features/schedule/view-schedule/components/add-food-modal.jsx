@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import {
   HiOutlineDocumentText,
-  HiOutlineDuplicate,
   HiOutlinePencil,
-  HiOutlinePlusCircle,
   HiOutlineTrash
 } from 'react-icons/hi';
 
@@ -59,16 +57,6 @@ export default function AddFoodModal({
           >
             <HiOutlineDocumentText size={18} />
             Thêm ghi chú món ăn
-          </DropdownMenuItem>
-
-          <DropdownMenuItem className='gap-3'>
-            <HiOutlineDuplicate size={18} />
-            Sao chép thực đơn
-          </DropdownMenuItem>
-
-          <DropdownMenuItem className='gap-3'>
-            <HiOutlinePlusCircle size={18} />
-            Thêm ngày mới
           </DropdownMenuItem>
 
           <DropdownMenuItem
