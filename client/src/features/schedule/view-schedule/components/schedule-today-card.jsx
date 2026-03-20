@@ -45,72 +45,74 @@ export default function ScheduleTodayCard({
 
   return (
     <div className='rounded-[32px] border border-border bg-card p-6 shadow-sm'>
-      <div className='mb-4 flex items-center justify-between px-1'>
-        <div>
-          <h2 className='text-2xl font-black tracking-tight text-foreground'>
-            {formatDateVI(selectedDate)}
-          </h2>
-          <p className='mt-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60'>
-            Lịch trình ăn uống
-          </p>
-        </div>
-
-        <div className='flex items-center gap-3'>
-          <button
-            onClick={onGenerateAI}
-            disabled={isGeneratingAI}
-            className='
-  flex items-center gap-2
-  h-9 px-4
-  rounded-full
-  border border-primary/20
-  bg-primary/10
-  text-primary
-  text-[12px] font-black
-  tracking-tight
-  shadow-sm
-  transition-all
-  hover:bg-primary hover:text-primary-foreground
-  hover:shadow-md
-  active:scale-[0.97]
-  disabled:opacity-60 disabled:cursor-not-allowed
-'
-          >
-            {isGeneratingAI ? (
-              <div className='h-3.5 w-3.5 border-2 border-current border-t-transparent animate-spin rounded-full' />
-            ) : (
-              <HiSparkles size={14} />
-            )}
-            AI gợi ý
-          </button>
-
-          {targetCalories && (
-            <div className='flex flex-col items-end gap-0.5'>
-              <span className='text-[10px] font-black uppercase tracking-[0.2em] text-[#2D6A4F]/60 px-1'>
-                Mục tiêu ngày
-              </span>
-
-              <Link
-                to={`/profile/nutrition-target`}
-                className='flex items-center gap-1.5 rounded-full border border-[#2D6A4F]/20 bg-[#F0F7F4] px-3 py-1 shadow-sm'
-              >
-                <HiFire className='text-[#2D6A4F]' size={14} />
-                <span className='text-[12px] font-black tracking-tight text-[#1B4332]'>
-                  {targetCalories}{' '}
-                  <span className='text-[9px] font-bold opacity-60'>kcal</span>
-                </span>
-              </Link>
+      <div className='mb-5 rounded-[28px] bg-card/70 p-4 shadow-sm backdrop-blur sm:p-5'>
+        <div className='flex flex-col gap-4'>
+          <div className='flex items-start justify-between gap-4'>
+            <div className='min-w-0'>
+              <h2 className='text-2xl font-black tracking-tight text-foreground sm:text-[28px]'>
+                {formatDateVI(selectedDate)}
+              </h2>
+              <p className='mt-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60'>
+                Lịch trình ăn uống
+              </p>
             </div>
-          )}
 
-          <DeleteScheduleModal scheduleId={schedule._id}>
+            <div className='flex shrink-0 items-start gap-3'>
+              {targetCalories && (
+                <div className='flex flex-col items-end gap-1'>
+                  <span className='px-1 text-[10px] font-black uppercase tracking-[0.2em] text-[#2D6A4F]/60'>
+                    Mục tiêu ngày
+                  </span>
+
+                  <Link
+                    to='/profile/nutrition-target'
+                    className='flex items-center gap-1.5 rounded-full bg-[#F0F7F4] px-3 py-1.5 shadow-sm transition-all hover:shadow-md'
+                  >
+                    <HiFire className='text-[#2D6A4F]' size={14} />
+                    <span className='text-[12px] font-black tracking-tight text-[#1B4332]'>
+                      {targetCalories}{' '}
+                      <span className='text-[9px] font-bold opacity-60'>
+                        kcal
+                      </span>
+                    </span>
+                  </Link>
+                </div>
+              )}
+
+              <DeleteScheduleModal scheduleId={schedule._id}>
+                <button
+                  className='flex h-10 w-10 items-center justify-center rounded-xl bg-background text-destructive shadow-sm transition-all hover:bg-destructive hover:text-white hover:shadow-md'
+                  title='Xoá toàn bộ lịch ăn'
+                >
+                  <HiOutlineTrash size={18} />
+                </button>
+              </DeleteScheduleModal>
+            </div>
+          </div>
+
+          <div className='flex items-center justify-between gap-3 rounded-2xl bg-primary/[0.06] px-4 py-3'>
+            <div className='min-w-0'>
+              <p className='text-[12px] font-black tracking-tight text-primary'>
+                Gợi ý thực đơn bằng AI
+              </p>
+              <p className='text-[11px] text-muted-foreground'>
+                Tạo nhanh lịch ăn phù hợp với mục tiêu trong ngày
+              </p>
+            </div>
+
             <button
-              className='flex h-10 w-10 items-center justify-center rounded-xl border border-destructive/30 text-destructive hover:bg-destructive hover:text-white transition-all'
-              title='Xoá toàn bộ lịch ăn'
+              onClick={onGenerateAI}
+              disabled={isGeneratingAI}
+              className='flex shrink-0 items-center gap-2 rounded-full bg-primary px-4 py-2.5 text-[12px] font-black tracking-tight text-primary-foreground shadow-sm transition-all hover:shadow-md active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60'
             >
-              <HiOutlineTrash size={18} />
+              {isGeneratingAI ? (
+                <div className='h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent' />
+              ) : (
+                <HiSparkles size={14} />
+              )}
+              AI gợi ý
             </button>
-          </DeleteScheduleModal>
+          </div>
         </div>
       </div>
 
