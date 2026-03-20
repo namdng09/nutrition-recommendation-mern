@@ -74,6 +74,12 @@ const router = createBrowserRouter([
                 Component: lazy(() => import('~/app/schedules/[day]/page'))
               },
               {
+                path: 'day/:id/nutrition',
+                Component: lazy(
+                  () => import('~/app/schedules/[id]/nutrition/page')
+                )
+              },
+              {
                 path: 'week',
                 Component: lazy(() => import('~/app/schedules/[week]/page'))
               }
