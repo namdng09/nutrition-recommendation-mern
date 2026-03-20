@@ -23,7 +23,7 @@ import {
   IoWaterOutline
 } from 'react-icons/io5';
 import { MdOutlineLocalDining, MdOutlineMonitorWeight } from 'react-icons/md';
-import { Link, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 
 import { useProfile } from '~/features/users/view-profile/api/view-profile';
 import { findByLabel, formatDateVI, formatValue } from '~/lib/utils';
@@ -44,6 +44,8 @@ import { NutritionTable, TopDishesCard } from './nutrition-tables';
 
 export default function ScheduleNutritionContent() {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const { data: schedule } = useScheduleDetail(id);
   const { data: profile } = useProfile();
 
@@ -115,13 +117,14 @@ export default function ScheduleNutritionContent() {
         <div className='mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between'>
           <div>
             <div className='mb-3'>
-              <Link
-                to='/schedules/day'
+              <button
+                type='button'
+                onClick={() => navigate(-1)}
                 className='inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-[12px] font-bold text-foreground shadow-sm transition hover:bg-muted'
               >
                 <HiArrowLeft size={16} />
                 Quay lại lịch ăn
-              </Link>
+              </button>
             </div>
 
             <div className='flex flex-wrap items-center gap-2'>
