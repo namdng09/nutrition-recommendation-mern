@@ -17,7 +17,7 @@ const apiClient = axios.create({
 
 let isRefreshing = false;
 let failedQueue = [];
-let isLoggingOut = false; // Track if we're in logout process
+let isLoggingOut = false;
 
 export const AUTH_SESSION_EXPIRED_EVENT = 'auth:session-expired';
 
@@ -40,14 +40,25 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
-export const resetAuthState = () => {
-  isLoggingOut = true; // Mark as logging out
+export const startLogout = () => {
+  isLoggingOut = true;
   isRefreshing = false;
   failedQueue.forEach(({ reject }) => {
     reject(new axios.Cancel('Authentication cancelled'));
   });
   failedQueue = [];
 };
+
+export const resetAuthQueue = () => {
+  isLoggingOut = false;
+  isRefreshing = false;
+  failedQueue.forEach(({ reject }) => {
+    reject(new axios.Cancel('Auth state reset'));
+  });
+  failedQueue = [];
+};
+
+export const resetAuthState = startLogout;
 
 apiClient.interceptors.request.use(
   config => {

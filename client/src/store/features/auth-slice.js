@@ -3,7 +3,11 @@ import { jwtDecode } from 'jwt-decode';
 
 import { logout as logoutApi } from '~/features/auth/logout/api/logout';
 import { refreshAccessToken } from '~/features/auth/refresh-access-token/api/refresh-access-token';
-import { AUTH_SESSION_EXPIRED_EVENT, resetAuthState } from '~/lib/api-client';
+import {
+  AUTH_SESSION_EXPIRED_EVENT,
+  resetAuthQueue,
+  startLogout
+} from '~/lib/api-client';
 import {
   clearAuthTokens,
   getStoredAccessToken,
@@ -80,7 +84,7 @@ export const authSlice = createSlice({
         state.user = decoded;
         state.sessionExpired = false;
         state.initialized = true;
-        resetAuthState(); // Reset logout state on login
+        resetAuthQueue();
       } catch (error) {
         state.user = null;
       }
@@ -115,7 +119,7 @@ export const authSlice = createSlice({
         state.user = null;
         state.sessionExpired = true;
         state.error = action.payload?.error?.message || 'Session expired';
-        resetAuthState();
+        startLogout();
       })
       .addCase(logout.pending, state => {
         state.loading = true;
@@ -127,7 +131,7 @@ export const authSlice = createSlice({
         state.sessionExpired = false;
         state.initialized = false;
         clearAuthTokens();
-        resetAuthState();
+        startLogout();
       })
       .addCase(logout.rejected, state => {
         state.loading = false;
@@ -136,7 +140,7 @@ export const authSlice = createSlice({
         state.sessionExpired = false;
         state.initialized = false;
         clearAuthTokens();
-        resetAuthState();
+        startLogout();
       });
   }
 });

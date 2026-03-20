@@ -1,6 +1,5 @@
 import { ChevronDown, LogOut, User } from 'lucide-react';
-import { useDispatch } from 'react-redux';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
@@ -10,21 +9,11 @@ import {
   PopoverTrigger
 } from '~/components/ui/popover';
 import { useProfile } from '~/features/users/view-profile/api/view-profile';
-import { resetAuthState } from '~/lib/api-client';
-import { clearAuthTokens } from '~/lib/auth-tokens';
-import { logout } from '~/store/features/auth-slice';
+import { useLogout } from '~/hooks/useLogout';
 
 export const AdminProfileDropdown = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const handleLogout = useLogout();
   const { data: profile } = useProfile();
-
-  const handleLogout = async () => {
-    resetAuthState(); // Cancel pending requests FIRST
-    clearAuthTokens(); // Then clear tokens
-    dispatch(logout()).catch(() => {});
-    navigate('/');
-  };
 
   return (
     <Popover>

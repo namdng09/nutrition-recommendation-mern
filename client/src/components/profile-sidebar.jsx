@@ -11,8 +11,8 @@ import {
   User,
   Utensils
 } from 'lucide-react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useLocation, useNavigate } from 'react-router';
+import { useSelector } from 'react-redux';
+import { Link, useLocation } from 'react-router';
 
 import {
   Sidebar,
@@ -31,13 +31,10 @@ import {
 } from '~/components/ui/sidebar';
 import { ROLE } from '~/constants/role';
 import { useIsMobile } from '~/hooks/use-mobile';
-import { resetAuthState } from '~/lib/api-client';
-import { clearAuthTokens } from '~/lib/auth-tokens';
-import { logout } from '~/store/features/auth-slice';
+import { useLogout } from '~/hooks/useLogout';
 
 export function ProfileSidebar({ ...props }) {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const handleLogout = useLogout();
   const location = useLocation();
   const user = useSelector(state => state.auth.user);
   const isMobile = useIsMobile();
@@ -103,13 +100,6 @@ export function ProfileSidebar({ ...props }) {
       : [];
 
   const navItems = [...baseNavItems, ...nutritionistNavItems];
-
-  const handleLogout = async () => {
-    resetAuthState(); // Cancel pending requests FIRST
-    clearAuthTokens(); // Then clear tokens
-    dispatch(logout()).catch(() => {});
-    navigate('/');
-  };
 
   return (
     <>
