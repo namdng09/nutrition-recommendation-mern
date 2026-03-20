@@ -1,4 +1,4 @@
-import { ArrowLeft, Building2, GraduationCap, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router';
 
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
@@ -20,6 +20,8 @@ export default function NutritionistDetail({ id }) {
   const { data: nutritionist } = useNutritionistDetail(id);
   const certificate = nutritionist?.certificate;
   const profile = nutritionist?.nutritionistProfile;
+  const hasFileUrl = !!certificate?.fileUrl;
+  const showCertificate = certificate?.showCertificate !== false;
 
   return (
     <div className='min-h-screen bg-background'>
@@ -111,9 +113,11 @@ export default function NutritionistDetail({ id }) {
                 {certificate ? (
                   <div className='space-y-4'>
                     <div className='flex items-center justify-between'>
-                      <p className='font-semibold text-foreground'>
-                        {certificate.name}
-                      </p>
+                      <div className='flex items-center gap-2'>
+                        <p className='font-semibold text-foreground'>
+                          {certificate.name}
+                        </p>
+                      </div>
                       <Badge
                         className={
                           certificate.status === 'Approved'
@@ -144,7 +148,7 @@ export default function NutritionistDetail({ id }) {
                       )}
                     </div>
 
-                    {certificate.fileUrl && (
+                    {hasFileUrl && showCertificate && (
                       <a
                         href={certificate.fileUrl}
                         target='_blank'

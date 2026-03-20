@@ -150,6 +150,26 @@ const calculateMacros = (calories: number, ratios: MacroRatios) => {
   };
 };
 
+const sanitizeCertificate = (doc: User | HydratedDocument<User>) => {
+  const cert = 'certificate' in doc ? doc.certificate : null;
+  if (!cert) {
+    return doc;
+  }
+
+  const obj = ('toObject' in doc ? doc.toObject() : doc) as Record<
+    string,
+    unknown
+  >;
+  const certData = obj.certificate as Record<string, unknown>;
+
+  if (cert.showCertificate === false) {
+    const { fileUrl, publicId, ...rest } = certData;
+    return { ...obj, certificate: rest } as User;
+  }
+
+  return doc;
+};
+
 export const UserService = {
   addFavoriteDish: async (userId: string, dishId: string) => {
     if (!validateObjectId(dishId)) {
@@ -403,6 +423,10 @@ export const UserService = {
       throw createHttpError(404, 'Không tìm thấy chuyên gia dinh dưỡng nào');
     }
 
+    result.docs = result.docs.map(doc =>
+      sanitizeCertificate(doc)
+    ) as typeof result.docs;
+
     return result;
   },
 
@@ -599,7 +623,7 @@ export const UserService = {
       );
     }
 
-    return user;
+    return sanitizeCertificate(user);
   },
 
   updateUser: async (
@@ -871,6 +895,37 @@ export const UserService = {
     }).catch(err => {
       console.error('Không thể gửi email từ chối chứng chỉ:', err);
     });
+
+    return user;
+  },
+
+  toggleCertificateVisibility: async (
+    userId: string,
+    showCertificate: boolean
+  ) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
+    }
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      throw createHttpError(404, 'Không tìm thấy người dùng');
+    }
+
+    if (user.role !== ROLE.NUTRITIONIST) {
+      throw createHttpError(
+        403,
+        'Chỉ chuyên gia dinh dưỡng mới có thể thay đổi cài đặt này'
+      );
+    }
+
+    if (!user.certificate) {
+      throw createHttpError(404, 'Người dùng chưa có chứng chỉ');
+    }
+
+    user.certificate.showCertificate = showCertificate;
+    await user.save();
 
     return user;
   }
