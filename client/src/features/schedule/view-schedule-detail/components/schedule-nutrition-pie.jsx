@@ -32,16 +32,24 @@ export default function ScheduleNutritionPie({ schedule }) {
   );
 
   return (
-    <div className='rounded-2xl border bg-card p-5 shadow-sm'>
-      <div className='mb-3 flex items-center justify-between'>
-        <h2 className='flex items-center gap-2 text-sm font-black tracking-wide'>
-          <FaDrumstickBite className='text-primary' />
-          DINH DƯỠNG TRONG NGÀY
-        </h2>
-        <span className='text-[10px] text-muted-foreground'>gram (g)</span>
+    <div className='relative overflow-hidden rounded-[38px] border border-border/40 bg-card p-6 transition-all hover:shadow-lg sm:p-8'>
+      <div className='mb-8 flex items-center justify-between px-2'>
+        <div className='flex items-center gap-3'>
+          <div className='flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-sm'>
+            <FaDrumstickBite size={20} />
+          </div>
+          <div>
+            <h2 className='text-[15px] font-black uppercase tracking-[0.15em] text-foreground'>
+              Dinh dưỡng trong ngày
+            </h2>
+            <p className='text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50'>
+              Chỉ số tính theo gram (g)
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className='h-[320px] w-full sm:h-[360px]'>
+      <div className='relative h-[320px] w-full rounded-[32px] p-4 dark:bg-muted/10 sm:h-[360px]'>
         <ResponsiveContainer width='100%' height='100%'>
           <PieChart>
             <Pie
@@ -50,44 +58,87 @@ export default function ScheduleNutritionPie({ schedule }) {
               nameKey='name'
               cx='50%'
               cy='50%'
-              outerRadius={90}
+              innerRadius={70}
+              outerRadius={100}
+              paddingAngle={5}
+              cornerRadius={8}
               label={({ name, value }) =>
                 value > 0 ? `${name}: ${formatGram(value)}g` : ''
               }
+            ></Pie>
+            <Tooltip
+              contentStyle={{
+                borderRadius: '16px',
+                border: 'none',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+              }}
+              formatter={v => `${formatGram(v)}g`}
             />
-            <Tooltip formatter={v => `${formatGram(v)}g`} />
-            {data.length ? <Legend verticalAlign='bottom' /> : null}
+            {data.length ? (
+              <Legend
+                verticalAlign='bottom'
+                iconType='circle'
+                wrapperStyle={{
+                  paddingTop: '20px',
+                  fontSize: '12px',
+                  fontWeight: 'bold'
+                }}
+              />
+            ) : null}
           </PieChart>
         </ResponsiveContainer>
+
+        <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center'>
+          <p className='text-[10px] font-black uppercase tracking-widest text-muted-foreground/40'>
+            Tổng
+          </p>
+          <p className='text-xl font-black text-foreground'>
+            {formatGram(
+              nutrients.protein + nutrients.carbs + (nutrients.fat || 0)
+            )}
+            g
+          </p>
+        </div>
       </div>
 
-      <div className='mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3 text-xs'>
-        <div className='rounded-xl border p-3 text-center text-orange-light'>
-          <div className='flex items-center justify-center gap-1 font-semibold'>
-            <FaFireAlt className='text-lg' />
-            <span>Calo</span>
+      <div className='mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3'>
+        <div className='group flex flex-col items-center justify-center rounded-[28px] bg-[#1B4332] p-5 text-white shadow-lg shadow-[#1B4332]/20 transition-all hover:brightness-110'>
+          <div className='mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 backdrop-blur-md'>
+            <FaFireAlt className='text-orange-400' size={18} />
           </div>
-          <div className='mt-1 text-lg font-black'>
-            {Math.round(nutrients.calories)} kcal
+          <p className='text-[10px] font-bold uppercase tracking-widest opacity-60'>
+            Năng lượng
+          </p>
+          <div className='mt-1 flex items-baseline gap-1'>
+            <span className='text-2xl font-black tracking-tighter'>
+              {Math.round(nutrients.calories)}
+            </span>
+            <span className='text-[10px] font-bold opacity-40 uppercase'>
+              kcal
+            </span>
           </div>
         </div>
 
-        <div className='rounded-xl border p-3 text-center text-green-light'>
-          <div className='flex items-center justify-center gap-1 font-semibold'>
-            <FaDrumstickBite className='text-lg' />
-            <span>Đạm</span>
+        <div className='group flex flex-col items-center justify-center rounded-[28px] border border-green-100 bg-green-50/50 p-5 transition-all hover:bg-white hover:shadow-md dark:border-green-900/20 dark:bg-green-950/10'>
+          <div className='mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-white text-green-600 shadow-sm dark:bg-card'>
+            <FaDrumstickBite size={18} />
           </div>
-          <div className='mt-1 text-lg font-black'>
+          <p className='text-[10px] font-bold uppercase tracking-widest text-green-700/50'>
+            Chất đạm
+          </p>
+          <div className='mt-1 text-xl font-black text-[#1B4332] dark:text-green-400'>
             {formatGram(nutrients.protein)}g
           </div>
         </div>
 
-        <div className='rounded-xl border p-3 text-center text-cyan-light'>
-          <div className='flex items-center justify-center gap-1 font-semibold'>
-            <FaBreadSlice className='text-lg' />
-            <span>Tinh bột</span>
+        <div className='group flex flex-col items-center justify-center rounded-[28px] border border-cyan-100 bg-cyan-50/50 p-5 transition-all hover:bg-white hover:shadow-md dark:border-cyan-900/20 dark:bg-cyan-950/10'>
+          <div className='mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-white text-cyan-600 shadow-sm dark:bg-card'>
+            <FaBreadSlice size={18} />
           </div>
-          <div className='mt-1 text-lg font-black'>
+          <p className='text-[10px] font-bold uppercase tracking-widest text-cyan-700/50'>
+            Tinh bột
+          </p>
+          <div className='mt-1 text-xl font-black text-cyan-900 dark:text-cyan-400'>
             {formatGram(nutrients.carbs)}g
           </div>
         </div>
