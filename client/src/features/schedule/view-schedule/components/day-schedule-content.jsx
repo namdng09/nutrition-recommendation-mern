@@ -142,9 +142,16 @@ export default function DayScheduleContent({
           </div>
         ))}
 
-        <button className='mt-2 w-full flex items-center justify-center gap-2 rounded-[20px] bg-background border border-border py-4 text-[11px] font-black uppercase tracking-[0.2em] text-foreground/60 hover:bg-muted/50 transition-all'>
-          CHI TIẾT <HiOutlineChevronRight size={16} />
-        </button>
+        <Link
+          to={`/schedules/day/${schedule._id}/nutrition`}
+          className='group mt-2 flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-background px-4 py-3.5 text-[12px] font-black uppercase tracking-[0.18em] text-foreground/70 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:bg-primary/5 hover:text-primary hover:shadow-md active:scale-[0.99]'
+        >
+          <span>Chi tiết dinh dưỡng</span>
+          <HiOutlineChevronRight
+            size={16}
+            className='transition-transform group-hover:translate-x-0.5'
+          />
+        </Link>
       </div>
     );
   }
