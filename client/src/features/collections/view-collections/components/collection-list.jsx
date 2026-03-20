@@ -106,7 +106,7 @@ export default function CollectionsList() {
                         </div>
 
                         <div className='text-[11px] font-medium text-muted-foreground'>
-                          Món tiêu biểu • {col.dishes[0].calories} kcal
+                          Món tiêu biểu • {col.dishes[0].energy} kcal
                         </div>
                       </div>
                     </div>

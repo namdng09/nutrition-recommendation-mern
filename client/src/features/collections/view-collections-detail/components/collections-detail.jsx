@@ -143,7 +143,7 @@ export default function CollectionDetail() {
                 <div className='flex items-center gap-3'>
                   <span className='inline-flex items-center gap-1.5 text-[11px] font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-md'>
                     <FaFireAlt size={10} />
-                    {dish.calories} kcal
+                    {dish.energy} kcal
                   </span>
                 </div>
               </div>
