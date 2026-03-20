@@ -244,10 +244,13 @@ export default function ScheduleTodayCard({
         ))}
       </div>
 
-      <button className='mt-10 w-full flex items-center justify-center gap-2 rounded-[20px] bg-primary py-4 text-[12px] font-black tracking-widest text-primary-foreground shadow-lg shadow-primary/20 hover:brightness-110 active:scale-[0.98] transition-all'>
+      <Link
+        to={`/schedules/day/${schedule._id}/nutrition`}
+        className='mt-10 w-full flex items-center justify-center gap-2 rounded-[20px] bg-primary py-4 text-[12px] font-black tracking-widest text-primary-foreground shadow-lg shadow-primary/20 hover:brightness-110 active:scale-[0.98] transition-all'
+      >
         PHÂN TÍCH DINH DƯỠNG
         <HiOutlineChevronRight size={16} />
-      </button>
+      </Link>
     </div>
   );
 }
