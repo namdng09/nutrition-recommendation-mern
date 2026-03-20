@@ -42,7 +42,7 @@ export default function ScheduleWeekCard({
     <div
       className={cn(
         `
-      relative min-w-[340px] flex-1 rounded-[32px] p-5
+      relative min-w-[340px] h-fit rounded-[32px] p-6
       flex flex-col transition-all duration-500
       bg-card border-2 border-border/60
     `,
@@ -63,7 +63,7 @@ export default function ScheduleWeekCard({
         <DeleteScheduleModal scheduleId={schedule._id}>
           <button
             className='
-        absolute top-3 right-3
+        absolute top-4 right-4
         flex h-9 w-9 items-center justify-center
         rounded-xl
         border border-border
@@ -95,7 +95,7 @@ export default function ScheduleWeekCard({
         </div>
       )}
 
-      <div className='mb-6 text-center'>
+      <div className='mb-6 text-center pt-2'>
         <p
           className={cn(
             'text-[11px] font-black uppercase tracking-[0.2em] mb-1.5',
@@ -115,7 +115,7 @@ export default function ScheduleWeekCard({
         </h3>
       </div>
 
-      <div className='flex-1 flex flex-col'>
+      <div className='w-full'>
         <DayScheduleContent
           schedule={schedule}
           isDayToday={isDayToday}
