@@ -13,7 +13,7 @@ import { useIngredients } from '~/features/ingredients/view-ingredients/api/view
 import { useAddGroceryIngredient } from '../../add-grocery-ingredient/api/add-grocery-ingredient';
 
 const AddIngredientModal = ({ open, onOpenChange, groceryId }) => {
-  const { data } = useIngredients();
+  const { data } = useIngredients({ limit: 1000 });
   const { mutate } = useAddGroceryIngredient();
   const [search, setSearch] = useState('');
 
