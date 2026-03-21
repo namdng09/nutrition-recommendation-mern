@@ -21,13 +21,13 @@ export default function CollectionsList() {
   const collections = data?.docs ?? [];
 
   return (
-    <div className='mx-auto w-full max-w-7xl space-y-3 animate-in fade-in duration-700'>
+    <div className='mx-auto w-full max-w-7xl animate-in space-y-6 fade-in duration-700'>
       <CollectionsHeader
         totalDocs={data?.totalDocs}
         hasCollections={collections.length > 0}
       />
 
-      <div className='grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3'>
+      <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3'>
         {collections.map(col => {
           const cover =
             col.image ||
@@ -37,48 +37,52 @@ export default function CollectionsList() {
           return (
             <div
               key={col._id}
-              className='group relative flex flex-col overflow-hidden rounded-[2rem] border border-border bg-background transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-sky-900/5'
+              className='group relative flex flex-col overflow-hidden rounded-[28px] bg-card shadow-[0_10px_30px_rgba(0,0,0,0.05)] ring-1 ring-border/50 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_20px_45px_rgba(14,116,144,0.12)]'
             >
               <Link
                 to={`/collections/${col._id}`}
                 className='flex flex-1 flex-col'
               >
-                <div className='relative h-50 w-full overflow-hidden'>
+                <div className='relative h-56 w-full overflow-hidden bg-muted'>
                   <img
                     src={cover}
                     alt={col.name}
                     loading='lazy'
-                    className='h-full w-full object-cover transition-transform duration-700 group-hover:scale-105'
+                    className='h-full w-full object-cover'
                   />
 
-                  <div className='absolute inset-0 bg-gradient-to-t from-black/30 to-transparent' />
+                  <div className='absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent' />
 
-                  <span
-                    className={`absolute top-3 right-3 inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black uppercase ${
-                      col.isPublic
-                        ? 'bg-emerald-500 text-white'
-                        : 'bg-gray-800 text-white'
-                    }`}
-                  >
-                    {col.isPublic ? (
-                      <FaLockOpen size={9} />
-                    ) : (
-                      <FaLock size={9} />
-                    )}
-                    {col.isPublic ? 'Công khai' : 'Riêng tư'}
-                  </span>
+                  <div className='absolute left-4 top-4 right-4 flex items-start justify-between gap-3'>
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] shadow-lg ${
+                        col.isPublic
+                          ? 'bg-emerald-500/95 text-white'
+                          : 'bg-slate-900/90 text-white'
+                      }`}
+                    >
+                      {col.isPublic ? (
+                        <FaLockOpen size={9} />
+                      ) : (
+                        <FaLock size={9} />
+                      )}
+                      {col.isPublic ? 'Công khai' : 'Riêng tư'}
+                    </span>
+                  </div>
                 </div>
 
-                <div className='flex flex-col flex-1 p-6'>
-                  <div className='flex items-start justify-between gap-2'>
-                    <h3 className='text-xl font-bold text-foreground group-hover:text-sky-600 line-clamp-1'>
+                <div className='flex flex-1 flex-col p-5 sm:p-6'>
+                  <div className='flex items-start justify-between gap-3'>
+                    <h3 className='line-clamp-2 text-[22px] font-black leading-tight tracking-tight text-foreground transition-colors group-hover:text-sky-600'>
                       {col.name}
                     </h3>
 
-                    <CollectionFavoriteButton collectionId={col._id} />
+                    <div className='shrink-0'>
+                      <CollectionFavoriteButton collectionId={col._id} />
+                    </div>
                   </div>
 
-                  <div className='flex flex-wrap gap-2 mt-3 mb-5'>
+                  <div className='mt-4 flex flex-wrap gap-2'>
                     <StatBadge
                       icon={<FaUser size={10} />}
                       value={col.user?.name}
@@ -93,11 +97,11 @@ export default function CollectionsList() {
                   </div>
 
                   {col.dishes?.[0] ? (
-                    <div className='mb-5 flex items-center gap-4 rounded-xl border border-border/60 bg-secondary/20 p-3'>
+                    <div className='mt-5 flex items-center gap-4 rounded-[20px] bg-muted/40 p-3.5 transition-all group-hover:bg-muted/60'>
                       <img
                         src={col.dishes[0].image}
                         alt={col.dishes[0].name}
-                        className='h-12 w-12 rounded-lg object-cover'
+                        className='h-14 w-14 rounded-xl object-cover shadow-sm'
                       />
 
                       <div className='min-w-0'>
@@ -105,7 +109,7 @@ export default function CollectionsList() {
                           {col.dishes[0].name}
                         </div>
 
-                        <div className='text-[11px] font-medium text-muted-foreground'>
+                        <div className='mt-1 text-[11px] font-medium text-muted-foreground'>
                           Món tiêu biểu • {col.dishes[0].energy} kcal
                         </div>
                       </div>
@@ -113,11 +117,11 @@ export default function CollectionsList() {
                   ) : null}
 
                   {col.tags?.length > 0 && (
-                    <div className='flex flex-wrap gap-1.5 mb-4'>
+                    <div className='mt-4 flex flex-wrap gap-2'>
                       {col.tags.slice(0, 3).map(tag => (
                         <span
                           key={tag}
-                          className='text-[13px] font-bold text-sky-600/70'
+                          className='rounded-full bg-sky-50 px-3 py-1 text-[12px] font-bold text-sky-700'
                         >
                           #{tag}
                         </span>
@@ -125,12 +129,12 @@ export default function CollectionsList() {
                     </div>
                   )}
 
-                  <div className='mt-auto flex items-center justify-between border-t border-border/50 pt-3'>
-                    <span className='text-[11px] font-black uppercase tracking-[0.15em] text-muted-foreground group-hover:text-sky-600 transition-colors'>
+                  <div className='mt-6 flex items-center justify-between border-t border-border/60 pt-4'>
+                    <span className='text-[11px] font-black uppercase tracking-[0.16em] text-muted-foreground transition-colors group-hover:text-sky-600'>
                       Khám phá ngay
                     </span>
 
-                    <div className='flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-all group-hover:bg-sky-600 group-hover:text-white group-hover:translate-x-1'>
+                    <div className='flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground transition-all duration-300 group-hover:translate-x-1 group-hover:bg-sky-600 group-hover:text-white'>
                       <FaChevronRight size={12} />
                     </div>
                   </div>
