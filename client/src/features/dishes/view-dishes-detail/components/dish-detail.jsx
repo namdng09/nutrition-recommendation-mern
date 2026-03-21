@@ -158,10 +158,10 @@ export default function DishDetail() {
                     className='h-14 w-14 rounded-xl object-cover transition-transform duration-300 group-hover:scale-105'
                   />
                   <div className='min-w-0 flex-1'>
-                    <p className='truncate text-sm font-bold text-foreground'>
+                    <p className='truncate text-l font-bold text-foreground'>
                       {item.name}
                     </p>
-                    <p className='text-xs text-muted-foreground'>
+                    <p className='text-l text-muted-foreground'>
                       {unit?.quantity ?? '-'} {unit?.unit ?? ''}
                     </p>
                   </div>
