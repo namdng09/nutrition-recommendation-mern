@@ -26,7 +26,7 @@ export default function ExerciseList() {
     <div className='max-w-7xl mx-auto px-4 py-10 space-y-12'>
       <ExerciseHeader />
 
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
+      <div className='grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3'>
         {exercises.map(ex => {
           const isGif = isGifUrl(ex.tutorial);
           const preview = getPreviewImage(ex.tutorial);
@@ -35,15 +35,15 @@ export default function ExerciseList() {
             <Link
               to={`/exercises/${ex._id}`}
               key={ex._id}
-              className='group flex flex-col rounded-3xl border border-border bg-card shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden'
+              className='group flex flex-col overflow-hidden rounded-[28px] bg-card shadow-[0_10px_30px_rgba(0,0,0,0.06)] ring-1 ring-border/50 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_45px_rgba(0,0,0,0.10)]'
             >
-              <div className='relative aspect-video overflow-hidden'>
+              <div className='relative aspect-video overflow-hidden bg-muted'>
                 <img
                   src={preview}
                   alt={ex.name}
                   loading='lazy'
                   decoding='async'
-                  className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
+                  className='h-full w-full object-cover transition-transform duration-700 group-hover:scale-105'
                   onMouseEnter={e => {
                     if (isGif) e.currentTarget.src = ex.tutorial;
                   }}
@@ -52,12 +52,14 @@ export default function ExerciseList() {
                   }}
                 />
 
-                <div className='absolute top-3 left-3'>
+                <div className='absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-transparent' />
+
+                <div className='absolute left-4 top-4'>
                   <span
-                    className={`flex items-center gap-1 text-[11px] px-3 py-1 rounded-full font-semibold uppercase tracking-wide shadow ${
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] shadow-lg ${
                       ex.difficulty === 'Cơ bản'
-                        ? 'bg-green-500/90 text-white'
-                        : 'bg-orange-500/90 text-white'
+                        ? 'bg-emerald-500/95 text-white'
+                        : 'bg-orange-500/95 text-white'
                     }`}
                   >
                     <HiOutlineChartBar className='text-xs' />
@@ -66,54 +68,56 @@ export default function ExerciseList() {
                 </div>
               </div>
 
-              <div className='p-6 flex flex-col flex-1 space-y-4'>
-                <h3 className='text-lg font-semibold text-foreground group-hover:text-primary transition'>
+              <div className='flex flex-1 flex-col p-5 sm:p-6'>
+                <h3 className='min-h-[56px] text-[20px] font-black leading-tight tracking-tight text-foreground transition-colors group-hover:text-primary'>
                   {ex.name}
                 </h3>
 
-                <div className='flex flex-wrap gap-4 text-sm text-muted-foreground'>
-                  <div className='flex items-center gap-1.5'>
-                    <HiOutlineLightningBolt className='text-primary text-lg' />
+                <div className='flex flex-wrap gap-2 text-sm'>
+                  <div className='inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 font-semibold text-foreground/80'>
+                    <HiOutlineLightningBolt className='text-primary text-base' />
                     <span>{ex.type}</span>
                   </div>
 
-                  <div className='flex items-center gap-1.5'>
+                  <div className='inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 font-semibold text-muted-foreground'>
                     {ex.logType === 'Thời gian' ? (
-                      <HiOutlineClock className='text-primary text-lg' />
+                      <HiOutlineClock className='text-primary text-base' />
                     ) : (
-                      <GiWeightLiftingUp className='text-primary text-lg' />
+                      <GiWeightLiftingUp className='text-primary text-base' />
                     )}
                     <span>{ex.logType}</span>
                   </div>
                 </div>
 
-                <div className='flex flex-wrap gap-2 pt-2'>
+                <div className='mt-5 flex flex-wrap gap-2'>
                   {ex.muscles?.map(muscle => (
                     <div
                       key={muscle._id}
-                      className='flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border bg-muted text-xs font-medium'
+                      className='inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1.5 text-[12px] font-medium text-foreground/80 ring-1 ring-border/60'
                     >
                       <img
                         src={muscle.image}
                         alt={muscle.name}
-                        className='w-3.5 h-3.5 object-contain'
+                        className='h-4 w-4 object-contain'
                       />
                       {muscle.name}
                     </div>
                   ))}
                 </div>
-              </div>
 
-              <button className='flex items-center justify-center gap-2 py-4 font-semibold text-sm border-t border-border bg-muted/40 hover:bg-primary hover:text-primary-foreground transition'>
-                XEM CHI TIẾT
-                <HiChevronDoubleRight className='transition-transform group-hover:translate-x-1' />
-              </button>
+                <div className='mt-6 border-t border-border/60 pt-4'>
+                  <div className='flex items-center justify-center gap-2 rounded-2xl bg-primary/6 py-3 text-sm font-black tracking-wide text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground'>
+                    XEM CHI TIẾT
+                    <HiChevronDoubleRight className='transition-transform duration-300 group-hover:translate-x-1' />
+                  </div>
+                </div>
+              </div>
             </Link>
           );
         })}
       </div>
 
-      <div className='border-t border-border'>
+      <div className='border-border'>
         <ExercisePagination
           page={data.page}
           totalPages={data.totalPages}
