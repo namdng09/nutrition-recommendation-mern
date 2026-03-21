@@ -132,18 +132,6 @@ const ExerciseDetail = ({ id }) => {
     }
   };
 
-  if (!exercise) {
-    return (
-      <div className='flex flex-col items-center justify-center min-h-[400px] gap-4'>
-        <p className='text-muted-foreground'>Khong tim thay bai tap</p>
-        <Button variant='outline' onClick={handleBack}>
-          <ArrowLeft className='h-4 w-4 mr-2' />
-          Quay lại danh sách
-        </Button>
-      </div>
-    );
-  }
-
   const currentTutorialUrl = previewUrl || exercise?.tutorial;
 
   return (
@@ -190,7 +178,7 @@ const ExerciseDetail = ({ id }) => {
             ) : (
               <Save className='h-4 w-4 mr-1' />
             )}
-            Luu
+            Lưu
           </Button>
         </div>
       </div>
