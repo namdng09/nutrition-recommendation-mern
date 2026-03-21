@@ -21,12 +21,12 @@ export default function ExerciseDetail() {
 
   return (
     <div className='min-h-screen pb-20'>
-      <div className='max-w-7xl mx-auto px-6 py-6'>
+      <div className='mx-auto max-w-7xl px-4 py-6 sm:px-6'>
         <button
           onClick={() => navigate(-1)}
-          className='flex items-center gap-2 text-muted-foreground hover:text-primary font-semibold text-sm transition-colors group'
+          className='group inline-flex items-center gap-2 rounded-full bg-muted/50 px-4 py-2 text-sm font-bold text-muted-foreground transition-all hover:bg-primary/10 hover:text-primary'
         >
-          <HiOutlineChevronLeft className='text-lg group-hover:-translate-x-1 transition-transform' />
+          <HiOutlineChevronLeft className='text-lg transition-transform duration-300 group-hover:-translate-x-1' />
           Quay lại danh sách
         </button>
       </div>
