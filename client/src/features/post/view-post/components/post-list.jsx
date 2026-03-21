@@ -26,7 +26,7 @@ export default function PostList() {
               <img
                 src={post.images?.[0]}
                 alt={post.title}
-                className='h-full w-full object-cover transition-transform duration-700 group-hover:scale-105'
+                className='h-full w-full object-cover transition-transform'
               />
 
               <div className='absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent' />

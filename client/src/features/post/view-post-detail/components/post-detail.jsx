@@ -36,7 +36,7 @@ export default function PostDetail() {
               <img
                 src={data.images[0]}
                 alt={data.title}
-                className='h-full w-full object-cover transition-transform duration-700 group-hover:scale-105'
+                className='h-full w-full object-cover transition-transform'
               />
 
               <div className='absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent' />
