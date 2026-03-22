@@ -6,17 +6,17 @@ export default function InfoItem({
 }) {
   return (
     <div
-      className={`flex min-w-0 items-center gap-3 rounded-2xl border p-3 ${colorClass}`}
+      className={`group flex min-w-0 items-center gap-3 rounded-[1.25rem] bg-card px-4 py-3.5 shadow-sm ring-1 ring-border/60 transition-all ${colorClass}`}
     >
-      <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-background/70'>
+      <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted shadow-sm ring-1 ring-border/40'>
         {icon}
       </div>
 
-      <div className='min-w-0'>
-        <p className='text-[10px] font-bold uppercase tracking-wider'>
+      <div className='min-w-0 space-y-0.5'>
+        <p className='text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground'>
           {label}
         </p>
-        <p className='truncate text-sm font-semibold sm:text-base'>
+        <p className='truncate text-sm font-black tracking-tight sm:text-base'>
           {value || '--'}
         </p>
       </div>

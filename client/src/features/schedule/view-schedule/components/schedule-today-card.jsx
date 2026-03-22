@@ -60,10 +60,9 @@ export default function ScheduleTodayCard({
             <div className='flex shrink-0 items-start gap-3'>
               {targetCalories && (
                 <div className='flex flex-col items-end gap-1'>
-                  <span className='px-1 text-[10px] font-black uppercase tracking-[0.2em] text-[#2D6A4F]/60'>
+                  <span className='px-1 text-[10px] font-black uppercase tracking-[0.2em] text-primary/60'>
                     Mục tiêu ngày
                   </span>
-
                   <Link
                     to='/profile/nutrition-target'
                     className='flex items-center gap-1.5 rounded-full bg-[#F0F7F4] px-3 py-1.5 shadow-sm transition-all hover:shadow-md'
