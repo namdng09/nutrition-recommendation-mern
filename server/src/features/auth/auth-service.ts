@@ -317,17 +317,7 @@ export const AuthService = {
     });
   },
 
-  resetPassword: async (
-    token: string,
-    data: ResetPasswordRequest
-  ): Promise<void> => {
-    const validation = resetPasswordRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
+  resetPassword: async (token: string, password: string): Promise<void> => {
     const storedLastResetToken = await AuthModel.findOne({
       lastResetPasswordToken: token
     });
@@ -347,7 +337,7 @@ export const AuthService = {
       throw createHttpError(404, 'Không tìm thấy người dùng');
     }
 
-    const hashedPassword = await hashPassword(data.password);
+    const hashedPassword = await hashPassword(password);
     let auth = await AuthModel.findOne({ user: user._id, provider: 'local' });
 
     if (!auth) {
