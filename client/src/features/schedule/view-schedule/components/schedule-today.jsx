@@ -3,6 +3,7 @@ import { vi } from 'date-fns/locale';
 import { useState } from 'react';
 
 import { useRecommendDailyMeals } from '~/features/ai-schedule/recommend-ai-meal/api/recommend-daily-meals';
+import { useRecommendDailyWorkout } from '~/features/ai-schedule/recommend-ai-workout/api/recommend-daily-workout';
 
 import AddWorkoutModal from '../../add-exercise-workout/components/add-workout-modal';
 import { useCreateSchedule } from '../../create-schedule/api/create-schedule';
@@ -23,6 +24,9 @@ export default function ScheduleToday({ selectedDate = new Date() }) {
   const { mutate: generateAI, isPending: isGeneratingAI } =
     useRecommendDailyMeals();
 
+  const { mutate: generateWorkoutAI, isPending: isGeneratingWorkoutAI } =
+    useRecommendDailyWorkout();
+
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [isEditWorkoutOpen, setIsEditWorkoutOpen] = useState(false);
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false);
@@ -37,7 +41,7 @@ export default function ScheduleToday({ selectedDate = new Date() }) {
 
   const handleCreateToday = () => {
     createSchedule({
-      date: startOfDay(selectedDate),
+      date: format(selectedDate, 'yyyy-MM-dd'),
       dayOfWeek: format(selectedDate, 'EEEE', { locale: vi })
     });
   };
@@ -64,6 +68,20 @@ export default function ScheduleToday({ selectedDate = new Date() }) {
             scheduleId: schedule._id,
             meals: formattedMeals
           });
+        }
+      }
+    );
+  };
+
+  const handleGenerateWorkoutAI = () => {
+    if (!schedule?._id) return;
+
+    generateWorkoutAI(
+      { date: format(startOfDay(selectedDate), 'yyyy-MM-dd') },
+      {
+        onSuccess: data => {
+          const aiSchedule = data?.schedule;
+          if (!aiSchedule) return;
         }
       }
     );
@@ -100,7 +118,7 @@ export default function ScheduleToday({ selectedDate = new Date() }) {
     <>
       <div className='w-full max-w-7xl mx-auto space-y-10'>
         <div className='grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-start'>
-          <div className='space-y-8 self-start lg:sticky lg:top-6'>
+          <div className='space-y-8 self-start lg:sticky lg:top-6 z-10'>
             <ScheduleTodayCard
               schedule={schedule}
               selectedDate={selectedDate}
@@ -109,13 +127,17 @@ export default function ScheduleToday({ selectedDate = new Date() }) {
             />
           </div>
 
-          <ScheduleTodayDetail scheduleId={schedule._id} />
+          <div className='min-w-0 w-full'>
+            <ScheduleTodayDetail scheduleId={schedule._id} />
+          </div>
         </div>
 
         <ScheduleTodayWorkout
           schedule={schedule}
           onEditWorkout={handleOpenEditWorkout}
           onAddWorkout={handleOpenAddWorkout}
+          onGenerateWorkoutAI={handleGenerateWorkoutAI}
+          isGeneratingWorkoutAI={isGeneratingWorkoutAI}
         />
       </div>
 
@@ -130,7 +152,6 @@ export default function ScheduleToday({ selectedDate = new Date() }) {
         open={isAddWorkoutOpen}
         onClose={handleCloseAddWorkout}
         scheduleId={schedule._id}
-        exercises={[]}
       />
     </>
   );
