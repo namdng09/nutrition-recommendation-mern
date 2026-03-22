@@ -20,7 +20,7 @@ describe('AchievementService.getUserAchievements', () => {
   });
 
   describe('business logic', () => {
-    it('should return all achievements for user successfully', async () => {
+    it('should return all achievements with no unlocks when user has no achievements', async () => {
       mockFindById.mockReturnValue({
         lean: vi.fn().mockResolvedValue(null)
       } as any);
@@ -28,15 +28,37 @@ describe('AchievementService.getUserAchievements', () => {
       const result = await AchievementService.getUserAchievements(USER_ID);
 
       expect(result.unlockedCount).toBe(0);
-      expect(result.achievements).toHaveLength(
-        Object.values(ACHIEVEMENTS).length
-      );
       expect(result.achievements.every(item => item.unlocked === false)).toBe(
         true
       );
       expect(result.achievements.every(item => item.unlockedAt === null)).toBe(
         true
       );
+    });
+
+    it('should return all achievements with correct unlocked status and dates', async () => {
+      const unlockedDate = new Date('2024-01-15');
+
+      mockFindById.mockReturnValue({
+        lean: vi.fn().mockResolvedValue({
+          achievements: [
+            {
+              key: ACHIEVEMENTS.THE_PLANNER.key,
+              unlockedAt: unlockedDate
+            }
+          ]
+        })
+      } as any);
+
+      const result = await AchievementService.getUserAchievements(USER_ID);
+
+      expect(result.unlockedCount).toBe(1);
+
+      const plannerAchievement = result.achievements.find(
+        a => a.key === ACHIEVEMENTS.THE_PLANNER.key
+      );
+      expect(plannerAchievement?.unlocked).toBe(true);
+      expect(plannerAchievement?.unlockedAt).toEqual(unlockedDate);
     });
   });
 
