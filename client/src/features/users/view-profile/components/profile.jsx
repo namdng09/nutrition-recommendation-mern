@@ -104,7 +104,20 @@ const Profile = () => {
     }
   };
 
-  // Don't render if not logged in
+  const handleSaveAll = async e => {
+    e.preventDefault();
+
+    if (profile?.role === ROLE.NUTRITIONIST) {
+      const nutritionistFormValid = await nutritionistForm.trigger();
+      if (!nutritionistFormValid) return;
+      nutritionistForm.handleSubmit(handleSaveNutritionistProfile)();
+    }
+
+    const userFormValid = await form.trigger();
+    if (!userFormValid) return;
+    form.handleSubmit(handleSave)();
+  };
+
   if (!user) {
     return null;
   }
