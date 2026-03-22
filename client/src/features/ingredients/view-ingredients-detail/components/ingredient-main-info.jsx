@@ -20,9 +20,9 @@ export default function IngredientMainInfo({
   setOpenNutrition
 }) {
   return (
-    <div className='rounded-2xl border border-border bg-background/80 backdrop-blur p-5 shadow-sm'>
-      <div className='flex flex-col gap-5 md:flex-row'>
-        <div className='h-44 w-full overflow-hidden rounded-2xl border bg-muted md:h-56 md:w-56'>
+    <div className='rounded-[2rem] bg-card/90 p-5 shadow-[0_12px_36px_rgba(0,0,0,0.06)] ring-1 ring-border/60 backdrop-blur sm:p-6'>
+      <div className='flex flex-col gap-6 lg:flex-row'>
+        <div className='h-52 w-full overflow-hidden rounded-[1.5rem] bg-muted shadow-sm ring-1 ring-border/50 md:h-64 md:w-64 lg:shrink-0'>
           <img
             src={item?.image || '/placeholder.png'}
             alt={item?.name}
@@ -30,18 +30,18 @@ export default function IngredientMainInfo({
           />
         </div>
 
-        <div className='flex-1 space-y-4'>
-          <div className='flex items-start justify-between gap-3'>
+        <div className='flex-1 space-y-5'>
+          <div className='flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between'>
             <div className='min-w-0'>
-              <h1 className='truncate text-2xl font-bold text-foreground'>
+              <h1 className='text-2xl font-black tracking-tight text-foreground sm:text-3xl'>
                 {item?.name}
               </h1>
 
-              <div className='mt-1 flex flex-wrap items-center gap-2 text-sm'>
+              <div className='mt-3 flex flex-wrap items-center gap-2'>
                 {item?.categories?.map(cat => (
                   <span
                     key={cat}
-                    className='inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground ring-1 ring-border'
+                    className='inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-xs font-bold text-muted-foreground shadow-sm ring-1 ring-border/50'
                   >
                     <FaTag className='h-3.5 w-3.5' />
                     {cat}
@@ -49,7 +49,7 @@ export default function IngredientMainInfo({
                 ))}
 
                 {defaultUnit?.unit && (
-                  <span className='inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground ring-1 ring-border'>
+                  <span className='inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-xs font-bold text-muted-foreground shadow-sm ring-1 ring-border/50'>
                     <FaBox className='h-3.5 w-3.5' />
                     {defaultUnit.unit}
                   </span>
@@ -57,24 +57,24 @@ export default function IngredientMainInfo({
               </div>
 
               {item?.description && (
-                <div className='mt-3 w-full rounded-xl border border-border bg-muted/40 p-4'>
-                  <div className='mb-1 flex items-center gap-2 text-sm font-medium text-emerald-700'>
+                <div className='mt-4 rounded-[1.25rem] bg-muted/40 p-4 shadow-sm ring-1 ring-border/40'>
+                  <div className='mb-2 flex items-center gap-2 text-sm font-bold text-emerald-700 dark:text-emerald-400'>
                     <FaAlignLeft className='h-4 w-4' />
                     Mô tả
                   </div>
 
-                  <p className='text-sm text-foreground leading-relaxed'>
+                  <p className='text-sm leading-relaxed text-foreground/90'>
                     {item.description}
                   </p>
                 </div>
               )}
             </div>
 
-            <div className='flex items-center gap-2'>
+            <div className='flex flex-wrap items-center gap-2 xl:justify-end'>
               <span
-                className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${
+                className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold ${
                   item?.isActive
-                    ? 'bg-accent text-accent-foreground'
+                    ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400'
                     : 'bg-muted text-muted-foreground'
                 }`}
               >
@@ -98,55 +98,58 @@ export default function IngredientMainInfo({
 
           <Button
             variant='outline'
-            className='w-fit rounded-xl text-sm flex items-center gap-2'
+            className='flex w-fit items-center gap-2 rounded-xl text-sm shadow-sm'
             onClick={() => setOpenNutrition(true)}
           >
             Xem chi tiết dinh dưỡng
             <IoChevronForward size={16} className='text-muted-foreground' />
           </Button>
 
-          {/* UNITS */}
-          <div className='rounded-xl border p-3'>
-            <div className='text-sm font-semibold'>Đơn vị sử dụng</div>
+          <div className='grid gap-4 lg:grid-cols-2'>
+            <div className='rounded-[1.25rem] bg-background p-4 shadow-sm ring-1 ring-border/50'>
+              <div className='text-sm font-black tracking-tight text-foreground'>
+                Đơn vị sử dụng
+              </div>
 
-            <div className='mt-2 flex flex-wrap gap-2'>
-              {item?.units?.map(u => (
-                <span
-                  key={u._id}
-                  className={`rounded-full px-3 py-1 text-xs ${
-                    u.isDefault
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-muted-foreground'
-                  }`}
-                >
-                  {u.value} {u.unit}
-                </span>
-              ))}
+              <div className='mt-3 flex flex-wrap gap-2'>
+                {item?.units?.map(u => (
+                  <span
+                    key={u._id}
+                    className={`rounded-full px-3 py-1.5 text-xs font-bold ${
+                      u.isDefault
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    {u.value} {u.unit}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className='rounded-[1.25rem] bg-background p-4 shadow-sm ring-1 ring-border/50'>
+              <div className='text-sm font-black tracking-tight text-foreground'>
+                Chất gây dị ứng
+              </div>
+
+              <div className='mt-3 flex flex-wrap gap-2 text-sm text-muted-foreground'>
+                {item?.allergens?.length
+                  ? item.allergens.map(a => (
+                      <span
+                        key={a}
+                        className='rounded-full bg-muted px-3 py-1.5 text-xs font-medium'
+                      >
+                        {a}
+                      </span>
+                    ))
+                  : 'Không có'}
+              </div>
             </div>
           </div>
 
-          {/* ALLERGENS */}
-          <div className='rounded-xl border p-3'>
-            <div className='text-sm font-semibold'>Chất gây dị ứng</div>
-
-            <div className='mt-2 text-sm text-muted-foreground'>
-              {item?.allergens?.length
-                ? item.allergens.map(a => (
-                    <span
-                      key={a}
-                      className='mr-2 rounded-full bg-muted px-2 py-1 text-xs'
-                    >
-                      {a}
-                    </span>
-                  ))
-                : 'Không có'}
-            </div>
-          </div>
-
-          {/* BACK LINK */}
           <Link
             to='/ingredients'
-            className='text-sm font-medium text-primary hover:underline'
+            className='inline-flex items-center gap-2 text-sm font-bold text-primary transition hover:translate-x-0.5 hover:underline'
           >
             Trở về danh sách nguyên liệu
           </Link>

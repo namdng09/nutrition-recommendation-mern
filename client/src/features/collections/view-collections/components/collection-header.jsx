@@ -6,27 +6,42 @@ import CollectionsEmpty from './collection-empty';
 export default function CollectionsHeader({ totalDocs = 0, hasCollections }) {
   return (
     <>
-      <div className='flex flex-col md:flex-row md:items-end justify-between gap-6 border-border pb-8'>
-        <div className='space-y-2'>
-          <div className='flex items-center gap-3'>
-            <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-sky-600 text-white shadow-lg shadow-sky-100'>
-              <FaFolderOpen />
+      <div className='relative overflow-hidden rounded-[32px] bg-gradient-to-br from-sky-500/[0.08] via-background to-background px-6 py-8 shadow-sm sm:px-8 sm:py-10'>
+        <div className='absolute -right-10 -top-10 h-32 w-32 rounded-full bg-sky-500/10 blur-3xl' />
+        <div className='absolute -bottom-14 left-0 h-32 w-32 rounded-full bg-sky-400/10 blur-3xl' />
+
+        <div className='relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between'>
+          <div className='max-w-2xl space-y-4'>
+            <div className='inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-3 py-1.5'>
+              <FaFolderOpen className='text-sky-600' size={14} />
+              <span className='text-[11px] font-bold uppercase tracking-[0.22em] text-sky-700/80'>
+                Recipe Collections
+              </span>
             </div>
 
-            <h1 className='text-3xl font-extrabold tracking-tight text-foreground'>
-              Bộ sưu tập <span className='text-sky-600'>món ăn</span>
-            </h1>
+            <div className='flex items-center gap-3'>
+              <div className='flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-600 text-white shadow-lg'>
+                <FaFolderOpen size={18} />
+              </div>
+
+              <h1 className='text-3xl font-black tracking-tight text-foreground sm:text-4xl'>
+                Bộ sưu tập <span className='text-sky-600'>món ăn</span>
+              </h1>
+            </div>
+
+            <p className='max-w-xl text-sm font-medium leading-relaxed text-muted-foreground sm:text-[15px]'>
+              Lưu trữ và tổ chức những công thức yêu thích của cộng đồng theo
+              cách trực quan, gọn gàng và dễ khám phá hơn.
+            </p>
           </div>
 
-          <p className='text-muted-foreground font-medium'>
-            Lưu trữ và tổ chức những công thức yêu thích của cộng đồng
-          </p>
+          <div className='self-start md:self-end'>
+            <span className='inline-flex items-center gap-2 rounded-full bg-card/80 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-muted-foreground shadow-sm backdrop-blur'>
+              <FaLayerGroup size={12} className='text-sky-600' />
+              {totalDocs} Bộ sưu tập
+            </span>
+          </div>
         </div>
-
-        <span className='inline-flex items-center gap-2 rounded-full bg-secondary/50 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-muted-foreground border border-border/50'>
-          <FaLayerGroup size={12} />
-          {totalDocs} Bộ sưu tập
-        </span>
       </div>
 
       {!hasCollections && <CollectionsEmpty />}

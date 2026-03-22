@@ -10,14 +10,13 @@ import InfoItem from './info-item';
 export default function ScheduleOverviewCard({ schedule, totalCalories }) {
   return (
     <div className='relative overflow-hidden rounded-3xl border bg-card p-6 shadow-md'>
-      <h3 className='flex items-center gap-2 text-lg font-black tracking-tight mb-6'>
-        <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-accent-foreground'>
+      <h3 className='mb-6 flex items-center gap-3 text-lg font-black tracking-tight text-foreground'>
+        <div className='flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-sm ring-1 ring-primary/10'>
           <HiOutlineCollection size={18} />
         </div>
-        Tổng quan ngày
+        <span>Tổng quan ngày</span>
       </h3>
-
-      <div className='grid grid-cols-2 gap-5'>
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
         <InfoItem
           icon={<HiOutlineUser size={18} />}
           label='Người dùng'
@@ -39,17 +38,20 @@ export default function ScheduleOverviewCard({ schedule, totalCalories }) {
           colorClass='text-cyan-light'
         />
 
-        <div className='flex items-center gap-3 rounded-2xl border p-3 text-orange-light'>
-          <div className='flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-foreground shadow'>
+        <div className='group flex min-w-0 items-center gap-3 rounded-[1.25rem] bg-card px-4 py-3.5 text-orange-light shadow-sm ring-1 ring-border/60 transition-all'>
+          <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-orange-50 text-orange-500 shadow-sm ring-1 ring-orange-100 dark:bg-orange-500/10 dark:text-orange-400 dark:ring-orange-500/20'>
             <HiFire size={18} />
           </div>
-          <div>
-            <p className='text-[10px] uppercase tracking-wider font-bold'>
+
+          <div className='min-w-0 space-y-0.5'>
+            <p className='text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground'>
               Năng lượng
             </p>
-            <p className='text-lg font-black'>
+            <p className='truncate text-lg font-black tracking-tight'>
               {Math.round(totalCalories)}{' '}
-              <span className='text-xs font-medium'>kcal</span>
+              <span className='text-xs font-semibold text-muted-foreground'>
+                kcal
+              </span>
             </p>
           </div>
         </div>

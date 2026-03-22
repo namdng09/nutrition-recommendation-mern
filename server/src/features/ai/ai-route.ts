@@ -7,7 +7,8 @@ import { asyncHandler } from '~/shared/utils';
 import { AiController } from './ai-controller';
 import {
   askAgentRequestSchema,
-  recommendDailyMealsRequestSchema
+  recommendDailyMealsRequestSchema,
+  recommendDailyWorkoutRequestSchema
 } from './ai-dto';
 
 const router = Router();
@@ -24,6 +25,14 @@ router.post(
   authorize([ROLE.USER, ROLE.NUTRITIONIST, ROLE.ADMIN]),
   validate(recommendDailyMealsRequestSchema.shape),
   asyncHandler(AiController.recommendDailyMeals)
+);
+
+router.post(
+  '/recommend-daily-workout',
+  authenticate(),
+  authorize([ROLE.USER, ROLE.NUTRITIONIST, ROLE.ADMIN]),
+  validate(recommendDailyWorkoutRequestSchema.shape),
+  asyncHandler(AiController.recommendDailyWorkout)
 );
 
 export default router;

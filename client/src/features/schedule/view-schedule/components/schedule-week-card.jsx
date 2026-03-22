@@ -42,19 +42,20 @@ export default function ScheduleWeekCard({
     <div
       className={cn(
         `
-      relative min-w-[340px] flex-1 rounded-[32px] p-5
+      relative min-w-[340px] h-fit rounded-[32px] p-6
       flex flex-col transition-all duration-500
-      bg-card border-2 border-border/60
+      bg-card border-2 border-border/60 text-foreground
     `,
         isDayToday
           ? `
-          border-[#2D6A4F] 
-          bg-[#F0F7F4] 
-          shadow-[0_20px_50px_rgba(45,106,79,0.12)] 
+          border-primary
+          bg-primary/5
+          shadow-[0_20px_50px_rgba(0,0,0,0.08)]
+          dark:shadow-[0_20px_50px_rgba(0,0,0,0.35)]
           z-10
         `
           : `
-          hover:border-[#2D6A4F]/40
+          hover:border-primary/40
           hover:shadow-xl
         `
       )}
@@ -63,19 +64,19 @@ export default function ScheduleWeekCard({
         <DeleteScheduleModal scheduleId={schedule._id}>
           <button
             className='
-        absolute top-3 right-3
-        flex h-9 w-9 items-center justify-center
-        rounded-xl
-        border border-border
-        bg-background/80 backdrop-blur
-        text-destructive
-        shadow-sm
-        hover:bg-destructive/10
-        hover:border-destructive/30
-        hover:shadow-md
-        active:scale-95
-        transition-all
-      '
+          absolute top-4 right-4
+          flex h-9 w-9 items-center justify-center
+          rounded-xl
+          border border-border
+          bg-background/80 backdrop-blur
+          text-destructive
+          shadow-sm
+          hover:bg-destructive/10
+          hover:border-destructive/30
+          hover:shadow-md
+          active:scale-95
+          transition-all
+        '
           >
             <HiOutlineTrash size={18} />
           </button>
@@ -84,38 +85,40 @@ export default function ScheduleWeekCard({
 
       {isDayToday && (
         <div
-          className='absolute -top-3.5 left-1/2 -translate-x-1/2 z-20
-      rounded-full bg-[#2D6A4F] 
-      px-6 py-1.5
-      text-[10px] font-black uppercase tracking-widest
-      text-white border-2 border-[#F0F7F4]
-      shadow-lg shadow-[#2D6A4F]/30'
+          className='
+        absolute -top-3.5 left-1/2 -translate-x-1/2 z-20
+        rounded-full bg-primary
+        px-6 py-1.5
+        text-[10px] font-black uppercase tracking-widest
+        text-primary-foreground border-2 border-background
+        shadow-lg shadow-primary/30
+      '
         >
           Hôm nay
         </div>
       )}
 
-      <div className='mb-6 text-center'>
+      <div className='mb-6 text-center pt-2'>
         <p
           className={cn(
             'text-[11px] font-black uppercase tracking-[0.2em] mb-1.5',
-            isDayToday ? 'text-[#2D6A4F]' : 'text-muted-foreground/60'
+            isDayToday ? 'text-primary' : 'text-muted-foreground/60'
           )}
         >
           {format(date, 'EEEE', { locale: vi })}
         </p>
 
         <h3 className='flex items-baseline justify-center gap-1'>
-          <span className='text-4xl font-black text-[#1B4332] tracking-tighter'>
+          <span className='text-4xl font-black text-foreground tracking-tighter'>
             {format(date, 'dd')}
           </span>
-          <span className='text-sm font-bold text-[#2D6A4F]/40'>
+          <span className='text-sm font-bold text-muted-foreground/50'>
             / {format(date, 'MM')}
           </span>
         </h3>
       </div>
 
-      <div className='flex-1 flex flex-col'>
+      <div className='w-full'>
         <DayScheduleContent
           schedule={schedule}
           isDayToday={isDayToday}

@@ -26,40 +26,44 @@ export default function DishesList() {
   const dishes = data?.docs || [];
 
   return (
-    <div className='mx-auto w-full max-w-7xl space-y-10 animate-in fade-in duration-500'>
+    <div className='mx-auto w-full max-w-7xl animate-in space-y-8 fade-in duration-500'>
       <DishHeader total={data?.totalDocs} />
 
       {!dishes?.length && <DishEmpty />}
 
-      <div className='grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3'>
+      <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3'>
         {dishes.map(dish => (
           <Link
             to={`/dishes/${dish._id}`}
             key={dish._id}
-            className='group relative flex flex-col overflow-hidden rounded-[2rem] border border-border bg-background transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)]'
+            className='group relative flex flex-col overflow-hidden rounded-[28px] border border-border/60 bg-card shadow-[0_10px_30px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_20px_45px_rgba(0,0,0,0.10)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.25)] dark:hover:shadow-[0_20px_45px_rgba(0,0,0,0.35)]'
           >
-            <div className='relative h-60 w-full overflow-hidden'>
+            <div className='relative h-60 w-full overflow-hidden bg-muted'>
               <img
                 src={dish.image || '/placeholder.png'}
                 alt={dish.name}
-                className='h-full w-full object-cover transition-transform duration-700 group-hover:scale-110'
+                className='h-full w-full object-cover transition-transform duration-700'
               />
-              <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100' />
+              <div className='absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent' />
 
               {dish.tags?.[0] && (
-                <div className='absolute left-4 top-4 rounded-lg bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-foreground backdrop-blur-md'>
-                  {dish.tags[0]}
+                <div className='absolute left-4 top-4'>
+                  <span className='inline-flex items-center rounded-full bg-background/90 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-foreground shadow-md backdrop-blur'>
+                    {dish.tags[0]}
+                  </span>
                 </div>
               )}
             </div>
 
-            <div className='flex flex-1 flex-col p-6'>
-              <div className='mb-3 flex items-start justify-between gap-3'>
-                <h3 className='line-clamp-1 text-xl font-bold text-foreground transition-colors group-hover:text-emerald-600'>
+            <div className='flex flex-1 flex-col p-5 sm:p-6'>
+              <div className='mb-4 flex items-start justify-between gap-3'>
+                <h3 className='line-clamp-2 text-[22px] font-black leading-tight tracking-tight text-foreground transition-colors group-hover:text-primary'>
                   {dish.name}
                 </h3>
 
-                <DishFavoriteButton dishId={dish._id} />
+                <div className='shrink-0'>
+                  <DishFavoriteButton dishId={dish._id} />
+                </div>
               </div>
 
               <div className='mb-4 flex flex-wrap gap-2'>
@@ -80,22 +84,22 @@ export default function DishesList() {
                 />
               </div>
 
-              <p className='mb-6 line-clamp-2 text-sm leading-relaxed text-muted-foreground'>
+              <p className='mb-6 line-clamp-3 text-sm leading-6 text-muted-foreground'>
                 {dish.description ||
                   'Công thức chế biến đơn giản, ngon miệng và đầy đủ dinh dưỡng cho cả gia đình.'}
               </p>
 
-              <div className='mt-auto flex items-center justify-between border-t border-border/50 pt-4'>
-                <div className='flex items-center gap-2'>
-                  <div className='flex h-7 w-7 items-center justify-center rounded-full bg-secondary text-muted-foreground'>
+              <div className='mt-auto flex items-center justify-between border-t border-border/60 pt-4'>
+                <div className='flex min-w-0 items-center gap-2.5'>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-full bg-muted text-muted-foreground'>
                     <FaUser size={12} />
                   </div>
-                  <span className='text-xs font-semibold text-foreground/80'>
+                  <span className='truncate text-xs font-bold text-foreground/80'>
                     {dish.user?.name}
                   </span>
                 </div>
 
-                <div className='flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-emerald-600 transition-all group-hover:gap-2'>
+                <div className='flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.14em] text-primary transition-all group-hover:gap-2 group-hover:bg-primary group-hover:text-primary-foreground'>
                   Chi tiết <FaChevronRight />
                 </div>
               </div>
@@ -104,7 +108,7 @@ export default function DishesList() {
         ))}
       </div>
 
-      <div className='pt-10'>
+      <div className='pt-8'>
         <DishesPagination
           page={data?.page}
           totalPages={data?.totalPages}

@@ -3,20 +3,44 @@ import createHttpError from 'http-errors';
 import { agent, agentConfig } from '~/shared/config/ai-agent';
 import { DAY_OF_WEEK } from '~/shared/constants/day-of-week';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
+import { EXERCISE_DIFFICULTY } from '~/shared/constants/exercise-difficulty';
+import { EXERCISE_TYPE } from '~/shared/constants/exercise-type';
 import { MEAL_SIZE } from '~/shared/constants/meal-size';
 import { MEAL_TYPE } from '~/shared/constants/meal-type';
 import { NUTRITION_FOCUS } from '~/shared/constants/nutrition-focus';
 import { USER_TARGET } from '~/shared/constants/user-target';
-import { DishModel, UserModel } from '~/shared/database/models';
+import {
+  WORKOUT_COUNTER_TYPE,
+  WORKOUT_DISTANCE_UNIT
+} from '~/shared/constants/workout-counter-type';
+import {
+  DishModel,
+  ExerciseModel,
+  ScheduleModel,
+  UserModel
+} from '~/shared/database/models';
 
 import type {
   AskAgentRequest,
   AskAgentResponse,
   DailyMealRecommendationResponse,
-  RecommendDailyMealsRequest
+  DailyWorkoutRecommendationResponse,
+  RecommendDailyMealsRequest,
+  RecommendDailyWorkoutRequest
 } from './ai-dto';
-import { aiMealRecommendationSchema } from './ai-dto';
-import type { IDishCatalogPromptInput, IInputGenerateMeal } from './ai-type';
+import {
+  aiMealRecommendationSchema,
+  aiWorkoutRecommendationSchema
+} from './ai-dto';
+import type {
+  IDishCatalogPromptInput,
+  IExerciseCatalogPromptInput,
+  IInputGenerateMeal,
+  IInputGenerateWorkout
+} from './ai-type';
+import exerciseRecommendationPrompt, {
+  EXERCISE_RECOMMENDATION_PROMPT_CONFIG
+} from './exercise-recommendation-prompt';
 import mealRecommendationPrompt, {
   MEAL_RECOMMENDATION_PROMPT_CONFIG
 } from './meal-recommendation-prompt';
@@ -64,6 +88,7 @@ type MealSlot = {
 
 type UserProfileForRecommendation = {
   _id: string;
+  name: string;
   gender?: string;
   dob?: Date;
   height?: number;
@@ -98,6 +123,26 @@ type UserProfileForRecommendation = {
   allergens: string[];
   activityLevel?: string;
   medicalHistory: string[];
+};
+
+type ExerciseCandidate = {
+  _id: string;
+  name: string;
+  tutorial?: string;
+  difficulty: string;
+  type: string;
+  logType: string;
+  muscles: string[];
+  equipments: string[];
+};
+
+type MealContextSummary = {
+  totalCalories?: number;
+  meals: Array<{
+    mealType: string;
+    dishes: string[];
+    calories?: number;
+  }>;
 };
 
 const DEFAULT_MEAL_TYPE_ORDER = [
@@ -140,6 +185,48 @@ const MEAL_TYPE_CATEGORY_HINTS: Record<string, string[]> = {
   [MEAL_TYPE.SNACK]: [DISH_CATEGORY.SNACK, DISH_CATEGORY.BEVERAGE],
   [MEAL_TYPE.DESSERT]: [DISH_CATEGORY.DESSERT]
 };
+
+const EXERCISE_COUNT_BY_ACTIVITY: Record<string, number> = {
+  'Công việc bàn giấy, vận động nhẹ': 4,
+  'Hoạt động nhẹ, tập luyện 3-4 lần/tuần': 5,
+  'Hoạt động hằng ngày, tập luyện thường xuyên': 6,
+  'Rất năng động': 7,
+  'Cực kỳ năng động': 8
+};
+
+const DIFFICULTY_ORDER = [
+  EXERCISE_DIFFICULTY.BEGINNER,
+  EXERCISE_DIFFICULTY.INTERMEDIATE,
+  EXERCISE_DIFFICULTY.ADVANCED
+];
+
+const TARGET_DIFFICULTY_BY_ACTIVITY: Record<string, string> = {
+  'Công việc bàn giấy, vận động nhẹ': EXERCISE_DIFFICULTY.BEGINNER,
+  'Hoạt động nhẹ, tập luyện 3-4 lần/tuần': EXERCISE_DIFFICULTY.BEGINNER,
+  'Hoạt động hằng ngày, tập luyện thường xuyên':
+    EXERCISE_DIFFICULTY.INTERMEDIATE,
+  'Rất năng động': EXERCISE_DIFFICULTY.ADVANCED,
+  'Cực kỳ năng động': EXERCISE_DIFFICULTY.ADVANCED
+};
+
+const MUSCLE_GOAL_TYPES = new Set<string>([
+  EXERCISE_TYPE.STRENGTH,
+  EXERCISE_TYPE.POWER,
+  EXERCISE_TYPE.OLYMPIC,
+  EXERCISE_TYPE.EXPLOSIVE
+]);
+
+const FAT_LOSS_TYPES = new Set<string>([
+  EXERCISE_TYPE.DYNAMIC,
+  EXERCISE_TYPE.POWER,
+  EXERCISE_TYPE.EXPLOSIVE
+]);
+
+const RECOVERY_TYPES = new Set<string>([
+  EXERCISE_TYPE.MOBILITY,
+  EXERCISE_TYPE.STRETCHING,
+  EXERCISE_TYPE.YOGA
+]);
 
 const dayOfWeekByIndex: Record<number, string> = {
   0: DAY_OF_WEEK.SUNDAY,
@@ -231,6 +318,113 @@ export const AiService = {
       dayOfWeek,
       meals
     };
+  },
+
+  recommendDailyWorkout: async (
+    userId: string,
+    payload: RecommendDailyWorkoutRequest
+  ): Promise<DailyWorkoutRecommendationResponse> => {
+    const user = await getUserProfileForRecommendation(userId);
+
+    const targetDate = payload.date;
+    const dayOfWeek = getDayOfWeek(targetDate);
+
+    const candidateExercises = await getCandidateExercises();
+    if (!candidateExercises.length) {
+      throw createHttpError(404, 'Không có bài tập phù hợp trong hệ thống');
+    }
+
+    const rankedExercises = rankCandidateExercises(candidateExercises, user);
+    const recentExerciseIds = await getRecentWorkoutExerciseIds(
+      userId,
+      targetDate,
+      7
+    );
+    const diversifiedExercises = diversifyExercisesByRecency(
+      rankedExercises,
+      recentExerciseIds
+    );
+    const targetExerciseCount = resolveTargetExerciseCount(
+      payload.maxExercises,
+      user.activityLevel,
+      diversifiedExercises.length
+    );
+
+    const exerciseCatalog = buildExerciseCatalog(diversifiedExercises);
+    const inputForPrompt = buildWorkoutPromptInput(user);
+    const mealContext = await getMealContextForDate(userId, targetDate);
+    const retrievalSummary = buildWorkoutRetrievalSummary(
+      candidateExercises.length,
+      targetExerciseCount,
+      mealContext
+    );
+
+    const prompt = exerciseRecommendationPrompt(inputForPrompt, {
+      dateISO: targetDate.toISOString(),
+      dayOfWeek,
+      targetExerciseCount,
+      exerciseCatalog,
+      retrievalSummary
+    });
+
+    const aiText = await invokeAi(prompt);
+    const aiSelection = parseAiWorkoutSelection(aiText);
+
+    const selectedExercises = materializeExercises({
+      aiSelection,
+      rankedExercises: diversifiedExercises,
+      targetExerciseCount
+    });
+
+    const workout = buildWorkoutEntries(selectedExercises);
+
+    const schedule = await upsertScheduleWorkout({
+      user,
+      date: targetDate,
+      dayOfWeek,
+      workout
+    });
+
+    const scheduleObj = schedule.toObject();
+
+    const sanitizedWorkout = (scheduleObj.workout ?? []).map(item => ({
+      exerciseId: item.exerciseId?.toString(),
+      exerciseName: item.exerciseName,
+      exerciseType: item.exerciseType,
+      exerciseTutorial: item.exerciseTutorial ?? '',
+      logType: item.logType,
+      distanceTarget: item.distanceTarget
+        ? {
+            value: item.distanceTarget.value,
+            unit: item.distanceTarget.unit
+          }
+        : undefined,
+      weightAndRepsTarget: item.weightAndRepsTarget
+        ? {
+            reps: item.weightAndRepsTarget.reps,
+            sets: item.weightAndRepsTarget.sets,
+            weight:
+              typeof item.weightAndRepsTarget.weight === 'number'
+                ? item.weightAndRepsTarget.weight
+                : undefined
+          }
+        : undefined,
+      durationTarget: item.durationTarget
+        ? { seconds: item.durationTarget.seconds }
+        : undefined,
+      isCompleted: item.isCompleted ?? false
+    }));
+
+    return {
+      schedule: {
+        ...scheduleObj,
+        _id: scheduleObj._id?.toString(),
+        user: scheduleObj.user
+          ? { ...scheduleObj.user, _id: scheduleObj.user._id?.toString() }
+          : scheduleObj.user,
+        workout: sanitizedWorkout
+      }
+    };
   }
 };
 
@@ -249,6 +443,7 @@ const getUserProfileForRecommendation = async (
 
   return {
     _id: user._id.toString(),
+    name: user.name,
     gender: user.gender ?? undefined,
     dob: user.dob ?? undefined,
     height: user.height ?? undefined,
@@ -389,6 +584,23 @@ const getCandidateDishes = async (
           ingredient.allergens.some(allergen => allergenSet.has(allergen))
         )
     );
+};
+
+const getCandidateExercises = async (): Promise<ExerciseCandidate[]> => {
+  const exercises = await ExerciseModel.find({ isActive: true })
+    .select('name tutorial difficulty type logType muscles equipments')
+    .lean();
+
+  return exercises.map(exercise => ({
+    _id: exercise._id.toString(),
+    name: exercise.name,
+    tutorial: exercise.tutorial ?? '',
+    difficulty: exercise.difficulty,
+    type: exercise.type,
+    logType: exercise.logType,
+    muscles: (exercise.muscles ?? []).map(muscle => muscle.name),
+    equipments: (exercise.equipments ?? []).map(equipment => equipment.name)
+  }));
 };
 
 const getDayOfWeek = (date: Date): string =>
@@ -554,6 +766,59 @@ const scoreDishForMeal = (
   return score;
 };
 
+const resolveTargetDifficulty = (activityLevel?: string) => {
+  if (!activityLevel) return undefined;
+  return TARGET_DIFFICULTY_BY_ACTIVITY[activityLevel];
+};
+
+const difficultyDistance = (value: string, target: string) => {
+  const currentIndex = DIFFICULTY_ORDER.indexOf(value as any);
+  const targetIndex = DIFFICULTY_ORDER.indexOf(target as any);
+  if (currentIndex === -1 || targetIndex === -1) return 2;
+  return Math.abs(currentIndex - targetIndex);
+};
+
+const scoreExerciseForUser = (
+  exercise: ExerciseCandidate,
+  user: UserProfileForRecommendation
+) => {
+  let score = 0;
+
+  const targetDifficulty = resolveTargetDifficulty(user.activityLevel);
+  if (targetDifficulty) {
+    const distance = difficultyDistance(exercise.difficulty, targetDifficulty);
+    if (distance === 0) score += 8;
+    if (distance === 1) score += 4;
+  }
+
+  if (user.goal?.target === USER_TARGET.BUILD_MUSCLE) {
+    if (MUSCLE_GOAL_TYPES.has(exercise.type)) score += 6;
+  }
+
+  if (user.goal?.target === USER_TARGET.LOSE_FAT) {
+    if (FAT_LOSS_TYPES.has(exercise.type)) score += 6;
+  }
+
+  if (user.goal?.target === USER_TARGET.MAINTAIN_WEIGHT) {
+    if (RECOVERY_TYPES.has(exercise.type)) score += 4;
+  }
+
+  if (RECOVERY_TYPES.has(exercise.type)) {
+    score += 1;
+  }
+
+  return score;
+};
+
+const rankCandidateExercises = (
+  exercises: ExerciseCandidate[],
+  user: UserProfileForRecommendation
+) =>
+  [...exercises].sort(
+    (left, right) =>
+      scoreExerciseForUser(right, user) - scoreExerciseForUser(left, user)
+  );
+
 const buildPromptCatalog = (
   mealSlots: MealSlot[],
   candidatesByMealType: Map<string, DishCandidate[]>,
@@ -610,6 +875,21 @@ const buildPromptCatalog = (
   return Array.from(catalogByDishId.values());
 };
 
+const buildExerciseCatalog = (
+  exercises: ExerciseCandidate[]
+): IExerciseCatalogPromptInput[] =>
+  exercises
+    .slice(0, EXERCISE_RECOMMENDATION_PROMPT_CONFIG.maxCatalogItems)
+    .map(exercise => ({
+      id: exercise._id,
+      name: exercise.name,
+      difficulty: exercise.difficulty,
+      type: exercise.type,
+      logType: exercise.logType,
+      muscles: exercise.muscles,
+      equipments: exercise.equipments
+    }));
+
 const getAge = (dob?: Date) => {
   if (!dob) return undefined;
 
@@ -658,6 +938,20 @@ const buildPromptInput = (
   macroTargets: user.nutritionTarget?.macros
 });
 
+const buildWorkoutPromptInput = (
+  user: UserProfileForRecommendation
+): IInputGenerateWorkout => ({
+  gender: user.gender,
+  age: getAge(user.dob),
+  height: user.height,
+  weight: getLatestWeight(user.weightRecord),
+  targetWeight: user.goal?.weightGoal,
+  fitnessGoal: user.goal?.target,
+  activityLevel: user.activityLevel,
+  bodyfat: user.bodyfat,
+  medicalHistory: user.medicalHistory
+});
+
 const buildRetrievalSummary = (
   totalCandidates: number,
   mealSlots: MealSlot[],
@@ -678,6 +972,149 @@ const buildRetrievalSummary = (
   ].join('\n');
 };
 
+const calculateDishCalories = (dish: DishCandidate | null | undefined) => {
+  if (!dish?.nutrition?.nutrients?.length) return 0;
+  const energy = dish.nutrition.nutrients[0];
+  if (!energy || typeof energy.value !== 'number') return 0;
+  return energy.value;
+};
+
+const getMealContextForDate = async (
+  userId: string,
+  date: Date
+): Promise<MealContextSummary | null> => {
+  const schedule = await ScheduleModel.findOne({
+    'user._id': userId,
+    date
+  }).lean();
+
+  if (!schedule || !schedule.meals?.length) return null;
+
+  const dishIds = new Set<string>();
+  schedule.meals.forEach(meal => {
+    meal.dishes?.forEach(dish => {
+      const dishId = dish.dishId?.toString();
+      if (dishId) dishIds.add(dishId);
+    });
+  });
+
+  const dishes = dishIds.size
+    ? await DishModel.find({ _id: { $in: Array.from(dishIds) } })
+        .select('name nutrition')
+        .lean()
+    : [];
+
+  const dishById = new Map(
+    dishes.map(dish => [dish._id.toString(), dish as unknown as DishCandidate])
+  );
+
+  let totalCalories = 0;
+  const meals = schedule.meals.map(meal => {
+    let mealCalories = 0;
+    const dishNames =
+      meal.dishes?.map(dish => {
+        const dishId = dish.dishId?.toString();
+        const detail = dishId ? dishById.get(dishId) : undefined;
+        const calories = calculateDishCalories(detail);
+        mealCalories += calories;
+        return detail?.name ?? dish.name ?? 'N/A';
+      }) ?? [];
+
+    totalCalories += mealCalories;
+
+    return {
+      mealType: meal.mealType,
+      dishes: dishNames.filter(Boolean),
+      calories: mealCalories > 0 ? Math.round(mealCalories) : undefined
+    };
+  });
+
+  return {
+    totalCalories: totalCalories > 0 ? Math.round(totalCalories) : undefined,
+    meals
+  };
+};
+
+const getRecentWorkoutExerciseIds = async (
+  userId: string,
+  date: Date,
+  lookbackDays: number
+) => {
+  const start = new Date(date);
+  start.setDate(start.getDate() - Math.max(0, lookbackDays));
+
+  const schedules = await ScheduleModel.find({
+    'user._id': userId,
+    date: { $gte: start, $lt: date }
+  })
+    .select('workout.exerciseId')
+    .lean();
+
+  const ids = new Set<string>();
+  schedules.forEach(schedule => {
+    schedule.workout?.forEach(item => {
+      const id = item.exerciseId?.toString();
+      if (id) ids.add(id);
+    });
+  });
+
+  return ids;
+};
+
+const diversifyExercisesByRecency = (
+  exercises: ExerciseCandidate[],
+  recentIds: Set<string>
+) => {
+  if (!recentIds.size) return exercises;
+
+  const fresh: ExerciseCandidate[] = [];
+  const recent: ExerciseCandidate[] = [];
+
+  exercises.forEach(exercise => {
+    if (recentIds.has(exercise._id)) {
+      recent.push(exercise);
+    } else {
+      fresh.push(exercise);
+    }
+  });
+
+  return [...fresh, ...recent];
+};
+
+const buildWorkoutRetrievalSummary = (
+  totalCandidates: number,
+  targetExerciseCount: number,
+  mealContext: MealContextSummary | null
+) => {
+  const mealLines = mealContext
+    ? mealContext.meals
+        .map(meal => {
+          const dishText =
+            meal.dishes.length > 0 ? meal.dishes.join(', ') : 'N/A';
+          const caloriesText =
+            typeof meal.calories === 'number'
+              ? ` (~${meal.calories} kcal)`
+              : '';
+          return `- ${meal.mealType}: ${dishText}${caloriesText}`;
+        })
+        .join('\n')
+    : 'N/A';
+
+  const totalCaloriesText =
+    mealContext?.totalCalories !== undefined
+      ? `~${mealContext.totalCalories} kcal`
+      : 'N/A';
+
+  return [
+    'Current retrieval mode: direct MongoDB filtering (RAG not enabled yet).',
+    `Total exercise candidates: ${totalCandidates}.`,
+    `Target exercise count: ${targetExerciseCount}.`,
+    'Meals planned for this day:',
+    mealLines,
+    `Estimated total meal calories: ${totalCaloriesText}.`
+  ].join('\n');
+};
+
 const invokeAi = async (prompt: string) => {
   const result = await agent.invoke({
     messages: [{ role: 'user', content: prompt }]
@@ -693,6 +1130,20 @@ const parseAiSelection = (aiText: string) => {
   }
 
   const parsed = aiMealRecommendationSchema.safeParse(parsedJson);
+  if (!parsed.success) {
+    return null;
+  }
+
+  return parsed.data;
+};
+
+const parseAiWorkoutSelection = (aiText: string) => {
+  const parsedJson = extractJson(aiText);
+  if (!parsedJson) {
+    return null;
+  }
+
+  const parsed = aiWorkoutRecommendationSchema.safeParse(parsedJson);
   if (!parsed.success) {
     return null;
   }
@@ -824,6 +1275,106 @@ const materializeMeals = ({
   });
 };
 
+const resolveTargetExerciseCount = (
+  requestedCount: number | undefined,
+  activityLevel: string | undefined,
+  totalCandidates: number
+) => {
+  const base =
+    typeof requestedCount === 'number'
+      ? requestedCount
+      : (EXERCISE_COUNT_BY_ACTIVITY[activityLevel ?? ''] ?? 5);
+
+  const normalized = Math.max(1, Math.min(12, base));
+  return Math.min(normalized, Math.max(1, totalCandidates));
+};
+
+const materializeExercises = ({
+  aiSelection,
+  rankedExercises,
+  targetExerciseCount
+}: {
+  aiSelection: Array<{ exerciseId: string }> | null;
+  rankedExercises: ExerciseCandidate[];
+  targetExerciseCount: number;
+}) => {
+  const byId = new Map(rankedExercises.map(item => [item._id, item]));
+  const selected: ExerciseCandidate[] = [];
+  const used = new Set<string>();
+
+  if (aiSelection?.length) {
+    for (const item of aiSelection) {
+      if (selected.length >= targetExerciseCount) break;
+      const exercise = byId.get(item.exerciseId);
+      if (!exercise) continue;
+      if (used.has(exercise._id)) continue;
+      used.add(exercise._id);
+      selected.push(exercise);
+    }
+  }
+
+  for (const exercise of rankedExercises) {
+    if (selected.length >= targetExerciseCount) break;
+    if (used.has(exercise._id)) continue;
+    used.add(exercise._id);
+    selected.push(exercise);
+  }
+
+  return selected;
+};
+
+const defaultDistanceTarget = (difficulty: string) => {
+  if (difficulty === EXERCISE_DIFFICULTY.ADVANCED) {
+    return { value: 3, unit: WORKOUT_DISTANCE_UNIT.KILOMETER };
+  }
+  if (difficulty === EXERCISE_DIFFICULTY.INTERMEDIATE) {
+    return { value: 2, unit: WORKOUT_DISTANCE_UNIT.KILOMETER };
+  }
+  return { value: 1, unit: WORKOUT_DISTANCE_UNIT.KILOMETER };
+};
+
+const defaultDurationTarget = (difficulty: string) => {
+  if (difficulty === EXERCISE_DIFFICULTY.ADVANCED) return { seconds: 1200 };
+  if (difficulty === EXERCISE_DIFFICULTY.INTERMEDIATE) return { seconds: 900 };
+  return { seconds: 600 };
+};
+
+const defaultWeightAndRepsTarget = (difficulty: string) => {
+  if (difficulty === EXERCISE_DIFFICULTY.ADVANCED) {
+    return { reps: 8, sets: 4 };
+  }
+  if (difficulty === EXERCISE_DIFFICULTY.INTERMEDIATE) {
+    return { reps: 10, sets: 4 };
+  }
+  return { reps: 10, sets: 3 };
+};
+
+const buildWorkoutEntries = (exercises: ExerciseCandidate[]) =>
+  exercises.map(exercise => {
+    const logType = exercise.logType;
+
+    return {
+      exerciseId: exercise._id,
+      exerciseName: exercise.name,
+      exerciseType: exercise.type,
+      exerciseTutorial: exercise.tutorial ?? '',
+      logType,
+      distanceTarget:
+        logType === WORKOUT_COUNTER_TYPE.DISTANCE
+          ? defaultDistanceTarget(exercise.difficulty)
+          : undefined,
+      weightAndRepsTarget:
+        logType === WORKOUT_COUNTER_TYPE.WEIGHT_AND_REPS
+          ? defaultWeightAndRepsTarget(exercise.difficulty)
+          : undefined,
+      durationTarget:
+        logType === WORKOUT_COUNTER_TYPE.DURATION
+          ? defaultDurationTarget(exercise.difficulty)
+          : undefined,
+      isCompleted: false
+    };
+  });
+
 const pickAiMeal = (
   aiSelection: Array<{
     mealType: string;
@@ -869,6 +1420,59 @@ const toDishResponse = (dish: DishCandidate, servings: number) => ({
   image: dish.image,
   nutrition: normalizeNutrition(dish.nutrition)
 });
+
+const upsertScheduleWorkout = async ({
+  user,
+  date,
+  dayOfWeek,
+  workout
+}: {
+  user: UserProfileForRecommendation;
+  date: Date;
+  dayOfWeek: string;
+  workout: Array<{
+    exerciseId: string;
+    exerciseName: string;
+    exerciseType: string;
+    exerciseTutorial: string;
+    logType: string;
+    distanceTarget?: { value: number; unit: string };
+    weightAndRepsTarget?: {
+      weight?: number | null;
+      reps: number;
+      sets?: number;
+    };
+    durationTarget?: { seconds: number };
+    isCompleted: boolean;
+  }>;
+}) => {
+  const existing = await ScheduleModel.findOne({
+    'user._id': user._id,
+    date
+  });
+
+  if (existing) {
+    existing.workout = workout as any;
+    await existing.save();
+    return existing;
+  }
+
+  const meals = user.mealSettings.map(setting => ({
+    mealType: setting.name ?? MEAL_TYPE.BREAKFAST,
+    dishes: []
+  }));
+
+  return ScheduleModel.create({
+    user: {
+      _id: user._id,
+      name: user.name
+    },
+    date,
+    dayOfWeek,
+    meals,
+    workout
+  });
+};
 
 const normalizeContent = (content: unknown): string => {
   if (typeof content === 'string') {
