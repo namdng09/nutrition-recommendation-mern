@@ -16,8 +16,8 @@ export const errorHandler: ErrorRequestHandler = (
   if (err instanceof Error && err.message === 'Refresh token expired') {
     res.clearCookie('refreshToken', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'none'
+      secure: false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none'
     });
   }
   if (status >= 400 && status < 500) {
