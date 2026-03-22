@@ -51,14 +51,9 @@ const PackagesGrid = () => {
       const checkoutUrl =
         typeof result === 'string' ? result : result?.checkoutUrl;
 
-      if (!checkoutUrl) {
-        console.log('CreatePayment result:', result);
-        return;
-      }
-
       window.location.href = checkoutUrl;
     } catch (err) {
-      console.error('CreatePayment error:', err?.response?.data || err);
+      throw new Error(err?.response?.data?.message || 'CreatePayment failed');
     }
   };
 
