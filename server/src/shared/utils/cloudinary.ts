@@ -240,7 +240,7 @@ export const deleteCertificate = async (
 };
 
 /**
- * Upload exercise tutorial image to Cloudinary
+ * Upload exercise tutorial (image or video) to Cloudinary
  * @param file - File buffer
  * @param exerciseId - Exercise ID to use as filename
  * @returns Promise with upload result
@@ -250,29 +250,73 @@ export const uploadExerciseTutorial = async (
   exerciseId: string
 ): Promise<UploadResult> => {
   const tutorialOptions = {
+    resource_type: 'auto' as const, // Support both images and videos
     folder: 'exercise-tutorials',
     public_id: exerciseId,
     overwrite: true,
     invalidate: true,
-    transformation: [
-      { width: 1280, crop: 'limit' },
-      { quality: 'auto', format: 'auto' }
-    ]
+    transformation: [{ quality: 'auto', format: 'auto' }]
   };
 
-  return uploadImage(file, tutorialOptions);
+  try {
+    const result: UploadApiResponse = await new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          tutorialOptions,
+          (
+            error: UploadApiErrorResponse | undefined,
+            result: UploadApiResponse | undefined
+          ) => {
+            if (error) reject(error);
+            else if (result) resolve(result);
+            else reject(new Error('Upload failed'));
+          }
+        )
+        .end(file);
+    });
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('Cloudinary exercise tutorial upload error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Upload failed'
+    };
+  }
 };
 
 /**
- * Delete exercise tutorial image from Cloudinary
- * @param exerciseId - Exercise ID (used as public_id)
+ * Delete exercise tutorial from Cloudinary
+ * @param exerciseId - Exercise ID (used as public_id under exercise-tutorials/)
  * @returns Promise with deletion result
  */
 export const deleteExerciseTutorial = async (
   exerciseId: string
 ): Promise<{ success: boolean; error?: string }> => {
-  const publicId = `exercise-tutorials/${exerciseId}`;
-  return deleteImage(publicId);
+  try {
+    // Try both image and video resource types since we don't know which was uploaded
+    const [imageResult, videoResult] = await Promise.allSettled([
+      cloudinary.uploader.destroy(`exercise-tutorials/${exerciseId}`, {
+        resource_type: 'image'
+      }),
+      cloudinary.uploader.destroy(`exercise-tutorials/${exerciseId}`, {
+        resource_type: 'video'
+      })
+    ]);
+
+    const imageOk =
+      imageResult.status === 'fulfilled' && imageResult.value.result === 'ok';
+    const videoOk =
+      videoResult.status === 'fulfilled' && videoResult.value.result === 'ok';
+
+    return { success: imageOk || videoOk };
+  } catch (error) {
+    console.error('Cloudinary exercise tutorial delete error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Delete failed'
+    };
+  }
 };
 
 export default cloudinary;

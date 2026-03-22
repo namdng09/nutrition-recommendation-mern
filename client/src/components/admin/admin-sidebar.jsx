@@ -1,4 +1,12 @@
-import { Apple, Ham, Home, Package, StickyNote, Users } from 'lucide-react';
+import {
+  Apple,
+  BicepsFlexed,
+  Ham,
+  Home,
+  Package,
+  StickyNote,
+  Users
+} from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router';
 
 import {
@@ -69,6 +77,16 @@ export function AdminSidebar({ ...props }) {
           title: 'Bài viết',
           url: '/admin/manage-posts',
           icon: StickyNote
+        }
+      ]
+    },
+    {
+      title: 'Quản lý bài tập',
+      items: [
+        {
+          title: 'Bài tập',
+          url: '/admin/manage-exercises',
+          icon: BicepsFlexed
         }
       ]
     }
