@@ -90,44 +90,7 @@ describe('IngredientService.createIngredient', () => {
       });
     });
 
-    it('should create ingredient successfully without image', async () => {
-      mockFindOne.mockResolvedValue(null);
-      const mockIngredient = {
-        _id: { toString: () => 'abc123' },
-        ...validData
-      };
-      mockCreate.mockResolvedValue(mockIngredient as any);
-
-      const result = await IngredientService.createIngredient(validData);
-
-      expect(result).toEqual(mockIngredient);
-      expect(mockUploadImage).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('system', () => {
-    it('should throw 500 when image upload fails', async () => {
-      mockFindOne.mockResolvedValue(null);
-      mockCreate.mockResolvedValue({
-        _id: { toString: () => 'abc123' },
-        ...validData,
-        save: vi.fn()
-      } as any);
-      mockUploadImage.mockResolvedValue({ success: false, data: null } as any);
-
-      const fakeImage = {
-        buffer: Buffer.from('fake-image-data')
-      } as Express.Multer.File;
-
-      await expect(
-        IngredientService.createIngredient(validData, fakeImage)
-      ).rejects.toMatchObject({
-        status: 500,
-        message: 'Tải ảnh lên thất bại'
-      });
-    });
-
-    it('should create ingredient successfully with image', async () => {
+    it('should create ingredient successfully', async () => {
       const mockSave = vi.fn();
       const mockIngredient = {
         _id: { toString: () => 'abc123' },
@@ -160,6 +123,29 @@ describe('IngredientService.createIngredient', () => {
       );
       expect(mockSave).toHaveBeenCalled();
       expect(result).toEqual(mockIngredient);
+    });
+  });
+
+  describe('system', () => {
+    it('should throw 500 when image upload fails', async () => {
+      mockFindOne.mockResolvedValue(null);
+      mockCreate.mockResolvedValue({
+        _id: { toString: () => 'abc123' },
+        ...validData,
+        save: vi.fn()
+      } as any);
+      mockUploadImage.mockResolvedValue({ success: false, data: null } as any);
+
+      const fakeImage = {
+        buffer: Buffer.from('fake-image-data')
+      } as Express.Multer.File;
+
+      await expect(
+        IngredientService.createIngredient(validData, fakeImage)
+      ).rejects.toMatchObject({
+        status: 500,
+        message: 'Tải ảnh lên thất bại'
+      });
     });
   });
 });
