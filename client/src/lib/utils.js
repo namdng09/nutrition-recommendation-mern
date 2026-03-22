@@ -43,8 +43,7 @@ export const NAV_LINKS = [
   { to: '/dishes', label: 'Món ăn' },
   { to: '/ingredients', label: 'Nguyên liệu' },
   { to: '/posts', label: 'Blogs' },
-  { to: '/groceries', label: 'Mua sắm' },
-  { to: '/nutritionists', label: 'Chuyên gia dinh dưỡng' }
+  { to: '/groceries', label: 'Mua sắm' }
 ];
 
 // ingredients pie chart

@@ -32,6 +32,7 @@ const certificateSchema = new Schema(
       enum: Object.values(CERTIFICATE_STATUS),
       default: CERTIFICATE_STATUS.PENDING
     },
+    showCertificate: { type: Boolean, default: true },
     rejectionReason: { type: String },
     submittedAt: { type: Date, default: Date.now },
     reviewedAt: { type: Date }
