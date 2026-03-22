@@ -20,7 +20,7 @@ export default function CollectionsHeader({ totalDocs = 0, hasCollections }) {
             </div>
 
             <div className='flex items-center gap-3'>
-              <div className='flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-600 text-white shadow-lg shadow-sky-200'>
+              <div className='flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-600 text-white shadow-lg'>
                 <FaFolderOpen size={18} />
               </div>
 

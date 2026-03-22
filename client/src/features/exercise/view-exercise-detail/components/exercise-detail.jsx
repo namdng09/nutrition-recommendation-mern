@@ -10,14 +10,21 @@ import { useNavigate, useParams } from 'react-router';
 
 import { formatInstructions, getPreviewImage, isGifUrl } from '~/lib/utils';
 
+import { useExercises } from '../../view-exercise/api/view-exercise';
 import { useExerciseDetail } from '../api/view-exercise-detail';
+import RelatedExercisesHorizontal from './related-exercises-horizontal';
 
 export default function ExerciseDetail() {
   const { id } = useParams();
   const { data: exercise } = useExerciseDetail(id);
+  const { data: exercisesData } = useExercises();
   const navigate = useNavigate();
+  if (!exercise) return null;
+
   const isGif = isGifUrl(exercise.tutorial);
   const preview = getPreviewImage(exercise.tutorial);
+
+  const allExercises = exercisesData?.docs || exercisesData || [];
 
   return (
     <div className='min-h-screen pb-20'>
@@ -31,15 +38,15 @@ export default function ExerciseDetail() {
         </button>
       </div>
 
-      <div className='max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12'>
-        <div className='lg:col-span-7 space-y-10'>
-          <div className='relative rounded-3xl overflow-hidden shadow-md border border-border'>
+      <div className='mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 lg:grid-cols-12'>
+        <div className='space-y-10 lg:col-span-7'>
+          <div className='relative overflow-hidden rounded-3xl border border-border shadow-md'>
             <img
               src={preview}
               alt={exercise.name}
               loading='lazy'
               decoding='async'
-              className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
+              className='h-full w-full object-cover transition-transform duration-500 group-hover:scale-110'
               onMouseEnter={e => {
                 if (isGif) e.currentTarget.src = exercise.tutorial;
               }}
@@ -49,50 +56,50 @@ export default function ExerciseDetail() {
             />
 
             <div className='absolute bottom-5 left-5'>
-              <span className='flex items-center gap-2 px-4 py-1.5 bg-primary/90 backdrop-blur text-primary-foreground rounded-lg text-[10px] font-bold uppercase tracking-widest'>
+              <span className='flex items-center gap-2 rounded-lg bg-primary/90 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-primary-foreground backdrop-blur'>
                 <HiOutlinePlay className='text-xs' />
                 Video hướng dẫn
               </span>
             </div>
           </div>
 
-          <div className='bg-card rounded-3xl p-8 shadow-sm border border-border'>
-            <h2 className='text-xl font-bold text-foreground mb-6 flex items-center gap-3'>
-              <HiOutlineFire className='text-primary text-lg' />
+          <div className='rounded-3xl border border-border bg-card p-8 shadow-sm'>
+            <h2 className='mb-6 flex items-center gap-3 text-xl font-bold text-foreground'>
+              <HiOutlineFire className='text-lg text-primary' />
               Hướng dẫn thực hiện
             </h2>
 
-            <div className='whitespace-pre-line leading-relaxed text-muted-foreground text-base'>
+            <div className='whitespace-pre-line text-base leading-relaxed text-muted-foreground'>
               {formatInstructions(exercise.instructions)}
             </div>
           </div>
         </div>
 
         <div className='lg:col-span-5'>
-          <div className='lg:sticky lg:top-10 space-y-8'>
-            <div className='bg-card rounded-3xl p-8 shadow-sm border border-border'>
-              <div className='flex items-center gap-2 mb-4'>
-                <span className='px-3 py-1 bg-orange-100 text-orange-600 rounded-md text-[10px] font-bold uppercase'>
+          <div className='space-y-8 lg:sticky lg:top-10'>
+            <div className='rounded-3xl border border-border bg-card p-8 shadow-sm'>
+              <div className='mb-4 flex items-center gap-2'>
+                <span className='rounded-md bg-orange-100 px-3 py-1 text-[10px] font-bold uppercase text-orange-600'>
                   {exercise.difficulty || 'Trung bình'}
                 </span>
 
-                <span className='px-3 py-1 bg-blue-100 text-blue-600 rounded-md text-[10px] font-bold uppercase'>
+                <span className='rounded-md bg-blue-100 px-3 py-1 text-[10px] font-bold uppercase text-blue-600'>
                   {exercise.type}
                 </span>
               </div>
 
-              <h1 className='text-3xl font-bold text-foreground leading-tight mb-8'>
+              <h1 className='mb-8 text-3xl font-bold leading-tight text-foreground'>
                 {exercise.name}
               </h1>
 
               <div className='grid grid-cols-2 gap-4'>
-                <div className='p-5 rounded-2xl border border-border flex flex-col gap-2'>
-                  <p className='text-xs font-semibold text-muted-foreground uppercase'>
+                <div className='flex flex-col gap-2 rounded-2xl border border-border p-5'>
+                  <p className='text-xs font-semibold uppercase text-muted-foreground'>
                     Kiểu ghi chép
                   </p>
 
                   <div className='flex items-center gap-3 font-semibold'>
-                    <div className='p-2 bg-muted rounded-lg text-primary'>
+                    <div className='rounded-lg bg-muted p-2 text-primary'>
                       {exercise.logType === 'Thời gian' ? (
                         <HiOutlineClock size={20} />
                       ) : (
@@ -104,13 +111,13 @@ export default function ExerciseDetail() {
                   </div>
                 </div>
 
-                <div className='p-5 rounded-2xl border border-border flex flex-col gap-2'>
-                  <p className='text-xs font-semibold text-muted-foreground uppercase'>
+                <div className='flex flex-col gap-2 rounded-2xl border border-border p-5'>
+                  <p className='text-xs font-semibold uppercase text-muted-foreground'>
                     Cường độ
                   </p>
 
                   <div className='flex items-center gap-3 font-semibold'>
-                    <div className='p-2 bg-muted rounded-lg text-orange-500'>
+                    <div className='rounded-lg bg-muted p-2 text-orange-500'>
                       <HiOutlineLightningBolt size={20} />
                     </div>
                     High Intensity
@@ -120,9 +127,9 @@ export default function ExerciseDetail() {
             </div>
 
             {exercise.muscles?.length > 0 && (
-              <div className='bg-card rounded-3xl p-8 shadow-sm border border-border'>
-                <h2 className='flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-6'>
-                  <GiMuscleUp className='text-primary text-lg' />
+              <div className='rounded-3xl border border-border bg-card p-8 shadow-sm'>
+                <h2 className='mb-6 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground'>
+                  <GiMuscleUp className='text-lg text-primary' />
                   Nhóm cơ tác động
                 </h2>
 
@@ -130,14 +137,14 @@ export default function ExerciseDetail() {
                   {exercise.muscles.map(muscle => (
                     <div
                       key={muscle._id}
-                      className='flex items-center justify-between p-4 border border-border rounded-xl hover:bg-muted transition'
+                      className='flex items-center justify-between rounded-xl border border-border p-4 transition hover:bg-muted'
                     >
                       <div className='flex items-center gap-4'>
-                        <div className='w-10 h-10 rounded-lg bg-muted p-2 flex items-center justify-center'>
+                        <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-muted p-2'>
                           <img
                             src={muscle.image}
                             alt={muscle.name}
-                            className='w-full h-full object-contain'
+                            className='h-full w-full object-contain'
                           />
                         </div>
                         <span className='font-semibold'>{muscle.name}</span>
@@ -149,6 +156,15 @@ export default function ExerciseDetail() {
             )}
           </div>
         </div>
+      </div>
+
+      <div className='mx-auto max-w-7xl px-6'>
+        <RelatedExercisesHorizontal
+          title='Bài tập liên quan'
+          description='Một số bài tập bạn có thể thử tiếp theo'
+          currentExercise={exercise}
+          allExercises={allExercises}
+        />
       </div>
     </div>
   );
