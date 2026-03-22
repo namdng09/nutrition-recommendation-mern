@@ -225,6 +225,13 @@ router.post(
   asyncHandler(UserController.uploadCertificate)
 );
 
+router.put(
+  '/me/certificate/visibility',
+  authenticate(),
+  authorize([ROLE.NUTRITIONIST]),
+  asyncHandler(UserController.toggleCertificateVisibility)
+);
+
 router.get(
   '/pending-certificates/count',
   authenticate(),

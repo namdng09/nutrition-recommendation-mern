@@ -2,8 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Camera, LogOut, Save, User } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router';
+import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
 
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
@@ -26,12 +25,12 @@ import { nutritionistProfileSchema } from '~/features/users/update-nutritionist-
 import { useUpdateProfile } from '~/features/users/update-profile/api/update-profile';
 import { updateProfileSchema } from '~/features/users/update-profile/schemas/update-profile-schema';
 import { useProfileForPage } from '~/features/users/view-profile/api/view-profile';
-import { logout } from '~/store/features/auth-slice';
+import { useLogout } from '~/hooks/useLogout';
 
 const Profile = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const handleLogout = useLogout();
   const fileInputRef = useRef(null);
+  const user = useSelector(state => state.auth.user);
 
   const { data: profile } = useProfileForPage();
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile({
@@ -105,24 +104,10 @@ const Profile = () => {
     }
   };
 
-  const handleLogout = async () => {
-    await dispatch(logout());
-    navigate('/');
-  };
-
-  const handleSaveAll = async e => {
-    e.preventDefault();
-
-    if (profile?.role === ROLE.NUTRITIONIST) {
-      const nutritionistFormValid = await nutritionistForm.trigger();
-      if (!nutritionistFormValid) return;
-      nutritionistForm.handleSubmit(handleSaveNutritionistProfile)();
-    }
-
-    const userFormValid = await form.trigger();
-    if (!userFormValid) return;
-    form.handleSubmit(handleSave)();
-  };
+  // Don't render if not logged in
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className='w-full px-4 py-6 sm:px-6 lg:px-8'>

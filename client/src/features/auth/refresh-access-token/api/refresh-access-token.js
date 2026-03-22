@@ -1,19 +1,13 @@
 import axios from 'axios';
 
+import authClient from '~/lib/auth-client';
+
 import { REFRESH_TOKEN_ERROR } from '../constants/refresh-token-error';
 import { getRefreshTokenErrorCode } from '../utils/refresh-token';
 
-const refreshTokenClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  timeout: 10000,
-  withCredentials: true
-});
-
 export const refreshAccessToken = async () => {
   try {
-    const response = await refreshTokenClient.post(
-      '/api/auth/refresh-access-token'
-    );
+    const response = await authClient.post('/api/auth/refresh-access-token');
 
     const { status, message, data } = response.data;
 
