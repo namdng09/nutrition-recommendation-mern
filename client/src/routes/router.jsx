@@ -94,6 +94,10 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/posts/[id]/page'))
           },
           {
+            path: 'nutritionists/:id',
+            Component: lazy(() => import('~/app/nutritionists/[id]/page'))
+          },
+          {
             path: 'dishes/:id/nutrition',
             Component: lazy(() => import('~/app/dishes/[id]/nutrition/page'))
           },
@@ -119,6 +123,7 @@ const router = createBrowserRouter([
             path: 'payment/cancel',
             Component: lazy(() => import('~/app/payment/error/page'))
           },
+
           {
             path: 'profile',
             Component: () => (
@@ -166,6 +171,14 @@ const router = createBrowserRouter([
               {
                 path: 'blocks',
                 Component: lazy(() => import('~/app/profile/blocks/page'))
+              },
+              {
+                path: 'achievements',
+                Component: lazy(() => import('~/app/profile/achievements/page'))
+              },
+              {
+                path: 'certificate',
+                Component: lazy(() => import('~/app/profile/certificate/page'))
               }
             ]
           }
@@ -345,12 +358,60 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/admin/manage-dishes/page'))
           },
           {
+            path: 'manage-dishes/:id',
+            Component: lazy(() => import('~/app/admin/manage-dishes/[id]/page'))
+          },
+
+          //admin manage ingredients
+          {
             path: 'manage-ingredients/',
             Component: lazy(() => import('~/app/admin/manage-ingredients/page'))
           },
           {
+            path: 'manage-ingredients/:id',
+            Component: lazy(
+              () => import('~/app/admin/manage-ingredients/[id]/page')
+            )
+          },
+
+          //admin manage collections
+          {
             path: 'manage-collections/',
             Component: lazy(() => import('~/app/admin/manage-collections/page'))
+          },
+          {
+            path: 'manage-collections/:id',
+            Component: lazy(
+              () => import('~/app/admin/manage-collections/[id]/page')
+            )
+          },
+
+          //admin manage posts
+          {
+            path: 'manage-posts/',
+            Component: lazy(() => import('~/app/admin/manage-posts/page'))
+          },
+          {
+            path: 'manage-posts/:id',
+            Component: lazy(() => import('~/app/admin/manage-posts/[id]/page'))
+          },
+
+          //admin manage exercises
+          {
+            path: 'manage-exercises/',
+            Component: lazy(() => import('~/app/admin/manage-exercises/page'))
+          },
+          {
+            path: 'manage-exercises/create-exercise',
+            Component: lazy(
+              () => import('~/app/admin/manage-exercises/create-exercise/page')
+            )
+          },
+          {
+            path: 'manage-exercises/:id',
+            Component: lazy(
+              () => import('~/app/admin/manage-exercises/[id]/page')
+            )
           }
         ]
       },

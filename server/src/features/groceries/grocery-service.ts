@@ -11,6 +11,8 @@ import {
 import type { Dish } from '~/shared/database/models/dish-model';
 import type { Grocery } from '~/shared/database/models/grocery-model';
 import type { Schedule } from '~/shared/database/models/schedule-model';
+import { eventBus } from '~/shared/events/event-bus';
+import { EVENTS } from '~/shared/events/event-types';
 import { buildPaginateOptions, validateObjectId } from '~/shared/utils';
 
 import {
@@ -52,6 +54,11 @@ export const GroceryService = {
     if (!newGrocery) {
       throw createHttpError(500, 'Tạo danh sách mua sắm thất bại');
     }
+
+    eventBus.emit(EVENTS.GROCERY_CREATED, {
+      userId,
+      groceryId: newGrocery._id.toString()
+    });
 
     return newGrocery;
   },
@@ -243,11 +250,19 @@ export const GroceryService = {
       );
     }
 
+    const wasPurchased = grocery.ingredients[ingredientIndex].isPurchased;
     if (data.isPurchased !== undefined) {
       grocery.ingredients[ingredientIndex].isPurchased = data.isPurchased;
     }
 
     await grocery.save();
+
+    if (!wasPurchased && data.isPurchased === true) {
+      eventBus.emit(EVENTS.GROCERY_INGREDIENT_PURCHASED, {
+        userId,
+        groceryId
+      });
+    }
 
     return grocery;
   },

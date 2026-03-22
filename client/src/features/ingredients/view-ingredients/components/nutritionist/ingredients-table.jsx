@@ -1,24 +1,34 @@
 import { Eye, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import { DataTableColumnHeader } from '~/components/admin/data-table-column-header';
 import CommonTable from '~/components/common-table';
 import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
+import { ROLE } from '~/constants/role';
 import DeleteBulkIngredientsDialog from '~/features/ingredients/delete-ingredient/components/nutritionist/delete-bulk-ingredients-dialog';
 import DeleteIngredientDialog from '~/features/ingredients/delete-ingredient/components/nutritionist/delete-ingredient-dialog';
 import { useIngredients } from '~/features/ingredients/view-ingredients/api/view-ingredient';
-
-const IngredientsTable = ({
-  viewDetailPath = '/nutritionist/manage-ingredients'
-}) => {
+const IngredientsTable = ({ viewDetailPath }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [ingredientToDelete, setIngredientToDelete] = useState(null);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
   const [selectedIngredientIds, setSelectedIngredientIds] = useState([]);
+
+  // Lấy user từ Redux store
+  const user = useSelector(state => state.auth.user);
+  const isAdmin = user?.role === ROLE.ADMIN;
+
+  // Xác định đường dẫn view detail dựa trên role hoặc prop
+  const detailPath =
+    viewDetailPath ||
+    (isAdmin
+      ? '/admin/manage-ingredients'
+      : '/nutritionist/manage-ingredients');
 
   const params = {
     page: parseInt(searchParams.get('page') || '1'),
@@ -43,6 +53,10 @@ const IngredientsTable = ({
   const getNutrientValue = (nutrients, label) => {
     const nutrient = nutrients?.find(n => n.label === label);
     return nutrient ? `${nutrient.value} ${nutrient.unit}` : '-';
+  };
+
+  const handleViewDetail = ingredientId => {
+    navigate(`${detailPath}/${ingredientId}`);
   };
 
   const columns = [
@@ -126,7 +140,7 @@ const IngredientsTable = ({
           <Button
             variant='ghost'
             size='icon'
-            onClick={() => navigate(`${viewDetailPath}/${row.original._id}`)}
+            onClick={() => handleViewDetail(row.original._id)}
             title='Xem chi tiết'
           >
             <Eye className='h-4 w-4' />

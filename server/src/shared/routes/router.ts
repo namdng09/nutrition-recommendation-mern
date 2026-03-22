@@ -1,8 +1,10 @@
 import { Router } from 'express';
 
+import achievementRoute from '~/features/achievements/achievement-route';
 import aiRoute from '~/features/ai/ai-route';
 import authRoute from '~/features/auth/auth-route';
 import collectionRoute from '~/features/collections/collection-route';
+import dashboardRoute from '~/features/dashboard/dashboard-route';
 import dishRoute from '~/features/dishes/dish-route';
 import exerciseRouter from '~/features/exercises/exercise-route';
 import groceryRoute from '~/features/groceries/grocery-route';
@@ -14,8 +16,10 @@ import userRoute from '~/features/users/user-route';
 
 const router = Router();
 
+router.use('/achievements', achievementRoute);
 router.use('/auth', authRoute);
 router.use('/users', userRoute);
+router.use('/dashboard', dashboardRoute);
 router.use('/ingredients', ingredientRoute);
 router.use('/dishes', dishRoute);
 router.use('/collections', collectionRoute);

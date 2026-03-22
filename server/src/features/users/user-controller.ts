@@ -26,6 +26,34 @@ export const UserController = {
       .json(ApiResponse.success('Người dùng được lấy thành công', result));
   },
 
+  viewNutritionists: async (req: Request, res: Response) => {
+    const parsed = parseQuery(req.query);
+
+    const result = await UserService.viewNutritionists(parsed);
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success(
+          'Lấy danh sách chuyên gia dinh dưỡng thành công',
+          result
+        )
+      );
+  },
+
+  pendingCertificatesCount: async (_req: Request, res: Response) => {
+    const count = await UserService.pendingCertificatesCount();
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success(
+          'Số lượng chứng chỉ chờ duyệt được lấy thành công',
+          { count }
+        )
+      );
+  },
+
   viewProfile: async (req: Request, res: Response) => {
     const id = req.user?._id.toString();
 
@@ -82,6 +110,21 @@ export const UserController = {
     res
       .status(200)
       .json(ApiResponse.success('Người dùng được lấy thành công', result));
+  },
+
+  viewNutritionistProfile: async (req: Request, res: Response) => {
+    const id = req.params.id;
+
+    const result = await UserService.viewNutritionistProfile(id);
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success(
+          'Lấy hồ sơ chuyên gia dinh dưỡng thành công',
+          result
+        )
+      );
   },
 
   updateUser: async (req: Request, res: Response) => {
@@ -264,6 +307,92 @@ export const UserController = {
       .status(200)
       .json(
         ApiResponse.success('Nguyên liệu bị chặn được xóa thành công', result)
+      );
+  },
+
+  uploadCertificate: async (req: Request, res: Response) => {
+    const userId = req.user?._id.toString();
+    const data = req.body;
+    const files = req.files as Record<string, Express.Multer.File[]>;
+    const file =
+      files?.['certificate']?.[0] ??
+      (req.file as Express.Multer.File | undefined);
+
+    if (!file) {
+      res.status(400).json(ApiResponse.error('Vui lòng tải lên tệp chứng chỉ'));
+      return;
+    }
+
+    const result = await UserService.uploadCertificate(userId, data, file);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Tải lên chứng chỉ thành công', result));
+  },
+
+  updateNutritionistProfile: async (req: Request, res: Response) => {
+    const userId = req.user?._id.toString();
+    const data = req.body;
+
+    const result = await UserService.updateNutritionistProfile(userId, data);
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Hồ sơ dinh dưỡng được cập nhật thành công', result)
+      );
+  },
+
+  updateUserNutritionistProfile: async (req: Request, res: Response) => {
+    const userId = req.params.id;
+    const data = req.body;
+
+    const result = await UserService.updateUserNutritionistProfile(
+      userId,
+      data
+    );
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Hồ sơ dinh dưỡng được cập nhật thành công', result)
+      );
+  },
+
+  approveCertificate: async (req: Request, res: Response) => {
+    const userId = req.params.id;
+
+    const result = await UserService.approveCertificate(userId);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Phê duyệt chứng chỉ thành công', result));
+  },
+
+  rejectCertificate: async (req: Request, res: Response) => {
+    const userId = req.params.id;
+    const data = req.body;
+
+    const result = await UserService.rejectCertificate(userId, data);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Từ chối chứng chỉ thành công', result));
+  },
+
+  toggleCertificateVisibility: async (req: Request, res: Response) => {
+    const userId = req.user?._id.toString();
+    const { showCertificate } = req.body;
+
+    const result = await UserService.toggleCertificateVisibility(
+      userId,
+      showCertificate
+    );
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Cập nhật hiển thị chứng chỉ thành công', result)
       );
   }
 };

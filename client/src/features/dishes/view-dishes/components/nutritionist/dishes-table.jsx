@@ -1,22 +1,33 @@
 import { Eye, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import { DataTableColumnHeader } from '~/components/admin/data-table-column-header';
 import CommonTable from '~/components/common-table';
 import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
+import { ROLE } from '~/constants/role';
 import DeleteBulkDishesDialog from '~/features/dishes/delete-dish/components/nutritionist/delete-bulk-dishes-dialog';
 import DeleteDishDialog from '~/features/dishes/delete-dish/components/nutritionist/delete-dish-dialog';
 import { useDishes } from '~/features/dishes/view-dishes/api/view-dishes';
 
-const DishesTable = ({ viewDetailPath = '/nutritionist/manage-dishes' }) => {
+const DishesTable = ({ viewDetailPath }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [dishToDelete, setDishToDelete] = useState(null);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
   const [selectedDishIds, setSelectedDishIds] = useState([]);
+
+  // Lấy user từ Redux store
+  const user = useSelector(state => state.auth.user);
+  const isAdmin = user?.role === ROLE.ADMIN;
+
+  // Xác định đường dẫn view detail dựa trên role hoặc prop
+  const detailPath =
+    viewDetailPath ||
+    (isAdmin ? '/admin/manage-dishes' : '/nutritionist/manage-dishes');
 
   const params = {
     page: parseInt(searchParams.get('page') || '1'),
@@ -36,6 +47,10 @@ const DishesTable = ({ viewDetailPath = '/nutritionist/manage-dishes' }) => {
   const handleBulkAction = selectedDishes => {
     setSelectedDishIds(selectedDishes.map(dish => dish._id));
     setBulkDeleteDialogOpen(true);
+  };
+
+  const handleViewDetail = dishId => {
+    navigate(`${detailPath}/${dishId}`);
   };
 
   const columns = [
@@ -121,7 +136,7 @@ const DishesTable = ({ viewDetailPath = '/nutritionist/manage-dishes' }) => {
           <Button
             variant='ghost'
             size='icon'
-            onClick={() => navigate(`${viewDetailPath}/${row.original._id}`)}
+            onClick={() => handleViewDetail(row.original._id)}
             title='Xem chi tiết'
           >
             <Eye className='h-4 w-4' />

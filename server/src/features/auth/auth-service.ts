@@ -1,9 +1,13 @@
 import createHttpError from 'http-errors';
 import { HydratedDocument } from 'mongoose';
 
+import { CERTIFICATE_STATUS } from '~/shared/constants/certificate-status';
+import { ROLE } from '~/shared/constants/role';
 import { TOKEN_TYPE } from '~/shared/constants/token-type';
 import { AuthModel, UserModel } from '~/shared/database/models';
 import type { User } from '~/shared/database/models/user-model';
+import { eventBus } from '~/shared/events/event-bus';
+import { EVENTS } from '~/shared/events/event-types';
 import {
   comparePassword,
   generateResetPasswordToken,
@@ -11,6 +15,7 @@ import {
   hashPassword,
   sendMail,
   uploadAvatar,
+  uploadCertificate,
   verifyToken
 } from '~/shared/utils';
 
@@ -25,6 +30,34 @@ import {
   signUpRequestSchema,
   type SignUpResponse
 } from './auth-dto';
+
+// Updates loginStreak on the user document in-place (does not save).
+// Rules: same-day login → no change; consecutive day → streak++;
+// gap > 1 day → reset to 1.
+function updateLoginStreak(user: {
+  loginStreak?: { count: number; lastLoginDate?: Date | null } | null;
+}) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
+  const last = user.loginStreak?.lastLoginDate
+    ? new Date(user.loginStreak.lastLoginDate)
+    : null;
+  if (last) last.setHours(0, 0, 0, 0);
+
+  if (!last || last < yesterday) {
+    user.loginStreak = { count: 1, lastLoginDate: today };
+  } else if (last.getTime() === yesterday.getTime()) {
+    user.loginStreak = {
+      count: (user.loginStreak?.count ?? 0) + 1,
+      lastLoginDate: today
+    };
+  }
+  // else last === today → already logged in today, no change
+}
 
 export const AuthService = {
   login: async (data: LoginRequest): Promise<LoginResponse> => {
@@ -60,10 +93,18 @@ export const AuthService = {
       );
     }
 
+    updateLoginStreak(user);
+    await user.save();
+
     const { accessToken, refreshToken } = generateToken({
       id: user._id.toString(),
       role: user.role,
       hasOnboarded: user.hasOnboarded
+    });
+
+    eventBus.emit(EVENTS.USER_LOGGED_IN, {
+      userId: user._id.toString(),
+      loginStreak: user.loginStreak?.count ?? 1
     });
 
     return {
@@ -96,10 +137,18 @@ export const AuthService = {
       await auth.save();
     }
 
+    updateLoginStreak(user);
+    await user.save();
+
     const { accessToken, refreshToken } = generateToken({
       id: user._id.toString(),
       role: user.role,
       hasOnboarded: user.hasOnboarded
+    });
+
+    eventBus.emit(EVENTS.USER_LOGGED_IN, {
+      userId: user._id.toString(),
+      loginStreak: user.loginStreak?.count ?? 1
     });
 
     return {
@@ -111,7 +160,8 @@ export const AuthService = {
 
   signUp: async (
     data: SignUpRequest,
-    avatar?: Express.Multer.File
+    avatar?: Express.Multer.File,
+    certificate?: Express.Multer.File
   ): Promise<SignUpResponse> => {
     const existingAuth = await AuthModel.findOne({
       provider: 'local',
@@ -132,6 +182,80 @@ export const AuthService = {
       localPassword: hashedPassword,
       verifyAt: new Date()
     });
+
+    // Upload certificate and set nutritionist profile for Nutritionist registrations
+    if (data.role === ROLE.NUTRITIONIST) {
+      const updates: any = {};
+
+      // Upload certificate
+      if (certificate) {
+        const certUpload = await uploadCertificate(
+          certificate.buffer,
+          newUser._id.toString()
+        );
+        if (certUpload.success && certUpload.data) {
+          const certName =
+            (data as any).certificateName || certificate.originalname;
+          updates.certificate = {
+            name: certName,
+            fileUrl: certUpload.data.secure_url,
+            publicId: certUpload.data.public_id,
+            status: CERTIFICATE_STATUS.PENDING
+          };
+        }
+      }
+
+      // Set nutritionist profile if provided
+      if (data.workplace || data.graduatedUniversity || data.professionalBio) {
+        updates.nutritionistProfile = {
+          workplace: data.workplace || '',
+          graduatedUniversity: data.graduatedUniversity || '',
+          professionalBio: data.professionalBio || ''
+        };
+      }
+
+      if (Object.keys(updates).length > 0) {
+        await UserModel.findByIdAndUpdate(newUser._id, updates);
+      }
+
+      // Send certificate pending email
+      if (certificate) {
+        sendMail({
+          to: newUser.email,
+          subject: 'Chứng chỉ của bạn đang chờ duyệt',
+          template: 'certificate-pending',
+          templateData: {
+            name: newUser.name,
+            certificateName:
+              (data as any).certificateName || certificate.originalname
+          }
+        }).catch(err => {
+          console.error(
+            'Không thể gửi email thông báo chờ duyệt chứng chỉ:',
+            err
+          );
+        });
+      }
+    }
+
+    // Send welcome email for all new registrations
+    if (data.role === ROLE.NUTRITIONIST) {
+      sendMail({
+        to: newUser.email,
+        subject: 'Chào mừng bạn đến với PNRS',
+        template: 'nutritionist-welcome',
+        templateData: {
+          name: newUser.name,
+          email: newUser.email,
+          loginUrl: `${process.env.CLIENT_URL}/auth/sign-in`
+        }
+      }).catch(err => {
+        console.error(
+          'Không thể gửi email chào mừng chuyên gia dinh dưỡng:',
+          err
+        );
+      });
+    }
 
     const { accessToken, refreshToken } = generateToken({
       id: newUser._id.toString(),

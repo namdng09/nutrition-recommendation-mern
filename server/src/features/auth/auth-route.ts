@@ -3,7 +3,7 @@ import passport from 'passport';
 
 import { parseFormData, validate, validateQuery } from '~/shared/middlewares';
 import { createOAuthCallback } from '~/shared/middlewares/oauth-callback';
-import { asyncHandler, handleSingleImageUpload } from '~/shared/utils';
+import { asyncHandler, handleSignUpUpload } from '~/shared/utils';
 
 import { AuthController } from './auth-controller';
 import {
@@ -36,7 +36,7 @@ router.get(
 
 router.post(
   '/sign-up',
-  handleSingleImageUpload('avatar'),
+  handleSignUpUpload(),
   validate(signUpRequestSchema.shape),
   asyncHandler(AuthController.signUp)
 );

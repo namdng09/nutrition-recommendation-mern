@@ -1,8 +1,8 @@
 import { ChevronDown, LogOut, Menu, Sparkles, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { FaUserPlus } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, NavLink, useNavigate } from 'react-router';
+import { useSelector } from 'react-redux';
+import { Link, NavLink } from 'react-router';
 
 import { ModeToggle } from '~/components/mode-toggle';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
@@ -14,14 +14,13 @@ import {
 } from '~/components/ui/popover';
 import { useProfile } from '~/features/users/view-profile/api/view-profile';
 import { useIsMobile } from '~/hooks/use-mobile';
+import { useLogout } from '~/hooks/useLogout';
 import { cn, NAV_LINKS } from '~/lib/utils';
-import { logout } from '~/store/features/auth-slice';
 
 import HeaderNav from './header-nav';
 
 const Header = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const handleLogout = useLogout();
   const isMobile = useIsMobile();
   const { user } = useSelector(state => state.auth);
   const { data: profile } = useProfile();
@@ -31,11 +30,6 @@ const Header = () => {
   useEffect(() => {
     if (!isMobile) setMobileMenuOpen(false);
   }, [isMobile]);
-
-  const handleLogout = async () => {
-    dispatch(logout());
-    navigate('/');
-  };
 
   const displayName = profile?.name || user?.name || 'User';
   const displayEmail = profile?.email || user?.email || '';

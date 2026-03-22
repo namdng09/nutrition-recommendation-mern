@@ -1,9 +1,10 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Calendar, PlusIcon, Save, XIcon } from 'lucide-react';
+import { Calendar, PlusIcon, Save, Sparkles, Trash2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
 import {
   Form,
@@ -50,9 +51,20 @@ import { useUpdateScheduleSettings } from '~/features/users/update-schedule-sett
 import { updateScheduleSettingsSchema } from '~/features/users/update-schedule-settings/schemas/update-schedule-settings-schema';
 import { useProfileForPage } from '~/features/users/view-profile/api/view-profile';
 
+const toLabelMap = options =>
+  options.reduce((acc, option) => {
+    acc[option.value] = option.label;
+    return acc;
+  }, {});
+
+const MEAL_SIZE_LABELS = toLabelMap(MEAL_SIZE_OPTIONS);
+const AVAILABLE_TIME_LABELS = toLabelMap(AVAILABLE_TIME_OPTIONS);
+const COMPLEXITY_LABELS = toLabelMap(MEAL_COMPLEXITY_OPTIONS);
+const DISH_CATEGORY_LABELS = toLabelMap(DISH_CATEGORY_OPTIONS);
+
 function MealSettingFields({ control, index }) {
   return (
-    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+    <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
       <FormField
         control={control}
         name={`mealSettings.${index}.name`}
@@ -120,7 +132,7 @@ function MealSettingFields({ control, index }) {
         render={({ field }) => (
           <FormItem>
             <FormLabel>
-              Sở thích nấu ăn <span className='text-destructive'>*</span>
+              Khả năng nấu<span className='text-destructive'>*</span>
             </FormLabel>
             <Select onValueChange={field.onChange} value={field.value}>
               <FormControl>
@@ -287,6 +299,14 @@ const UpdateScheduleSettings = () => {
     name: 'mealSettings'
   });
 
+  const watchedMealSettings = form.watch('mealSettings');
+  const usedMealTypes = new Set(
+    (watchedMealSettings || []).map(setting => setting?.name).filter(Boolean)
+  );
+  const quickAddMealTypes = MEAL_TYPE_OPTIONS.filter(
+    option => !usedMealTypes.has(option.value)
+  );
+
   // Initialize with user's meal settings or defaults
   useEffect(() => {
     if (profile?.mealSettings && profile.mealSettings.length > 0) {
@@ -304,74 +324,151 @@ const UpdateScheduleSettings = () => {
   };
 
   return (
-    <div className='px-4 sm:px-6'>
-      <div className='mb-4 flex items-center gap-2'>
-        <Calendar className='h-7 w-7' />
-        <h1 className='text-2xl font-bold'>Cài đặt lịch trình bữa ăn</h1>
-      </div>
-      <p className='text-sm text-muted-foreground mb-6'>
-        Thiết lập các bữa ăn hàng ngày và sở thích của bạn
-      </p>
+    <div className='px-4 pb-24 sm:px-6'>
+      <div className='mx-auto max-w-5xl'>
+        <div className='mb-6 rounded-2xl border border-border/60 bg-gradient-to-br from-background via-background to-muted/30 p-5 shadow-sm'>
+          <div className='flex flex-wrap items-start justify-between gap-3'>
+            <div>
+              <div className='mb-2 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary'>
+                <Sparkles className='h-3.5 w-3.5' />
+                Meal planner
+              </div>
+              <div className='flex items-center gap-2'>
+                <Calendar className='h-6 w-6 text-primary' />
+                <h1 className='text-2xl font-bold'>Cài đặt bữa ăn</h1>
+              </div>
+              <p className='mt-2 text-sm text-muted-foreground'>
+                Thiết lập từng bữa ăn theo thời gian, khẩu phần và mức độ nấu
+                nướng để hệ thống gợi ý chính xác hơn.
+              </p>
+            </div>
+          </div>
+        </div>
 
-      <div className='rounded-2xl border border-border bg-background p-6 shadow-sm'>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSave)} className='space-y-6'>
+          <form onSubmit={form.handleSubmit(handleSave)} className='space-y-5'>
             <div className='space-y-4'>
               {fields.map((field, index) => {
+                const mealSetting = watchedMealSettings?.[index] || {};
+                const dishCategoryLabels = (mealSetting?.dishCategories || [])
+                  .map(item => DISH_CATEGORY_LABELS[item])
+                  .filter(Boolean)
+                  .slice(0, 3);
+
                 return (
-                  <div
+                  <section
                     key={field.id}
-                    className='border-input relative rounded-xl border p-6 space-y-4'
+                    className='rounded-2xl border border-border bg-card p-4 shadow-sm transition-all duration-200 hover:shadow-md sm:p-5'
                   >
-                    <Button
-                      type='button'
-                      variant='ghost'
-                      size='icon'
-                      className='absolute right-2 top-2'
-                      onClick={() => remove(index)}
-                    >
-                      <XIcon className='h-4 w-4' />
-                    </Button>
+                    <div className='mb-4 flex flex-wrap items-start justify-between gap-3 border-b border-border/70 pb-4'>
+                      <div>
+                        <p className='text-xs font-medium uppercase tracking-wider text-muted-foreground'>
+                          Bữa #{index + 1}
+                        </p>
+                        <h3 className='mt-1 text-lg font-semibold'>
+                          {mealSetting?.name || 'Bữa ăn mới'}
+                        </h3>
+                        <div className='mt-2 flex flex-wrap gap-2'>
+                          {mealSetting?.mealSize && (
+                            <Badge variant='outline'>
+                              {MEAL_SIZE_LABELS[mealSetting.mealSize]}
+                            </Badge>
+                          )}
+                          {mealSetting?.availableTime && (
+                            <Badge variant='outline'>
+                              {AVAILABLE_TIME_LABELS[mealSetting.availableTime]}
+                            </Badge>
+                          )}
+                          {mealSetting?.complexity && (
+                            <Badge variant='outline'>
+                              {COMPLEXITY_LABELS[mealSetting.complexity]}
+                            </Badge>
+                          )}
+                          {dishCategoryLabels.length > 0 && (
+                            <Badge variant='outline'>
+                              {dishCategoryLabels.join(', ')}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+
+                      <Button
+                        type='button'
+                        variant='ghost'
+                        size='sm'
+                        onClick={() => remove(index)}
+                        disabled={fields.length === 1}
+                        className='text-destructive hover:bg-destructive/10 hover:text-destructive disabled:cursor-not-allowed disabled:opacity-50'
+                      >
+                        <Trash2 className='mr-1 h-4 w-4' />
+                        Xóa bữa
+                      </Button>
+                    </div>
 
                     <MealSettingFields control={form.control} index={index} />
-                  </div>
+                  </section>
                 );
               })}
             </div>
 
-            <Button
-              type='button'
-              variant='outline'
-              size='sm'
-              className='w-full rounded-xl'
-              onClick={() =>
-                append({
-                  name: '',
-                  dishCategories: [],
-                  cookingPreference: COOKING_PREFERENCE.CAN_COOK,
-                  mealSize: MEAL_SIZE.NORMAL,
-                  availableTime: AVAILABLE_TIME.SOME_TIME,
-                  complexity: MEAL_COMPLEXITY.MODERATE
-                })
-              }
-            >
-              <PlusIcon className='h-4 w-4 mr-1' />
-              Thêm bữa ăn
-            </Button>
+            <section className='rounded-2xl border border-dashed border-border bg-muted/20 p-4 sm:p-5'>
+              <p className='text-sm font-medium'>Thêm nhanh bữa ăn</p>
+              <p className='mt-1 text-xs text-muted-foreground'>
+                Chọn loại bữa ăn để thêm nhanh với cấu hình mặc định hợp lý.
+              </p>
 
-            <div className='flex justify-end'>
-              <Button
-                type='submit'
-                disabled={isUpdating}
-                className='rounded-xl bg-primary text-primary-foreground hover:bg-primary/90'
-              >
-                {isUpdating ? (
-                  <Spinner className='h-4 w-4 mr-1' />
-                ) : (
-                  <Save className='h-4 w-4 mr-1' />
-                )}
-                Lưu thay đổi
-              </Button>
+              <div className='mt-3 flex flex-wrap gap-2'>
+                {quickAddMealTypes.map(option => (
+                  <Button
+                    key={option.value}
+                    type='button'
+                    variant='outline'
+                    size='sm'
+                    onClick={() => append(getMealDefaults(option.value))}
+                    className='rounded-full'
+                  >
+                    <PlusIcon className='mr-1 h-4 w-4' />
+                    {option.label}
+                  </Button>
+                ))}
+
+                <Button
+                  type='button'
+                  variant='secondary'
+                  size='sm'
+                  className='rounded-full'
+                  onClick={() =>
+                    append({
+                      name: '',
+                      dishCategories: [],
+                      cookingPreference: COOKING_PREFERENCE.CAN_COOK,
+                      mealSize: MEAL_SIZE.NORMAL,
+                      availableTime: AVAILABLE_TIME.SOME_TIME,
+                      complexity: MEAL_COMPLEXITY.MODERATE
+                    })
+                  }
+                >
+                  <PlusIcon className='mr-1 h-4 w-4' />
+                  Bữa tùy chỉnh
+                </Button>
+              </div>
+            </section>
+
+            <div className='fixed inset-x-0 bottom-0 z-20 border-t border-border bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/80'>
+              <div className='mx-auto flex max-w-5xl justify-end'>
+                <Button
+                  type='submit'
+                  disabled={isUpdating}
+                  className='w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 sm:w-auto'
+                >
+                  {isUpdating ? (
+                    <Spinner className='mr-1 h-4 w-4' />
+                  ) : (
+                    <Save className='mr-1 h-4 w-4' />
+                  )}
+                  Lưu thay đổi
+                </Button>
+              </div>
             </div>
           </form>
         </Form>

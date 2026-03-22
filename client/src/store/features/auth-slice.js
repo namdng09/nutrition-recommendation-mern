@@ -3,7 +3,11 @@ import { jwtDecode } from 'jwt-decode';
 
 import { logout as logoutApi } from '~/features/auth/logout/api/logout';
 import { refreshAccessToken } from '~/features/auth/refresh-access-token/api/refresh-access-token';
-import { AUTH_SESSION_EXPIRED_EVENT } from '~/lib/api-client';
+import {
+  AUTH_SESSION_EXPIRED_EVENT,
+  resetAuthQueue,
+  startLogout
+} from '~/lib/api-client';
 import {
   clearAuthTokens,
   getStoredAccessToken,
@@ -64,7 +68,8 @@ export const authSlice = createSlice({
     user: null,
     loading: true,
     error: null,
-    sessionExpired: false
+    sessionExpired: false,
+    initialized: false
   },
   reducers: {
     loadUser: (state, action) => {
@@ -78,6 +83,8 @@ export const authSlice = createSlice({
         const decoded = jwtDecode(accessToken);
         state.user = decoded;
         state.sessionExpired = false;
+        state.initialized = true;
+        resetAuthQueue();
       } catch (error) {
         state.user = null;
       }
@@ -95,6 +102,7 @@ export const authSlice = createSlice({
       })
       .addCase(initializeAuth.fulfilled, (state, action) => {
         state.loading = false;
+        state.initialized = true;
         if (action.payload) {
           state.user = action.payload.user;
         } else {
@@ -111,6 +119,7 @@ export const authSlice = createSlice({
         state.user = null;
         state.sessionExpired = true;
         state.error = action.payload?.error?.message || 'Session expired';
+        startLogout();
       })
       .addCase(logout.pending, state => {
         state.loading = true;
@@ -120,14 +129,18 @@ export const authSlice = createSlice({
         state.user = null;
         state.error = null;
         state.sessionExpired = false;
+        state.initialized = false;
         clearAuthTokens();
+        startLogout();
       })
       .addCase(logout.rejected, state => {
         state.loading = false;
         state.user = null;
         state.error = null;
         state.sessionExpired = false;
+        state.initialized = false;
         clearAuthTokens();
+        startLogout();
       });
   }
 });

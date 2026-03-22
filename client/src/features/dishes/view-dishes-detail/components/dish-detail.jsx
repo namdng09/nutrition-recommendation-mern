@@ -123,7 +123,12 @@ export default function DishDetail() {
                 <p className='text-[10px] font-extrabold uppercase tracking-[0.18em] text-muted-foreground'>
                   Công thức được tạo bởi
                 </p>
-                <p className='font-bold text-foreground'>{dish.user.name}</p>
+                <Link
+                  to={`/nutritionists/${dish.user._id}`}
+                  className='font-bold hover:underline underline-offset-4'
+                >
+                  {dish.user.name}
+                </Link>
               </div>
             </div>
           )}

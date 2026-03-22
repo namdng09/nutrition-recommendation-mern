@@ -3,8 +3,12 @@ import { format } from 'date-fns';
 import {
   ArrowLeft,
   Calendar as CalendarIcon,
+  CheckCircle,
+  Clock,
+  ExternalLink,
   Save,
-  Trash2
+  Trash2,
+  XCircle
 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -37,15 +41,47 @@ import {
   SelectValue
 } from '~/components/ui/select';
 import { Spinner } from '~/components/ui/spinner';
+import { Textarea } from '~/components/ui/textarea';
 import { GENDER_OPTIONS } from '~/constants/gender';
-import { ROLE_OPTIONS } from '~/constants/role';
+import { ROLE, ROLE_OPTIONS } from '~/constants/role';
 import { STATUS_OPTIONS } from '~/constants/status';
 import DeleteUserDialog from '~/features/users/delete-user/components/admin/delete-user-dialog';
+import { useApproveCertificate } from '~/features/users/manage-certificate/api/approve-certificate';
+import { useRejectCertificate } from '~/features/users/manage-certificate/api/reject-certificate';
+import { useUpdateUserNutritionistProfile } from '~/features/users/update-nutritionist-profile/api/update-nutritionist-profile';
+import { nutritionistProfileSchema } from '~/features/users/update-nutritionist-profile/schemas/nutritionist-profile-schema';
 import { useUpdateUser } from '~/features/users/update-user/api/update-user';
 import { updateUserSchema } from '~/features/users/update-user/schemas/update-user-schema';
 import { useUserDetail } from '~/features/users/view-user-detail/api/view-user-detail';
 import { getRoleLabel } from '~/lib/utils';
 import { cn } from '~/lib/utils';
+
+const CERTIFICATE_STATUS = {
+  PENDING: 'Pending',
+  APPROVED: 'Approved',
+  REJECTED: 'Rejected'
+};
+
+const certStatusConfig = {
+  [CERTIFICATE_STATUS.PENDING]: {
+    label: 'Đang chờ duyệt',
+    icon: Clock,
+    badgeClass:
+      'border-yellow-400 text-yellow-600 bg-yellow-50 dark:bg-yellow-950/30 dark:text-yellow-400'
+  },
+  [CERTIFICATE_STATUS.APPROVED]: {
+    label: 'Đã phê duyệt',
+    icon: CheckCircle,
+    badgeClass:
+      'border-green-400 text-green-600 bg-green-50 dark:bg-green-950/30 dark:text-green-400'
+  },
+  [CERTIFICATE_STATUS.REJECTED]: {
+    label: 'Bị từ chối',
+    icon: XCircle,
+    badgeClass:
+      'border-red-400 text-red-600 bg-red-50 dark:bg-red-950/30 dark:text-red-400'
+  }
+};
 
 const UserDetail = ({ id }) => {
   const navigate = useNavigate();
@@ -62,7 +98,49 @@ const UserDetail = ({ id }) => {
     }
   });
 
+  const { mutate: approveCertificate, isPending: isApproving } =
+    useApproveCertificate({
+      onSuccess: response => {
+        toast.success(response.message || 'Phê duyệt chứng chỉ thành công');
+      },
+      onError: error => {
+        toast.error(
+          error.response?.data?.message || 'Phê duyệt chứng chỉ thất bại'
+        );
+      }
+    });
+
+  const { mutate: rejectCertificate, isPending: isRejecting } =
+    useRejectCertificate({
+      onSuccess: response => {
+        toast.success(response.message || 'Từ chối chứng chỉ thành công');
+        setRejectReason('');
+        setShowRejectInput(false);
+      },
+      onError: error => {
+        toast.error(
+          error.response?.data?.message || 'Từ chối chứng chỉ thất bại'
+        );
+      }
+    });
+
+  const {
+    mutate: updateNutritionistProfile,
+    isPending: isUpdatingNutritionist
+  } = useUpdateUserNutritionistProfile({
+    onSuccess: response => {
+      toast.success(response.message || 'Cập nhật hồ sơ dinh dưỡng thành công');
+    },
+    onError: error => {
+      toast.error(
+        error.response?.data?.message || 'Cập nhật hồ sơ dinh dưỡng thất bại'
+      );
+    }
+  });
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [showRejectInput, setShowRejectInput] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
 
   const form = useForm({
     resolver: yupResolver(updateUserSchema),
@@ -78,12 +156,47 @@ const UserDetail = ({ id }) => {
       : undefined
   });
 
+  const nutritionistForm = useForm({
+    resolver: yupResolver(nutritionistProfileSchema),
+    values: user?.nutritionistProfile
+      ? {
+          workplace: user.nutritionistProfile.workplace || '',
+          graduatedUniversity:
+            user.nutritionistProfile.graduatedUniversity || '',
+          professionalBio: user.nutritionistProfile.professionalBio || ''
+        }
+      : {
+          workplace: '',
+          graduatedUniversity: '',
+          professionalBio: ''
+        }
+  });
+
   const handleSave = data => {
     updateUser({ id, data });
   };
 
+  const handleSaveNutritionistProfile = data => {
+    updateNutritionistProfile({ id, data });
+  };
+
   const handleToggleActive = () => {
     updateUser({ id, data: { isActive: !user.isActive } });
+  };
+
+  const handleSaveAll = async e => {
+    e.preventDefault();
+
+    const userFormValid = await form.trigger();
+    if (!userFormValid) return;
+
+    if (user?.role === ROLE.NUTRITIONIST) {
+      const nutritionistFormValid = await nutritionistForm.trigger();
+      if (!nutritionistFormValid) return;
+      nutritionistForm.handleSubmit(handleSaveNutritionistProfile)();
+    }
+
+    form.handleSubmit(handleSave)();
   };
 
   const handleBack = () => {
@@ -149,10 +262,10 @@ const UserDetail = ({ id }) => {
           </Button>
           <Button
             size='sm'
-            onClick={form.handleSubmit(handleSave)}
-            disabled={isUpdating}
+            onClick={handleSaveAll}
+            disabled={isUpdating || isUpdatingNutritionist}
           >
-            {isUpdating ? (
+            {isUpdating || isUpdatingNutritionist ? (
               <Spinner className='h-4 w-4 mr-1' />
             ) : (
               <Save className='h-4 w-4 mr-1' />
@@ -360,6 +473,227 @@ const UserDetail = ({ id }) => {
           </Button>
         </div>
       </div>
+
+      {/* Nutritionist Profile section — Nutritionist only */}
+      {user.role === ROLE.NUTRITIONIST && (
+        <div className='bg-card rounded-lg border p-6 mt-6'>
+          <h2 className='text-lg font-semibold mb-4'>
+            Hồ sơ chuyên gia dinh dưỡng
+          </h2>
+
+          <Form {...nutritionistForm}>
+            <form
+              onSubmit={nutritionistForm.handleSubmit(
+                handleSaveNutritionistProfile
+              )}
+              className='space-y-4'
+            >
+              <FormField
+                control={nutritionistForm.control}
+                name='workplace'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-muted-foreground'>
+                      Nơi làm việc <span className='text-destructive'>*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder='Nhập nơi làm việc' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={nutritionistForm.control}
+                name='graduatedUniversity'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-muted-foreground'>
+                      Trường đại học <span className='text-destructive'>*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder='Nhập trường đại học' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={nutritionistForm.control}
+                name='professionalBio'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-muted-foreground'>
+                      Tiểu sử
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Mô tả ngắn về chuyên môn và kinh nghiệm'
+                        {...field}
+                        rows={4}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                    <p className='text-xs text-muted-foreground'>
+                      Tối đa 500 ký tự
+                    </p>
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        </div>
+      )}
+
+      {/* Certificate section — Nutritionist only */}
+      {user.role === ROLE.NUTRITIONIST &&
+        (() => {
+          const cert = user.certificate;
+          const certConfig = cert ? certStatusConfig[cert.status] : null;
+          const CertIcon = certConfig?.icon;
+
+          const handleRejectCert = () => {
+            if (!rejectReason.trim()) {
+              toast.error('Vui lòng nhập lý do từ chối');
+              return;
+            }
+            rejectCertificate({ id, rejectionReason: rejectReason });
+          };
+
+          const handleCancelReject = () => {
+            setShowRejectInput(false);
+            setRejectReason('');
+          };
+
+          return (
+            <div className='bg-card rounded-lg border p-6 mt-6'>
+              <h2 className='text-lg font-semibold mb-4'>
+                Chứng chỉ nghề nghiệp
+              </h2>
+              {!cert ? (
+                <p className='text-sm text-muted-foreground'>
+                  Chuyên gia này chưa nộp chứng chỉ nào.
+                </p>
+              ) : (
+                <div className='space-y-4'>
+                  <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+                    <div className='space-y-1'>
+                      <p className='text-sm text-muted-foreground'>
+                        Tên chứng chỉ
+                      </p>
+                      <p className='font-medium'>{cert.name}</p>
+                    </div>
+                    {certConfig && (
+                      <Badge
+                        variant='outline'
+                        className={`gap-1.5 self-start sm:self-auto ${certConfig.badgeClass}`}
+                      >
+                        <CertIcon className='h-3 w-3' />
+                        {certConfig.label}
+                      </Badge>
+                    )}
+                  </div>
+                  {cert.fileUrl && (
+                    <div className='space-y-2'>
+                      <p className='text-sm text-muted-foreground'>
+                        Ảnh chứng chỉ
+                      </p>
+                      <div className='relative w-full max-w-2xl rounded-lg border overflow-hidden bg-muted'>
+                        <img
+                          src={cert.fileUrl}
+                          alt={cert.name || 'Chứng chỉ'}
+                          className='w-full h-auto object-contain'
+                        />
+                      </div>
+                      <a
+                        href={cert.fileUrl}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='inline-flex items-center gap-1.5 text-sm text-primary hover:underline underline-offset-4'
+                      >
+                        <ExternalLink className='h-4 w-4' />
+                        Xem ảnh kích thước đầy đủ
+                      </a>
+                    </div>
+                  )}
+                  {cert.status === CERTIFICATE_STATUS.REJECTED &&
+                    cert.rejectionReason && (
+                      <div className='rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950/30'>
+                        <p className='text-sm font-medium text-red-700 dark:text-red-400'>
+                          Lý do từ chối trước đó
+                        </p>
+                        <p className='mt-1 text-sm text-red-600 dark:text-red-300'>
+                          {cert.rejectionReason}
+                        </p>
+                      </div>
+                    )}
+                  {cert.status !== CERTIFICATE_STATUS.APPROVED && (
+                    <div className='flex flex-wrap gap-2 pt-2 border-t'>
+                      <Button
+                        size='sm'
+                        onClick={() => approveCertificate({ id })}
+                        disabled={isApproving || isRejecting}
+                      >
+                        {isApproving ? (
+                          <Spinner className='h-4 w-4 mr-1' />
+                        ) : (
+                          <CheckCircle className='h-4 w-4 mr-1' />
+                        )}
+                        Phê duyệt
+                      </Button>
+                      {!showRejectInput ? (
+                        <Button
+                          size='sm'
+                          variant='destructive'
+                          onClick={() => setShowRejectInput(true)}
+                          disabled={isApproving || isRejecting}
+                        >
+                          <XCircle className='h-4 w-4 mr-1' />
+                          Từ chối
+                        </Button>
+                      ) : (
+                        <div className='w-full space-y-2'>
+                          <Textarea
+                            placeholder='Nhập lý do từ chối...'
+                            value={rejectReason}
+                            onChange={e => setRejectReason(e.target.value)}
+                            rows={3}
+                            className='resize-none'
+                          />
+                          <div className='flex gap-2'>
+                            <Button
+                              size='sm'
+                              variant='destructive'
+                              onClick={handleRejectCert}
+                              disabled={isRejecting}
+                            >
+                              {isRejecting ? (
+                                <Spinner className='h-4 w-4 mr-1' />
+                              ) : (
+                                <XCircle className='h-4 w-4 mr-1' />
+                              )}
+                              Xác nhận từ chối
+                            </Button>
+                            <Button
+                              size='sm'
+                              variant='outline'
+                              onClick={handleCancelReject}
+                              disabled={isRejecting}
+                            >
+                              Hủy
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
       <DeleteUserDialog
         user={user}

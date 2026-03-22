@@ -7,7 +7,11 @@ import {
   parseFormData,
   validate
 } from '~/shared/middlewares';
-import { asyncHandler, handleSingleImageUpload } from '~/shared/utils';
+import {
+  asyncHandler,
+  handleCertificateUpload,
+  handleSingleImageUpload
+} from '~/shared/utils';
 
 import { UserController } from './user-controller';
 import {
@@ -20,13 +24,16 @@ import {
   favoriteIngredientRequestSchema,
   nutritionTargetRequestSchema,
   onboardingRequestSchema,
+  rejectCertificateRequestSchema,
   updateAllergensSchema,
+  updateNutritionistProfileSchema,
   updateNutritionTargetSchema,
   updatePhysicalStatsSchema,
   updateProfileSchema,
   updateRestrictionsSchema,
   updateScheduleSettingsSchema,
-  updateUserRequestSchema
+  updateUserRequestSchema,
+  uploadCertificateRequestSchema
 } from './user-dto';
 
 const router = Router();
@@ -121,6 +128,14 @@ router.put(
   asyncHandler(UserController.updateProfile)
 );
 
+router.put(
+  '/me/nutritionist-profile',
+  authenticate(),
+  parseFormData,
+  validate(updateNutritionistProfileSchema.shape),
+  asyncHandler(UserController.updateNutritionistProfile)
+);
+
 router.post(
   '/me/favorites/dishes',
   authenticate(),
@@ -201,6 +216,52 @@ router.delete(
   asyncHandler(UserController.removeBlockIngredient)
 );
 
+router.post(
+  '/me/certificate',
+  authenticate(),
+  authorize([ROLE.NUTRITIONIST]),
+  handleCertificateUpload('certificate'),
+  validate(uploadCertificateRequestSchema.shape),
+  asyncHandler(UserController.uploadCertificate)
+);
+
+router.put(
+  '/me/certificate/visibility',
+  authenticate(),
+  authorize([ROLE.NUTRITIONIST]),
+  asyncHandler(UserController.toggleCertificateVisibility)
+);
+
+router.get(
+  '/pending-certificates/count',
+  authenticate(),
+  authorize([ROLE.ADMIN]),
+  asyncHandler(UserController.pendingCertificatesCount)
+);
+
+router.put(
+  '/:id/certificate/approve',
+  authenticate(),
+  authorize([ROLE.ADMIN]),
+  asyncHandler(UserController.approveCertificate)
+);
+
+router.put(
+  '/:id/certificate/reject',
+  authenticate(),
+  authorize([ROLE.ADMIN]),
+  parseFormData,
+  validate(rejectCertificateRequestSchema.shape),
+  asyncHandler(UserController.rejectCertificate)
+);
+
+router.get('/nutritionists', asyncHandler(UserController.viewNutritionists));
+
+router.get(
+  '/:id/profile',
+  asyncHandler(UserController.viewNutritionistProfile)
+);
+
 router.get(
   '/:id',
   authenticate(),
@@ -215,6 +276,15 @@ router.put(
   parseFormData,
   validate(updateUserRequestSchema.shape),
   asyncHandler(UserController.updateUser)
+);
+
+router.put(
+  '/:id/nutritionist-profile',
+  authenticate(),
+  authorize([ROLE.ADMIN]),
+  parseFormData,
+  validate(updateNutritionistProfileSchema.shape),
+  asyncHandler(UserController.updateUserNutritionistProfile)
 );
 
 router.delete(

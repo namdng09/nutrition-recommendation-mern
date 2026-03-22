@@ -2,6 +2,7 @@ export const QUERY_KEYS = {
   PROFILE: ['profile'],
   USERS: ['users'],
   USER: id => ['user', id],
+  PENDING_CERTIFICATES_COUNT: ['pending-certificates-count'],
   INGREDIENTS: ['ingredients'],
   INGREDIENT: id => ['ingredient', id],
   COLLECTIONS: ['collections'],
@@ -15,6 +16,9 @@ export const QUERY_KEYS = {
   DISH_NUTRITION_DETAIL: id => ['dish_nutrition_detail', id],
   GROCERIES: ['groceries'],
   PAYMENTS: ['payments'],
+  ACHIEVEMENTS: ['achievements'],
+  NUTRITIONISTS: ['nutritionists'],
+  NUTRITIONIST: id => ['nutritionist', id],
   EXERCISES: ['exercises'],
   EXERCISE: id => ['exercise', id]
 };

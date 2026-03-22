@@ -8,11 +8,11 @@ const Page = () => {
   return (
     <div className='space-y-4'>
       {/* Filter - Hide Create Button */}
-      <CollectionsFilter hideCreateButton={true} />
+      <CollectionsFilter />
 
       {/* Table - View only mode */}
       <Suspense fallback={<CollectionsTableSkeleton />}>
-        <CollectionsTable viewDetailPath='/collections' />
+        <CollectionsTable />
       </Suspense>
     </div>
   );

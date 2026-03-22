@@ -4,8 +4,10 @@ import createHttpError from 'http-errors';
 import type { HydratedDocument, PaginateResult } from 'mongoose';
 
 import { ACTIVITY_LEVEL } from '~/shared/constants/activity-level';
+import { CERTIFICATE_STATUS } from '~/shared/constants/certificate-status';
 import { DIET } from '~/shared/constants/diet';
 import { GENDER } from '~/shared/constants/gender';
+import { ROLE } from '~/shared/constants/role';
 import { USER_TARGET } from '~/shared/constants/user-target';
 import {
   AuthModel,
@@ -18,10 +20,12 @@ import type { User } from '~/shared/database/models/user-model';
 import {
   buildPaginateOptions,
   deleteAvatar,
+  deleteCertificate,
   generateToken,
   hashPassword,
   sendMail,
   uploadAvatar,
+  uploadCertificate,
   validateObjectId
 } from '~/shared/utils';
 
@@ -29,13 +33,16 @@ import {
   CreateUserRequest,
   NutritionTargetRequest,
   OnboardingRequest,
+  RejectCertificateRequest,
   UpdateAllergens,
+  UpdateNutritionistProfile,
   UpdateNutritionTarget,
   UpdatePhysicalStats,
   UpdateProfile,
   UpdateRestrictions,
   UpdateScheduleSettings,
-  UpdateUserRequest
+  UpdateUserRequest,
+  UploadCertificateRequest
 } from './user-dto';
 
 type UpdateProfileRequest =
@@ -141,6 +148,26 @@ const calculateMacros = (calories: number, ratios: MacroRatios) => {
     protein: { min: proteinMin, max: proteinMax },
     fat: { min: fatMin, max: fatMax }
   };
+};
+
+const sanitizeCertificate = (doc: User | HydratedDocument<User>) => {
+  const cert = 'certificate' in doc ? doc.certificate : null;
+  if (!cert) {
+    return doc;
+  }
+
+  const obj = ('toObject' in doc ? doc.toObject() : doc) as Record<
+    string,
+    unknown
+  >;
+  const certData = obj.certificate as Record<string, unknown>;
+
+  if (cert.showCertificate === false) {
+    const { fileUrl, publicId, ...rest } = certData;
+    return { ...obj, certificate: rest } as User;
+  }
+
+  return doc;
 };
 
 export const UserService = {
@@ -352,9 +379,13 @@ export const UserService = {
       subject: 'Chào mừng bạn đến với nền tảng của chúng tôi',
       template: 'create-user',
       templateData: {
+        name: newUser.name,
         email: newUser.email,
-        password
+        password,
+        loginUrl: `${process.env.CLIENT_URL}/auth/sign-in`
       }
+    }).catch(err => {
+      console.error('Không thể gửi email chào mừng người dùng:', err);
     });
 
     return newUser;
@@ -371,6 +402,38 @@ export const UserService = {
     }
 
     return result;
+  },
+
+  viewNutritionists: async (
+    parsed: QueryOptions
+  ): Promise<PaginateResult<User>> => {
+    const { filter } = parsed;
+    const options = buildPaginateOptions(parsed);
+
+    const result = await UserModel.paginate(
+      {
+        ...filter,
+        role: ROLE.NUTRITIONIST,
+        'certificate.status': CERTIFICATE_STATUS.APPROVED
+      },
+      { ...options, select: 'name avatar role certificate nutritionistProfile' }
+    );
+
+    if (!result || result.totalDocs === 0) {
+      throw createHttpError(404, 'Không tìm thấy chuyên gia dinh dưỡng nào');
+    }
+
+    result.docs = result.docs.map(doc =>
+      sanitizeCertificate(doc)
+    ) as typeof result.docs;
+
+    return result;
+  },
+
+  pendingCertificatesCount: async (): Promise<number> => {
+    return UserModel.countDocuments({
+      'certificate.status': CERTIFICATE_STATUS.PENDING
+    });
   },
 
   viewProfile: async (id: string) => {
@@ -540,6 +603,29 @@ export const UserService = {
     return user;
   },
 
+  viewNutritionistProfile: async (id: string) => {
+    if (!validateObjectId(id)) {
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
+    }
+
+    const user = await UserModel.findById(id).select(
+      'name avatar role certificate nutritionistProfile'
+    );
+
+    if (!user) {
+      throw createHttpError(404, 'Không tìm thấy người dùng');
+    }
+
+    if (user.role !== ROLE.NUTRITIONIST) {
+      throw createHttpError(
+        403,
+        'Người dùng này không phải chuyên gia dinh dưỡng'
+      );
+    }
+
+    return sanitizeCertificate(user);
+  },
+
   updateUser: async (
     id: string,
     data: UpdateUserRequest,
@@ -627,6 +713,221 @@ export const UserService = {
     ]);
 
     return result;
+  },
+
+  uploadCertificate: async (
+    userId: string,
+    data: UploadCertificateRequest,
+    file: Express.Multer.File
+  ) => {
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      throw createHttpError(404, 'Không tìm thấy người dùng');
+    }
+
+    if (user.role !== ROLE.NUTRITIONIST) {
+      throw createHttpError(
+        403,
+        'Chỉ chuyên gia dinh dưỡng mới có thể tải lên chứng chỉ'
+      );
+    }
+
+    // Delete old rejected certificate from Cloudinary before re-uploading
+    if (
+      user.certificate &&
+      user.certificate.status === CERTIFICATE_STATUS.REJECTED
+    ) {
+      await deleteCertificate(userId);
+    }
+
+    const uploadResult = await uploadCertificate(file.buffer, userId);
+
+    if (!uploadResult.success || !uploadResult.data) {
+      throw createHttpError(500, 'Không thể tải lên chứng chỉ');
+    }
+
+    user.certificate = {
+      name: data.certificateName,
+      fileUrl: uploadResult.data.secure_url,
+      publicId: uploadResult.data.public_id,
+      status: CERTIFICATE_STATUS.PENDING,
+      rejectionReason: undefined
+    } as any;
+
+    await user.save();
+
+    sendMail({
+      to: user.email,
+      subject: 'Chứng chỉ của bạn đang chờ duyệt',
+      template: 'certificate-pending',
+      templateData: {
+        name: user.name,
+        certificateName: data.certificateName
+      }
+    }).catch(err => {
+      console.error('Không thể gửi email thông báo chờ duyệt chứng chỉ:', err);
+    });
+
+    return user;
+  },
+
+  updateNutritionistProfile: async (
+    userId: string,
+    data: UpdateNutritionistProfile
+  ) => {
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      throw createHttpError(404, 'Không tìm thấy người dùng');
+    }
+
+    if (user.role !== ROLE.NUTRITIONIST) {
+      throw createHttpError(
+        403,
+        'Chỉ chuyên gia dinh dưỡng mới có thể cập nhật hồ sơ'
+      );
+    }
+
+    user.nutritionistProfile = data;
+    await user.save();
+
+    return user;
+  },
+
+  updateUserNutritionistProfile: async (
+    userId: string,
+    data: UpdateNutritionistProfile
+  ) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
+    }
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      throw createHttpError(404, 'Không tìm thấy người dùng');
+    }
+
+    if (user.role !== ROLE.NUTRITIONIST) {
+      throw createHttpError(
+        403,
+        'Người dùng này không phải là chuyên gia dinh dưỡng'
+      );
+    }
+
+    user.nutritionistProfile = data;
+    await user.save();
+
+    return user;
+  },
+
+  approveCertificate: async (userId: string) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
+    }
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      throw createHttpError(404, 'Không tìm thấy người dùng');
+    }
+
+    if (!user.certificate) {
+      throw createHttpError(404, 'Người dùng chưa có chứng chỉ');
+    }
+
+    if (user.certificate.status === CERTIFICATE_STATUS.APPROVED) {
+      throw createHttpError(400, 'Chứng chỉ đã được phê duyệt trước đó');
+    }
+
+    user.certificate.status = CERTIFICATE_STATUS.APPROVED;
+    user.certificate.rejectionReason = undefined as any;
+    await user.save();
+
+    sendMail({
+      to: user.email,
+      subject: 'Chứng chỉ của bạn đã được phê duyệt',
+      template: 'certificate-approved',
+      templateData: {
+        name: user.name,
+        certificateName: user.certificate.name
+      }
+    }).catch(err => {
+      console.error('Không thể gửi email phê duyệt chứng chỉ:', err);
+    });
+
+    return user;
+  },
+
+  rejectCertificate: async (userId: string, data: RejectCertificateRequest) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
+    }
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      throw createHttpError(404, 'Không tìm thấy người dùng');
+    }
+
+    if (!user.certificate) {
+      throw createHttpError(404, 'Người dùng chưa có chứng chỉ');
+    }
+
+    if (user.certificate.status === CERTIFICATE_STATUS.REJECTED) {
+      throw createHttpError(400, 'Chứng chỉ đã bị từ chối trước đó');
+    }
+
+    user.certificate.status = CERTIFICATE_STATUS.REJECTED;
+    user.certificate.rejectionReason = data.rejectionReason;
+    await user.save();
+
+    sendMail({
+      to: user.email,
+      subject: 'Chứng chỉ của bạn bị từ chối',
+      template: 'certificate-rejected',
+      templateData: {
+        name: user.name,
+        certificateName: user.certificate.name,
+        rejectionReason: data.rejectionReason
+      }
+    }).catch(err => {
+      console.error('Không thể gửi email từ chối chứng chỉ:', err);
+    });
+
+    return user;
+  },
+
+  toggleCertificateVisibility: async (
+    userId: string,
+    showCertificate: boolean
+  ) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
+    }
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      throw createHttpError(404, 'Không tìm thấy người dùng');
+    }
+
+    if (user.role !== ROLE.NUTRITIONIST) {
+      throw createHttpError(
+        403,
+        'Chỉ chuyên gia dinh dưỡng mới có thể thay đổi cài đặt này'
+      );
+    }
+
+    if (!user.certificate) {
+      throw createHttpError(404, 'Người dùng chưa có chứng chỉ');
+    }
+
+    user.certificate.showCertificate = showCertificate;
+    await user.save();
+
+    return user;
   }
 };
 

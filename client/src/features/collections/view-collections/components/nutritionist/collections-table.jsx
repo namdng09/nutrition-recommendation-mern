@@ -1,24 +1,34 @@
 import { Eye, Trash2, Users } from 'lucide-react';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import { DataTableColumnHeader } from '~/components/admin/data-table-column-header';
 import CommonTable from '~/components/common-table';
 import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
+import { ROLE } from '~/constants/role';
 import DeleteBulkCollectionsDialog from '~/features/collections/delete-collection/components/nutritionist/delete-bulk-collections-dialog';
 import DeleteCollectionDialog from '~/features/collections/delete-collection/components/nutritionist/delete-collection-dialog';
 import { useCollections } from '~/features/collections/view-collections/api/view-collection';
 
-const CollectionsTable = ({
-  viewDetailPath = '/nutritionist/manage-collections'
-}) => {
+const CollectionsTable = ({ viewDetailPath }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [collectionToDelete, setCollectionToDelete] = useState(null);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
   const [selectedCollectionIds, setSelectedCollectionIds] = useState([]);
+
+  // Lấy user từ Redux store
+  const user = useSelector(state => state.auth.user);
+  const isAdmin = user?.role === ROLE.ADMIN;
+
+  const detailPath =
+    viewDetailPath ||
+    (isAdmin
+      ? '/admin/manage-collections'
+      : '/nutritionist/manage-collections');
 
   const params = {
     page: parseInt(searchParams.get('page') || '1'),
@@ -39,6 +49,10 @@ const CollectionsTable = ({
       selectedCollections.map(collection => collection._id)
     );
     setBulkDeleteDialogOpen(true);
+  };
+
+  const handleViewDetail = collectionId => {
+    navigate(`${detailPath}/${collectionId}`);
   };
 
   const columns = [
@@ -148,7 +162,7 @@ const CollectionsTable = ({
           <Button
             variant='ghost'
             size='icon'
-            onClick={() => navigate(`${viewDetailPath}/${row.original._id}`)}
+            onClick={() => handleViewDetail(row.original._id)}
             title='Xem chi tiết'
           >
             <Eye className='h-4 w-4' />

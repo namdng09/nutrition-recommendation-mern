@@ -4,6 +4,7 @@ import { ACTIVITY_LEVEL } from '~/shared/constants/activity-level';
 import { ALLERGEN } from '~/shared/constants/allergen';
 import { AVAILABLE_TIME } from '~/shared/constants/available-time';
 import { BODYFAT } from '~/shared/constants/bodyfat';
+import { CERTIFICATE_STATUS } from '~/shared/constants/certificate-status';
 import { COOKING_PREFERENCE } from '~/shared/constants/cooking-preference';
 import { DIET } from '~/shared/constants/diet';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
@@ -287,3 +288,34 @@ export const deleteBulkRequestSchema = z.object({
 });
 
 export type DeleteBulkRequest = z.infer<typeof deleteBulkRequestSchema>;
+
+export const uploadCertificateRequestSchema = z.object({
+  certificateName: z.string().min(1, 'Tên chứng chỉ không được để trống').trim()
+});
+
+export type UploadCertificateRequest = z.infer<
+  typeof uploadCertificateRequestSchema
+>;
+
+export const rejectCertificateRequestSchema = z.object({
+  rejectionReason: z.string().min(1, 'Lý do từ chối không được để trống').trim()
+});
+
+export type RejectCertificateRequest = z.infer<
+  typeof rejectCertificateRequestSchema
+>;
+
+export const updateNutritionistProfileSchema = z.object({
+  workplace: z.string().min(2, 'Nơi làm việc phải có ít nhất 2 ký tự'),
+  graduatedUniversity: z
+    .string()
+    .min(2, 'Trường đại học phải có ít nhất 2 ký tự'),
+  professionalBio: z
+    .string()
+    .max(500, 'Tiểu sử không được vượt quá 500 ký tự')
+    .optional()
+});
+
+export type UpdateNutritionistProfile = z.infer<
+  typeof updateNutritionistProfileSchema
+>;
