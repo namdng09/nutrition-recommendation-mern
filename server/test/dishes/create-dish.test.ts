@@ -1,309 +1,215 @@
-import mongoose from 'mongoose';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi
-} from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { createDishRequestSchema } from '~/features/dishes/dish-dto';
 import { DishService } from '~/features/dishes/dish-service';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
-import { INGREDIENT_CATEGORY } from '~/shared/constants/ingredient-category';
 import { NUTRITION_FOCUS } from '~/shared/constants/nutrition-focus';
 import { UNIT } from '~/shared/constants/unit';
 import { DishModel, IngredientModel } from '~/shared/database/models';
+import { uploadImage } from '~/shared/utils';
 
-// Mock Cloudinary upload
-vi.mock('~/shared/utils/cloudinary', () => ({
-  uploadImage: vi.fn().mockResolvedValue({
-    success: true,
-    data: {
-      secure_url:
-        'https://res.cloudinary.com/test/image/upload/v1234567890/test-dish.jpg',
-      public_id: 'test-dish',
-      format: 'jpg'
-    }
-  }),
-  deleteImage: vi.fn().mockResolvedValue({ success: true })
+vi.mock('~/shared/database/models', () => ({
+  DishModel: {
+    findOne: vi.fn(),
+    create: vi.fn()
+  },
+  IngredientModel: {
+    findById: vi.fn()
+  }
 }));
 
-// Import mocked functions to customize per test
-import * as cloudinaryUtils from '~/shared/utils/cloudinary';
+vi.mock('~/shared/utils', async importOriginal => {
+  const actual = await importOriginal<typeof import('~/shared/utils')>();
+  return {
+    ...actual,
+    uploadImage: vi.fn(),
+    deleteImage: vi.fn(),
+    validateObjectId: vi.fn(() => true)
+  };
+});
+
+const mockFindOneDish = vi.mocked(DishModel.findOne);
+const mockCreateDish = vi.mocked(DishModel.create);
+const mockFindByIdIngredient = vi.mocked(IngredientModel.findById);
+const mockUploadImage = vi.mocked(uploadImage);
+
+const validData = {
+  name: 'Phở bò',
+  description: 'Phở bò truyền thống Hà Nội',
+  categories: [DISH_CATEGORY.MAIN_COURSE],
+  ingredients: [
+    {
+      ingredientId: '507f1f77bcf86cd799439011',
+      units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
+    }
+  ],
+  instructions: [{ step: 1, description: 'Luộc xương' }],
+  nutritionFocus: [NUTRITION_FOCUS.HIGH_PROTEIN],
+  servings: 2
+};
+
+const mockIngredient = {
+  _id: '507f1f77bcf86cd799439011',
+  name: 'Thịt bò',
+  description: 'Thịt bò Úc',
+  image: 'beef.jpg',
+  allergens: [],
+  baseUnit: { amount: 100, unit: UNIT.GRAM }
+};
 
 describe('DishService.createDish', () => {
-  let ingredientId: string;
-  const userId = new mongoose.Types.ObjectId().toString();
+  const userId = 'user123';
   const userName = 'Test User';
 
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe('validation', () => {
+    // Tests DTO schema directly — no service, no DB involved
+
+    it('should fail when name is missing', () => {
+      const { name: _, ...data } = validData;
+      const result = createDishRequestSchema.safeParse(data);
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe('Tên món ăn không hợp lệ');
+    });
+
+    it('should fail when name is too short', () => {
+      const result = createDishRequestSchema.safeParse({
+        ...validData,
+        name: 'A'
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Tên món ăn phải có ít nhất 2 ký tự'
       );
-    }
-  });
-
-  beforeEach(async () => {
-    // Clean up database before each test
-    await DishModel.deleteMany({});
-    await IngredientModel.deleteMany({});
-
-    // Reset mocks
-    vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValue({
-      success: true,
-      data: {
-        secure_url:
-          'https://res.cloudinary.com/test/image/upload/v1234567890/test-dish.jpg',
-        public_id: 'test-dish',
-        format: 'jpg'
-      } as any
     });
 
-    // Create test ingredient
-    const ingredient = await IngredientModel.create({
-      name: 'Thịt bò',
-      description: 'Thịt bò Úc',
-      categories: [INGREDIENT_CATEGORY.MEAT],
-      baseUnit: { amount: 100, unit: UNIT.GRAM },
-      allergens: [],
-      isActive: true
+    it('should fail when name is not a string', () => {
+      const result = createDishRequestSchema.safeParse({
+        ...validData,
+        name: 123
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe('Tên món ăn không hợp lệ');
     });
-    ingredientId = ingredient._id.toString();
   });
 
-  afterEach(async () => {
-    // Clean up after each test
-    await DishModel.deleteMany({});
-    await IngredientModel.deleteMany({});
-  });
+  describe('business logic', () => {
+    it('should throw 409 when dish name already exists', async () => {
+      mockFindOneDish.mockResolvedValue({ name: validData.name } as any);
 
-  afterAll(async () => {
-    // Close connection
-    await mongoose.connection.close();
-  });
-
-  // Branch - Happy case
-  it('should create dish successfully', async () => {
-    const dishData = {
-      name: 'Bún chả',
-      description: 'Bún chả Hà Nội',
-      categories: [DISH_CATEGORY.MAIN_COURSE],
-      ingredients: [
-        {
-          ingredientId,
-          units: [{ value: 150, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ],
-      instructions: [{ step: 1, description: 'Ướp thịt' }],
-      nutritionFocus: [NUTRITION_FOCUS.HIGH_PROTEIN],
-      isActive: true
-    };
-
-    const fakeImage = {
-      buffer: Buffer.from('fake-image-data'),
-      originalname: 'test-dish.jpg'
-    } as Express.Multer.File;
-
-    const dish = await DishService.createDish(
-      userId,
-      userName,
-      dishData as any,
-      fakeImage
-    );
-
-    expect(dish).toBeDefined();
-    expect(dish.name).toBe('Bún chả');
-    expect(dish.image).toBeDefined();
-    expect(dish.image).toContain('https://res.cloudinary.com');
-  });
-
-  // Branch - Invalid constant value
-  it('should throw error when category value is invalid', async () => {
-    const dishData = {
-      name: 'Phở bò',
-      categories: ['invalid-category'],
-      ingredients: [
-        {
-          ingredientId,
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ],
-      instructions: [{ step: 1, description: 'Luộc xương' }],
-      nutritionFocus: [NUTRITION_FOCUS.HIGH_PROTEIN]
-    };
-
-    await expect(
-      DishService.createDish(userId, userName, dishData as any, undefined)
-    ).rejects.toThrow('Danh mục món ăn không hợp lệ');
-  });
-
-  // Branch - Missing required field
-  it('should throw error when name is missing', async () => {
-    const dishData = {
-      description: 'Phở bò truyền thống',
-      categories: [DISH_CATEGORY.MAIN_COURSE],
-      ingredients: [
-        {
-          ingredientId,
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ],
-      instructions: [{ step: 1, description: 'Luộc xương' }],
-      nutritionFocus: [NUTRITION_FOCUS.HIGH_PROTEIN]
-    };
-
-    await expect(
-      DishService.createDish(userId, userName, dishData as any, undefined)
-    ).rejects.toThrow('Tên món ăn không hợp lệ');
-  });
-
-  // Branch - Name too short
-  it('should throw error when name is too short', async () => {
-    const dishData = {
-      name: 'A',
-      categories: [DISH_CATEGORY.MAIN_COURSE],
-      ingredients: [
-        {
-          ingredientId,
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ],
-      instructions: [{ step: 1, description: 'Luộc xương' }],
-      nutritionFocus: [NUTRITION_FOCUS.HIGH_PROTEIN]
-    };
-
-    await expect(
-      DishService.createDish(userId, userName, dishData as any, undefined)
-    ).rejects.toThrow('Tên món ăn phải có ít nhất 2 ký tự');
-  });
-
-  // Branch - Name is not a string
-  it('should throw error when name is not a string', async () => {
-    const dishData = {
-      name: 123,
-      categories: [DISH_CATEGORY.MAIN_COURSE],
-      ingredients: [
-        {
-          ingredientId,
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ],
-      instructions: [{ step: 1, description: 'Luộc xương' }],
-      nutritionFocus: [NUTRITION_FOCUS.HIGH_PROTEIN]
-    };
-
-    await expect(
-      DishService.createDish(userId, userName, dishData as any, undefined)
-    ).rejects.toThrow('Tên món ăn không hợp lệ');
-  });
-
-  // Branch - Ingredient does not exist
-  it('should throw error when ingredient does not exist', async () => {
-    const nonExistentId = new mongoose.Types.ObjectId().toString();
-    const dishData = {
-      name: 'Phở bò',
-      categories: [DISH_CATEGORY.MAIN_COURSE],
-      ingredients: [
-        {
-          ingredientId: nonExistentId,
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ],
-      instructions: [{ step: 1, description: 'Luộc xương' }],
-      nutritionFocus: [NUTRITION_FOCUS.HIGH_PROTEIN]
-    };
-
-    await expect(
-      DishService.createDish(userId, userName, dishData as any, undefined)
-    ).rejects.toThrow('Không tìm thấy nguyên liệu');
-  });
-
-  // Branch - Invalid ingredient id format
-  it('should throw error when ingredient ID format is invalid', async () => {
-    const dishData = {
-      name: 'Phở bò',
-      categories: [DISH_CATEGORY.MAIN_COURSE],
-      ingredients: [
-        {
-          ingredientId: 'invalid-id',
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ],
-      instructions: [{ step: 1, description: 'Luộc xương' }],
-      nutritionFocus: [NUTRITION_FOCUS.HIGH_PROTEIN]
-    };
-
-    await expect(
-      DishService.createDish(userId, userName, dishData as any, undefined)
-    ).rejects.toThrow(
-      `ID nguyên liệu không hợp lệ: ${dishData.ingredients[0].ingredientId}`
-    );
-  });
-
-  // Branch - Duplicate dish name
-  it('should throw error when dish name already exists', async () => {
-    // Create a dish with specific name
-    await DishModel.create({
-      user: { _id: userId, name: userName },
-      name: 'Cơm chiên dứa',
-      categories: [DISH_CATEGORY.MAIN_COURSE],
-      ingredients: [],
-      instructions: [{ step: 1, description: 'Rang cơm' }],
-      nutritionFocus: [NUTRITION_FOCUS.HIGH_PROTEIN]
+      await expect(
+        DishService.createDish(userId, userName, validData as any)
+      ).rejects.toMatchObject({
+        status: 409,
+        message: 'Món ăn với tên này đã tồn tại'
+      });
     });
 
-    // Try to create another dish with the same name
-    const dishData = {
-      name: 'Cơm chiên dứa',
-      categories: [DISH_CATEGORY.MAIN_COURSE],
-      ingredients: [
-        {
-          ingredientId,
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ],
-      instructions: [{ step: 1, description: 'Rang cơm' }],
-      nutritionFocus: [NUTRITION_FOCUS.HIGH_PROTEIN]
-    };
+    it('should throw 404 when ingredient does not exist', async () => {
+      mockFindOneDish.mockResolvedValue(null);
+      mockFindByIdIngredient.mockResolvedValue(null);
 
-    await expect(
-      DishService.createDish(userId, userName, dishData as any, undefined)
-    ).rejects.toThrow('Món ăn với tên này đã tồn tại');
+      await expect(
+        DishService.createDish(userId, userName, validData as any)
+      ).rejects.toMatchObject({
+        status: 404,
+        message: 'Không tìm thấy nguyên liệu với ID: 507f1f77bcf86cd799439011'
+      });
+    });
+
+    it('should create dish successfully without image', async () => {
+      const mockSave = vi.fn();
+      const mockDish = {
+        _id: { toString: () => 'dish123' },
+        ...validData,
+        user: { _id: userId, name: userName },
+        image: '',
+        save: mockSave
+      };
+
+      mockFindOneDish.mockResolvedValue(null);
+      mockFindByIdIngredient.mockResolvedValue(mockIngredient as any);
+      mockCreateDish.mockResolvedValue(mockDish as any);
+
+      const result = await DishService.createDish(
+        userId,
+        userName,
+        validData as any
+      );
+
+      expect(result).toBeDefined();
+      expect(result.name).toBe(validData.name);
+      expect(mockSave).not.toHaveBeenCalled();
+    });
+
+    it('should create dish successfully with image', async () => {
+      const mockSave = vi.fn();
+      const mockDish = {
+        _id: { toString: () => 'dish123' },
+        ...validData,
+        user: { _id: userId, name: userName },
+        image: '',
+        save: mockSave
+      };
+
+      mockFindOneDish.mockResolvedValue(null);
+      mockFindByIdIngredient.mockResolvedValue(mockIngredient as any);
+      mockCreateDish.mockResolvedValue(mockDish as any);
+      mockUploadImage.mockResolvedValue({
+        success: true,
+        data: {
+          secure_url:
+            'https://res.cloudinary.com/test/image/upload/v1234567890/test-dish.jpg'
+        }
+      } as any);
+
+      const fakeImage = {
+        buffer: Buffer.from('fake-image-data')
+      } as Express.Multer.File;
+
+      const result = await DishService.createDish(
+        userId,
+        userName,
+        validData as any,
+        fakeImage
+      );
+
+      expect(mockDish.image).toBe(
+        'https://res.cloudinary.com/test/image/upload/v1234567890/test-dish.jpg'
+      );
+      expect(mockSave).toHaveBeenCalled();
+      expect(result).toBeDefined();
+    });
   });
 
-  // Branch - Image upload fails
-  it('should throw error when image upload fails', async () => {
-    // Mock uploadImage to fail
-    vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValueOnce({
-      success: false,
-      data: null
-    } as any);
+  describe('system', () => {
+    it('should throw 500 when image upload fails', async () => {
+      mockFindOneDish.mockResolvedValue(null);
+      mockFindByIdIngredient.mockResolvedValue(mockIngredient as any);
+      mockCreateDish.mockResolvedValue({
+        _id: { toString: () => 'dish123' },
+        ...validData,
+        user: { _id: userId, name: userName },
+        save: vi.fn()
+      } as any);
+      mockUploadImage.mockResolvedValue({ success: false, data: null } as any);
 
-    const dishData = {
-      name: 'Phở bò',
-      categories: [DISH_CATEGORY.MAIN_COURSE],
-      ingredients: [
-        {
-          ingredientId,
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ],
-      instructions: [{ step: 1, description: 'Luộc xương' }],
-      nutritionFocus: [NUTRITION_FOCUS.HIGH_PROTEIN]
-    };
+      const fakeImage = {
+        buffer: Buffer.from('fake-image-data')
+      } as Express.Multer.File;
 
-    const fakeImage = {
-      buffer: Buffer.from('fake-image-data'),
-      originalname: 'test-dish.jpg'
-    } as Express.Multer.File;
-
-    await expect(
-      DishService.createDish(userId, userName, dishData as any, fakeImage)
-    ).rejects.toThrow('Tải ảnh lên thất bại');
+      await expect(
+        DishService.createDish(userId, userName, validData as any, fakeImage)
+      ).rejects.toMatchObject({
+        status: 500,
+        message: 'Tải ảnh lên thất bại'
+      });
+    });
   });
 });

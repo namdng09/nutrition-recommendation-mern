@@ -31,7 +31,10 @@ const mockIngredient = {
   categories: [INGREDIENT_CATEGORY.VEGETABLES],
   baseUnit: { amount: 100, unit: UNIT.GRAM },
   nutrition: { nutrients: [], minerals: [] },
-  isActive: true
+  isActive: true,
+  toObject: function () {
+    return this;
+  }
 };
 
 describe('IngredientService.viewIngredientDetail', () => {

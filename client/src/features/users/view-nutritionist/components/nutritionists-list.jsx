@@ -1,4 +1,4 @@
-import { CheckCircle, Clock, ShieldCheck, XCircle } from 'lucide-react';
+import { CheckCircle, Clock, EyeOff, ShieldCheck, XCircle } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router';
 
@@ -35,6 +35,8 @@ const NutritionistCard = ({ nutritionist }) => {
   const certificate = nutritionist.certificate;
   const config = certificate ? statusConfig[certificate.status] : null;
   const StatusIcon = config?.icon;
+  const hasFileUrl = !!certificate?.fileUrl;
+  const showCertificate = certificate?.showCertificate !== false;
 
   return (
     <Card className='flex flex-col h-full overflow-hidden transition-shadow hover:shadow-md'>
@@ -55,17 +57,32 @@ const NutritionistCard = ({ nutritionist }) => {
           <>
             <div className='space-y-1'>
               <p className='text-xs text-muted-foreground'>Chứng chỉ</p>
-              <p className='text-sm font-medium truncate'>{certificate.name}</p>
+              <div className='flex items-center gap-2'>
+                <p className='text-sm font-medium truncate'>
+                  {certificate.name}
+                </p>
+                {!showCertificate && hasFileUrl === false && (
+                  <EyeOff
+                    className='h-3 w-3 text-muted-foreground shrink-0'
+                    title='Chứng chỉ bị ẩn bởi chuyên gia'
+                  />
+                )}
+              </div>
+              {showCertificate && hasFileUrl && config && (
+                <Badge
+                  variant='outline'
+                  className={`gap-1.5 ${config.className}`}
+                >
+                  <StatusIcon className='h-3 w-3' />
+                  {config.label}
+                </Badge>
+              )}
+              {!showCertificate && (
+                <p className='text-xs text-muted-foreground italic'>
+                  (Hình ảnh chứng chỉ bị ẩn)
+                </p>
+              )}
             </div>
-            {config && (
-              <Badge
-                variant='outline'
-                className={`gap-1.5 ${config.className}`}
-              >
-                <StatusIcon className='h-3 w-3' />
-                {config.label}
-              </Badge>
-            )}
           </>
         ) : (
           <p className='text-sm text-muted-foreground'>Chưa có chứng chỉ</p>

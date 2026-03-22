@@ -5,6 +5,8 @@ import { type HydratedDocument, type PaginateResult } from 'mongoose';
 import { ROLE } from '~/shared/constants/role';
 import type { Post, PostComment } from '~/shared/database/models/post-model';
 import { PostModel } from '~/shared/database/models/post-model';
+import { eventBus } from '~/shared/events/event-bus';
+import { EVENTS } from '~/shared/events/event-types';
 import {
   buildPaginateOptions,
   deleteImage,
@@ -153,6 +155,21 @@ export const PostService = {
         : { $addToSet: { likes: userObjectId } }
     );
 
+    const authorId = post.author?._id.toString();
+    if (alreadyLiked) {
+      eventBus.emit(EVENTS.POST_UNLIKED, {
+        actorId: userId,
+        authorId,
+        postId: id
+      });
+    } else {
+      eventBus.emit(EVENTS.POST_LIKED, {
+        actorId: userId,
+        authorId,
+        postId: id
+      });
+    }
+
     return {
       liked: !alreadyLiked,
       likesCount: alreadyLiked ? post.likes.length - 1 : post.likes.length + 1
@@ -184,6 +201,12 @@ export const PostService = {
 
     post.comments.push(comment);
     await post.save();
+
+    eventBus.emit(EVENTS.POST_COMMENTED, {
+      actorId: userId,
+      authorId: post.author?._id.toString(),
+      postId: id
+    });
 
     return comment;
   },
@@ -220,6 +243,12 @@ export const PostService = {
 
     post.comments.splice(commentIndex, 1);
     await post.save();
+
+    eventBus.emit(EVENTS.POST_COMMENT_DELETED, {
+      actorId: userId,
+      authorId: post.author?._id.toString(),
+      postId: postId
+    });
   }
 };
 
