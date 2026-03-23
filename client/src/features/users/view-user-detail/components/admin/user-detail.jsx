@@ -48,6 +48,8 @@ import { STATUS_OPTIONS } from '~/constants/status';
 import DeleteUserDialog from '~/features/users/delete-user/components/admin/delete-user-dialog';
 import { useApproveCertificate } from '~/features/users/manage-certificate/api/approve-certificate';
 import { useRejectCertificate } from '~/features/users/manage-certificate/api/reject-certificate';
+import { useUpdateUserNutritionistProfile } from '~/features/users/update-nutritionist-profile/api/update-nutritionist-profile';
+import { nutritionistProfileSchema } from '~/features/users/update-nutritionist-profile/schemas/nutritionist-profile-schema';
 import { useUpdateUser } from '~/features/users/update-user/api/update-user';
 import { updateUserSchema } from '~/features/users/update-user/schemas/update-user-schema';
 import { useUserDetail } from '~/features/users/view-user-detail/api/view-user-detail';
@@ -122,6 +124,20 @@ const UserDetail = ({ id }) => {
       }
     });
 
+  const {
+    mutate: updateNutritionistProfile,
+    isPending: isUpdatingNutritionist
+  } = useUpdateUserNutritionistProfile({
+    onSuccess: response => {
+      toast.success(response.message || 'Cập nhật hồ sơ dinh dưỡng thành công');
+    },
+    onError: error => {
+      toast.error(
+        error.response?.data?.message || 'Cập nhật hồ sơ dinh dưỡng thất bại'
+      );
+    }
+  });
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [showRejectInput, setShowRejectInput] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
@@ -140,12 +156,47 @@ const UserDetail = ({ id }) => {
       : undefined
   });
 
+  const nutritionistForm = useForm({
+    resolver: yupResolver(nutritionistProfileSchema),
+    values: user?.nutritionistProfile
+      ? {
+          workplace: user.nutritionistProfile.workplace || '',
+          graduatedUniversity:
+            user.nutritionistProfile.graduatedUniversity || '',
+          professionalBio: user.nutritionistProfile.professionalBio || ''
+        }
+      : {
+          workplace: '',
+          graduatedUniversity: '',
+          professionalBio: ''
+        }
+  });
+
   const handleSave = data => {
     updateUser({ id, data });
   };
 
+  const handleSaveNutritionistProfile = data => {
+    updateNutritionistProfile({ id, data });
+  };
+
   const handleToggleActive = () => {
     updateUser({ id, data: { isActive: !user.isActive } });
+  };
+
+  const handleSaveAll = async e => {
+    e.preventDefault();
+
+    const userFormValid = await form.trigger();
+    if (!userFormValid) return;
+
+    if (user?.role === ROLE.NUTRITIONIST) {
+      const nutritionistFormValid = await nutritionistForm.trigger();
+      if (!nutritionistFormValid) return;
+      nutritionistForm.handleSubmit(handleSaveNutritionistProfile)();
+    }
+
+    form.handleSubmit(handleSave)();
   };
 
   const handleBack = () => {
@@ -211,10 +262,10 @@ const UserDetail = ({ id }) => {
           </Button>
           <Button
             size='sm'
-            onClick={form.handleSubmit(handleSave)}
-            disabled={isUpdating}
+            onClick={handleSaveAll}
+            disabled={isUpdating || isUpdatingNutritionist}
           >
-            {isUpdating ? (
+            {isUpdating || isUpdatingNutritionist ? (
               <Spinner className='h-4 w-4 mr-1' />
             ) : (
               <Save className='h-4 w-4 mr-1' />
@@ -423,18 +474,104 @@ const UserDetail = ({ id }) => {
         </div>
       </div>
 
+      {/* Nutritionist Profile section — Nutritionist only */}
+      {user.role === ROLE.NUTRITIONIST && (
+        <div className='bg-card rounded-lg border p-6 mt-6'>
+          <h2 className='text-lg font-semibold mb-4'>
+            Hồ sơ chuyên gia dinh dưỡng
+          </h2>
+
+          <Form {...nutritionistForm}>
+            <form
+              onSubmit={nutritionistForm.handleSubmit(
+                handleSaveNutritionistProfile
+              )}
+              className='space-y-4'
+            >
+              <FormField
+                control={nutritionistForm.control}
+                name='workplace'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-muted-foreground'>
+                      Nơi làm việc <span className='text-destructive'>*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder='Nhập nơi làm việc' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={nutritionistForm.control}
+                name='graduatedUniversity'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-muted-foreground'>
+                      Trường đại học <span className='text-destructive'>*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder='Nhập trường đại học' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={nutritionistForm.control}
+                name='professionalBio'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-muted-foreground'>
+                      Tiểu sử
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Mô tả ngắn về chuyên môn và kinh nghiệm'
+                        {...field}
+                        rows={4}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                    <p className='text-xs text-muted-foreground'>
+                      Tối đa 500 ký tự
+                    </p>
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        </div>
+      )}
+
       {/* Certificate section — Nutritionist only */}
       {user.role === ROLE.NUTRITIONIST &&
         (() => {
           const cert = user.certificate;
           const certConfig = cert ? certStatusConfig[cert.status] : null;
           const CertIcon = certConfig?.icon;
+
+          const handleRejectCert = () => {
+            if (!rejectReason.trim()) {
+              toast.error('Vui lòng nhập lý do từ chối');
+              return;
+            }
+            rejectCertificate({ id, rejectionReason: rejectReason });
+          };
+
+          const handleCancelReject = () => {
+            setShowRejectInput(false);
+            setRejectReason('');
+          };
+
           return (
             <div className='bg-card rounded-lg border p-6 mt-6'>
               <h2 className='text-lg font-semibold mb-4'>
                 Chứng chỉ nghề nghiệp
               </h2>
-
               {!cert ? (
                 <p className='text-sm text-muted-foreground'>
                   Chuyên gia này chưa nộp chứng chỉ nào.
@@ -458,7 +595,6 @@ const UserDetail = ({ id }) => {
                       </Badge>
                     )}
                   </div>
-
                   {cert.fileUrl && (
                     <div className='space-y-2'>
                       <p className='text-sm text-muted-foreground'>
@@ -482,7 +618,6 @@ const UserDetail = ({ id }) => {
                       </a>
                     </div>
                   )}
-
                   {cert.status === CERTIFICATE_STATUS.REJECTED &&
                     cert.rejectionReason && (
                       <div className='rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950/30'>
@@ -494,7 +629,6 @@ const UserDetail = ({ id }) => {
                         </p>
                       </div>
                     )}
-
                   {cert.status !== CERTIFICATE_STATUS.APPROVED && (
                     <div className='flex flex-wrap gap-2 pt-2 border-t'>
                       <Button
@@ -509,7 +643,6 @@ const UserDetail = ({ id }) => {
                         )}
                         Phê duyệt
                       </Button>
-
                       {!showRejectInput ? (
                         <Button
                           size='sm'
@@ -533,16 +666,7 @@ const UserDetail = ({ id }) => {
                             <Button
                               size='sm'
                               variant='destructive'
-                              onClick={() => {
-                                if (!rejectReason.trim()) {
-                                  toast.error('Vui lòng nhập lý do từ chối');
-                                  return;
-                                }
-                                rejectCertificate({
-                                  id,
-                                  rejectionReason: rejectReason
-                                });
-                              }}
+                              onClick={handleRejectCert}
                               disabled={isRejecting}
                             >
                               {isRejecting ? (
@@ -555,10 +679,7 @@ const UserDetail = ({ id }) => {
                             <Button
                               size='sm'
                               variant='outline'
-                              onClick={() => {
-                                setShowRejectInput(false);
-                                setRejectReason('');
-                              }}
+                              onClick={handleCancelReject}
                               disabled={isRejecting}
                             >
                               Hủy

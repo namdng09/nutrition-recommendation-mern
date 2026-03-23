@@ -304,3 +304,18 @@ export const rejectCertificateRequestSchema = z.object({
 export type RejectCertificateRequest = z.infer<
   typeof rejectCertificateRequestSchema
 >;
+
+export const updateNutritionistProfileSchema = z.object({
+  workplace: z.string().min(2, 'Nơi làm việc phải có ít nhất 2 ký tự'),
+  graduatedUniversity: z
+    .string()
+    .min(2, 'Trường đại học phải có ít nhất 2 ký tự'),
+  professionalBio: z
+    .string()
+    .max(500, 'Tiểu sử không được vượt quá 500 ký tự')
+    .optional()
+});
+
+export type UpdateNutritionistProfile = z.infer<
+  typeof updateNutritionistProfileSchema
+>;

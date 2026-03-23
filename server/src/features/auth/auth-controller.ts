@@ -15,10 +15,8 @@ export const AuthController = {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure:
-        process.env.NODE_ENV === 'production' &&
-        process.env.SERVER_URL?.startsWith('https'),
-      sameSite: 'strict',
+      secure: false, // Cloudflare handles HTTPS, so no need for Secure flag
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -39,10 +37,8 @@ export const AuthController = {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure:
-        process.env.NODE_ENV === 'production' &&
-        process.env.SERVER_URL?.startsWith('https'),
-      sameSite: 'strict',
+      secure: false, // Cloudflare handles HTTPS, so no need for Secure flag
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -64,10 +60,8 @@ export const AuthController = {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure:
-        process.env.NODE_ENV === 'production' &&
-        process.env.SERVER_URL?.startsWith('https'),
-      sameSite: 'strict',
+      secure: false, // Cloudflare handles HTTPS, so no need for Secure flag
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -82,10 +76,8 @@ export const AuthController = {
   logout: async (req: Request, res: Response) => {
     res.clearCookie('refreshToken', {
       httpOnly: true,
-      secure:
-        process.env.NODE_ENV === 'production' &&
-        process.env.SERVER_URL?.startsWith('https'),
-      sameSite: 'strict'
+      secure: false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none'
     });
 
     res.status(200).json(ApiResponse.success('Đăng xuất thành công'));

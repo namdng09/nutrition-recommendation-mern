@@ -1,7 +1,7 @@
 import { ChevronDown, LogOut, Settings, Sparkles, User } from 'lucide-react';
 import { FaUserPlus } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router';
 
 import { ModeToggle } from '~/components/mode-toggle';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
@@ -12,18 +12,12 @@ import {
   PopoverTrigger
 } from '~/components/ui/popover';
 import { useProfile } from '~/features/users/view-profile/api/view-profile';
-import { logout } from '~/store/features/auth-slice';
+import { useLogout } from '~/hooks/useLogout';
 
 const OnboardingHeader = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const handleLogout = useLogout();
   const { user } = useSelector(state => state.auth);
   const { data: profile } = useProfile();
-
-  const handleLogout = async () => {
-    dispatch(logout());
-    navigate('/');
-  };
 
   const displayName = profile?.name || user?.name || 'User';
   const displayEmail = profile?.email || user?.email || '';

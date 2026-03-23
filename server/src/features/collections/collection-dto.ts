@@ -3,7 +3,10 @@ import { z } from 'zod';
 import { booleanSchema, parseJSON } from '~/shared/utils/dto-parsers';
 
 export const createCollectionRequestSchema = z.object({
-  name: z.string().trim().min(2, 'Tên phải có ít nhất 2 ký tự'),
+  name: z
+    .string('Tên bộ sưu tập không hợp lệ')
+    .trim()
+    .min(2, 'Tên phải có ít nhất 2 ký tự'),
   description: z.string().trim().optional(),
   image: z.file().optional(),
   isPublic: booleanSchema.optional(),
@@ -21,7 +24,11 @@ export type CreateCollectionRequest = z.infer<
 >;
 
 export const updateCollectionRequestSchema = z.object({
-  name: z.string().trim().min(2, 'Tên phải có ít nhất 2 ký tự').optional(),
+  name: z
+    .string('Tên bộ sưu tập không hợp lệ')
+    .trim()
+    .min(2, 'Tên phải có ít nhất 2 ký tự')
+    .optional(),
   description: z.string().trim().optional(),
   image: z.file().optional(),
   isPublic: booleanSchema.optional(),

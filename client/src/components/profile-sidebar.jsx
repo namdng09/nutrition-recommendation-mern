@@ -1,4 +1,3 @@
-// components/profile-sidebar.jsx
 import {
   Activity,
   Award,
@@ -12,8 +11,8 @@ import {
   User,
   Utensils
 } from 'lucide-react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useLocation, useNavigate } from 'react-router';
+import { useSelector } from 'react-redux';
+import { Link, useLocation } from 'react-router';
 
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Badge } from '~/components/ui/badge';
@@ -36,11 +35,10 @@ import {
 import { ROLE } from '~/constants/role';
 import { useProfile } from '~/features/users/view-profile/api/view-profile';
 import { useIsMobile } from '~/hooks/use-mobile';
-import { logout } from '~/store/features/auth-slice';
+import { useLogout } from '~/hooks/useLogout';
 
 export function ProfileSidebar({ ...props }) {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const handleLogout = useLogout();
   const location = useLocation();
   const user = useSelector(state => state.auth.user);
   const { data: profile } = useProfile();
@@ -139,18 +137,13 @@ export function ProfileSidebar({ ...props }) {
     });
   }
 
-  const handleLogout = async () => {
-    await dispatch(logout());
-    navigate('/');
-  };
-
   return (
     <>
       {/* Mobile Toggle Button - Enhanced with Shadow */}
       {isMobile && (
-        <div className='fixed left-0 top-20 z-50 md:hidden'>
-          <SidebarTrigger className='h-12 w-12 -translate-x-1/2 rounded-full bg-primary text-primary-foreground shadow-xl transition-all hover:shadow-2xl hover:scale-110'>
-            <Menu className='h-6 w-6' />
+        <div className='fixed left-1 top-30 z-50 md:hidden'>
+          <SidebarTrigger className='h-10 w-10 -translate-x-1/2 rounded-full bg-primary text-primary-foreground shadow-lg'>
+            <Menu className='h-5 w-5' />
           </SidebarTrigger>
         </div>
       )}

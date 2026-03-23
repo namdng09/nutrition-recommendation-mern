@@ -80,10 +80,6 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/posts/[id]/page'))
           },
           {
-            path: 'nutritionists',
-            Component: lazy(() => import('~/app/nutritionists/page'))
-          },
-          {
             path: 'nutritionists/:id',
             Component: lazy(() => import('~/app/nutritionists/[id]/page'))
           },
@@ -384,6 +380,24 @@ const router = createBrowserRouter([
           {
             path: 'manage-posts/:id',
             Component: lazy(() => import('~/app/admin/manage-posts/[id]/page'))
+          },
+
+          //admin manage exercises
+          {
+            path: 'manage-exercises/',
+            Component: lazy(() => import('~/app/admin/manage-exercises/page'))
+          },
+          {
+            path: 'manage-exercises/create-exercise',
+            Component: lazy(
+              () => import('~/app/admin/manage-exercises/create-exercise/page')
+            )
+          },
+          {
+            path: 'manage-exercises/:id',
+            Component: lazy(
+              () => import('~/app/admin/manage-exercises/[id]/page')
+            )
           }
         ]
       },

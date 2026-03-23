@@ -4,14 +4,14 @@ import express from 'express';
 import logger from 'morgan';
 import passport from 'passport';
 
-// import { registerAllAchievementHandlers } from '~/features/achievements/handlers';
+import { registerAllAchievementHandlers } from '~/features/achievements/handlers';
 import { configurePassport, connectDB } from '~/shared/config';
 import { errorHandler } from '~/shared/middlewares';
 import router from '~/shared/routes/router';
 
 const app = express();
 connectDB();
-// registerAllAchievementHandlers();
+registerAllAchievementHandlers();
 
 configurePassport();
 app.use(passport.initialize());

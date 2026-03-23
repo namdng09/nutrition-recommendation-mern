@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { ROLE } from '~/shared/constants/role';
-import { authenticate, authorize } from '~/shared/middlewares';
+import { authenticate, authenticateSse, authorize } from '~/shared/middlewares';
 import { asyncHandler } from '~/shared/utils';
 
 import { AchievementController } from './achievement-controller';
@@ -10,6 +10,8 @@ const router = Router();
 
 // Public — anyone can browse achievement definitions
 router.get('/', asyncHandler(AchievementController.getAllDefinitions));
+
+router.get('/sse', authenticateSse, AchievementController.subscribe);
 
 router.get(
   '/me',

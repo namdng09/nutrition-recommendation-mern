@@ -1,7 +1,7 @@
 import { ArrowLeft, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
+import { Pie, PieChart, ResponsiveContainer } from 'recharts';
 
 import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';

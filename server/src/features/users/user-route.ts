@@ -26,6 +26,7 @@ import {
   onboardingRequestSchema,
   rejectCertificateRequestSchema,
   updateAllergensSchema,
+  updateNutritionistProfileSchema,
   updateNutritionTargetSchema,
   updatePhysicalStatsSchema,
   updateProfileSchema,
@@ -127,6 +128,14 @@ router.put(
   asyncHandler(UserController.updateProfile)
 );
 
+router.put(
+  '/me/nutritionist-profile',
+  authenticate(),
+  parseFormData,
+  validate(updateNutritionistProfileSchema.shape),
+  asyncHandler(UserController.updateNutritionistProfile)
+);
+
 router.post(
   '/me/favorites/dishes',
   authenticate(),
@@ -216,6 +225,13 @@ router.post(
   asyncHandler(UserController.uploadCertificate)
 );
 
+router.put(
+  '/me/certificate/visibility',
+  authenticate(),
+  authorize([ROLE.NUTRITIONIST]),
+  asyncHandler(UserController.toggleCertificateVisibility)
+);
+
 router.get(
   '/pending-certificates/count',
   authenticate(),
@@ -260,6 +276,15 @@ router.put(
   parseFormData,
   validate(updateUserRequestSchema.shape),
   asyncHandler(UserController.updateUser)
+);
+
+router.put(
+  '/:id/nutritionist-profile',
+  authenticate(),
+  authorize([ROLE.ADMIN]),
+  parseFormData,
+  validate(updateNutritionistProfileSchema.shape),
+  asyncHandler(UserController.updateUserNutritionistProfile)
 );
 
 router.delete(

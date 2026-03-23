@@ -3,6 +3,8 @@ import {
   CheckCircle,
   Clock,
   ExternalLink,
+  Eye,
+  EyeOff,
   Upload,
   XCircle
 } from 'lucide-react';
@@ -30,7 +32,9 @@ import {
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
 import { Spinner } from '~/components/ui/spinner';
+import { Switch } from '~/components/ui/switch';
 import CERTIFICATE_STATUS from '~/constants/certificate-status';
+import { useToggleCertificateVisibility } from '~/features/users/manage-certificate/api/toggle-certificate-visibility';
 import { useUploadCertificate } from '~/features/users/manage-certificate/api/upload-certificate';
 import { useProfileForPage } from '~/features/users/view-profile/api/view-profile';
 
@@ -65,6 +69,7 @@ const CertificateStatus = () => {
   const status = certificate?.status;
   const config = statusConfig[status];
   const StatusIcon = config?.icon;
+  const showCertificate = certificate?.showCertificate ?? true;
 
   const form = useForm({
     resolver: yupResolver(reUploadSchema),
@@ -76,24 +81,42 @@ const CertificateStatus = () => {
 
   const watchedCert = form.watch('certificate');
 
-  const { mutate: uploadCertificate, isPending } = useUploadCertificate({
-    onSuccess: response => {
-      toast.success(response.message || 'Nộp chứng chỉ thành công');
-      form.reset({ certificateName: '', certificate: undefined });
-    },
-    onError: error => {
-      toast.error(
-        error.response?.data?.message ||
-          'Nộp chứng chỉ thất bại. Vui lòng thử lại.'
-      );
-    }
-  });
+  const { mutate: uploadCertificate, isPending: isUploading } =
+    useUploadCertificate({
+      onSuccess: response => {
+        toast.success(response.message || 'Nộp chứng chỉ thành công');
+        form.reset({ certificateName: '', certificate: undefined });
+      },
+      onError: error => {
+        toast.error(
+          error.response?.data?.message ||
+            'Nộp chứng chỉ thất bại. Vui lòng thử lại.'
+        );
+      }
+    });
+
+  const { mutate: toggleVisibility, isPending: isToggling } =
+    useToggleCertificateVisibility({
+      onSuccess: response => {
+        toast.success(response.message || 'Cập nhật hiển thị thành công');
+      },
+      onError: error => {
+        toast.error(
+          error.response?.data?.message ||
+            'Cập nhật hiển thị thất bại. Vui lòng thử lại.'
+        );
+      }
+    });
 
   const handleSubmit = data => {
     uploadCertificate({
       certificateName: data.certificateName,
       certificate: data.certificate[0]
     });
+  };
+
+  const handleToggleVisibility = () => {
+    toggleVisibility(!showCertificate);
   };
 
   if (!certificate) {
@@ -219,6 +242,34 @@ const CertificateStatus = () => {
               </Badge>
             )}
           </div>
+
+          {status === CERTIFICATE_STATUS.APPROVED && (
+            <div className='flex items-center justify-between rounded-lg border p-3'>
+              <div className='flex items-center gap-3'>
+                {showCertificate ? (
+                  <Eye className='h-4 w-4 text-green-600' />
+                ) : (
+                  <EyeOff className='h-4 w-4 text-muted-foreground' />
+                )}
+                <div>
+                  <p className='text-sm font-medium'>Hiển thị với người dùng</p>
+                  <p className='text-xs text-muted-foreground'>
+                    {showCertificate
+                      ? 'Chứng chỉ đang hiển thị trên hồ sơ của bạn'
+                      : 'Chứng chỉ bị ẩn khỏi hồ sơ công khai'}
+                  </p>
+                </div>
+              </div>
+              {isToggling ? (
+                <Spinner className='h-5 w-5' />
+              ) : (
+                <Switch
+                  checked={showCertificate}
+                  onCheckedChange={handleToggleVisibility}
+                />
+              )}
+            </div>
+          )}
 
           {certificate.url && (
             <a

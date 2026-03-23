@@ -37,7 +37,10 @@ export const signUpRequestSchema = z.object({
     .optional()
     .default(ROLE.USER),
   certificateName: z.string().optional(),
-  certificate: z.file().optional()
+  certificate: z.file().optional(),
+  workplace: z.string().optional(),
+  graduatedUniversity: z.string().optional(),
+  professionalBio: z.string().optional()
 });
 
 export type SignUpRequest = z.infer<typeof signUpRequestSchema>;

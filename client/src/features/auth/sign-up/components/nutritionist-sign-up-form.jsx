@@ -3,6 +3,8 @@ import { ArrowLeft } from 'lucide-react';
 import React, { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import {
+  HiOutlineAcademicCap,
+  HiOutlineBuildingOffice,
   HiOutlineCamera,
   HiOutlineDocument,
   HiOutlineEnvelope,
@@ -38,7 +40,10 @@ const NutritionistSignUpForm = ({ onSubmit, onBack, isLoading }) => {
       confirmPassword: '',
       avatar: undefined,
       certificateName: '',
-      certificate: undefined
+      certificate: undefined,
+      workplace: '',
+      graduatedUniversity: '',
+      professionalBio: ''
     }
   });
 
@@ -110,7 +115,7 @@ const NutritionistSignUpForm = ({ onSubmit, onBack, isLoading }) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel className='text-primary'>
-                Họ và tên <span className='text-red-500'>*</span>
+                Họ và tên <span className='text-destructive'>*</span>
               </FormLabel>
               <FormControl>
                 <div className='relative'>
@@ -134,7 +139,7 @@ const NutritionistSignUpForm = ({ onSubmit, onBack, isLoading }) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel className='text-primary'>
-                Email <span className='text-red-500'>*</span>
+                Email <span className='text-destructive'>*</span>
               </FormLabel>
               <FormControl>
                 <div className='relative'>
@@ -158,7 +163,7 @@ const NutritionistSignUpForm = ({ onSubmit, onBack, isLoading }) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel className='text-primary'>
-                Mật khẩu <span className='text-red-500'>*</span>
+                Mật khẩu <span className='text-destructive'>*</span>
               </FormLabel>
               <FormControl>
                 <div className='relative'>
@@ -183,7 +188,7 @@ const NutritionistSignUpForm = ({ onSubmit, onBack, isLoading }) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel className='text-primary'>
-                Nhập lại mật khẩu <span className='text-red-500'>*</span>
+                Nhập lại mật khẩu <span className='text-destructive'>*</span>
               </FormLabel>
               <FormControl>
                 <div className='relative'>
@@ -208,7 +213,7 @@ const NutritionistSignUpForm = ({ onSubmit, onBack, isLoading }) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel className='text-primary'>
-                Tên chứng chỉ <span className='text-red-500'>*</span>
+                Tên chứng chỉ <span className='text-destructive'>*</span>
               </FormLabel>
               <FormControl>
                 <div className='relative'>
@@ -232,7 +237,7 @@ const NutritionistSignUpForm = ({ onSubmit, onBack, isLoading }) => {
           render={({ field: { onChange, value, ...field } }) => (
             <FormItem>
               <FormLabel className='text-primary'>
-                Tệp chứng chỉ <span className='text-red-500'>*</span>
+                Tệp chứng chỉ <span className='text-destructive'>*</span>
               </FormLabel>
               <FormControl>
                 <div
@@ -260,6 +265,75 @@ const NutritionistSignUpForm = ({ onSubmit, onBack, isLoading }) => {
                 </div>
               </FormControl>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Workplace */}
+        <FormField
+          control={form.control}
+          name='workplace'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className='text-primary'>
+                Nơi làm việc <span className='text-destructive'>*</span>
+              </FormLabel>
+              <FormControl>
+                <div className='relative'>
+                  <HiOutlineBuildingOffice className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
+                  <Input
+                    placeholder='Ví dụ: Bệnh viện Chợ Rẫy'
+                    className='rounded-xl border-border pl-10 focus-visible:ring-ring/30'
+                    {...field}
+                  />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Graduated University */}
+        <FormField
+          control={form.control}
+          name='graduatedUniversity'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className='text-primary'>
+                Trường đại học <span className='text-destructive'>*</span>
+              </FormLabel>
+              <FormControl>
+                <div className='relative'>
+                  <HiOutlineAcademicCap className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
+                  <Input
+                    placeholder='Ví dụ: Đại học Y Dược TP.HCM'
+                    className='rounded-xl border-border pl-10 focus-visible:ring-ring/30'
+                    {...field}
+                  />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Professional Bio */}
+        <FormField
+          control={form.control}
+          name='professionalBio'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className='text-primary'>Mô tả chuyên môn</FormLabel>
+              <FormControl>
+                <textarea
+                  placeholder='Mô tả ngắn về chuyên môn và kinh nghiệm của bạn'
+                  className='flex min-h-[120px] w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus-visible:ring-ring/30 focus-visible:outline-none resize-none'
+                  rows={4}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+              <p className='text-xs text-muted-foreground'>Tối đa 500 ký tự</p>
             </FormItem>
           )}
         />
