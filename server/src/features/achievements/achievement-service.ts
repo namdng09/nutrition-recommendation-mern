@@ -1,14 +1,32 @@
 import { ACHIEVEMENTS } from '~/shared/constants/achievement';
 import { UserModel } from '~/shared/database/models/user-model';
 
+import { sendAchievementSseEvent } from './achievement-sse';
+
 export const AchievementService = {
   unlock: async (userId: string, achievementKey: string): Promise<void> => {
-    await UserModel.updateOne(
+    const result = await UserModel.updateOne(
       { _id: userId, 'achievements.key': { $ne: achievementKey } },
       {
         $push: { achievements: { key: achievementKey, unlockedAt: new Date() } }
       }
     );
+
+    if (result.modifiedCount === 0) return;
+
+    const achievementDefinition = Object.values(ACHIEVEMENTS).find(
+      achievement => achievement.key === achievementKey
+    );
+    if (!achievementDefinition) return;
+
+    sendAchievementSseEvent(userId, {
+      type: 'achievement_unlocked',
+      achievement: {
+        key: achievementDefinition.key,
+        name: achievementDefinition.name,
+        description: achievementDefinition.description
+      }
+    });
   },
 
   getAllDefinitions: () => {

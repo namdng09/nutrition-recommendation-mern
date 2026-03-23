@@ -8,6 +8,7 @@
   "main": "src/index.js",
   "scripts": {
     "build": "rimraf ./dist && tsc --project tsconfig.build.json && tsc-alias --dir dist",
+    "postbuild": "node copy-email-templates.js",
     "start": "node dist/index.js",
     "dev": "nodemon --watch src --watch .env --exec tsx src/index.ts",
     "test": "vitest",

@@ -378,5 +378,21 @@ export const UserController = {
     res
       .status(200)
       .json(ApiResponse.success('Từ chối chứng chỉ thành công', result));
+  },
+
+  toggleCertificateVisibility: async (req: Request, res: Response) => {
+    const userId = req.user?._id.toString();
+    const { showCertificate } = req.body;
+
+    const result = await UserService.toggleCertificateVisibility(
+      userId,
+      showCertificate
+    );
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Cập nhật hiển thị chứng chỉ thành công', result)
+      );
   }
 };
