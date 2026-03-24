@@ -21,7 +21,14 @@ export const initializeAuth = createAsyncThunk(
       const accessToken = getStoredAccessToken();
 
       if (!accessToken) {
-        return null;
+        try {
+          const { accessToken: newAccessToken } = await refreshAccessToken();
+          saveAccessToken(newAccessToken);
+          const newDecoded = jwtDecode(newAccessToken);
+          return { accessToken: newAccessToken, user: newDecoded };
+        } catch (refreshError) {
+          return null;
+        }
       }
 
       const decoded = jwtDecode(accessToken);
