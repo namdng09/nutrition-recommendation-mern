@@ -1,7 +1,7 @@
-import React from 'react';
+import Dashboard from '~/features/dashboard/nutritionist/components/dashboard';
 
-const Dashboard = () => {
-  return <div>nutri</div>;
+const Page = () => {
+  return <Dashboard />;
 };
 
-export default Dashboard;
+export default Page;

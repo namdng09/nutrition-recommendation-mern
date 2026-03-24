@@ -1,4 +1,6 @@
 export const QUERY_KEYS = {
+  ADMIN_DASHBOARD: ['admin-dashboard'],
+  NUTRITIONIST_DASHBOARD: ['nutritionist-dashboard'],
   PROFILE: ['profile'],
   USERS: ['users'],
   USER: id => ['user', id],

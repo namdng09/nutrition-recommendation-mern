@@ -320,6 +320,7 @@ const router = createBrowserRouter([
         ),
         // Component: AdminLayout,
         children: [
+          {},
           {
             path: '',
             Component: lazy(() => import('~/app/admin/page'))
