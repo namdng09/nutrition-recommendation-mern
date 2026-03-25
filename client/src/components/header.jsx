@@ -67,7 +67,7 @@ const Header = () => {
         </div>
 
         <div className='flex items-center gap-3'>
-          <div className='hidden sm:block border-r border-border h-6 pr-3'>
+          <div className='hidden sm:flex items-center border-r border-border pr-3'>
             <ModeToggle />
           </div>
           <div className='sm:hidden'>
