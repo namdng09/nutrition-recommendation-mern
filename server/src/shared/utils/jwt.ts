@@ -45,7 +45,7 @@ export const generateToken = (
 
 export const generateResetPasswordToken = (id: string): string => {
   return jwt.sign({ id }, JWT_RESET_PASSWORD_SECRET, {
-    expiresIn: '1h'
+    expiresIn: '15m'
   });
 };
 
