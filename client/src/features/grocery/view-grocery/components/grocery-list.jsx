@@ -11,9 +11,11 @@ const GroceryList = () => {
 
   return (
     <div className='space-y-8'>
-      <div className='grid gap-12 md:grid-cols-2'>
+      <div className='grid grid-cols-1 gap-8 md:grid-cols-2'>
         {lists.map(list => (
-          <GroceryReceipt key={list._id} list={list} />
+          <div key={list._id} className='min-w-0'>
+            <GroceryReceipt list={list} />
+          </div>
         ))}
       </div>
 

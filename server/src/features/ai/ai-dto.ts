@@ -34,6 +34,20 @@ export type RecommendDailyMealsRequest = z.infer<
   typeof recommendDailyMealsRequestSchema
 >;
 
+export const recommendDailyWorkoutRequestSchema = z.object({
+  date: z.coerce.date('Định dạng ngày không hợp lệ'),
+  maxExercises: z.coerce
+    .number()
+    .int('Số bài tập phải là số nguyên')
+    .min(1, 'Số bài tập phải lớn hơn hoặc bằng 1')
+    .max(12, 'Số bài tập phải nhỏ hơn hoặc bằng 12')
+    .optional()
+});
+
+export type RecommendDailyWorkoutRequest = z.infer<
+  typeof recommendDailyWorkoutRequestSchema
+>;
+
 const aiDishPickSchema = z
   .object({
     dishId: z.string().trim().min(1, 'dishId là bắt buộc'),
@@ -54,6 +68,14 @@ const aiMealPickSchema = z
   .strict();
 
 export const aiMealRecommendationSchema = z.array(aiMealPickSchema);
+
+const aiExercisePickSchema = z
+  .object({
+    exerciseId: z.string().trim().min(1, 'exerciseId là bắt buộc')
+  })
+  .strict();
+
+export const aiWorkoutRecommendationSchema = z.array(aiExercisePickSchema);
 
 type NutritionItemResponse = {
   label?: string | null;
@@ -79,5 +101,22 @@ export interface DailyMealRecommendationResponse {
       image?: string;
       nutrition: DishNutritionResponse;
     }>;
+  }>;
+}
+
+export interface DailyWorkoutRecommendationResponse {
+  scheduleId: string;
+  date: string;
+  dayOfWeek: string;
+  workout: Array<{
+    exerciseId: string;
+    exerciseName: string;
+    exerciseType: string;
+    exerciseTutorial: string;
+    logType: string;
+    distanceTarget?: { value: number; unit: string };
+    weightAndRepsTarget?: { weight?: number; reps: number; sets?: number };
+    durationTarget?: { seconds: number };
+    isCompleted: boolean;
   }>;
 }

@@ -36,14 +36,6 @@ const Feature = ({ icon, title, desc, colorClass }) => (
     <p className='text-muted-foreground text-sm sm:text-base mt-3 md:mt-4 leading-relaxed'>
       {desc}
     </p>
-
-    <div
-      className='mt-4 md:mt-6 flex items-center gap-2 text-primary font-bold text-xs sm:text-sm
-                    opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity'
-    >
-      <span>Khám phá thêm</span>
-      <div className='w-4 md:w-5 h-[1px] bg-primary' />
-    </div>
   </div>
 );
 

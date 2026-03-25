@@ -18,9 +18,13 @@ export const useUpdateDishStatus = ({ onSuccess } = {}) => {
   return useMutation({
     mutationFn: updateDishStatus,
 
-    onSuccess: res => {
+    onSuccess: (res, variables) => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.SCHEDULES
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.SCHEDULE(variables.scheduleId)
       });
 
       toast.success(res.message || 'Đã cập nhật trạng thái món ăn');

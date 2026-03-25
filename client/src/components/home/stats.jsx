@@ -5,31 +5,30 @@ import {
 } from 'react-icons/hi2';
 
 const Item = ({ icon, label, value, colorClass }) => (
-  <div
-    className='group bg-card border border-border rounded-3xl md:rounded-[2.5rem]
-                  p-5 sm:p-6 md:p-8
-                  transition-all duration-300
-                  md:hover:shadow-2xl md:hover:shadow-primary/5 md:hover:-translate-y-2'
-  >
-    <div className='flex flex-col items-center text-center gap-3 md:gap-4'>
+  <div className='group relative overflow-hidden rounded-[2rem] bg-card p-5 shadow-[0_10px_30px_rgba(0,0,0,0.05)] ring-1 ring-border/60 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] sm:p-6 md:rounded-[2.5rem] md:p-8'>
+    <div className='absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent' />
+
+    <div className='flex flex-col items-center gap-4 text-center md:gap-5'>
       <div
         className={`
-          w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16
-          rounded-xl md:rounded-2xl
-          flex items-center justify-center
-          text-xl sm:text-2xl md:text-3xl
+          flex h-14 w-14 items-center justify-center
+          rounded-2xl bg-muted/60 text-2xl
+          shadow-sm ring-1 ring-border/40
+          transition-transform duration-300 group-hover:scale-105
+          sm:h-16 sm:w-16 sm:text-3xl
+          md:h-[4.5rem] md:w-[4.5rem] md:text-[2rem]
           ${colorClass}
         `}
       >
         {icon}
       </div>
 
-      <div>
-        <div className='text-xl sm:text-2xl md:text-3xl font-black text-foreground tracking-tight'>
+      <div className='space-y-1.5'>
+        <div className='text-2xl font-black tracking-tight text-foreground sm:text-3xl md:text-[2rem]'>
           {value}
         </div>
 
-        <div className='text-[10px] sm:text-xs md:text-sm font-bold text-muted-foreground mt-1 uppercase tracking-widest'>
+        <div className='text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground sm:text-xs md:text-sm'>
           {label}
         </div>
       </div>
@@ -39,8 +38,10 @@ const Item = ({ icon, label, value, colorClass }) => (
 
 const Stats = () => {
   return (
-    <section className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12'>
-      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8'>
+    <section className='relative mx-auto max-w-6xl px-4 py-10 sm:px-6 md:py-14 lg:px-8'>
+      <div className='absolute inset-x-0 top-1/2 -z-10 mx-auto hidden h-40 max-w-5xl -translate-y-1/2 rounded-full bg-primary/5 blur-3xl md:block' />
+
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 md:gap-8'>
         <Item
           icon={<HiOutlineFire />}
           value='500+'

@@ -16,8 +16,15 @@ export const useClearMealDishes = ({ onSuccess } = {}) => {
 
   return useMutation({
     mutationFn: clearMealDishes,
-    onSuccess: data => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SCHEDULES });
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.SCHEDULES
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.SCHEDULE(variables.scheduleId)
+      });
+
       toast.success(data?.message || 'Xoá toàn bộ món ăn của bữa thành công');
       onSuccess?.();
     },

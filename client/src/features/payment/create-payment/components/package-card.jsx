@@ -1,6 +1,18 @@
 import { HiCheck, HiOutlineSparkles } from 'react-icons/hi2';
+import { useNavigate } from 'react-router';
 
 const PackageCard = ({ plan, onSelect, isLoading }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (plan.name?.toLowerCase() === 'cơ bản') {
+      navigate('/schedules/day');
+      return;
+    }
+
+    onSelect(plan);
+  };
+
   return (
     <div
       className={`
@@ -73,7 +85,7 @@ const PackageCard = ({ plan, onSelect, isLoading }) => {
 
       <button
         type='button'
-        onClick={() => onSelect(plan)}
+        onClick={handleClick}
         disabled={isLoading && plan.amount > 0}
         className={`
           w-full py-3 md:py-4

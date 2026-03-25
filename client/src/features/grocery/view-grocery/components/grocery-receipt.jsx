@@ -2,6 +2,8 @@ import React from 'react';
 import { HiOutlineCalendar } from 'react-icons/hi';
 import { IoReceiptOutline, IoSparklesOutline } from 'react-icons/io5';
 
+import { formatDateVI } from '~/lib/utils';
+
 import DeleteGroceryButton from '../../delete-grocery/components/delete-grocery-button';
 import AddIngredientButton from './add-ingredient-button';
 import GroceryIngredientsList from './grocery-ingredients-list';
@@ -39,7 +41,7 @@ const GroceryReceipt = ({ list }) => {
             <div className='flex items-center justify-center gap-4 text-l font-mono font-bold uppercase text-muted-foreground'>
               <span className='flex items-center gap-2'>
                 <HiOutlineCalendar className='text-primary text-lg' />
-                {new Date(date).toLocaleDateString('vi-VN')}
+                {formatDateVI(date, 'dd/MM/yyyy')}
               </span>
             </div>
           )}

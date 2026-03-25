@@ -4,90 +4,57 @@ import { Link } from 'react-router';
 
 const Footer = () => {
   return (
-    <footer className='relative z-20 w-full border-t border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
-      <div
-        className='
-        mx-auto
-        max-w-7xl
-        flex flex-col
-        gap-4
-        px-4 py-4
-        sm:flex-row sm:items-center sm:justify-between
-        sm:px-6
-        lg:px-8
-      '
-      >
-        <div
-          className='
-          flex flex-col items-center text-center
-          gap-2
-          sm:flex-row sm:items-center sm:text-left sm:gap-3
-        '
-        >
-          <Link to='/' className='flex items-center gap-2'>
-            <img
-              src='/logo2.png'
-              alt='Logo'
-              className='
-                h-12 w-12
-                sm:h-14 sm:w-14
-                object-contain
-              '
-            />
+    <footer className='relative z-20 mt-7 w-full bg-gradient-to-b from-transparent to-muted/20'>
+      <div className='mx-auto max-w-8xl px-4 pb-6 pt-4 sm:px-6 lg:px-8'>
+        <div className='overflow-hidden rounded-[28px] border border-border/50 bg-background/80 shadow-[0_12px_40px_-20px_rgba(0,0,0,0.18)] backdrop-blur supports-[backdrop-filter]:bg-background/70'>
+          <div className='flex flex-col gap-5 px-5 py-5 sm:px-6 sm:py-6 lg:flex-row lg:items-center lg:justify-between lg:px-8'>
+            <div className='flex flex-col items-center gap-3 text-center sm:flex-row sm:text-left'>
+              <Link
+                to='/'
+                className='group flex items-center gap-3 rounded-2xl px-1 py-1 transition'
+              >
+                <div className='flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 shadow-inner sm:h-16 sm:w-16'>
+                  <img
+                    src='/logo2.png'
+                    alt='Logo'
+                    className='h-20 w-20 object-contain sm:h-12 sm:w-12'
+                  />
+                </div>
 
-            <div className='leading-tight'>
-              <div className='text-sm sm:text-base font-bold text-primary'>
-                EatDee
-              </div>
-              <div className='text-xs sm:text-sm text-muted-foreground'>
-                Since 2025
+                <div className='leading-tight'>
+                  <div className='text-base font-black tracking-tight text-primary sm:text-lg'>
+                    EatDee
+                  </div>
+                  <div className='text-xs font-medium text-muted-foreground sm:text-sm'>
+                    Healthy living since 2026
+                  </div>
+                </div>
+              </Link>
+
+              <div className='hidden h-8 w-px bg-border/70 sm:block' />
+
+              <div className='space-y-0.5'>
+                <p className='text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground/60'>
+                  Nền tảng dinh dưỡng
+                </p>
+                <p className='text-sm font-medium text-muted-foreground'>
+                  © 2026 EatDee. All rights reserved.
+                </p>
               </div>
             </div>
-          </Link>
 
-          <span className='hidden sm:inline-block h-1.5 w-1.5 rounded-full bg-muted-foreground' />
-
-          <span
-            className='
-            text-xs sm:text-sm font-medium
-            text-muted-foreground
-          '
-          >
-            © 2026 EatDee
-          </span>
-        </div>
-
-        <div
-          className='
-          flex flex-col w-full
-          gap-2
-          sm:w-auto sm:flex-row sm:items-center
-        '
-        >
-          <Link
-            to='/'
-            className='
-              w-full sm:w-auto
-              text-center
-              inline-flex items-center justify-center gap-2
-              rounded-full
-              border border-border
-              bg-accent
-              px-4 py-2
-              text-sm font-medium
-              text-primary
-              shadow-sm
-              transition
-              hover:bg-accent/80
-            '
-          >
-            <FaHome className='h-4 w-4' />
-            Trang Chủ
-          </Link>
+            <div className='flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center'>
+              <Link
+                to='/'
+                className='inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-primary/30 sm:w-auto'
+              >
+                <FaHome className='h-4 w-4' />
+                Trang Chủ
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
-
-      <div className='pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent' />
     </footer>
   );
 };

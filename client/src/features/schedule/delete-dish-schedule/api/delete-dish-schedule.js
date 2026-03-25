@@ -16,8 +16,15 @@ export const useDeleteDishSchedule = ({ onSuccess } = {}) => {
 
   return useMutation({
     mutationFn: deleteDishSchedule,
-    onSuccess: data => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SCHEDULES });
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.SCHEDULES
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.SCHEDULE(variables.scheduleId)
+      });
+
       toast.success(data?.message || 'Xoá món ăn thành công');
       onSuccess?.();
     },

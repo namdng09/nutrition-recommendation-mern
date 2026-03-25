@@ -142,7 +142,7 @@ export const PostService = {
     if (!validateObjectId(id))
       throw createHttpError(400, 'ID bài viết không hợp lệ');
 
-    const post = await PostModel.findById(id, { likes: 1 });
+    const post = await PostModel.findById(id, { likes: 1, 'author._id': 1 });
     if (!post) throw createHttpError(404, 'Không tìm thấy bài viết');
 
     const alreadyLiked = post.likes.some(like => like.toString() === userId);
@@ -155,7 +155,7 @@ export const PostService = {
         : { $addToSet: { likes: userObjectId } }
     );
 
-    const authorId = post.author?._id.toString();
+    const authorId = post.author?._id?.toString();
     if (alreadyLiked) {
       eventBus.emit(EVENTS.POST_UNLIKED, {
         actorId: userId,

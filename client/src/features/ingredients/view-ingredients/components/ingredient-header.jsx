@@ -2,8 +2,8 @@ import React from 'react';
 
 export default function IngredientHeader({ item }) {
   return (
-    <div className='flex items-center gap-4 mb-5'>
-      <div className='relative h-20 w-20 overflow-hidden rounded-2xl bg-secondary/30'>
+    <div className='mb-6 flex items-center gap-4 rounded-[1.75rem] bg-card p-4 shadow-sm ring-1 ring-border/60 sm:gap-5 sm:p-5'>
+      <div className='relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-muted shadow-sm ring-1 ring-border/50'>
         <img
           src={item.image || '/placeholder.png'}
           alt={item.name}
@@ -11,21 +11,23 @@ export default function IngredientHeader({ item }) {
         />
       </div>
 
-      <div className='flex-1 space-y-1.5'>
-        <h3 className='text-lg font-bold'>{item.name}</h3>
+      <div className='min-w-0 flex-1 space-y-2'>
+        <h3 className='truncate text-xl font-black tracking-tight text-foreground sm:text-2xl'>
+          {item.name}
+        </h3>
 
-        <div className='flex items-center gap-2'>
+        <div className='flex flex-wrap items-center gap-2.5'>
           <span
-            className={`px-2 py-0.5 text-[10px] rounded-full ${
+            className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em] ${
               item.isActive
-                ? 'bg-emerald-50 text-emerald-600'
-                : 'bg-zinc-100 text-zinc-400'
+                ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400'
+                : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-500/10 dark:text-zinc-400'
             }`}
           >
             {item.isActive ? 'Đang hoạt động' : 'Vô hiệu hoá'}
           </span>
 
-          <span className='text-xs text-muted-foreground'>
+          <span className='inline-flex items-center rounded-full bg-muted px-3 py-1 text-xs font-bold text-muted-foreground'>
             {item.baseUnit?.amount}
             {item.baseUnit?.unit}
           </span>

@@ -2,7 +2,6 @@ export const EVENTS = {
   SCHEDULE_DISH_EATEN: 'schedule:dish_eaten',
   SCHEDULE_CREATED: 'schedule:created',
   DISH_CREATED: 'dish:created',
-  USER_LOGGED_IN: 'user:logged_in',
   POST_LIKED: 'post:liked',
   POST_UNLIKED: 'post:unliked',
   POST_COMMENTED: 'post:commented',
@@ -26,10 +25,6 @@ export type EventPayloads = {
   [EVENTS.DISH_CREATED]: {
     userId: string;
     dishId: string;
-  };
-  [EVENTS.USER_LOGGED_IN]: {
-    userId: string;
-    loginStreak: number;
   };
   [EVENTS.POST_LIKED]: {
     actorId: string;

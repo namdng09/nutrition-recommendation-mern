@@ -20,10 +20,47 @@ export const useUpdateScheduleMeals = ({ onSuccess } = {}) => {
 
   return useMutation({
     mutationFn: updateScheduleMeals,
-    onSuccess: res => {
+    onSuccess: (res, variables) => {
+      const updatedSchedule = res?.data;
+
+      if (updatedSchedule?._id) {
+        queryClient.setQueryData(
+          QUERY_KEYS.SCHEDULE(updatedSchedule._id),
+          updatedSchedule
+        );
+      }
+
+      queryClient.setQueriesData({ queryKey: QUERY_KEYS.SCHEDULES }, old => {
+        if (!old) return old;
+
+        if (Array.isArray(old)) {
+          return old.map(item =>
+            item?._id === variables.scheduleId
+              ? { ...item, ...updatedSchedule }
+              : item
+          );
+        }
+
+        const oldDocs = Array.isArray(old?.docs) ? old.docs : [];
+
+        return {
+          ...old,
+          docs: oldDocs.map(item =>
+            item?._id === variables.scheduleId
+              ? { ...item, ...updatedSchedule }
+              : item
+          )
+        };
+      });
+
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.SCHEDULES
       });
+
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.SCHEDULE(variables.scheduleId)
+      });
+
       toast.success(res.message || 'Cập nhật bữa ăn thành công');
       onSuccess?.(res.data);
     },
