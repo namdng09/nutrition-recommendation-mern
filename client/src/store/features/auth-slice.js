@@ -76,7 +76,8 @@ export const authSlice = createSlice({
     loading: true,
     error: null,
     sessionExpired: false,
-    initialized: false
+    initialized: false,
+    loggingOut: false
   },
   reducers: {
     loadUser: (state, action) => {
@@ -91,6 +92,7 @@ export const authSlice = createSlice({
         state.user = decoded;
         state.sessionExpired = false;
         state.initialized = true;
+        state.loggingOut = false;
         resetAuthQueue();
       } catch (error) {
         state.user = null;
@@ -99,6 +101,9 @@ export const authSlice = createSlice({
     clearSessionExpired: state => {
       state.sessionExpired = false;
       state.error = null;
+    },
+    setLoggingOut: state => {
+      state.loggingOut = true;
     }
   },
   extraReducers: builder => {
@@ -128,15 +133,12 @@ export const authSlice = createSlice({
         state.error = action.payload?.error?.message || 'Session expired';
         startLogout();
       })
-      .addCase(logout.pending, state => {
-        state.loading = true;
-      })
       .addCase(logout.fulfilled, state => {
         state.loading = false;
         state.user = null;
         state.error = null;
         state.sessionExpired = false;
-        state.initialized = false;
+        state.initialized = true;
         clearAuthTokens();
         startLogout();
       })
@@ -145,14 +147,15 @@ export const authSlice = createSlice({
         state.user = null;
         state.error = null;
         state.sessionExpired = false;
-        state.initialized = false;
+        state.initialized = true;
         clearAuthTokens();
         startLogout();
       });
   }
 });
 
-export const { loadUser, clearSessionExpired } = authSlice.actions;
+export const { loadUser, clearSessionExpired, setLoggingOut } =
+  authSlice.actions;
 
 export const setupSessionExpiredListener = dispatch => {
   const handleSessionExpiredEvent = event => {
