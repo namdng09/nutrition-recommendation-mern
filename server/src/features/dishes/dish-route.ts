@@ -16,7 +16,7 @@ const router = Router();
 router.post(
   '/',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
+  authorize([ROLE.NUTRITIONIST]),
   handleSingleImageUpload('image'),
   validate(createDishRequestSchema.shape),
   asyncHandler(DishController.createDish)
@@ -31,7 +31,7 @@ router.get(
 router.delete(
   '/',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST, ROLE.ADMIN]),
+  authorize([ROLE.NUTRITIONIST, ROLE.ADMIN]),
   validate(deleteBulkRequestSchema.shape),
   asyncHandler(DishController.deleteBulk)
 );
@@ -45,7 +45,7 @@ router.get(
 router.put(
   '/:id',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST, ROLE.ADMIN]),
+  authorize([ROLE.NUTRITIONIST, ROLE.ADMIN]),
   handleSingleImageUpload('image'),
   validate(updateDishRequestSchema.shape),
   asyncHandler(DishController.updateDish)
