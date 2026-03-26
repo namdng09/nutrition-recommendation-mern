@@ -371,12 +371,15 @@ export const AiService = {
       dishesById,
       candidatesByMealType
     });
-
-    return {
-      date: targetDate.toISOString(),
+    const scheduleMeals = toScheduleMealPayloads(meals, dishesById);
+    const schedule = await upsertScheduleMeals({
+      user,
+      date: targetDate,
       dayOfWeek,
-      meals
-    };
+      meals: scheduleMeals
+    });
+
+    return toAiRecommendedScheduleResponse(schedule.toObject());
   },
 
   recommendDailyWorkout: async (
@@ -444,49 +447,7 @@ export const AiService = {
       workout
     });
 
-    const scheduleObj = schedule.toObject();
-
-    const sanitizedWorkout: DailyWorkoutRecommendationResponse['workout'] = [];
-
-    (scheduleObj.workout ?? []).forEach(item => {
-      const exerciseId = item.exerciseId?.toString();
-      if (!exerciseId) return;
-
-      sanitizedWorkout.push({
-        exerciseId,
-        exerciseName: item.exerciseName,
-        exerciseType: item.exerciseType,
-        exerciseTutorial: item.exerciseTutorial ?? '',
-        logType: item.logType,
-        distanceTarget: item.distanceTarget
-          ? {
-              value: item.distanceTarget.value,
-              unit: item.distanceTarget.unit
-            }
-          : undefined,
-        weightAndRepsTarget: item.weightAndRepsTarget
-          ? {
-              reps: item.weightAndRepsTarget.reps,
-              sets: item.weightAndRepsTarget.sets,
-              weight:
-                typeof item.weightAndRepsTarget.weight === 'number'
-                  ? item.weightAndRepsTarget.weight
-                  : undefined
-            }
-          : undefined,
-        durationTarget: item.durationTarget
-          ? { seconds: item.durationTarget.seconds }
-          : undefined,
-        isCompleted: item.isCompleted ?? false
-      });
-    });
-
-    return {
-      scheduleId: scheduleObj._id.toString(),
-      date: scheduleObj.date.toISOString(),
-      dayOfWeek: scheduleObj.dayOfWeek,
-      workout: sanitizedWorkout
-    };
+    return toAiRecommendedScheduleResponse(schedule.toObject());
   }
 };
 
@@ -1750,6 +1711,72 @@ const toDishResponse = (dish: DishCandidate, servings: number) => ({
   nutrition: normalizeNutrition(dish.nutrition)
 });
 
+const toScheduleMealPayloads = (
+  meals: ReturnType<typeof materializeMeals>,
+  dishesById: Map<string, DishCandidate>
+) =>
+  meals.map(meal => ({
+    mealType: meal.mealType,
+    dishes: meal.dishes.map(dish => {
+      const dishCandidate = dishesById.get(dish.dishId);
+      const energy = calculateDishCalories(dishCandidate);
+
+      return {
+        dishId: dish.dishId,
+        name: dish.name,
+        energy: energy || undefined,
+        servings: dish.servings,
+        image: dish.image,
+        isEaten: false
+      };
+    })
+  }));
+
+const upsertScheduleMeals = async ({
+  user,
+  date,
+  dayOfWeek,
+  meals
+}: {
+  user: UserProfileForRecommendation;
+  date: Date;
+  dayOfWeek: string;
+  meals: Array<{
+    mealType: string;
+    dishes: Array<{
+      dishId: string;
+      name: string;
+      energy?: number;
+      servings: number;
+      image?: string;
+      isEaten: boolean;
+    }>;
+  }>;
+}) => {
+  const existing = await ScheduleModel.findOne({
+    'user._id': user._id,
+    date
+  });
+
+  if (existing) {
+    existing.dayOfWeek = dayOfWeek as any;
+    existing.meals = meals as any;
+    await existing.save();
+    return existing;
+  }
+
+  return ScheduleModel.create({
+    user: {
+      _id: user._id,
+      name: user.name
+    },
+    date,
+    dayOfWeek,
+    meals,
+    workout: []
+  });
+};
+
 const upsertScheduleWorkout = async ({
   user,
   date,
@@ -1801,6 +1828,95 @@ const upsertScheduleWorkout = async ({
     meals,
     workout
   });
+};
+
+const toIsoString = (value: unknown): string | undefined => {
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === 'string') {
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) return parsed.toISOString();
+  }
+  return undefined;
+};
+
+const toAiRecommendedScheduleResponse = (
+  scheduleObj: any
+): DailyMealRecommendationResponse => {
+  const sanitizedMeals: DailyMealRecommendationResponse['meals'] = [];
+  (scheduleObj.meals ?? []).forEach((meal: any) => {
+    const dishes: DailyMealRecommendationResponse['meals'][number]['dishes'] =
+      [];
+    (meal.dishes ?? []).forEach((dish: any) => {
+      const dishId = dish.dishId?.toString();
+      if (!dishId) return;
+
+      dishes.push({
+        dishId,
+        name: dish.name,
+        energy: typeof dish.energy === 'number' ? dish.energy : undefined,
+        servings: typeof dish.servings === 'number' ? dish.servings : 1,
+        image: dish.image ?? undefined,
+        isEaten: dish.isEaten ?? false
+      });
+    });
+
+    sanitizedMeals.push({
+      mealType: meal.mealType,
+      notes: meal.notes ?? undefined,
+      dishes
+    });
+  });
+
+  const sanitizedWorkout: DailyMealRecommendationResponse['workout'] = [];
+  (scheduleObj.workout ?? []).forEach((item: any) => {
+    const exerciseId = item.exerciseId?.toString();
+    if (!exerciseId) return;
+
+    sanitizedWorkout.push({
+      exerciseId,
+      exerciseName: item.exerciseName,
+      exerciseType: item.exerciseType,
+      exerciseTutorial: item.exerciseTutorial ?? '',
+      logType: item.logType,
+      distanceTarget: item.distanceTarget
+        ? {
+            value: item.distanceTarget.value,
+            unit: item.distanceTarget.unit
+          }
+        : undefined,
+      weightAndRepsTarget: item.weightAndRepsTarget
+        ? {
+            reps: item.weightAndRepsTarget.reps,
+            sets: item.weightAndRepsTarget.sets,
+            weight:
+              typeof item.weightAndRepsTarget.weight === 'number'
+                ? item.weightAndRepsTarget.weight
+                : undefined
+          }
+        : undefined,
+      durationTarget: item.durationTarget
+        ? { seconds: item.durationTarget.seconds }
+        : undefined,
+      isCompleted: item.isCompleted ?? false
+    });
+  });
+
+  const dateIso = toIsoString(scheduleObj.date) ?? new Date().toISOString();
+
+  return {
+    scheduleId: scheduleObj._id.toString(),
+    date: dateIso,
+    dayOfWeek: scheduleObj.dayOfWeek ?? getDayOfWeek(new Date(dateIso)),
+    user: {
+      _id: scheduleObj.user?._id?.toString() ?? '',
+      name: scheduleObj.user?.name ?? ''
+    },
+    meals: sanitizedMeals,
+    workout: sanitizedWorkout,
+    notes: scheduleObj.notes ?? undefined,
+    createdAt: toIsoString(scheduleObj.createdAt),
+    updatedAt: toIsoString(scheduleObj.updatedAt)
+  };
 };
 
 const normalizeContent = (content: unknown): string => {

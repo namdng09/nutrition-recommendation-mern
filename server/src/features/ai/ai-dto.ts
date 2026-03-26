@@ -77,37 +77,26 @@ const aiExercisePickSchema = z
 
 export const aiWorkoutRecommendationSchema = z.array(aiExercisePickSchema);
 
-type NutritionItemResponse = {
-  label?: string | null;
-  unit?: string | null;
-  value?: number | null;
-};
-
-type DishNutritionResponse = {
-  nutrients?: NutritionItemResponse[] | null;
-  minerals?: NutritionItemResponse[] | null;
-  vitamins?: NutritionItemResponse[] | null;
-} | null;
-
-export interface DailyMealRecommendationResponse {
-  date: string;
-  dayOfWeek: string;
-  meals: Array<{
-    mealType: string;
-    dishes: Array<{
-      dishId: string;
-      name: string;
-      servings: number;
-      image?: string;
-      nutrition: DishNutritionResponse;
-    }>;
-  }>;
-}
-
-export interface DailyWorkoutRecommendationResponse {
+export interface AiRecommendedScheduleResponse {
   scheduleId: string;
   date: string;
   dayOfWeek: string;
+  user: {
+    _id: string;
+    name: string;
+  };
+  meals: Array<{
+    mealType: string;
+    notes?: string;
+    dishes: Array<{
+      dishId: string;
+      name: string;
+      energy?: number;
+      servings: number;
+      image?: string;
+      isEaten: boolean;
+    }>;
+  }>;
   workout: Array<{
     exerciseId: string;
     exerciseName: string;
@@ -119,4 +108,11 @@ export interface DailyWorkoutRecommendationResponse {
     durationTarget?: { seconds: number };
     isCompleted: boolean;
   }>;
+  notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
+
+export type DailyMealRecommendationResponse = AiRecommendedScheduleResponse;
+
+export type DailyWorkoutRecommendationResponse = AiRecommendedScheduleResponse;
