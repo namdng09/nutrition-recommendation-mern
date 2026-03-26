@@ -5,7 +5,8 @@ import {
   Home,
   Package,
   StickyNote,
-  Users
+  Users,
+  Wallet
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router';
 
@@ -52,6 +53,16 @@ export function AdminSidebar({ ...props }) {
           title: 'Người dùng',
           url: '/admin/manage-users',
           icon: Users
+        }
+      ]
+    },
+    {
+      title: 'Quản lý thanh toán',
+      items: [
+        {
+          title: 'Thanh toán',
+          url: '/admin/manage-payments',
+          icon: Wallet
         }
       ]
     },

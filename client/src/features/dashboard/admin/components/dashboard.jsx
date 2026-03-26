@@ -298,6 +298,51 @@ const Dashboard = () => {
 
   return (
     <div className='space-y-6'>
+      <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-4'>
+        {metricCards.map(item => {
+          const tone = getCardTone(item.tone);
+          const Icon = item.icon;
+
+          return (
+            <Card
+              key={item.title}
+              className={`border transition-transform duration-200 hover:-translate-y-0.5 ${tone.wrapper}`}
+            >
+              <CardContent className='pt-6'>
+                <div className='flex items-start justify-between gap-3'>
+                  <div className='space-y-1'>
+                    <p className='text-sm font-medium text-foreground/80'>
+                      {item.title}
+                    </p>
+                    <p className={`text-2xl font-semibold ${tone.value}`}>
+                      {item.value}
+                    </p>
+                  </div>
+                  <div
+                    className={`flex size-10 items-center justify-center rounded-xl ${tone.icon}`}
+                  >
+                    <Icon className='size-5' />
+                  </div>
+                </div>
+                <p className='mt-3 text-xs text-muted-foreground'>
+                  {item.description}
+                </p>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      <div className='flex flex-wrap items-center gap-2'>
+        <span className='text-sm text-muted-foreground'>Kỳ đang xem:</span>
+        <Badge variant='secondary'>
+          {getRangeLabel(dashboardData?.period)}
+        </Badge>
+        <Badge variant='outline'>
+          {formatNumber(statusBreakdown.length)} trạng thái thanh toán
+        </Badge>
+      </div>
+
       <Card className='relative overflow-hidden via-background'>
         <div className='pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-primary/15 blur-2xl' />
         <div className='pointer-events-none absolute -left-10 -bottom-10 size-40 rounded-full bg-cyan-500/15 blur-2xl' />
@@ -308,6 +353,7 @@ const Dashboard = () => {
                 <CalendarDays className='size-3.5 text-primary' />
                 Báo cáo: {getRangeLabel(dashboardData?.period)}
               </div>
+
               {showCustomRangeHint && (
                 <p className='text-xs text-muted-foreground'>
                   Đang hiển thị dữ liệu gần nhất. Chọn đủ ngày bắt đầu và kết
@@ -362,51 +408,6 @@ const Dashboard = () => {
           </div>
         </CardContent>
       </Card>
-
-      <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-4'>
-        {metricCards.map(item => {
-          const tone = getCardTone(item.tone);
-          const Icon = item.icon;
-
-          return (
-            <Card
-              key={item.title}
-              className={`border transition-transform duration-200 hover:-translate-y-0.5 ${tone.wrapper}`}
-            >
-              <CardContent className='pt-6'>
-                <div className='flex items-start justify-between gap-3'>
-                  <div className='space-y-1'>
-                    <p className='text-sm font-medium text-foreground/80'>
-                      {item.title}
-                    </p>
-                    <p className={`text-2xl font-semibold ${tone.value}`}>
-                      {item.value}
-                    </p>
-                  </div>
-                  <div
-                    className={`flex size-10 items-center justify-center rounded-xl ${tone.icon}`}
-                  >
-                    <Icon className='size-5' />
-                  </div>
-                </div>
-                <p className='mt-3 text-xs text-muted-foreground'>
-                  {item.description}
-                </p>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      <div className='flex flex-wrap items-center gap-2'>
-        <span className='text-sm text-muted-foreground'>Kỳ đang xem:</span>
-        <Badge variant='secondary'>
-          {getRangeLabel(dashboardData?.period)}
-        </Badge>
-        <Badge variant='outline'>
-          {formatNumber(statusBreakdown.length)} trạng thái thanh toán
-        </Badge>
-      </div>
 
       <Card>
         <CardHeader>

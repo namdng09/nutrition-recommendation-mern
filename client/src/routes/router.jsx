@@ -397,6 +397,16 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/admin/manage-posts/[id]/page'))
           },
 
+          //admin manage payments
+          {
+            path: 'manage-payments/',
+            Component: lazy(() => import('~/app/admin/manage-payments/page'))
+          },
+          {
+            path: 'payments/',
+            Component: lazy(() => import('~/app/admin/payments/page'))
+          },
+
           //admin manage exercises
           {
             path: 'manage-exercises/',
