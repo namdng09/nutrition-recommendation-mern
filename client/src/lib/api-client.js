@@ -80,8 +80,7 @@ apiClient.interceptors.response.use(
     const alreadyRetried = originalRequest._retry;
     const isPublic = isPublicEndpoint(originalRequest.url);
 
-    // If we're logging out or no token, don't try to refresh - just reject
-    if (isLoggingOut || !getStoredAccessToken()) {
+    if (isLoggingOut) {
       return Promise.reject(error);
     }
 

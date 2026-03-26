@@ -105,18 +105,21 @@ export interface DailyMealRecommendationResponse {
 }
 
 export interface DailyWorkoutRecommendationResponse {
-  scheduleId: string;
-  date: string;
-  dayOfWeek: string;
-  workout: Array<{
-    exerciseId: string;
-    exerciseName: string;
-    exerciseType: string;
-    exerciseTutorial: string;
-    logType: string;
-    distanceTarget?: { value: number; unit: string };
-    weightAndRepsTarget?: { weight?: number; reps: number; sets?: number };
-    durationTarget?: { seconds: number };
-    isCompleted: boolean;
-  }>;
+  schedule: {
+    _id?: string;
+    date?: string;
+    dayOfWeek?: string;
+    user?: any;
+    workout: Array<{
+      exerciseId: string;
+      exerciseName: string;
+      exerciseType: string;
+      exerciseTutorial: string;
+      logType: string;
+      distanceTarget?: { value: number; unit: string };
+      weightAndRepsTarget?: { weight?: number; reps: number; sets?: number };
+      durationTarget?: { seconds: number };
+      isCompleted: boolean;
+    }>;
+  };
 }

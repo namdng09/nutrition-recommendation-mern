@@ -419,6 +419,14 @@ export const AiService = {
       schedule: {
         ...scheduleObj,
         _id: scheduleObj._id?.toString(),
+        date:
+          scheduleObj.date instanceof Date
+            ? scheduleObj.date.toISOString()
+            : scheduleObj.date,
+        dayOfWeek:
+          typeof scheduleObj.dayOfWeek === 'string'
+            ? scheduleObj.dayOfWeek
+            : String(scheduleObj.dayOfWeek),
         user: scheduleObj.user
           ? { ...scheduleObj.user, _id: scheduleObj.user._id?.toString() }
           : scheduleObj.user,
