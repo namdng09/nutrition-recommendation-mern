@@ -362,8 +362,6 @@ export const AiService = {
       retrievalSummary
     });
 
-    console.log('day la prompt', prompt);
-
     const aiText = await invokeAi(prompt);
     const aiSelection = parseAiSelection(aiText);
 
@@ -448,43 +446,46 @@ export const AiService = {
 
     const scheduleObj = schedule.toObject();
 
-    const sanitizedWorkout = (scheduleObj.workout ?? []).map(item => ({
-      exerciseId: item.exerciseId?.toString(),
-      exerciseName: item.exerciseName,
-      exerciseType: item.exerciseType,
-      exerciseTutorial: item.exerciseTutorial ?? '',
-      logType: item.logType,
-      distanceTarget: item.distanceTarget
-        ? {
-            value: item.distanceTarget.value,
-            unit: item.distanceTarget.unit
-          }
-        : undefined,
-      weightAndRepsTarget: item.weightAndRepsTarget
-        ? {
-            reps: item.weightAndRepsTarget.reps,
-            sets: item.weightAndRepsTarget.sets,
-            weight:
-              typeof item.weightAndRepsTarget.weight === 'number'
-                ? item.weightAndRepsTarget.weight
-                : undefined
-          }
-        : undefined,
-      durationTarget: item.durationTarget
-        ? { seconds: item.durationTarget.seconds }
-        : undefined,
-      isCompleted: item.isCompleted ?? false
-    }));
+    const sanitizedWorkout: DailyWorkoutRecommendationResponse['workout'] = [];
+
+    (scheduleObj.workout ?? []).forEach(item => {
+      const exerciseId = item.exerciseId?.toString();
+      if (!exerciseId) return;
+
+      sanitizedWorkout.push({
+        exerciseId,
+        exerciseName: item.exerciseName,
+        exerciseType: item.exerciseType,
+        exerciseTutorial: item.exerciseTutorial ?? '',
+        logType: item.logType,
+        distanceTarget: item.distanceTarget
+          ? {
+              value: item.distanceTarget.value,
+              unit: item.distanceTarget.unit
+            }
+          : undefined,
+        weightAndRepsTarget: item.weightAndRepsTarget
+          ? {
+              reps: item.weightAndRepsTarget.reps,
+              sets: item.weightAndRepsTarget.sets,
+              weight:
+                typeof item.weightAndRepsTarget.weight === 'number'
+                  ? item.weightAndRepsTarget.weight
+                  : undefined
+            }
+          : undefined,
+        durationTarget: item.durationTarget
+          ? { seconds: item.durationTarget.seconds }
+          : undefined,
+        isCompleted: item.isCompleted ?? false
+      });
+    });
 
     return {
-      schedule: {
-        ...scheduleObj,
-        _id: scheduleObj._id?.toString(),
-        user: scheduleObj.user
-          ? { ...scheduleObj.user, _id: scheduleObj.user._id?.toString() }
-          : scheduleObj.user,
-        workout: sanitizedWorkout
-      }
+      scheduleId: scheduleObj._id.toString(),
+      date: scheduleObj.date.toISOString(),
+      dayOfWeek: scheduleObj.dayOfWeek,
+      workout: sanitizedWorkout
     };
   }
 };

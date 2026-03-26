@@ -182,6 +182,10 @@ export const DishService = {
     if (image) await replaceDishImage(updatedDish, image);
 
     await cascadeDishSnapshot(updatedDish);
+    eventBus.emit(EVENTS.DISH_UPDATED, {
+      userId,
+      dishId: updatedDish._id.toString()
+    });
 
     return updatedDish;
   },
@@ -205,6 +209,10 @@ export const DishService = {
 
     if (dish.image) await deleteImage(dish._id.toString());
     await dish.deleteOne();
+    eventBus.emit(EVENTS.DISH_DELETED, {
+      userId,
+      dishId: dish._id.toString()
+    });
 
     return dish;
   },
@@ -234,6 +242,12 @@ export const DishService = {
     );
 
     const result = await DishModel.deleteMany({ _id: { $in: ids } });
+    dishes.forEach(dish => {
+      eventBus.emit(EVENTS.DISH_DELETED, {
+        userId,
+        dishId: dish._id.toString()
+      });
+    });
 
     return result;
   }

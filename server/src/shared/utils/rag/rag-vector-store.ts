@@ -45,7 +45,7 @@ export const createRagVectorStore = () => {
   const collection = asLangChainCompatibleCollection(ensureRagCollection());
 
   return new MongoDBAtlasVectorSearch(ragEmbeddings, {
-    collection,
+    collection: collection as any,
     indexName: ragConfig.vectorIndexName,
     textKey: ragConfig.textKey,
     embeddingKey: ragConfig.embeddingKey
