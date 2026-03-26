@@ -1,6 +1,7 @@
 import createHttpError from 'http-errors';
 
 import { agent, agentConfig } from '~/shared/config/ai-agent';
+import { ragConfig } from '~/shared/config/rag';
 import { DAY_OF_WEEK } from '~/shared/constants/day-of-week';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
 import { EXERCISE_DIFFICULTY } from '~/shared/constants/exercise-difficulty';
@@ -19,6 +20,7 @@ import {
   ScheduleModel,
   UserModel
 } from '~/shared/database/models';
+import { createRagVectorStore } from '~/shared/utils';
 
 import type {
   AskAgentRequest,
@@ -145,6 +147,46 @@ type MealContextSummary = {
   }>;
 };
 
+type DishRetrievalMode = 'direct_mongodb' | 'rag_vector_search';
+
+type DishRetrievalResult = {
+  dishes: DishCandidate[];
+  mode: DishRetrievalMode;
+  ragMatchedDishIds?: number;
+};
+
+type RecentMealDishContext = {
+  lookbackDays: number;
+  dishCounts: Map<string, number>;
+  recentDishNames: string[];
+  distinctDishCount: number;
+  totalDishPicks: number;
+};
+
+type MealRankingContext = {
+  targetDate: Date;
+  recentDishCounts: Map<string, number>;
+};
+
+type RagDishDocument = {
+  metadata?: {
+    sourceType?: string;
+    sourceId?: string;
+    metadata?: {
+      sourceType?: string;
+      sourceId?: string;
+    };
+  };
+};
+
+type RagDishVectorStore = {
+  similaritySearch: (
+    query: string,
+    k: number,
+    filter?: Record<string, unknown>
+  ) => Promise<RagDishDocument[]>;
+};
+
 const DEFAULT_MEAL_TYPE_ORDER = [
   MEAL_TYPE.BREAKFAST,
   MEAL_TYPE.LUNCH,
@@ -228,6 +270,8 @@ const RECOVERY_TYPES = new Set<string>([
   EXERCISE_TYPE.YOGA
 ]);
 
+const MEAL_HISTORY_LOOKBACK_DAYS = 7;
+
 const dayOfWeekByIndex: Record<number, string> = {
   0: DAY_OF_WEEK.SUNDAY,
   1: DAY_OF_WEEK.MONDAY,
@@ -265,7 +309,16 @@ export const AiService = {
     const targetDate = payload.date;
     const dayOfWeek = getDayOfWeek(targetDate);
     const mealSlots = buildMealSlots(user.mealSettings);
-    const candidateDishes = await getCandidateDishes(user);
+    const recentMealContext = await getRecentMealDishContext(
+      userId,
+      targetDate,
+      MEAL_HISTORY_LOOKBACK_DAYS
+    );
+    const dishRetrieval = await getCandidateDishes(user, mealSlots);
+    const candidateDishes = dishRetrieval.dishes;
+    console.log(
+      `[RAG] Meal retrieval mode=${dishRetrieval.mode}, ragMatchedDishIds=${dishRetrieval.ragMatchedDishIds ?? 'N/A'}, candidateDishesAfterHardFilters=${candidateDishes.length}, recentDistinctDishes(${recentMealContext.lookbackDays}d)=${recentMealContext.distinctDishCount}`
+    );
 
     if (!candidateDishes.length) {
       throw createHttpError(
@@ -279,7 +332,10 @@ export const AiService = {
     mealSlots.forEach(slot => {
       candidatesByMealType.set(
         slot.mealType,
-        pickCandidatesForMeal(slot, candidateDishes, user)
+        pickCandidatesForMeal(slot, candidateDishes, user, {
+          targetDate,
+          recentDishCounts: recentMealContext.dishCounts
+        })
       );
     });
 
@@ -293,7 +349,10 @@ export const AiService = {
     const retrievalSummary = buildRetrievalSummary(
       candidateDishes.length,
       mealSlots,
-      candidatesByMealType
+      candidatesByMealType,
+      dishRetrieval.mode,
+      dishRetrieval.ragMatchedDishIds,
+      recentMealContext
     );
     const prompt = mealRecommendationPrompt(inputForPrompt, {
       dateISO: targetDate.toISOString(),
@@ -302,6 +361,8 @@ export const AiService = {
       dishCatalog,
       retrievalSummary
     });
+
+    console.log('day la prompt', prompt);
 
     const aiText = await invokeAi(prompt);
     const aiSelection = parseAiSelection(aiText);
@@ -536,39 +597,32 @@ const toGoal = (
   };
 };
 
-const getCandidateDishes = async (
+const mapDishCandidate = (dish: any): DishCandidate => ({
+  _id: dish._id.toString(),
+  name: dish.name,
+  image: dish.image ?? undefined,
+  servings: dish.servings ?? 1,
+  nutrition: dish.nutrition ?? null,
+  categories: [...(dish.categories ?? [])],
+  nutritionFocus: [...(dish.nutritionFocus ?? [])],
+  tags: [...(dish.tags ?? [])],
+  preparationTime: dish.preparationTime ?? undefined,
+  cookTime: dish.cookTime ?? undefined,
+  ingredients: (dish.ingredients ?? []).map((ingredient: any) => ({
+    ingredientId: ingredient.ingredientId?.toString(),
+    allergens: [...(ingredient.allergens ?? [])]
+  }))
+});
+
+const applyDishHardFilters = (
+  dishes: DishCandidate[],
   user: UserProfileForRecommendation
-): Promise<DishCandidate[]> => {
+) => {
   const blockedDishSet = new Set(user.blockDishes);
   const blockedIngredientSet = new Set(user.blockIngredients);
   const allergenSet = new Set(user.allergens);
 
-  const dishes = await DishModel.find({
-    isActive: true,
-    isPublic: true
-  })
-    .select(
-      'name image servings nutrition categories nutritionFocus tags preparationTime cookTime ingredients'
-    )
-    .lean();
-
   return dishes
-    .map(dish => ({
-      _id: dish._id.toString(),
-      name: dish.name,
-      image: dish.image ?? undefined,
-      servings: dish.servings ?? 1,
-      nutrition: dish.nutrition ?? null,
-      categories: [...(dish.categories ?? [])],
-      nutritionFocus: [...(dish.nutritionFocus ?? [])],
-      tags: [...(dish.tags ?? [])],
-      preparationTime: dish.preparationTime ?? undefined,
-      cookTime: dish.cookTime ?? undefined,
-      ingredients: (dish.ingredients ?? []).map(ingredient => ({
-        ingredientId: ingredient.ingredientId?.toString(),
-        allergens: [...(ingredient.allergens ?? [])]
-      }))
-    }))
     .filter(dish => !blockedDishSet.has(dish._id))
     .filter(
       dish =>
@@ -584,6 +638,187 @@ const getCandidateDishes = async (
           ingredient.allergens.some(allergen => allergenSet.has(allergen))
         )
     );
+};
+
+const orderDishesByRagPriority = (
+  dishes: DishCandidate[],
+  ragDishIds: string[]
+) => {
+  if (!ragDishIds.length) return dishes;
+  const rank = new Map(ragDishIds.map((id, index) => [id, index]));
+  return [...dishes].sort(
+    (left, right) =>
+      (rank.get(left._id) ?? Number.MAX_SAFE_INTEGER) -
+      (rank.get(right._id) ?? Number.MAX_SAFE_INTEGER)
+  );
+};
+
+const getCandidateDishesFromMongo = async (
+  user: UserProfileForRecommendation,
+  preferredDishIds?: string[]
+): Promise<DishCandidate[]> => {
+  const query: Record<string, unknown> = {
+    isActive: true,
+    isPublic: true
+  };
+
+  if (preferredDishIds?.length) {
+    query._id = { $in: preferredDishIds };
+  }
+
+  const dishes = await DishModel.find(query)
+    .select(
+      'name image servings nutrition categories nutritionFocus tags preparationTime cookTime ingredients'
+    )
+    .lean();
+
+  const mapped = dishes.map(mapDishCandidate);
+  const filtered = applyDishHardFilters(mapped, user);
+
+  return preferredDishIds?.length
+    ? orderDishesByRagPriority(filtered, preferredDishIds)
+    : filtered;
+};
+
+const toDishRagGoalHints = (target?: string) => {
+  if (target === USER_TARGET.BUILD_MUSCLE) {
+    return [NUTRITION_FOCUS.HIGH_PROTEIN];
+  }
+  if (target === USER_TARGET.LOSE_FAT) {
+    return [NUTRITION_FOCUS.LOW_FAT, NUTRITION_FOCUS.LOW_CARB];
+  }
+  return [];
+};
+
+const buildDishRagQuery = (
+  user: UserProfileForRecommendation,
+  slot: MealSlot
+) => {
+  const categoryHints = slot.dishCategories.length
+    ? slot.dishCategories
+    : (MEAL_TYPE_CATEGORY_HINTS[slot.mealType] ?? []);
+  const goalHints = toDishRagGoalHints(user.goal?.target);
+
+  return [
+    `Meal type: ${slot.mealType}`,
+    `Preferred categories: ${
+      categoryHints.length ? categoryHints.join(', ') : 'N/A'
+    }`,
+    `Preferred types: ${
+      slot.preferredTypes.length ? slot.preferredTypes.join(', ') : 'N/A'
+    }`,
+    `Goal: ${user.goal?.target ?? 'N/A'}`,
+    `Diet: ${user.diet ?? 'N/A'}`,
+    `Nutrition hints: ${goalHints.length ? goalHints.join(', ') : 'N/A'}`,
+    `Available time: ${slot.availableTime ?? 'N/A'}`,
+    `Cooking preference: ${slot.cookingPreference ?? 'N/A'}`,
+    `Complexity: ${slot.complexity ?? 'N/A'}`,
+    `Allergens to avoid: ${
+      user.allergens.length ? user.allergens.join(', ') : 'N/A'
+    }`
+  ].join('\n');
+};
+
+const extractDishSourceId = (document: RagDishDocument) => {
+  const metadata = document.metadata;
+  if (
+    metadata?.sourceType === 'dish' &&
+    typeof metadata.sourceId === 'string'
+  ) {
+    return metadata.sourceId;
+  }
+
+  if (
+    metadata?.metadata?.sourceType === 'dish' &&
+    typeof metadata.metadata.sourceId === 'string'
+  ) {
+    return metadata.metadata.sourceId;
+  }
+
+  return undefined;
+};
+
+const findDishIdsByRag = async (
+  user: UserProfileForRecommendation,
+  mealSlots: MealSlot[]
+) => {
+  if (!mealSlots.length) return [];
+
+  const vectorStore = createRagVectorStore() as RagDishVectorStore;
+  const filter = {
+    'metadata.sourceType': 'dish',
+    'metadata.isPublic': true
+  };
+  const perSlotTopK = Math.max(25, Math.min(80, ragConfig.defaultTopK * 8));
+  const seen = new Set<string>();
+  const rankedDishIds: string[] = [];
+
+  for (const slot of mealSlots) {
+    const query = buildDishRagQuery(user, slot);
+    const docs = await vectorStore.similaritySearch(query, perSlotTopK, filter);
+
+    docs.forEach(doc => {
+      const sourceId = extractDishSourceId(doc);
+      if (sourceId && !seen.has(sourceId)) {
+        seen.add(sourceId);
+        rankedDishIds.push(sourceId);
+      }
+    });
+  }
+
+  return rankedDishIds;
+};
+
+const getCandidateDishes = async (
+  user: UserProfileForRecommendation,
+  mealSlots: MealSlot[]
+): Promise<DishRetrievalResult> => {
+  if (!ragConfig.enabled) {
+    return {
+      dishes: await getCandidateDishesFromMongo(user),
+      mode: 'direct_mongodb'
+    };
+  }
+
+  try {
+    const ragDishIds = await findDishIdsByRag(user, mealSlots);
+
+    if (!ragDishIds.length) {
+      return {
+        dishes: await getCandidateDishesFromMongo(user),
+        mode: 'direct_mongodb',
+        ragMatchedDishIds: 0
+      };
+    }
+
+    const ragScopedCandidates = await getCandidateDishesFromMongo(
+      user,
+      ragDishIds
+    );
+
+    if (!ragScopedCandidates.length) {
+      return {
+        dishes: await getCandidateDishesFromMongo(user),
+        mode: 'direct_mongodb',
+        ragMatchedDishIds: ragDishIds.length
+      };
+    }
+
+    return {
+      dishes: ragScopedCandidates,
+      mode: 'rag_vector_search',
+      ragMatchedDishIds: ragDishIds.length
+    };
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    console.warn(
+      `[RAG] Meal retrieval fallback to direct MongoDB filtering. Reason: ${reason}`
+    );
+    return {
+      dishes: await getCandidateDishesFromMongo(user),
+      mode: 'direct_mongodb'
+    };
+  }
 };
 
 const getCandidateExercises = async (): Promise<ExerciseCandidate[]> => {
@@ -669,6 +904,21 @@ const toDishCount = (mealSize?: string) => {
 const getDishTotalTime = (dish: DishCandidate) =>
   (dish.preparationTime ?? 0) + (dish.cookTime ?? 0);
 
+const dateKey = (date: Date) => date.toISOString().slice(0, 10);
+
+const stableHash = (value: string) => {
+  let hash = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash * 31 + value.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash);
+};
+
+const getDateDishJitter = (dishId: string, targetDate: Date) => {
+  const hash = stableHash(`${dateKey(targetDate)}:${dishId}`);
+  return (hash % 1000) / 1000 - 0.5;
+};
+
 const filterByMealTypeHint = (mealType: string, dishes: DishCandidate[]) => {
   const hints = MEAL_TYPE_CATEGORY_HINTS[mealType] ?? [];
   if (!hints.length) return dishes;
@@ -683,7 +933,8 @@ const filterByMealTypeHint = (mealType: string, dishes: DishCandidate[]) => {
 const pickCandidatesForMeal = (
   slot: MealSlot,
   candidateDishes: DishCandidate[],
-  user: UserProfileForRecommendation
+  user: UserProfileForRecommendation,
+  rankingContext: MealRankingContext
 ) => {
   let scoped = candidateDishes;
 
@@ -713,8 +964,8 @@ const pickCandidatesForMeal = (
 
   return [...scoped].sort(
     (left, right) =>
-      scoreDishForMeal(right, slot, user, favoriteSet) -
-      scoreDishForMeal(left, slot, user, favoriteSet)
+      scoreDishForMeal(right, slot, user, favoriteSet, rankingContext) -
+      scoreDishForMeal(left, slot, user, favoriteSet, rankingContext)
   );
 };
 
@@ -722,7 +973,8 @@ const scoreDishForMeal = (
   dish: DishCandidate,
   slot: MealSlot,
   user: UserProfileForRecommendation,
-  favoriteSet: Set<string>
+  favoriteSet: Set<string>,
+  rankingContext: MealRankingContext
 ) => {
   let score = 0;
 
@@ -762,6 +1014,13 @@ const scoreDishForMeal = (
       score += 6;
     }
   }
+
+  const recentCount = rankingContext.recentDishCounts.get(dish._id) ?? 0;
+  if (recentCount > 0) {
+    score -= Math.min(18, recentCount * 6);
+  }
+
+  score += getDateDishJitter(dish._id, rankingContext.targetDate);
 
   return score;
 };
@@ -955,7 +1214,10 @@ const buildWorkoutPromptInput = (
 const buildRetrievalSummary = (
   totalCandidates: number,
   mealSlots: MealSlot[],
-  candidatesByMealType: Map<string, DishCandidate[]>
+  candidatesByMealType: Map<string, DishCandidate[]>,
+  mode: DishRetrievalMode,
+  ragMatchedDishIds?: number,
+  recentMealContext?: RecentMealDishContext
 ) => {
   const detail = mealSlots
     .map(slot => {
@@ -964,8 +1226,27 @@ const buildRetrievalSummary = (
     })
     .join('\n');
 
+  const modeText =
+    mode === 'rag_vector_search'
+      ? 'Current retrieval mode: RAG vector search + hard filters.'
+      : 'Current retrieval mode: direct MongoDB filtering (RAG disabled or fallback).';
+  const ragCountText =
+    typeof ragMatchedDishIds === 'number'
+      ? `RAG matched dish IDs before hard filters: ${ragMatchedDishIds}.`
+      : null;
+  const recentContextText = recentMealContext
+    ? `Recent history window: ${recentMealContext.lookbackDays} days; distinct dishes=${recentMealContext.distinctDishCount}; total dish picks=${recentMealContext.totalDishPicks}.`
+    : null;
+  const recentDishHintText =
+    recentMealContext && recentMealContext.recentDishNames.length
+      ? `Recently used dishes (de-prioritize): ${recentMealContext.recentDishNames.join(', ')}.`
+      : null;
+
   return [
-    'Current retrieval mode: direct MongoDB filtering (RAG not enabled yet).',
+    modeText,
+    ...(ragCountText ? [ragCountText] : []),
+    ...(recentContextText ? [recentContextText] : []),
+    ...(recentDishHintText ? [recentDishHintText] : []),
     `Total candidates after hard filters: ${totalCandidates}.`,
     'Per-meal candidates:',
     detail
@@ -1032,6 +1313,53 @@ const getMealContextForDate = async (
   return {
     totalCalories: totalCalories > 0 ? Math.round(totalCalories) : undefined,
     meals
+  };
+};
+
+const getRecentMealDishContext = async (
+  userId: string,
+  date: Date,
+  lookbackDays: number
+): Promise<RecentMealDishContext> => {
+  const start = new Date(date);
+  start.setDate(start.getDate() - Math.max(0, lookbackDays));
+
+  const schedules = await ScheduleModel.find({
+    'user._id': userId,
+    date: { $gte: start, $lt: date }
+  })
+    .select('meals.dishes.dishId meals.dishes.name')
+    .lean();
+
+  const dishCounts = new Map<string, number>();
+  const dishNames = new Map<string, string>();
+  let totalDishPicks = 0;
+
+  schedules.forEach(schedule => {
+    schedule.meals?.forEach(meal => {
+      meal.dishes?.forEach(dish => {
+        const dishId = dish.dishId?.toString();
+        if (!dishId) return;
+        dishCounts.set(dishId, (dishCounts.get(dishId) ?? 0) + 1);
+        if (!dishNames.has(dishId) && dish.name) {
+          dishNames.set(dishId, dish.name);
+        }
+        totalDishPicks += 1;
+      });
+    });
+  });
+
+  const recentDishNames = Array.from(dishCounts.entries())
+    .sort((left, right) => right[1] - left[1])
+    .slice(0, 12)
+    .map(([dishId]) => dishNames.get(dishId) ?? dishId);
+
+  return {
+    lookbackDays: Math.max(0, lookbackDays),
+    dishCounts,
+    recentDishNames,
+    distinctDishCount: dishCounts.size,
+    totalDishPicks
   };
 };
 

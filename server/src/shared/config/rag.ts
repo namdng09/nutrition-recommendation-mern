@@ -48,7 +48,7 @@ export const ragConfig = {
   textKey: process.env.RAG_TEXT_KEY?.trim() || 'text',
   embeddingKey: process.env.RAG_EMBEDDING_KEY?.trim() || 'embedding',
   embeddingModel:
-    process.env.RAG_EMBEDDING_MODEL?.trim() || 'text-embedding-004',
+    process.env.RAG_EMBEDDING_MODEL?.trim() || 'gemini-embedding-001',
   embeddingDimensions: parseOptionalInteger(
     process.env.RAG_EMBEDDING_DIMENSIONS
   ),
