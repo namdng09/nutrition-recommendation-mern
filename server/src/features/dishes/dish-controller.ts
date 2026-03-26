@@ -11,8 +11,15 @@ export const DishController = {
     const image = req.file;
     const userId = req.user!._id.toString();
     const userName = req.user!.name;
+    const userRole = req.user!.role;
 
-    const result = await DishService.createDish(userId, userName, data, image);
+    const result = await DishService.createDish(
+      userId,
+      userName,
+      userRole,
+      data,
+      image
+    );
 
     res.status(201).json(ApiResponse.success('Tạo món ăn thành công', result));
   },
