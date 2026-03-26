@@ -26,7 +26,6 @@ export const DishService = {
   createDish: async (
     userId: string,
     userName: string,
-    userRole: string,
     data: CreateDishRequest,
     image?: Express.Multer.File
   ) => {
@@ -36,13 +35,6 @@ export const DishService = {
     }
 
     const ingredients = await resolveIngredientSnapshots(data.ingredients);
-    const isUser = userRole === ROLE.USER;
-
-    if (isUser && data.isPublic === true) {
-      throw createHttpError(403, 'User chỉ có thể tạo món ăn riêng tư');
-    }
-
-    const isPublic = isUser ? false : (data.isPublic ?? false);
 
     const newDish = await DishModel.create({
       user: { _id: userId, name: userName },
@@ -58,7 +50,7 @@ export const DishService = {
       servings: data.servings || 1,
       tags: data.tags,
       isActive: data.isActive ?? true,
-      isPublic
+      isPublic: data.isPublic
     });
 
     if (image) await saveDishImage(newDish, image);
