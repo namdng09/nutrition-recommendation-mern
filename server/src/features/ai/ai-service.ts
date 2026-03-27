@@ -155,6 +155,14 @@ type DishRetrievalResult = {
   ragMatchedDishIds?: number;
 };
 
+type ExerciseRetrievalMode = 'direct_mongodb' | 'rag_vector_search';
+
+type ExerciseRetrievalResult = {
+  exercises: ExerciseCandidate[];
+  mode: ExerciseRetrievalMode;
+  ragMatchedExerciseIds?: number;
+};
+
 type RecentMealDishContext = {
   lookbackDays: number;
   dishCounts: Map<string, number>;
@@ -166,6 +174,19 @@ type RecentMealDishContext = {
 type MealRankingContext = {
   targetDate: Date;
   recentDishCounts: Map<string, number>;
+};
+
+type RecentWorkoutExerciseContext = {
+  lookbackDays: number;
+  exerciseCounts: Map<string, number>;
+  recentExerciseNames: string[];
+  distinctExerciseCount: number;
+  totalExercisePicks: number;
+};
+
+type WorkoutRankingContext = {
+  targetDate: Date;
+  recentExerciseCounts: Map<string, number>;
 };
 
 type RagDishDocument = {
@@ -185,6 +206,25 @@ type RagDishVectorStore = {
     k: number,
     filter?: Record<string, unknown>
   ) => Promise<RagDishDocument[]>;
+};
+
+type RagExerciseDocument = {
+  metadata?: {
+    sourceType?: string;
+    sourceId?: string;
+    metadata?: {
+      sourceType?: string;
+      sourceId?: string;
+    };
+  };
+};
+
+type RagExerciseVectorStore = {
+  similaritySearch: (
+    query: string,
+    k: number,
+    filter?: Record<string, unknown>
+  ) => Promise<RagExerciseDocument[]>;
 };
 
 const DEFAULT_MEAL_TYPE_ORDER = [
@@ -390,17 +430,32 @@ export const AiService = {
 
     const targetDate = payload.date;
     const dayOfWeek = getDayOfWeek(targetDate);
+    const mealContext = await getMealContextForDate(userId, targetDate);
+    const recentWorkoutContext = await getRecentWorkoutExerciseContext(
+      userId,
+      targetDate,
+      7
+    );
+    const exerciseRetrieval = await getCandidateExercises(
+      user,
+      mealContext,
+      recentWorkoutContext
+    );
+    const candidateExercises = exerciseRetrieval.exercises;
+    console.log(
+      `[RAG] Workout retrieval mode=${exerciseRetrieval.mode}, ragMatchedExerciseIds=${exerciseRetrieval.ragMatchedExerciseIds ?? 'N/A'}, candidateExercisesAfterHardFilters=${candidateExercises.length}, recentDistinctExercises(${recentWorkoutContext.lookbackDays}d)=${recentWorkoutContext.distinctExerciseCount}`
+    );
 
-    const candidateExercises = await getCandidateExercises();
     if (!candidateExercises.length) {
       throw createHttpError(404, 'Không có bài tập phù hợp trong hệ thống');
     }
 
-    const rankedExercises = rankCandidateExercises(candidateExercises, user);
-    const recentExerciseIds = await getRecentWorkoutExerciseIds(
-      userId,
+    const rankedExercises = rankCandidateExercises(candidateExercises, user, {
       targetDate,
-      7
+      recentExerciseCounts: recentWorkoutContext.exerciseCounts
+    });
+    const recentExerciseIds = new Set(
+      Array.from(recentWorkoutContext.exerciseCounts.keys())
     );
     const diversifiedExercises = diversifyExercisesByRecency(
       rankedExercises,
@@ -414,11 +469,13 @@ export const AiService = {
 
     const exerciseCatalog = buildExerciseCatalog(diversifiedExercises);
     const inputForPrompt = buildWorkoutPromptInput(user);
-    const mealContext = await getMealContextForDate(userId, targetDate);
     const retrievalSummary = buildWorkoutRetrievalSummary(
       candidateExercises.length,
       targetExerciseCount,
-      mealContext
+      mealContext,
+      exerciseRetrieval.mode,
+      exerciseRetrieval.ragMatchedExerciseIds,
+      recentWorkoutContext
     );
 
     const prompt = exerciseRecommendationPrompt(inputForPrompt, {
@@ -435,7 +492,8 @@ export const AiService = {
     const selectedExercises = materializeExercises({
       aiSelection,
       rankedExercises: diversifiedExercises,
-      targetExerciseCount
+      targetExerciseCount,
+      recentExerciseIds
     });
 
     const workout = buildWorkoutEntries(selectedExercises);
@@ -783,21 +841,209 @@ const getCandidateDishes = async (
   }
 };
 
-const getCandidateExercises = async (): Promise<ExerciseCandidate[]> => {
-  const exercises = await ExerciseModel.find({ isActive: true })
+const mapExerciseCandidate = (exercise: any): ExerciseCandidate => ({
+  _id: exercise._id.toString(),
+  name: exercise.name,
+  tutorial: exercise.tutorial ?? '',
+  difficulty: exercise.difficulty,
+  type: exercise.type,
+  logType: exercise.logType,
+  muscles: (exercise.muscles ?? []).map((muscle: any) => muscle.name),
+  equipments: (exercise.equipments ?? []).map(
+    (equipment: any) => equipment.name
+  )
+});
+
+const orderExercisesByRagPriority = (
+  exercises: ExerciseCandidate[],
+  ragExerciseIds: string[]
+) => {
+  if (!ragExerciseIds.length) return exercises;
+  const rank = new Map(ragExerciseIds.map((id, index) => [id, index]));
+  return [...exercises].sort(
+    (left, right) =>
+      (rank.get(left._id) ?? Number.MAX_SAFE_INTEGER) -
+      (rank.get(right._id) ?? Number.MAX_SAFE_INTEGER)
+  );
+};
+
+const getCandidateExercisesFromMongo = async (
+  preferredExerciseIds?: string[]
+): Promise<ExerciseCandidate[]> => {
+  const query: Record<string, unknown> = {
+    isActive: true
+  };
+
+  if (preferredExerciseIds?.length) {
+    query._id = { $in: preferredExerciseIds };
+  }
+
+  const exercises = await ExerciseModel.find(query)
     .select('name tutorial difficulty type logType muscles equipments')
     .lean();
 
-  return exercises.map(exercise => ({
-    _id: exercise._id.toString(),
-    name: exercise.name,
-    tutorial: exercise.tutorial ?? '',
-    difficulty: exercise.difficulty,
-    type: exercise.type,
-    logType: exercise.logType,
-    muscles: (exercise.muscles ?? []).map(muscle => muscle.name),
-    equipments: (exercise.equipments ?? []).map(equipment => equipment.name)
-  }));
+  const mapped = exercises.map(mapExerciseCandidate);
+  return preferredExerciseIds?.length
+    ? orderExercisesByRagPriority(mapped, preferredExerciseIds)
+    : mapped;
+};
+
+const toExerciseRagGoalTypeHints = (target?: string) => {
+  if (target === USER_TARGET.BUILD_MUSCLE) {
+    return Array.from(MUSCLE_GOAL_TYPES);
+  }
+  if (target === USER_TARGET.LOSE_FAT) {
+    return Array.from(FAT_LOSS_TYPES);
+  }
+  if (target === USER_TARGET.MAINTAIN_WEIGHT) {
+    return Array.from(RECOVERY_TYPES);
+  }
+  return [];
+};
+
+const buildExerciseRagQuery = (
+  user: UserProfileForRecommendation,
+  mealContext: MealContextSummary | null,
+  recentWorkoutContext?: RecentWorkoutExerciseContext
+) => {
+  const goalTypeHints = toExerciseRagGoalTypeHints(user.goal?.target);
+  const targetDifficulty = resolveTargetDifficulty(user.activityLevel);
+  const mealHintLines = mealContext
+    ? mealContext.meals
+        .slice(0, 6)
+        .map(meal => {
+          const dishes = meal.dishes.length ? meal.dishes.join(', ') : 'N/A';
+          const calories =
+            typeof meal.calories === 'number' ? `${meal.calories} kcal` : 'N/A';
+          return `- ${meal.mealType}: dishes=${dishes}; calories=${calories}`;
+        })
+        .join('\n')
+    : 'N/A';
+
+  return [
+    `Goal: ${user.goal?.target ?? 'N/A'}`,
+    `Activity level: ${user.activityLevel ?? 'N/A'}`,
+    `Target difficulty: ${targetDifficulty ?? 'N/A'}`,
+    `Preferred exercise types: ${
+      goalTypeHints.length ? goalTypeHints.join(', ') : 'N/A'
+    }`,
+    `Medical history: ${
+      user.medicalHistory.length ? user.medicalHistory.join(', ') : 'N/A'
+    }`,
+    `Estimated meal calories today: ${
+      mealContext?.totalCalories !== undefined
+        ? `${mealContext.totalCalories} kcal`
+        : 'N/A'
+    }`,
+    `Recent exercises to de-prioritize: ${
+      recentWorkoutContext?.recentExerciseNames?.length
+        ? recentWorkoutContext.recentExerciseNames.join(', ')
+        : 'N/A'
+    }`,
+    'Meals context:',
+    mealHintLines
+  ].join('\n');
+};
+
+const extractExerciseSourceId = (document: RagExerciseDocument) => {
+  const metadata = document.metadata;
+  if (
+    metadata?.sourceType === 'exercise' &&
+    typeof metadata.sourceId === 'string'
+  ) {
+    return metadata.sourceId;
+  }
+
+  if (
+    metadata?.metadata?.sourceType === 'exercise' &&
+    typeof metadata.metadata.sourceId === 'string'
+  ) {
+    return metadata.metadata.sourceId;
+  }
+
+  return undefined;
+};
+
+const findExerciseIdsByRag = async (
+  user: UserProfileForRecommendation,
+  mealContext: MealContextSummary | null,
+  recentWorkoutContext?: RecentWorkoutExerciseContext
+) => {
+  const vectorStore = createRagVectorStore() as RagExerciseVectorStore;
+  const filter = {
+    'metadata.sourceType': 'exercise',
+    'metadata.isPublic': true
+  };
+  const topK = Math.max(30, Math.min(100, ragConfig.defaultTopK * 10));
+  const query = buildExerciseRagQuery(user, mealContext, recentWorkoutContext);
+  const docs = await vectorStore.similaritySearch(query, topK, filter);
+  const seen = new Set<string>();
+  const rankedExerciseIds: string[] = [];
+
+  docs.forEach(doc => {
+    const sourceId = extractExerciseSourceId(doc);
+    if (sourceId && !seen.has(sourceId)) {
+      seen.add(sourceId);
+      rankedExerciseIds.push(sourceId);
+    }
+  });
+
+  return rankedExerciseIds;
+};
+
+const getCandidateExercises = async (
+  user: UserProfileForRecommendation,
+  mealContext: MealContextSummary | null,
+  recentWorkoutContext?: RecentWorkoutExerciseContext
+): Promise<ExerciseRetrievalResult> => {
+  if (!ragConfig.enabled) {
+    return {
+      exercises: await getCandidateExercisesFromMongo(),
+      mode: 'direct_mongodb'
+    };
+  }
+
+  try {
+    const ragExerciseIds = await findExerciseIdsByRag(
+      user,
+      mealContext,
+      recentWorkoutContext
+    );
+
+    if (!ragExerciseIds.length) {
+      return {
+        exercises: await getCandidateExercisesFromMongo(),
+        mode: 'direct_mongodb',
+        ragMatchedExerciseIds: 0
+      };
+    }
+
+    const ragScopedCandidates =
+      await getCandidateExercisesFromMongo(ragExerciseIds);
+
+    if (!ragScopedCandidates.length) {
+      return {
+        exercises: await getCandidateExercisesFromMongo(),
+        mode: 'direct_mongodb',
+        ragMatchedExerciseIds: ragExerciseIds.length
+      };
+    }
+
+    return {
+      exercises: ragScopedCandidates,
+      mode: 'rag_vector_search',
+      ragMatchedExerciseIds: ragExerciseIds.length
+    };
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    console.warn(
+      `[RAG] Workout retrieval fallback to direct MongoDB filtering. Reason: ${reason}`
+    );
+    return {
+      exercises: await getCandidateExercisesFromMongo(),
+      mode: 'direct_mongodb'
+    };
+  }
 };
 
 const getDayOfWeek = (date: Date): string =>
@@ -878,6 +1124,11 @@ const stableHash = (value: string) => {
 
 const getDateDishJitter = (dishId: string, targetDate: Date) => {
   const hash = stableHash(`${dateKey(targetDate)}:${dishId}`);
+  return (hash % 1000) / 1000 - 0.5;
+};
+
+const getDateExerciseJitter = (exerciseId: string, targetDate: Date) => {
+  const hash = stableHash(`${dateKey(targetDate)}:${exerciseId}`);
   return (hash % 1000) / 1000 - 0.5;
 };
 
@@ -1001,7 +1252,8 @@ const difficultyDistance = (value: string, target: string) => {
 
 const scoreExerciseForUser = (
   exercise: ExerciseCandidate,
-  user: UserProfileForRecommendation
+  user: UserProfileForRecommendation,
+  rankingContext: WorkoutRankingContext
 ) => {
   let score = 0;
 
@@ -1028,16 +1280,26 @@ const scoreExerciseForUser = (
     score += 1;
   }
 
+  const recentCount =
+    rankingContext.recentExerciseCounts.get(exercise._id) ?? 0;
+  if (recentCount > 0) {
+    score -= Math.min(18, recentCount * 6);
+  }
+
+  score += getDateExerciseJitter(exercise._id, rankingContext.targetDate);
+
   return score;
 };
 
 const rankCandidateExercises = (
   exercises: ExerciseCandidate[],
-  user: UserProfileForRecommendation
+  user: UserProfileForRecommendation,
+  rankingContext: WorkoutRankingContext
 ) =>
   [...exercises].sort(
     (left, right) =>
-      scoreExerciseForUser(right, user) - scoreExerciseForUser(left, user)
+      scoreExerciseForUser(right, user, rankingContext) -
+      scoreExerciseForUser(left, user, rankingContext)
   );
 
 const buildPromptCatalog = (
@@ -1325,11 +1587,11 @@ const getRecentMealDishContext = async (
   };
 };
 
-const getRecentWorkoutExerciseIds = async (
+const getRecentWorkoutExerciseContext = async (
   userId: string,
   date: Date,
   lookbackDays: number
-) => {
+): Promise<RecentWorkoutExerciseContext> => {
   const start = new Date(date);
   start.setDate(start.getDate() - Math.max(0, lookbackDays));
 
@@ -1337,18 +1599,37 @@ const getRecentWorkoutExerciseIds = async (
     'user._id': userId,
     date: { $gte: start, $lt: date }
   })
-    .select('workout.exerciseId')
+    .select('workout.exerciseId workout.exerciseName')
     .lean();
 
-  const ids = new Set<string>();
+  const exerciseCounts = new Map<string, number>();
+  const exerciseNames = new Map<string, string>();
+  let totalExercisePicks = 0;
+
   schedules.forEach(schedule => {
     schedule.workout?.forEach(item => {
       const id = item.exerciseId?.toString();
-      if (id) ids.add(id);
+      if (!id) return;
+      exerciseCounts.set(id, (exerciseCounts.get(id) ?? 0) + 1);
+      if (!exerciseNames.has(id) && item.exerciseName) {
+        exerciseNames.set(id, item.exerciseName);
+      }
+      totalExercisePicks += 1;
     });
   });
 
-  return ids;
+  const recentExerciseNames = Array.from(exerciseCounts.entries())
+    .sort((left, right) => right[1] - left[1])
+    .slice(0, 12)
+    .map(([exerciseId]) => exerciseNames.get(exerciseId) ?? exerciseId);
+
+  return {
+    lookbackDays: Math.max(0, lookbackDays),
+    exerciseCounts,
+    recentExerciseNames,
+    distinctExerciseCount: exerciseCounts.size,
+    totalExercisePicks
+  };
 };
 
 const diversifyExercisesByRecency = (
@@ -1374,7 +1655,10 @@ const diversifyExercisesByRecency = (
 const buildWorkoutRetrievalSummary = (
   totalCandidates: number,
   targetExerciseCount: number,
-  mealContext: MealContextSummary | null
+  mealContext: MealContextSummary | null,
+  mode: ExerciseRetrievalMode,
+  ragMatchedExerciseIds?: number,
+  recentWorkoutContext?: RecentWorkoutExerciseContext
 ) => {
   const mealLines = mealContext
     ? mealContext.meals
@@ -1394,9 +1678,27 @@ const buildWorkoutRetrievalSummary = (
     mealContext?.totalCalories !== undefined
       ? `~${mealContext.totalCalories} kcal`
       : 'N/A';
+  const modeText =
+    mode === 'rag_vector_search'
+      ? 'Current retrieval mode: RAG vector search (exercise) + MongoDB hard filters.'
+      : 'Current retrieval mode: direct MongoDB filtering (RAG disabled or fallback).';
+  const ragCountText =
+    typeof ragMatchedExerciseIds === 'number'
+      ? `RAG matched exercise IDs before hard filters: ${ragMatchedExerciseIds}.`
+      : null;
+  const recentContextText = recentWorkoutContext
+    ? `Recent history window: ${recentWorkoutContext.lookbackDays} days; distinct exercises=${recentWorkoutContext.distinctExerciseCount}; total exercise picks=${recentWorkoutContext.totalExercisePicks}.`
+    : null;
+  const recentExerciseHintText =
+    recentWorkoutContext && recentWorkoutContext.recentExerciseNames.length
+      ? `Recently used exercises (de-prioritize): ${recentWorkoutContext.recentExerciseNames.join(', ')}.`
+      : null;
 
   return [
-    'Current retrieval mode: direct MongoDB filtering (RAG not enabled yet).',
+    modeText,
+    ...(ragCountText ? [ragCountText] : []),
+    ...(recentContextText ? [recentContextText] : []),
+    ...(recentExerciseHintText ? [recentExerciseHintText] : []),
     `Total exercise candidates: ${totalCandidates}.`,
     `Target exercise count: ${targetExerciseCount}.`,
     'Meals planned for this day:',
@@ -1582,15 +1884,20 @@ const resolveTargetExerciseCount = (
 const materializeExercises = ({
   aiSelection,
   rankedExercises,
-  targetExerciseCount
+  targetExerciseCount,
+  recentExerciseIds
 }: {
   aiSelection: Array<{ exerciseId: string }> | null;
   rankedExercises: ExerciseCandidate[];
   targetExerciseCount: number;
+  recentExerciseIds?: Set<string>;
 }) => {
   const byId = new Map(rankedExercises.map(item => [item._id, item]));
   const selected: ExerciseCandidate[] = [];
   const used = new Set<string>();
+  const deferredRecentFromAi: ExerciseCandidate[] = [];
+  const isRecent = (exerciseId: string) =>
+    Boolean(recentExerciseIds?.has(exerciseId));
 
   if (aiSelection?.length) {
     for (const item of aiSelection) {
@@ -1598,11 +1905,33 @@ const materializeExercises = ({
       const exercise = byId.get(item.exerciseId);
       if (!exercise) continue;
       if (used.has(exercise._id)) continue;
+      if (isRecent(exercise._id)) {
+        deferredRecentFromAi.push(exercise);
+        continue;
+      }
       used.add(exercise._id);
       selected.push(exercise);
     }
   }
 
+  // Phase 1: prefer non-recent exercises.
+  for (const exercise of rankedExercises) {
+    if (selected.length >= targetExerciseCount) break;
+    if (used.has(exercise._id)) continue;
+    if (isRecent(exercise._id)) continue;
+    used.add(exercise._id);
+    selected.push(exercise);
+  }
+
+  // Phase 2: fallback to AI-picked recent exercises.
+  for (const exercise of deferredRecentFromAi) {
+    if (selected.length >= targetExerciseCount) break;
+    if (used.has(exercise._id)) continue;
+    used.add(exercise._id);
+    selected.push(exercise);
+  }
+
+  // Phase 3: final fallback allows all remaining exercises.
   for (const exercise of rankedExercises) {
     if (selected.length >= targetExerciseCount) break;
     if (used.has(exercise._id)) continue;
