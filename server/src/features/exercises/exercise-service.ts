@@ -4,6 +4,8 @@ import type { HydratedDocument, PaginateResult } from 'mongoose';
 
 import { ExerciseModel } from '~/shared/database/models';
 import type { Exercise } from '~/shared/database/models/exercise-model';
+import { eventBus } from '~/shared/events/event-bus';
+import { EVENTS } from '~/shared/events/event-types';
 import {
   buildPaginateOptions,
   deleteExerciseTutorial,
@@ -32,6 +34,10 @@ export const ExerciseService = {
     if (tutorial) {
       await replaceExerciseTutorial(newExercise, tutorial);
     }
+
+    eventBus.emit(EVENTS.EXERCISE_CREATED, {
+      exerciseId: newExercise._id.toString()
+    });
 
     return newExercise;
   },
@@ -93,6 +99,10 @@ export const ExerciseService = {
       await replaceExerciseTutorial(updatedExercise, tutorial);
     }
 
+    eventBus.emit(EVENTS.EXERCISE_UPDATED, {
+      exerciseId: updatedExercise._id.toString()
+    });
+
     return updatedExercise;
   },
 
@@ -106,6 +116,10 @@ export const ExerciseService = {
     if (!deletedExercise) {
       throw createHttpError(404, 'Không tìm thấy bài tập');
     }
+
+    eventBus.emit(EVENTS.EXERCISE_DELETED, {
+      exerciseId: deletedExercise._id.toString()
+    });
 
     return deletedExercise;
   }

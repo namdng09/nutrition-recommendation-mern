@@ -4,6 +4,9 @@ export const EVENTS = {
   DISH_CREATED: 'dish:created',
   DISH_UPDATED: 'dish:updated',
   DISH_DELETED: 'dish:deleted',
+  EXERCISE_CREATED: 'exercise:created',
+  EXERCISE_UPDATED: 'exercise:updated',
+  EXERCISE_DELETED: 'exercise:deleted',
   USER_LOGGED_IN: 'user:logged_in',
   POST_LIKED: 'post:liked',
   POST_UNLIKED: 'post:unliked',
@@ -36,6 +39,15 @@ export type EventPayloads = {
   [EVENTS.DISH_DELETED]: {
     userId: string;
     dishId: string;
+  };
+  [EVENTS.EXERCISE_CREATED]: {
+    exerciseId: string;
+  };
+  [EVENTS.EXERCISE_UPDATED]: {
+    exerciseId: string;
+  };
+  [EVENTS.EXERCISE_DELETED]: {
+    exerciseId: string;
   };
   [EVENTS.USER_LOGGED_IN]: {
     userId: string;
