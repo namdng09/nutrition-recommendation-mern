@@ -13,6 +13,7 @@
     "dev": "nodemon --watch src --watch .env --exec tsx src/index.ts",
     "rag:setup": "tsx src/scripts/rag/setup-rag.ts",
     "rag:ingest:dishes": "tsx src/scripts/rag/ingest-dishes.ts",
+    "rag:ingest:exercises": "tsx src/scripts/rag/ingest-exercises.ts",
     "test": "vitest",
     "test:coverage": "vitest run --coverage"
   },
