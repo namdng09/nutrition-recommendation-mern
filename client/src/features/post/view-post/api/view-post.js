@@ -5,7 +5,7 @@ import { buildQueryParams } from '~/lib/build-query-params';
 import { QUERY_KEYS } from '~/lib/query-keys';
 
 const fetchPost = async params => {
-  const searchParams = buildQueryParams(params, ['title']);
+  const searchParams = buildQueryParams(params);
   const response = await apiClient.get(`/api/posts?${searchParams.toString()}`);
   return response.data.data;
 };
