@@ -2,6 +2,7 @@ export * from './auth-model';
 export * from './collection-model';
 export * from './dish-model';
 export * from './exercise-model';
+export * from './feedback-model';
 export * from './grocery-model';
 export * from './ingredient-model';
 export * from './payment-model';
