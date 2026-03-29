@@ -21,11 +21,17 @@ export default function ExerciseList() {
     name: '',
     difficulty: '',
     type: '',
-    logType: ''
+    logType: '',
+    muscle: '',
+    equipment: ''
   });
 
+  const { muscle, equipment, ...baseFilters } = filters;
+
   const { data } = useExercises({
-    ...filters,
+    ...baseFilters,
+    ...(muscle ? { 'muscles.name': muscle } : {}),
+    ...(equipment ? { 'equipments.name': equipment } : {}),
     page,
     limit: 9
   });
@@ -42,7 +48,9 @@ export default function ExerciseList() {
       name: '',
       difficulty: '',
       type: '',
-      logType: ''
+      logType: '',
+      muscle: '',
+      equipment: ''
     });
   };
 

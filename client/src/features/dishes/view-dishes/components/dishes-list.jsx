@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   FaChevronRight,
   FaClock,
@@ -6,28 +6,61 @@ import {
   FaUser,
   FaUtensils
 } from 'react-icons/fa';
-import { Link } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 
 import { getNutritionValue } from '~/lib/utils';
 
 import DishFavoriteButton from '../../add-dish-to-favorite/components/dish-favorite-button';
 import { useDishes } from '../api/view-dishes';
 import DishEmpty from './dish-empty';
+import DishFilter from './dish-filter';
 import DishHeader from './dish-header';
 import StatBadge from './dish-stat-badge';
 import DishesPagination from './dishes-pagination';
 
 export default function DishesList() {
-  const [page, setPage] = useState(1);
-  const { data } = useDishes({
-    page,
-    limit: 6
-  });
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const name = searchParams.get('name') ?? '';
+  const ingredient = searchParams.get('ingredient') ?? '';
+  const page = Number(searchParams.get('page') ?? 1);
+
+  const params = useMemo(() => {
+    const nextParams = {
+      page,
+      limit: 6
+    };
+
+    if (name) nextParams.name = name;
+    if (ingredient) nextParams['ingredients.name'] = ingredient;
+
+    return nextParams;
+  }, [ingredient, name, page]);
+
+  const { data } = useDishes(params);
   const dishes = data?.docs || [];
+
+  const goToPrev = useCallback(() => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('page', String(Math.max(1, page - 1)));
+      return next;
+    });
+  }, [page, setSearchParams]);
+
+  const goToNext = useCallback(() => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('page', String(page + 1));
+      return next;
+    });
+  }, [page, setSearchParams]);
 
   return (
     <div className='mx-auto w-full max-w-7xl animate-in space-y-8 fade-in duration-500'>
       <DishHeader total={data?.totalDocs} />
+
+      <DishFilter />
 
       {!dishes?.length && <DishEmpty />}
 
@@ -110,12 +143,12 @@ export default function DishesList() {
 
       <div className='pt-8'>
         <DishesPagination
-          page={data?.page}
-          totalPages={data?.totalPages}
+          page={data?.page ?? 1}
+          totalPages={data?.totalPages ?? 1}
           hasPrevPage={data?.hasPrevPage}
           hasNextPage={data?.hasNextPage}
-          onPrev={() => setPage(p => Math.max(1, p - 1))}
-          onNext={() => setPage(p => p + 1)}
+          onPrev={goToPrev}
+          onNext={goToNext}
         />
       </div>
     </div>
