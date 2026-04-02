@@ -6,7 +6,11 @@ import { Button } from './ui/button';
 import { Spinner } from './ui/spinner';
 
 const PrivateRoute = ({ children, allowedRoles }) => {
-  const { user, loading } = useSelector(state => state.auth);
+  const { user, loading, loggingOut } = useSelector(state => state.auth);
+
+  if (loggingOut) {
+    return null;
+  }
 
   if (loading) {
     return <Spinner size='lg' />;

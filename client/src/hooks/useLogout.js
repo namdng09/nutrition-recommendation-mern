@@ -1,18 +1,23 @@
+import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 
 import { startLogout } from '~/lib/api-client';
 import { clearAuthTokens } from '~/lib/auth-tokens';
-import { logout } from '~/store/features/auth-slice';
+import { queryClient } from '~/lib/query-client';
+import { logout, setLoggingOut } from '~/store/features/auth-slice';
 
 export const useLogout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  return async () => {
+  return useCallback(() => {
+    dispatch(setLoggingOut());
     startLogout();
     clearAuthTokens();
-    dispatch(logout()).catch(() => {});
-    navigate('/');
-  };
+    queryClient.clear();
+    dispatch(logout()).finally(() => {
+      navigate('/');
+    });
+  }, [dispatch, navigate]);
 };
