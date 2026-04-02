@@ -3,10 +3,16 @@ import generatePassword from 'generate-password';
 import createHttpError from 'http-errors';
 import type { HydratedDocument, PaginateResult } from 'mongoose';
 
+import {
+  getDailyTokenLimit,
+  getNextQuotaResetAt,
+  resolveMembershipLevel
+} from '~/shared/config/ai-quota';
 import { ACTIVITY_LEVEL } from '~/shared/constants/activity-level';
 import { CERTIFICATE_STATUS } from '~/shared/constants/certificate-status';
 import { DIET } from '~/shared/constants/diet';
 import { GENDER } from '~/shared/constants/gender';
+import { MEMBERSHIP_LEVEL } from '~/shared/constants/membership-level';
 import { ROLE } from '~/shared/constants/role';
 import { USER_TARGET } from '~/shared/constants/user-target';
 import {
@@ -168,6 +174,64 @@ const sanitizeCertificate = (doc: User | HydratedDocument<User>) => {
   }
 
   return doc;
+};
+
+const toNonNegativeInt = (value: unknown): number => {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return 0;
+  return Math.max(0, Math.round(numeric));
+};
+
+const refreshAiQuotaOnProfileRead = async (user: HydratedDocument<User>) => {
+  const now = new Date();
+  let changed = false;
+
+  if (user.membershipLevel === MEMBERSHIP_LEVEL.VIP) {
+    const expiresAt =
+      user.membershipExpiresAt instanceof Date
+        ? user.membershipExpiresAt
+        : user.membershipExpiresAt
+          ? new Date(user.membershipExpiresAt)
+          : null;
+
+    if (expiresAt && !Number.isNaN(expiresAt.getTime()) && now >= expiresAt) {
+      user.membershipLevel = MEMBERSHIP_LEVEL.NORMAL;
+      user.membershipExpiresAt = undefined;
+      changed = true;
+    }
+  }
+
+  const membershipLevel = resolveMembershipLevel(user.membershipLevel);
+  const dailyLimit = getDailyTokenLimit(membershipLevel);
+  const resetAt =
+    user.aiQuotaResetAt instanceof Date
+      ? user.aiQuotaResetAt
+      : user.aiQuotaResetAt
+        ? new Date(user.aiQuotaResetAt)
+        : null;
+
+  if (!resetAt || Number.isNaN(resetAt.getTime()) || now >= resetAt) {
+    user.aiTokens = dailyLimit;
+    user.aiDailyTokenLimit = dailyLimit;
+    user.aiQuotaResetAt = getNextQuotaResetAt(now);
+    changed = true;
+  } else {
+    if (toNonNegativeInt(user.aiDailyTokenLimit) !== dailyLimit) {
+      user.aiDailyTokenLimit = dailyLimit;
+      changed = true;
+    }
+
+    const normalizedTokens = toNonNegativeInt(user.aiTokens);
+    const boundedTokens = Math.min(normalizedTokens, dailyLimit);
+    if (boundedTokens !== user.aiTokens) {
+      user.aiTokens = boundedTokens;
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    await user.save();
+  }
 };
 
 export const UserService = {
@@ -484,6 +548,8 @@ export const UserService = {
     if (!user) {
       throw createHttpError(404, 'Không tìm thấy người dùng');
     }
+
+    await refreshAiQuotaOnProfileRead(user);
 
     return user;
   },

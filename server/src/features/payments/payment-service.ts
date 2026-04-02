@@ -6,6 +6,10 @@ import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
 import type { PaginateResult } from 'mongoose';
 
+import {
+  getDailyTokenLimit,
+  getNextQuotaResetAt
+} from '~/shared/config/ai-quota';
 import type { MembershipLevel } from '~/shared/constants/membership-level';
 import { MEMBERSHIP_LEVEL } from '~/shared/constants/membership-level';
 import { PAYMENT_STATUS } from '~/shared/constants/payment-status';
@@ -25,8 +29,6 @@ import {
   UpdatePaymentStatusRequest
 } from './payment-dto';
 
-const VIP_AI_TOKENS = 100;
-
 const applyMembershipUpgrade = async (
   payment: InstanceType<typeof PaymentModel>,
   targetMembership: MembershipLevel
@@ -42,9 +44,17 @@ const applyMembershipUpgrade = async (
   expiresAt.setDate(expiresAt.getDate() + 30);
   user.membershipExpiresAt = expiresAt;
 
-  if (targetMembership === MEMBERSHIP_LEVEL.VIP) {
-    user.aiTokens = (user.aiTokens ?? 0) + VIP_AI_TOKENS;
-  }
+  const dailyTokenLimit = getDailyTokenLimit(targetMembership);
+  user.aiDailyTokenLimit = dailyTokenLimit;
+  user.aiQuotaResetAt = getNextQuotaResetAt();
+
+  const currentTokens = Number.isFinite(user.aiTokens)
+    ? Number(user.aiTokens)
+    : 0;
+  user.aiTokens =
+    targetMembership === MEMBERSHIP_LEVEL.VIP
+      ? Math.max(currentTokens, dailyTokenLimit)
+      : Math.min(currentTokens, dailyTokenLimit);
 
   await user.save();
 

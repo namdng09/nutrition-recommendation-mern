@@ -1,6 +1,14 @@
 import createHttpError from 'http-errors';
 
 import { agent, agentConfig } from '~/shared/config/ai-agent';
+import {
+  type AiQuotaEndpoint,
+  estimateReserveTokensForPrompt,
+  getDailyTokenLimit,
+  getNextQuotaResetAt,
+  getReserveTokenRangeForEndpoint,
+  resolveMembershipLevel
+} from '~/shared/config/ai-quota';
 import { ragConfig } from '~/shared/config/rag';
 import { DAY_OF_WEEK } from '~/shared/constants/day-of-week';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
@@ -8,6 +16,7 @@ import { EXERCISE_DIFFICULTY } from '~/shared/constants/exercise-difficulty';
 import { EXERCISE_TYPE } from '~/shared/constants/exercise-type';
 import { MEAL_SIZE } from '~/shared/constants/meal-size';
 import { MEAL_TYPE } from '~/shared/constants/meal-type';
+import { MEMBERSHIP_LEVEL } from '~/shared/constants/membership-level';
 import { NUTRITION_FOCUS } from '~/shared/constants/nutrition-focus';
 import { USER_TARGET } from '~/shared/constants/user-target';
 import {
@@ -189,6 +198,37 @@ type WorkoutRankingContext = {
   recentExerciseCounts: Map<string, number>;
 };
 
+type AiUsageMetadata = {
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+};
+
+type AiInvocationResult = {
+  text: string;
+  usage: AiUsageMetadata;
+};
+
+type AiQuotaReservation = {
+  endpoint: AiQuotaEndpoint;
+  reservedTokens: number;
+};
+
+type AiQuotaSettlement = {
+  chargedTokens: number;
+  refundedTokens: number;
+  membershipLevel: string;
+  dailyTokenLimit: number;
+  remainingTokens: number;
+  quotaResetAt?: Date;
+};
+
+type AiResponseMeta = {
+  usage: AiUsageMetadata;
+  reservation: AiQuotaReservation;
+  settlement: AiQuotaSettlement;
+};
+
 type RagDishDocument = {
   metadata?: {
     sourceType?: string;
@@ -344,169 +384,394 @@ export const AiService = {
     userId: string,
     payload: RecommendDailyMealsRequest
   ): Promise<DailyMealRecommendationResponse> => {
-    const user = await getUserProfileForRecommendation(userId);
+    let reservation: AiQuotaReservation | null = null;
+    let aiInvocation: AiInvocationResult | null = null;
 
-    const targetDate = payload.date;
-    const dayOfWeek = getDayOfWeek(targetDate);
-    const mealSlots = buildMealSlots(user.mealSettings);
-    const recentMealContext = await getRecentMealDishContext(
-      userId,
-      targetDate,
-      MEAL_HISTORY_LOOKBACK_DAYS
-    );
-    const dishRetrieval = await getCandidateDishes(user, mealSlots);
-    const candidateDishes = dishRetrieval.dishes;
-    console.log(
-      `[RAG] Meal retrieval mode=${dishRetrieval.mode}, ragMatchedDishIds=${dishRetrieval.ragMatchedDishIds ?? 'N/A'}, candidateDishesAfterHardFilters=${candidateDishes.length}, recentDistinctDishes(${recentMealContext.lookbackDays}d)=${recentMealContext.distinctDishCount}`
-    );
+    try {
+      const user = await getUserProfileForRecommendation(userId);
 
-    if (!candidateDishes.length) {
-      throw createHttpError(
-        404,
-        'Không có món ăn phù hợp với hồ sơ người dùng hiện tại'
+      const targetDate = payload.date;
+      const dayOfWeek = getDayOfWeek(targetDate);
+      const mealSlots = buildMealSlots(user.mealSettings);
+      const recentMealContext = await getRecentMealDishContext(
+        userId,
+        targetDate,
+        MEAL_HISTORY_LOOKBACK_DAYS
       );
+      const dishRetrieval = await getCandidateDishes(user, mealSlots);
+      const candidateDishes = dishRetrieval.dishes;
+      console.log(
+        `[RAG] Meal retrieval mode=${dishRetrieval.mode}, ragMatchedDishIds=${dishRetrieval.ragMatchedDishIds ?? 'N/A'}, candidateDishesAfterHardFilters=${candidateDishes.length}, recentDistinctDishes(${recentMealContext.lookbackDays}d)=${recentMealContext.distinctDishCount}`
+      );
+
+      if (!candidateDishes.length) {
+        throw createHttpError(
+          404,
+          'Không có món ăn phù hợp với hồ sơ người dùng hiện tại'
+        );
+      }
+
+      const dishesById = new Map(candidateDishes.map(dish => [dish._id, dish]));
+      const candidatesByMealType = new Map<string, DishCandidate[]>();
+      mealSlots.forEach(slot => {
+        candidatesByMealType.set(
+          slot.mealType,
+          pickCandidatesForMeal(slot, candidateDishes, user, {
+            targetDate,
+            recentDishCounts: recentMealContext.dishCounts
+          })
+        );
+      });
+
+      const dishCatalog = buildPromptCatalog(
+        mealSlots,
+        candidatesByMealType,
+        dishesById
+      );
+
+      const inputForPrompt = buildPromptInput(user);
+      const retrievalSummary = buildRetrievalSummary(
+        candidateDishes.length,
+        mealSlots,
+        candidatesByMealType,
+        dishRetrieval.mode,
+        dishRetrieval.ragMatchedDishIds,
+        recentMealContext
+      );
+      const prompt = mealRecommendationPrompt(inputForPrompt, {
+        dateISO: targetDate.toISOString(),
+        dayOfWeek,
+        mealSlots,
+        dishCatalog,
+        retrievalSummary
+      });
+
+      const estimatedReserve = estimateReserveTokensForPrompt(
+        'recommend_daily_meals',
+        prompt
+      );
+      console.log(
+        `[AI_QUOTA] endpoint=recommend_daily_meals promptChars=${prompt.length} estimatedReserve=${estimatedReserve}`
+      );
+      reservation = await reserveAiTokensForRecommendation(
+        userId,
+        'recommend_daily_meals',
+        estimatedReserve
+      );
+      aiInvocation = await invokeAi(prompt);
+      const quotaSettlement = await settleAiTokenUsage(
+        userId,
+        reservation,
+        aiInvocation.usage
+      );
+      const aiMeta: AiResponseMeta = {
+        usage: aiInvocation.usage,
+        reservation,
+        settlement: quotaSettlement
+      };
+      const aiSelection = parseAiSelection(aiInvocation.text);
+
+      const meals = materializeMeals({
+        mealSlots,
+        aiSelection,
+        dishesById,
+        candidatesByMealType
+      });
+      const scheduleMeals = toScheduleMealPayloads(meals, dishesById);
+      const schedule = await upsertScheduleMeals({
+        user,
+        date: targetDate,
+        dayOfWeek,
+        meals: scheduleMeals
+      });
+
+      return toAiRecommendedScheduleResponse(schedule.toObject(), aiMeta);
+    } catch (error) {
+      if (reservation && !aiInvocation) {
+        await refundReservedAiTokens(userId, reservation);
+      }
+      throw error;
     }
-
-    const dishesById = new Map(candidateDishes.map(dish => [dish._id, dish]));
-    const candidatesByMealType = new Map<string, DishCandidate[]>();
-    mealSlots.forEach(slot => {
-      candidatesByMealType.set(
-        slot.mealType,
-        pickCandidatesForMeal(slot, candidateDishes, user, {
-          targetDate,
-          recentDishCounts: recentMealContext.dishCounts
-        })
-      );
-    });
-
-    const dishCatalog = buildPromptCatalog(
-      mealSlots,
-      candidatesByMealType,
-      dishesById
-    );
-
-    const inputForPrompt = buildPromptInput(user);
-    const retrievalSummary = buildRetrievalSummary(
-      candidateDishes.length,
-      mealSlots,
-      candidatesByMealType,
-      dishRetrieval.mode,
-      dishRetrieval.ragMatchedDishIds,
-      recentMealContext
-    );
-    const prompt = mealRecommendationPrompt(inputForPrompt, {
-      dateISO: targetDate.toISOString(),
-      dayOfWeek,
-      mealSlots,
-      dishCatalog,
-      retrievalSummary
-    });
-
-    const aiText = await invokeAi(prompt);
-    const aiSelection = parseAiSelection(aiText);
-
-    const meals = materializeMeals({
-      mealSlots,
-      aiSelection,
-      dishesById,
-      candidatesByMealType
-    });
-    const scheduleMeals = toScheduleMealPayloads(meals, dishesById);
-    const schedule = await upsertScheduleMeals({
-      user,
-      date: targetDate,
-      dayOfWeek,
-      meals: scheduleMeals
-    });
-
-    return toAiRecommendedScheduleResponse(schedule.toObject());
   },
 
   recommendDailyWorkout: async (
     userId: string,
     payload: RecommendDailyWorkoutRequest
   ): Promise<DailyWorkoutRecommendationResponse> => {
-    const user = await getUserProfileForRecommendation(userId);
+    let reservation: AiQuotaReservation | null = null;
+    let aiInvocation: AiInvocationResult | null = null;
 
-    const targetDate = payload.date;
-    const dayOfWeek = getDayOfWeek(targetDate);
-    const mealContext = await getMealContextForDate(userId, targetDate);
-    const recentWorkoutContext = await getRecentWorkoutExerciseContext(
-      userId,
-      targetDate,
-      7
-    );
-    const exerciseRetrieval = await getCandidateExercises(
-      user,
-      mealContext,
-      recentWorkoutContext
-    );
-    const candidateExercises = exerciseRetrieval.exercises;
-    console.log(
-      `[RAG] Workout retrieval mode=${exerciseRetrieval.mode}, ragMatchedExerciseIds=${exerciseRetrieval.ragMatchedExerciseIds ?? 'N/A'}, candidateExercisesAfterHardFilters=${candidateExercises.length}, recentDistinctExercises(${recentWorkoutContext.lookbackDays}d)=${recentWorkoutContext.distinctExerciseCount}`
-    );
+    try {
+      const user = await getUserProfileForRecommendation(userId);
 
-    if (!candidateExercises.length) {
-      throw createHttpError(404, 'Không có bài tập phù hợp trong hệ thống');
+      const targetDate = payload.date;
+      const dayOfWeek = getDayOfWeek(targetDate);
+      const mealContext = await getMealContextForDate(userId, targetDate);
+      const recentWorkoutContext = await getRecentWorkoutExerciseContext(
+        userId,
+        targetDate,
+        7
+      );
+      const exerciseRetrieval = await getCandidateExercises(
+        user,
+        mealContext,
+        recentWorkoutContext
+      );
+      const candidateExercises = exerciseRetrieval.exercises;
+      console.log(
+        `[RAG] Workout retrieval mode=${exerciseRetrieval.mode}, ragMatchedExerciseIds=${exerciseRetrieval.ragMatchedExerciseIds ?? 'N/A'}, candidateExercisesAfterHardFilters=${candidateExercises.length}, recentDistinctExercises(${recentWorkoutContext.lookbackDays}d)=${recentWorkoutContext.distinctExerciseCount}`
+      );
+
+      if (!candidateExercises.length) {
+        throw createHttpError(404, 'Không có bài tập phù hợp trong hệ thống');
+      }
+
+      const rankedExercises = rankCandidateExercises(candidateExercises, user, {
+        targetDate,
+        recentExerciseCounts: recentWorkoutContext.exerciseCounts
+      });
+      const recentExerciseIds = new Set(
+        Array.from(recentWorkoutContext.exerciseCounts.keys())
+      );
+      const diversifiedExercises = diversifyExercisesByRecency(
+        rankedExercises,
+        recentExerciseIds
+      );
+      const targetExerciseCount = resolveTargetExerciseCount(
+        payload.maxExercises,
+        user.activityLevel,
+        diversifiedExercises.length
+      );
+
+      const exerciseCatalog = buildExerciseCatalog(diversifiedExercises);
+      const inputForPrompt = buildWorkoutPromptInput(user);
+      const retrievalSummary = buildWorkoutRetrievalSummary(
+        candidateExercises.length,
+        targetExerciseCount,
+        mealContext,
+        exerciseRetrieval.mode,
+        exerciseRetrieval.ragMatchedExerciseIds,
+        recentWorkoutContext
+      );
+
+      const prompt = exerciseRecommendationPrompt(inputForPrompt, {
+        dateISO: targetDate.toISOString(),
+        dayOfWeek,
+        targetExerciseCount,
+        exerciseCatalog,
+        retrievalSummary
+      });
+
+      const estimatedReserve = estimateReserveTokensForPrompt(
+        'recommend_daily_workout',
+        prompt
+      );
+      console.log(
+        `[AI_QUOTA] endpoint=recommend_daily_workout promptChars=${prompt.length} estimatedReserve=${estimatedReserve}`
+      );
+      reservation = await reserveAiTokensForRecommendation(
+        userId,
+        'recommend_daily_workout',
+        estimatedReserve
+      );
+      aiInvocation = await invokeAi(prompt);
+      const quotaSettlement = await settleAiTokenUsage(
+        userId,
+        reservation,
+        aiInvocation.usage
+      );
+      const aiMeta: AiResponseMeta = {
+        usage: aiInvocation.usage,
+        reservation,
+        settlement: quotaSettlement
+      };
+      const aiSelection = parseAiWorkoutSelection(aiInvocation.text);
+
+      const selectedExercises = materializeExercises({
+        aiSelection,
+        rankedExercises: diversifiedExercises,
+        targetExerciseCount,
+        recentExerciseIds
+      });
+
+      const workout = buildWorkoutEntries(selectedExercises);
+
+      const schedule = await upsertScheduleWorkout({
+        user,
+        date: targetDate,
+        dayOfWeek,
+        workout
+      });
+
+      return toAiRecommendedScheduleResponse(schedule.toObject(), aiMeta);
+    } catch (error) {
+      if (reservation && !aiInvocation) {
+        await refundReservedAiTokens(userId, reservation);
+      }
+      throw error;
+    }
+  }
+};
+
+const applyMembershipExpiryIfNeeded = (user: any, now: Date): boolean => {
+  if (user.membershipLevel !== MEMBERSHIP_LEVEL.VIP) return false;
+  const expiresAt =
+    user.membershipExpiresAt instanceof Date
+      ? user.membershipExpiresAt
+      : user.membershipExpiresAt
+        ? new Date(user.membershipExpiresAt)
+        : null;
+
+  if (!expiresAt || Number.isNaN(expiresAt.getTime()) || now < expiresAt) {
+    return false;
+  }
+
+  const downgradedLevel = MEMBERSHIP_LEVEL.NORMAL;
+  const downgradedLimit = getDailyTokenLimit(downgradedLevel);
+
+  user.membershipLevel = downgradedLevel;
+  user.membershipExpiresAt = undefined;
+  user.aiDailyTokenLimit = downgradedLimit;
+  user.aiTokens = Math.min(toNonNegativeInt(user.aiTokens), downgradedLimit);
+
+  return true;
+};
+
+const refreshDailyQuotaIfNeeded = (user: any, now: Date): boolean => {
+  const membershipLevel = resolveMembershipLevel(user.membershipLevel);
+  const dailyLimit = getDailyTokenLimit(membershipLevel);
+  const resetAt =
+    user.aiQuotaResetAt instanceof Date
+      ? user.aiQuotaResetAt
+      : user.aiQuotaResetAt
+        ? new Date(user.aiQuotaResetAt)
+        : null;
+
+  const shouldReset =
+    !resetAt || Number.isNaN(resetAt.getTime()) || now >= resetAt;
+
+  if (shouldReset) {
+    user.aiTokens = dailyLimit;
+    user.aiDailyTokenLimit = dailyLimit;
+    user.aiQuotaResetAt = getNextQuotaResetAt(now);
+    return true;
+  }
+
+  let changed = false;
+  if (toNonNegativeInt(user.aiDailyTokenLimit) !== dailyLimit) {
+    user.aiDailyTokenLimit = dailyLimit;
+    if (toNonNegativeInt(user.aiTokens) > dailyLimit) {
+      user.aiTokens = dailyLimit;
+    }
+    changed = true;
+  }
+
+  if (typeof user.aiTokens !== 'number' || Number.isNaN(user.aiTokens)) {
+    user.aiTokens = 0;
+    changed = true;
+  }
+
+  return changed;
+};
+
+const reserveAiTokensForRecommendation = async (
+  userId: string,
+  endpoint: AiQuotaEndpoint,
+  requestedReserveTokens: number
+): Promise<AiQuotaReservation> => {
+  const user = await UserModel.findById(userId);
+  if (!user) {
+    throw createHttpError(404, 'Không tìm thấy người dùng');
+  }
+  if (!user.isActive) {
+    throw createHttpError(403, 'Tài khoản người dùng đang bị vô hiệu hóa');
+  }
+
+  const now = new Date();
+  const reserveRange = getReserveTokenRangeForEndpoint(endpoint);
+  const reserveTokens = Math.max(
+    reserveRange.min,
+    Math.min(reserveRange.max, toNonNegativeInt(requestedReserveTokens))
+  );
+
+  const changedByExpiry = applyMembershipExpiryIfNeeded(user, now);
+  const changedByRefresh = refreshDailyQuotaIfNeeded(user, now);
+  const normalizedTokens = toNonNegativeInt(user.aiTokens);
+  user.aiTokens = normalizedTokens;
+
+  if (normalizedTokens < reserveTokens) {
+    if (changedByExpiry || changedByRefresh) {
+      await user.save();
     }
 
-    const rankedExercises = rankCandidateExercises(candidateExercises, user, {
-      targetDate,
-      recentExerciseCounts: recentWorkoutContext.exerciseCounts
-    });
-    const recentExerciseIds = new Set(
-      Array.from(recentWorkoutContext.exerciseCounts.keys())
+    throw createHttpError(
+      429,
+      'Bạn đã hết token AI trong ngày. Vui lòng thử lại sau khi quota được làm mới.'
     );
-    const diversifiedExercises = diversifyExercisesByRecency(
-      rankedExercises,
-      recentExerciseIds
-    );
-    const targetExerciseCount = resolveTargetExerciseCount(
-      payload.maxExercises,
-      user.activityLevel,
-      diversifiedExercises.length
-    );
-
-    const exerciseCatalog = buildExerciseCatalog(diversifiedExercises);
-    const inputForPrompt = buildWorkoutPromptInput(user);
-    const retrievalSummary = buildWorkoutRetrievalSummary(
-      candidateExercises.length,
-      targetExerciseCount,
-      mealContext,
-      exerciseRetrieval.mode,
-      exerciseRetrieval.ragMatchedExerciseIds,
-      recentWorkoutContext
-    );
-
-    const prompt = exerciseRecommendationPrompt(inputForPrompt, {
-      dateISO: targetDate.toISOString(),
-      dayOfWeek,
-      targetExerciseCount,
-      exerciseCatalog,
-      retrievalSummary
-    });
-
-    const aiText = await invokeAi(prompt);
-    const aiSelection = parseAiWorkoutSelection(aiText);
-
-    const selectedExercises = materializeExercises({
-      aiSelection,
-      rankedExercises: diversifiedExercises,
-      targetExerciseCount,
-      recentExerciseIds
-    });
-
-    const workout = buildWorkoutEntries(selectedExercises);
-
-    const schedule = await upsertScheduleWorkout({
-      user,
-      date: targetDate,
-      dayOfWeek,
-      workout
-    });
-
-    return toAiRecommendedScheduleResponse(schedule.toObject());
   }
+
+  user.aiTokens = normalizedTokens - reserveTokens;
+  await user.save();
+
+  return {
+    endpoint,
+    reservedTokens: reserveTokens
+  };
+};
+
+const refundReservedAiTokens = async (
+  userId: string,
+  reservation: AiQuotaReservation
+) => {
+  await UserModel.findByIdAndUpdate(userId, {
+    $inc: { aiTokens: reservation.reservedTokens }
+  });
+};
+
+const settleAiTokenUsage = async (
+  userId: string,
+  reservation: AiQuotaReservation,
+  usage: AiUsageMetadata
+): Promise<AiQuotaSettlement> => {
+  const normalizedTotal = toNonNegativeInt(usage.totalTokens);
+  const chargedTokens = Math.min(normalizedTotal, reservation.reservedTokens);
+  const refundedTokens = Math.max(
+    0,
+    reservation.reservedTokens - chargedTokens
+  );
+
+  if (refundedTokens > 0) {
+    await UserModel.findByIdAndUpdate(userId, {
+      $inc: { aiTokens: refundedTokens }
+    });
+  }
+
+  if (normalizedTotal > reservation.reservedTokens) {
+    console.warn(
+      `[AI_QUOTA] totalTokens (${normalizedTotal}) exceeded reservedTokens (${reservation.reservedTokens}) for endpoint=${reservation.endpoint}`
+    );
+  }
+
+  const user = await UserModel.findById(userId).select(
+    'membershipLevel aiDailyTokenLimit aiTokens aiQuotaResetAt'
+  );
+  if (!user) {
+    throw createHttpError(404, 'Không tìm thấy người dùng');
+  }
+
+  return {
+    chargedTokens,
+    refundedTokens,
+    membershipLevel: resolveMembershipLevel(user.membershipLevel),
+    dailyTokenLimit: toNonNegativeInt(user.aiDailyTokenLimit),
+    remainingTokens: toNonNegativeInt(user.aiTokens),
+    quotaResetAt:
+      user.aiQuotaResetAt instanceof Date
+        ? user.aiQuotaResetAt
+        : user.aiQuotaResetAt
+          ? new Date(user.aiQuotaResetAt)
+          : undefined
+  };
 };
 
 const getUserProfileForRecommendation = async (
@@ -1707,12 +1972,46 @@ const buildWorkoutRetrievalSummary = (
   ].join('\n');
 };
 
-const invokeAi = async (prompt: string) => {
+const toNonNegativeInt = (value: unknown): number => {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return 0;
+  return Math.max(0, Math.round(numeric));
+};
+
+const normalizeUsageMetadata = (raw: unknown): AiUsageMetadata => {
+  const inputTokens =
+    toNonNegativeInt((raw as any)?.input_tokens) ||
+    toNonNegativeInt((raw as any)?.promptTokens) ||
+    toNonNegativeInt((raw as any)?.prompt_tokens);
+  const outputTokens =
+    toNonNegativeInt((raw as any)?.output_tokens) ||
+    toNonNegativeInt((raw as any)?.completionTokens) ||
+    toNonNegativeInt((raw as any)?.completion_tokens);
+  const totalTokens =
+    toNonNegativeInt((raw as any)?.total_tokens) ||
+    toNonNegativeInt((raw as any)?.totalTokens) ||
+    inputTokens + outputTokens;
+
+  return {
+    inputTokens,
+    outputTokens,
+    totalTokens
+  };
+};
+
+const invokeAi = async (prompt: string): Promise<AiInvocationResult> => {
   const result = await agent.invoke({
     messages: [{ role: 'user', content: prompt }]
   });
   const lastMessage = result.messages?.[result.messages.length - 1];
-  return normalizeContent(lastMessage?.content);
+  const text = normalizeContent(lastMessage?.content);
+
+  const usage = normalizeUsageMetadata(
+    (lastMessage as any)?.usage_metadata ??
+      (result as any)?.llmOutput?.tokenUsage
+  );
+
+  return { text, usage };
 };
 
 const parseAiSelection = (aiText: string) => {
@@ -2169,7 +2468,8 @@ const toIsoString = (value: unknown): string | undefined => {
 };
 
 const toAiRecommendedScheduleResponse = (
-  scheduleObj: any
+  scheduleObj: any,
+  aiMeta?: AiResponseMeta
 ): DailyMealRecommendationResponse => {
   const sanitizedMeals: DailyMealRecommendationResponse['meals'] = [];
   (scheduleObj.meals ?? []).forEach((meal: any) => {
@@ -2244,7 +2544,28 @@ const toAiRecommendedScheduleResponse = (
     workout: sanitizedWorkout,
     notes: scheduleObj.notes ?? undefined,
     createdAt: toIsoString(scheduleObj.createdAt),
-    updatedAt: toIsoString(scheduleObj.updatedAt)
+    updatedAt: toIsoString(scheduleObj.updatedAt),
+    aiUsage: aiMeta
+      ? {
+          endpoint: aiMeta.reservation.endpoint,
+          provider: agentConfig.provider,
+          model: agentConfig.model,
+          inputTokens: aiMeta.usage.inputTokens,
+          outputTokens: aiMeta.usage.outputTokens,
+          totalTokens: aiMeta.usage.totalTokens,
+          reservedTokens: aiMeta.reservation.reservedTokens,
+          chargedTokens: aiMeta.settlement.chargedTokens,
+          refundedTokens: aiMeta.settlement.refundedTokens
+        }
+      : undefined,
+    aiQuota: aiMeta
+      ? {
+          membershipLevel: aiMeta.settlement.membershipLevel,
+          dailyTokenLimit: aiMeta.settlement.dailyTokenLimit,
+          remainingTokens: aiMeta.settlement.remainingTokens,
+          quotaResetAt: toIsoString(aiMeta.settlement.quotaResetAt)
+        }
+      : undefined
   };
 };
 

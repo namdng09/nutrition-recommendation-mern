@@ -111,6 +111,23 @@ export interface AiRecommendedScheduleResponse {
   notes?: string;
   createdAt?: string;
   updatedAt?: string;
+  aiUsage?: {
+    endpoint: 'recommend_daily_meals' | 'recommend_daily_workout';
+    provider: string;
+    model: string;
+    inputTokens: number;
+    outputTokens: number;
+    totalTokens: number;
+    reservedTokens: number;
+    chargedTokens: number;
+    refundedTokens: number;
+  };
+  aiQuota?: {
+    membershipLevel: string;
+    dailyTokenLimit: number;
+    remainingTokens: number;
+    quotaResetAt?: string;
+  };
 }
 
 export type DailyMealRecommendationResponse = AiRecommendedScheduleResponse;
