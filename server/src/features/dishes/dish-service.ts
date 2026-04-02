@@ -50,7 +50,7 @@ export const DishService = {
       servings: data.servings || 1,
       tags: data.tags,
       isActive: data.isActive ?? true,
-      isPublic: data.isPublic ?? false
+      isPublic: data.isPublic
     });
 
     if (image) await saveDishImage(newDish, image);

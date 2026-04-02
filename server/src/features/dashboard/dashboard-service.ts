@@ -25,7 +25,7 @@ export const DashboardService = {
       ...(createdAtFilter && { createdAt: createdAtFilter })
     };
 
-    const [statusMetrics, totalVipUsers] = await Promise.all([
+    const [statusMetrics, totalVipUsers, totalUsers] = await Promise.all([
       PaymentModel.aggregate<{
         _id: string;
         revenue: number;
@@ -65,7 +65,8 @@ export const DashboardService = {
           }
         }
       ]),
-      UserModel.countDocuments({ membershipLevel: MEMBERSHIP_LEVEL.VIP })
+      UserModel.countDocuments({ membershipLevel: MEMBERSHIP_LEVEL.VIP }),
+      UserModel.countDocuments({})
     ]);
 
     const metricsMap = new Map(statusMetrics.map(m => [m._id, m]));
@@ -87,7 +88,8 @@ export const DashboardService = {
         totalRevenue: sum('revenue'),
         totalUpgrades: sum('upgradeCount'),
         totalCompletedUpgrades: sum('completedUpgradeCount'),
-        totalVipUsers
+        totalVipUsers,
+        totalUsers
       },
       statusBreakdown: statusBreakdown.map(({ status, count, revenue }) => ({
         status,

@@ -153,10 +153,6 @@ const userSchema = new Schema(
     allergens: [{ type: String, enum: Object.values(ALLERGEN) }],
     activityLevel: { type: String, enum: Object.values(ACTIVITY_LEVEL) },
     medicalHistory: { type: [String], default: [] },
-    loginStreak: {
-      count: { type: Number, default: 0 },
-      lastLoginDate: { type: Date }
-    },
     rank: { type: String, enum: Object.values(USER_RANK) },
     achievements: [
       {

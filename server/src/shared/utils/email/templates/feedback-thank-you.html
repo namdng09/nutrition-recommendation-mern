@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cảm ơn bạn đã gửi feedback</title>
+  </head>
+  <body
+    style="
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f6f8;
+      color: #1f2937;
+    "
+  >
+    <div style="max-width: 620px; margin: 0 auto; background-color: #ffffff">
+      <div
+        style="
+          background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+          padding: 28px 20px;
+          text-align: center;
+        "
+      >
+        <h1 style="margin: 0; font-size: 24px; color: #ffffff">
+          Cảm ơn bạn đã gửi feedback
+        </h1>
+      </div>
+
+      <div style="padding: 30px 26px">
+        <p style="font-size: 16px; line-height: 1.7; margin-top: 0">
+          Chào {{name}},
+        </p>
+
+        <p style="font-size: 15px; line-height: 1.7; color: #374151">
+          Cảm ơn bạn vì đã góp phần xây dựng hệ thống của chúng tôi.
+          Feedback của bạn đã được ghi nhận và đội ngũ quản trị sẽ xem xét trong
+          thời gian sớm nhất.
+        </p>
+
+        <div
+          style="
+            background-color: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin: 22px 0;
+          "
+        >
+          <p style="margin: 0 0 8px 0; font-size: 14px; color: #1f2937">
+            <strong>Loại feedback:</strong> {{feedbackType}}
+          </p>
+          <p
+            style="
+              margin: 0;
+              font-size: 14px;
+              color: #4b5563;
+              word-break: break-word;
+            "
+          >
+            <strong>Nội dung:</strong> {{feedbackContent}}
+          </p>
+        </div>
+
+        <p style="font-size: 14px; color: #6b7280; margin-bottom: 0">
+          Trân trọng,<br />
+          PNRS Team
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

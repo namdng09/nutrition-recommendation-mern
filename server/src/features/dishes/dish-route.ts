@@ -54,7 +54,7 @@ router.put(
 router.delete(
   '/:id',
   authenticate(),
-  authorize([ROLE.NUTRITIONIST, ROLE.ADMIN]),
+  authorize([ROLE.USER, ROLE.NUTRITIONIST, ROLE.ADMIN]),
   asyncHandler(DishController.deleteDish)
 );
 
