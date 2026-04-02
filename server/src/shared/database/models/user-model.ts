@@ -120,9 +120,15 @@ const userSchema = new Schema(
       default: ROLE.USER
     },
     dob: { type: Date },
-    membershipLevel: { type: String, enum: Object.values(MEMBERSHIP_LEVEL) },
+    membershipLevel: {
+      type: String,
+      enum: Object.values(MEMBERSHIP_LEVEL),
+      default: MEMBERSHIP_LEVEL.NORMAL
+    },
     membershipExpiresAt: { type: Date },
     aiTokens: { type: Number, default: 0 },
+    aiDailyTokenLimit: { type: Number, default: 0 },
+    aiQuotaResetAt: { type: Date },
     height: { type: Number },
     bodyfat: { type: String, enum: Object.values(BODYFAT) },
     diet: { type: String, enum: Object.values(DIET) },
