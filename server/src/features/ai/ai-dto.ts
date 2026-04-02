@@ -108,6 +108,23 @@ export interface AiRecommendedScheduleResponse {
     durationTarget?: { seconds: number };
     isCompleted: boolean;
   }>;
+  totalNutrition?: {
+    nutrients: Array<{
+      label?: string;
+      value?: number;
+      unit?: string;
+    }>;
+    minerals: Array<{
+      label?: string;
+      value?: number;
+      unit?: string;
+    }>;
+    vitamins: Array<{
+      label?: string;
+      value?: number;
+      unit?: string;
+    }>;
+  };
   notes?: string;
   createdAt?: string;
   updatedAt?: string;

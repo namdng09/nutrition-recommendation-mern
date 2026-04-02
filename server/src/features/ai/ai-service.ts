@@ -485,7 +485,7 @@ export const AiService = {
         meals: scheduleMeals
       });
 
-      return toAiRecommendedScheduleResponse(schedule.toObject(), aiMeta);
+      return await toAiRecommendedScheduleResponse(schedule.toObject(), aiMeta);
     } catch (error) {
       if (reservation && !aiInvocation) {
         await refundReservedAiTokens(userId, reservation);
@@ -603,7 +603,7 @@ export const AiService = {
         workout
       });
 
-      return toAiRecommendedScheduleResponse(schedule.toObject(), aiMeta);
+      return await toAiRecommendedScheduleResponse(schedule.toObject(), aiMeta);
     } catch (error) {
       if (reservation && !aiInvocation) {
         await refundReservedAiTokens(userId, reservation);
@@ -2467,10 +2467,109 @@ const toIsoString = (value: unknown): string | undefined => {
   return undefined;
 };
 
+const addNutritionItemsTotal = (
+  target: Map<string, NutritionItem>,
+  items: NutritionItem[] | null | undefined,
+  multiplier: number
+) => {
+  if (!items?.length) return;
+
+  for (const item of items) {
+    const label = item?.label ?? undefined;
+    const unit = item?.unit ?? undefined;
+    const value = item?.value;
+    if (!label || !unit || typeof value !== 'number') continue;
+
+    const key = `${label}|${unit}`;
+    const current = target.get(key);
+    if (current) {
+      current.value = (current.value ?? 0) + value * multiplier;
+    } else {
+      target.set(key, {
+        label,
+        unit,
+        value: value * multiplier
+      });
+    }
+  }
+};
+
+const buildTotalNutritionFromSchedule = async (scheduleObj: any) => {
+  const dishServingPairs: Array<{ dishId: string; servings: number }> = [];
+  const uniqueDishIds = new Set<string>();
+
+  (scheduleObj.meals ?? []).forEach((meal: any) => {
+    (meal.dishes ?? []).forEach((dish: any) => {
+      const dishId = dish.dishId?.toString();
+      if (!dishId) return;
+
+      const servings =
+        typeof dish.servings === 'number' && Number.isFinite(dish.servings)
+          ? dish.servings
+          : 1;
+
+      dishServingPairs.push({
+        dishId,
+        servings
+      });
+      uniqueDishIds.add(dishId);
+    });
+  });
+
+  if (!uniqueDishIds.size) {
+    return {
+      nutrients: [],
+      minerals: [],
+      vitamins: []
+    };
+  }
+
+  const dishes = await DishModel.find({
+    _id: { $in: Array.from(uniqueDishIds) }
+  })
+    .select('nutrition')
+    .lean();
+
+  const nutritionByDishId = new Map<string, DishNutrition>(
+    dishes.map(dish => [dish._id.toString(), (dish as any).nutrition ?? null])
+  );
+
+  const totalNutrients = new Map<string, NutritionItem>();
+  const totalMinerals = new Map<string, NutritionItem>();
+  const totalVitamins = new Map<string, NutritionItem>();
+
+  dishServingPairs.forEach(({ dishId, servings }) => {
+    const nutrition = nutritionByDishId.get(dishId);
+    if (!nutrition) return;
+
+    addNutritionItemsTotal(totalNutrients, nutrition.nutrients, servings);
+    addNutritionItemsTotal(totalMinerals, nutrition.minerals, servings);
+    addNutritionItemsTotal(totalVitamins, nutrition.vitamins, servings);
+  });
+
+  return {
+    nutrients: Array.from(totalNutrients.values()).map(item => ({
+      label: item.label ?? undefined,
+      unit: item.unit ?? undefined,
+      value: item.value ?? undefined
+    })),
+    minerals: Array.from(totalMinerals.values()).map(item => ({
+      label: item.label ?? undefined,
+      unit: item.unit ?? undefined,
+      value: item.value ?? undefined
+    })),
+    vitamins: Array.from(totalVitamins.values()).map(item => ({
+      label: item.label ?? undefined,
+      unit: item.unit ?? undefined,
+      value: item.value ?? undefined
+    }))
+  };
+};
+
 const toAiRecommendedScheduleResponse = (
   scheduleObj: any,
   aiMeta?: AiResponseMeta
-): DailyMealRecommendationResponse => {
+): Promise<DailyMealRecommendationResponse> => {
   const sanitizedMeals: DailyMealRecommendationResponse['meals'] = [];
   (scheduleObj.meals ?? []).forEach((meal: any) => {
     const dishes: DailyMealRecommendationResponse['meals'][number]['dishes'] =
@@ -2531,8 +2630,7 @@ const toAiRecommendedScheduleResponse = (
   });
 
   const dateIso = toIsoString(scheduleObj.date) ?? new Date().toISOString();
-
-  return {
+  return buildTotalNutritionFromSchedule(scheduleObj).then(totalNutrition => ({
     scheduleId: scheduleObj._id.toString(),
     date: dateIso,
     dayOfWeek: scheduleObj.dayOfWeek ?? getDayOfWeek(new Date(dateIso)),
@@ -2542,6 +2640,7 @@ const toAiRecommendedScheduleResponse = (
     },
     meals: sanitizedMeals,
     workout: sanitizedWorkout,
+    totalNutrition,
     notes: scheduleObj.notes ?? undefined,
     createdAt: toIsoString(scheduleObj.createdAt),
     updatedAt: toIsoString(scheduleObj.updatedAt),
@@ -2566,7 +2665,7 @@ const toAiRecommendedScheduleResponse = (
           quotaResetAt: toIsoString(aiMeta.settlement.quotaResetAt)
         }
       : undefined
-  };
+  }));
 };
 
 const normalizeContent = (content: unknown): string => {
