@@ -68,9 +68,18 @@ export const DishService = {
     userId?: string
   ): Promise<PaginateResult<Dish>> => {
     const options = buildPaginateOptions(parsed);
-    let { filter } = parsed;
+    let filter = { ...((parsed.filter ?? {}) as Record<string, any>) };
+
+    const includeBlocked = filter.includeBlocked === true;
+    const favoritesOnly = filter.favoritesOnly === true;
+    delete filter.includeBlocked;
+    delete filter.favoritesOnly;
 
     let favoriteDishIds: Set<string> = new Set();
+
+    if (favoritesOnly && !userId) {
+      throw createHttpError(401, 'Cần đăng nhập để lọc món ăn yêu thích');
+    }
 
     if (userId) {
       const user = await UserModel.findById(
@@ -78,14 +87,17 @@ export const DishService = {
         'blockDishes favoriteDishes'
       ).lean();
 
-      if (user?.blockDishes?.length) {
-        filter = { ...filter, _id: { $nin: user.blockDishes } };
+      const favoriteDishIdList = (user?.favoriteDishes ?? []).map(id =>
+        String(id)
+      );
+      favoriteDishIds = new Set(favoriteDishIdList);
+
+      if (favoritesOnly) {
+        filter = mergeIdScope(filter, { inIds: user?.favoriteDishes ?? [] });
       }
 
-      if (user?.favoriteDishes?.length) {
-        favoriteDishIds = new Set(
-          user.favoriteDishes.map((id: unknown) => String(id))
-        );
+      if (!includeBlocked && user?.blockDishes?.length) {
+        filter = mergeIdScope(filter, { ninIds: user.blockDishes });
       }
     }
 
@@ -252,6 +264,66 @@ export const DishService = {
     return result;
   }
 };
+
+function mergeIdScope(
+  filter: Record<string, any>,
+  scope: { inIds?: unknown[]; ninIds?: unknown[] }
+) {
+  const inIds = scope.inIds ?? [];
+  const ninIds = scope.ninIds ?? [];
+  const hasInScope = Object.prototype.hasOwnProperty.call(scope, 'inIds');
+  const hasNinScope = Object.prototype.hasOwnProperty.call(scope, 'ninIds');
+  const currentIdFilter = filter._id;
+
+  let nextIdFilter: Record<string, unknown>;
+  if (
+    currentIdFilter &&
+    typeof currentIdFilter === 'object' &&
+    !Array.isArray(currentIdFilter)
+  ) {
+    nextIdFilter = { ...currentIdFilter };
+  } else if (typeof currentIdFilter !== 'undefined') {
+    nextIdFilter = { $eq: currentIdFilter };
+  } else {
+    nextIdFilter = {};
+  }
+
+  if (hasInScope) {
+    if (Array.isArray(nextIdFilter.$in)) {
+      nextIdFilter.$in = intersectIds(nextIdFilter.$in as unknown[], inIds);
+    } else {
+      nextIdFilter.$in = inIds;
+    }
+  }
+
+  if (hasNinScope && ninIds.length > 0) {
+    if (Array.isArray(nextIdFilter.$nin)) {
+      nextIdFilter.$nin = uniqByString([
+        ...(nextIdFilter.$nin as unknown[]),
+        ...ninIds
+      ]);
+    } else {
+      nextIdFilter.$nin = ninIds;
+    }
+  }
+
+  return { ...filter, _id: nextIdFilter };
+}
+
+function intersectIds(idsA: unknown[], idsB: unknown[]) {
+  const allowed = new Set(idsB.map(id => String(id)));
+  return idsA.filter(id => allowed.has(String(id)));
+}
+
+function uniqByString(ids: unknown[]) {
+  const seen = new Set<string>();
+  return ids.filter(id => {
+    const key = String(id);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
 
 async function resolveIngredientSnapshots(
   items: CreateDishRequest['ingredients']
