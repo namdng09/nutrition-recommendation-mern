@@ -77,49 +77,59 @@ const aiExercisePickSchema = z
 
 export const aiWorkoutRecommendationSchema = z.array(aiExercisePickSchema);
 
-type NutritionItemResponse = {
-  label?: string | null;
-  unit?: string | null;
-  value?: number | null;
-};
-
-type DishNutritionResponse = {
-  nutrients?: NutritionItemResponse[] | null;
-  minerals?: NutritionItemResponse[] | null;
-  vitamins?: NutritionItemResponse[] | null;
-} | null;
-
-export interface DailyMealRecommendationResponse {
+export interface AiRecommendedScheduleResponse {
+  scheduleId: string;
   date: string;
   dayOfWeek: string;
+  user: {
+    _id: string;
+    name: string;
+  };
   meals: Array<{
     mealType: string;
+    notes?: string;
     dishes: Array<{
       dishId: string;
       name: string;
+      energy?: number;
       servings: number;
       image?: string;
-      nutrition: DishNutritionResponse;
+      isEaten: boolean;
     }>;
   }>;
-}
-
-export interface DailyWorkoutRecommendationResponse {
-  schedule: {
-    _id?: string;
-    date?: string;
-    dayOfWeek?: string;
-    user?: any;
-    workout: Array<{
-      exerciseId: string;
-      exerciseName: string;
-      exerciseType: string;
-      exerciseTutorial: string;
-      logType: string;
-      distanceTarget?: { value: number; unit: string };
-      weightAndRepsTarget?: { weight?: number; reps: number; sets?: number };
-      durationTarget?: { seconds: number };
-      isCompleted: boolean;
-    }>;
+  workout: Array<{
+    exerciseId: string;
+    exerciseName: string;
+    exerciseType: string;
+    exerciseTutorial: string;
+    logType: string;
+    distanceTarget?: { value: number; unit: string };
+    weightAndRepsTarget?: { weight?: number; reps: number; sets?: number };
+    durationTarget?: { seconds: number };
+    isCompleted: boolean;
+  }>;
+  notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  aiUsage?: {
+    endpoint: 'recommend_daily_meals' | 'recommend_daily_workout';
+    provider: string;
+    model: string;
+    inputTokens: number;
+    outputTokens: number;
+    totalTokens: number;
+    reservedTokens: number;
+    chargedTokens: number;
+    refundedTokens: number;
+  };
+  aiQuota?: {
+    membershipLevel: string;
+    dailyTokenLimit: number;
+    remainingTokens: number;
+    quotaResetAt?: string;
   };
 }
+
+export type DailyMealRecommendationResponse = AiRecommendedScheduleResponse;
+
+export type DailyWorkoutRecommendationResponse = AiRecommendedScheduleResponse;
