@@ -74,7 +74,8 @@ const AdminLayout = () => {
       'manage-posts': 'Quản lý bài viết',
       'create-post': 'Tạo bài viết',
       'manage-payments': 'Quản lý thanh toán',
-      payments: 'Thanh toán'
+      payments: 'Thanh toán',
+      feedbacks: 'Quản lý feedback'
     };
 
     const items = [];

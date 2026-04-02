@@ -3,6 +3,7 @@ import {
   BicepsFlexed,
   Ham,
   Home,
+  MessageSquare,
   Package,
   StickyNote,
   Users,
@@ -88,6 +89,11 @@ export function AdminSidebar({ ...props }) {
           title: 'Bài viết',
           url: '/admin/manage-posts',
           icon: StickyNote
+        },
+        {
+          title: 'Feedback',
+          url: '/admin/feedbacks',
+          icon: MessageSquare
         }
       ]
     },
@@ -136,6 +142,11 @@ export function AdminSidebar({ ...props }) {
           title: 'Bài viết',
           url: '/nutritionist/manage-posts',
           icon: StickyNote
+        },
+        {
+          title: 'Feedback',
+          url: '/nutritionist/feedbacks',
+          icon: MessageSquare
         }
       ]
     }

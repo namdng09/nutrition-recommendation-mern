@@ -322,6 +322,10 @@ const router = createBrowserRouter([
             Component: lazy(
               () => import('~/app/nutritionist/manage-posts/[id]/page')
             )
+          },
+          {
+            path: 'feedbacks/',
+            Component: lazy(() => import('~/app/nutritionist/feedbacks/page'))
           }
         ]
       },
@@ -423,6 +427,10 @@ const router = createBrowserRouter([
             Component: lazy(
               () => import('~/app/admin/manage-exercises/[id]/page')
             )
+          },
+          {
+            path: 'feedbacks/',
+            Component: lazy(() => import('~/app/admin/feedbacks/page'))
           }
         ]
       },
