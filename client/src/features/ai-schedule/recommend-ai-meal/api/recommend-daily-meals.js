@@ -12,16 +12,22 @@ const recommendDailyMeals = async ({ date }) => {
   return response.data;
 };
 
-export const useRecommendDailyMeals = ({ onSuccess } = {}) => {
+export const useRecommendDailyMeals = ({ onSuccess, scheduleId } = {}) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: recommendDailyMeals,
 
-    onSuccess: res => {
-      queryClient.invalidateQueries({
+    onSuccess: async res => {
+      await queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.SCHEDULES
       });
+
+      if (scheduleId) {
+        await queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.SCHEDULE(scheduleId)
+        });
+      }
 
       toast.success(res.message || 'Tạo thực đơn hằng ngày bằng AI thành công');
       onSuccess?.(res.data);

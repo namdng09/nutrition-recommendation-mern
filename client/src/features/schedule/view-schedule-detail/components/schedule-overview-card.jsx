@@ -16,25 +16,26 @@ export default function ScheduleOverviewCard({ schedule, totalCalories }) {
         </div>
         <span>Tổng quan ngày</span>
       </h3>
+
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
         <InfoItem
           icon={<HiOutlineUser size={18} />}
           label='Người dùng'
-          value={schedule.user.name}
+          value={schedule?.user?.name || '--'}
           colorClass='text-green-light'
         />
 
         <InfoItem
           icon={<HiOutlineCalendar size={18} />}
           label='Thời gian'
-          value={schedule.dayOfWeek}
+          value={schedule?.dayOfWeek || '--'}
           colorClass='text-blue-light'
         />
 
         <InfoItem
           icon={<HiOutlineCollection size={18} />}
           label='Chế độ'
-          value={`${schedule.meals.length} bữa ăn`}
+          value={`${schedule?.meals?.length || 0} bữa ăn`}
           colorClass='text-cyan-light'
         />
 

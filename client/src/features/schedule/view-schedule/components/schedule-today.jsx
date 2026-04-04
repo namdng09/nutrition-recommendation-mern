@@ -1,14 +1,15 @@
-import { format, isSameDay, startOfDay } from 'date-fns';
+import { useQueryClient } from '@tanstack/react-query';
+import { format, isSameDay } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useState } from 'react';
 
 import { useRecommendDailyMeals } from '~/features/ai-schedule/recommend-ai-meal/api/recommend-daily-meals';
 import { useRecommendDailyWorkout } from '~/features/ai-schedule/recommend-ai-workout/api/recommend-daily-workout';
+import { QUERY_KEYS } from '~/lib/query-keys';
 
 import AddWorkoutModal from '../../add-exercise-workout/components/add-workout-modal';
 import { useCreateSchedule } from '../../create-schedule/api/create-schedule';
 import EditWorkoutModal from '../../update-exercise-workout/components/edit-workout-modal';
-import { useUpdateScheduleMeals } from '../../update-schedule/api/update-schedule';
 import ScheduleTodayDetail from '../../view-schedule-detail/components/schedule-today-detail';
 import { useSchedules } from '../api/view-schedule';
 import ScheduleEmptyState from './schedule-empty-state';
@@ -16,11 +17,10 @@ import ScheduleTodayCard from './schedule-today-card';
 import ScheduleTodayWorkout from './workout/schedule-today-workout';
 
 export default function ScheduleToday({ selectedDate = new Date() }) {
+  const queryClient = useQueryClient();
   const { data } = useSchedules({ limit: 1000 });
 
   const { mutate: createSchedule, isPending: isCreating } = useCreateSchedule();
-  const { mutate: updateScheduleMeals } = useUpdateScheduleMeals();
-
   const { mutate: generateAI, isPending: isGeneratingAI } =
     useRecommendDailyMeals();
 
@@ -50,23 +50,15 @@ export default function ScheduleToday({ selectedDate = new Date() }) {
     if (!schedule?._id) return;
 
     generateAI(
-      { date: startOfDay(selectedDate) },
+      { date: format(selectedDate, 'yyyy-MM-dd') },
       {
-        onSuccess: res => {
-          const aiData = res.data;
+        onSuccess: async () => {
+          await queryClient.invalidateQueries({
+            queryKey: QUERY_KEYS.SCHEDULES
+          });
 
-          const formattedMeals = aiData.meals.map(meal => ({
-            mealType: meal.mealType,
-            notes: '',
-            dishes: meal.dishes.map(dish => ({
-              dishId: dish.dishId,
-              servings: dish.servings ?? 1
-            }))
-          }));
-
-          updateScheduleMeals({
-            scheduleId: schedule._id,
-            meals: formattedMeals
+          await queryClient.invalidateQueries({
+            queryKey: QUERY_KEYS.SCHEDULE(schedule._id)
           });
         }
       }
@@ -77,7 +69,7 @@ export default function ScheduleToday({ selectedDate = new Date() }) {
     if (!schedule?._id) return;
 
     generateWorkoutAI(
-      { date: format(startOfDay(selectedDate), 'yyyy-MM-dd') },
+      { date: format(selectedDate, 'yyyy-MM-dd') },
       {
         onSuccess: data => {
           const aiSchedule = data?.schedule;
