@@ -20,5 +20,6 @@ export const QUERY_KEYS = {
   NUTRITIONISTS: ['nutritionists'],
   NUTRITIONIST: id => ['nutritionist', id],
   EXERCISES: ['exercises'],
-  EXERCISE: id => ['exercise', id]
+  EXERCISE: id => ['exercise', id],
+  FEEDBACKS: ['feedbacks']
 };

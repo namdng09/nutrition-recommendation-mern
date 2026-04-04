@@ -53,13 +53,17 @@ export default function ScheduleToday({ selectedDate = new Date() }) {
       { date: format(selectedDate, 'yyyy-MM-dd') },
       {
         onSuccess: async () => {
-          await queryClient.invalidateQueries({
-            queryKey: QUERY_KEYS.SCHEDULES
-          });
-
-          await queryClient.invalidateQueries({
-            queryKey: QUERY_KEYS.SCHEDULE(schedule._id)
-          });
+          await Promise.all([
+            queryClient.invalidateQueries({
+              queryKey: QUERY_KEYS.SCHEDULES
+            }),
+            queryClient.invalidateQueries({
+              queryKey: QUERY_KEYS.SCHEDULE(schedule._id)
+            }),
+            queryClient.invalidateQueries({
+              queryKey: QUERY_KEYS.PROFILE
+            })
+          ]);
         }
       }
     );
