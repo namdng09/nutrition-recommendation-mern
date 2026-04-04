@@ -68,15 +68,9 @@ export default function ScheduleToday({ selectedDate = new Date() }) {
   const handleGenerateWorkoutAI = () => {
     if (!schedule?._id) return;
 
-    generateWorkoutAI(
-      { date: format(selectedDate, 'yyyy-MM-dd') },
-      {
-        onSuccess: data => {
-          const aiSchedule = data?.schedule;
-          if (!aiSchedule) return;
-        }
-      }
-    );
+    generateWorkoutAI({
+      date: format(selectedDate, 'yyyy-MM-dd')
+    });
   };
 
   const handleOpenEditWorkout = workout => {
