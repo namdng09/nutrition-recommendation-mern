@@ -9,15 +9,24 @@ import { useAddDishToFavorite } from '../api/add-dish-to-favorite';
 export default function DishFavoriteDetailButton({ dishId, className = '' }) {
   const { data: profile } = useProfile();
 
-  const { mutate: addFav } = useAddDishToFavorite();
-  const { mutate: removeFav } = useRemoveDishFromFavorite();
+  const { mutate: addFav, isPending: isAdding } = useAddDishToFavorite();
+  const { mutate: removeFav, isPending: isRemoving } =
+    useRemoveDishFromFavorite();
 
-  const favIds = profile?.favoriteDishes || [];
-  const isFav = favIds.includes(dishId);
+  const favoriteDishes = profile?.favoriteDishes || [];
+
+  const favoriteDishIds = favoriteDishes.map(item =>
+    typeof item === 'string' ? item : item?._id
+  );
+
+  const isFav = favoriteDishIds.includes(dishId);
+  const isLoading = isAdding || isRemoving;
 
   const handleClick = e => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (isLoading) return;
 
     if (isFav) removeFav(dishId);
     else addFav(dishId);
@@ -28,25 +37,20 @@ export default function DishFavoriteDetailButton({ dishId, className = '' }) {
       onClick={handleClick}
       size='icon'
       variant='ghost'
+      disabled={isLoading}
       className={`
-        rounded-full
-        bg-white/80 backdrop-blur
-        border border-border
-        hover:bg-pink-50
-        transition
+        rounded-full border border-border bg-white/80
+        backdrop-blur transition hover:bg-pink-50
         ${className}
       `}
     >
       <Heart
         size={18}
-        className={`
-          transition-all duration-200
-          ${
-            isFav
-              ? 'text-pink-500 fill-pink-500 scale-110'
-              : 'text-pink-500 fill-none'
-          }
-        `}
+        className={`transition-all duration-200 ${
+          isFav
+            ? 'scale-110 fill-pink-500 text-pink-500'
+            : 'fill-none text-pink-500'
+        }`}
       />
     </Button>
   );
