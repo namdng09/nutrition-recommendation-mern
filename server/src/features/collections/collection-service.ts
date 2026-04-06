@@ -2,10 +2,12 @@ import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
 import type { HydratedDocument, PaginateResult, Types } from 'mongoose';
 
+import { REVIEW_STATUS } from '~/shared/constants/review-status';
 import { ROLE } from '~/shared/constants/role';
 import {
   CollectionModel,
   DishModel,
+  ReviewModel,
   UserModel
 } from '~/shared/database/models';
 import type { Collection } from '~/shared/database/models/collection-model';
@@ -31,6 +33,11 @@ export const CollectionService = {
     data: CreateCollectionRequest,
     image?: Express.Multer.File
   ) => {
+    // Check private dishes before creating collection
+    if (data.dishes && data.dishes.length > 0) {
+      await validatePrivateDishesApproved(data.dishes, userId);
+    }
+
     const dishesData =
       data.dishes && data.dishes.length > 0
         ? await resolveDishSnapshots(data.dishes)
@@ -261,6 +268,9 @@ export const CollectionService = {
       );
     }
 
+    // Check private dishes before adding
+    await validatePrivateDishesApproved(data.dishIds, userId);
+
     const newDishes = await resolveDishSnapshots(data.dishIds);
 
     collection.dishes.push(...newDishes);
@@ -333,6 +343,58 @@ async function resolveDishSnapshots(dishIds: string[]) {
     energy: getDishEnergy(dish),
     image: dish.image
   }));
+}
+
+async function validatePrivateDishesApproved(
+  dishIds: string[],
+  userId: string
+) {
+  if (dishIds.length === 0) return;
+
+  const dishes = await DishModel.find({ _id: { $in: dishIds } })
+    .select('isPublic user')
+    .lean();
+
+  // Check private dishes owned by user
+  const privateDishes = dishes.filter(
+    dish => !dish.isPublic && dish.user?._id.toString() === userId
+  );
+
+  if (privateDishes.length > 0) {
+    const privateDishIds = privateDishes.map(dish => dish._id.toString());
+    const reviews = await ReviewModel.find({
+      dishId: { $in: privateDishIds },
+      userId,
+      status: REVIEW_STATUS.APPROVED
+    }).lean();
+
+    const approvedDishIds = new Set(
+      reviews.map(review => review.dishId.toString())
+    );
+
+    const unapprovedDishes = privateDishes.filter(
+      dish => !approvedDishIds.has(dish._id.toString())
+    );
+
+    if (unapprovedDishes.length > 0) {
+      throw createHttpError(
+        400,
+        'Món ăn riêng tư chưa được duyệt, không thể thêm vào bộ sưu tập'
+      );
+    }
+  }
+
+  // Check private dishes not owned by user
+  const otherPrivateDishes = dishes.filter(
+    dish => !dish.isPublic && dish.user?._id.toString() !== userId
+  );
+
+  if (otherPrivateDishes.length > 0) {
+    throw createHttpError(
+      403,
+      'Bạn không có quyền sử dụng món ăn riêng tư của người khác'
+    );
+  }
 }
 
 async function saveCollectionImage(
