@@ -6,12 +6,14 @@ import passport from 'passport';
 
 import { registerAllAchievementHandlers } from '~/features/achievements/handlers';
 import { configurePassport, connectDB } from '~/shared/config';
+import { registerAllEventHandlers } from '~/shared/events/handlers';
 import { errorHandler } from '~/shared/middlewares';
 import router from '~/shared/routes/router';
 
 const app = express();
 connectDB();
 registerAllAchievementHandlers();
+registerAllEventHandlers();
 
 configurePassport();
 app.use(passport.initialize());
