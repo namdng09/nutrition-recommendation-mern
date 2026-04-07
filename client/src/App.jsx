@@ -5,6 +5,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { RouterProvider } from 'react-router';
 
+import { Toaster } from '~/components/ui/sonner';
 import { queryClient } from '~/lib/query-client';
 import router from '~/routes/router';
 import store from '~/store/index';
@@ -20,6 +21,7 @@ const App = () => {
           enableSystem={true}
           disableTransitionOnChange
         >
+          <Toaster position='top-right' />
           <RouterProvider router={router} />
         </ThemeProvider>
         {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
