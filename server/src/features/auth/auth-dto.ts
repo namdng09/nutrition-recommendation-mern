@@ -29,7 +29,11 @@ export const signUpRequestSchema = z.object({
   avatar: z.file().optional(),
   password: z
     .string('Mật khẩu là bắt buộc')
-    .min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+    .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/,
+      'Mật khẩu phải gồm chữ thường, chữ hoa, số và ký tự đặc biệt'
+    ),
   role: z
     .enum([ROLE.USER, ROLE.NUTRITIONIST], {
       error: 'Vai trò không hợp lệ'
@@ -59,7 +63,11 @@ export type ForgotPasswordRequest = z.infer<typeof forgotPasswordRequestSchema>;
 export const resetPasswordRequestSchema = z.object({
   password: z
     .string('Mật khẩu là bắt buộc')
-    .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
+    .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/,
+      'Mật khẩu phải gồm chữ thường, chữ hoa, số và ký tự đặc biệt'
+    )
 });
 export type ResetPasswordRequest = z.infer<typeof resetPasswordRequestSchema>;
 
