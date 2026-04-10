@@ -3,7 +3,7 @@ import createHttpError from 'http-errors';
 import type { PaginateResult } from 'mongoose';
 
 import { REVIEW_STATUS } from '~/shared/constants/review-status';
-import { DishModel, UserModel } from '~/shared/database/models';
+import { DishModel } from '~/shared/database/models';
 import type { Dish } from '~/shared/database/models/dish-model';
 import {
   buildPaginateOptions,
@@ -19,11 +19,6 @@ export const ReviewService = {
       throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
     }
 
-    const user = await UserModel.findById(userId).lean();
-    if (!user) {
-      throw createHttpError(404, 'Người dùng không tồn tại');
-    }
-
     const dish = await DishModel.findById(data.dishId);
     if (!dish) {
       throw createHttpError(404, 'Không tìm thấy món ăn');
@@ -32,15 +27,12 @@ export const ReviewService = {
     if (dish.user?._id.toString() !== userId) {
       throw createHttpError(
         403,
-        'Bạn chỉ có thể submit món ăn do chính mình tạo'
+        'Bạn chỉ có thể gửi yêu cầu đánh giá món ăn do chính mình tạo'
       );
     }
 
     if (dish.isPublic) {
-      throw createHttpError(
-        400,
-        'Món ăn công khai không cần gửi đánh giá riêng tư'
-      );
+      throw createHttpError(400, 'Món ăn công khai không cần đánh giá');
     }
 
     const status = dish.evaluation?.status;
@@ -95,7 +87,7 @@ export const ReviewService = {
       .lean();
 
     if (!dish || !dish.evaluation?.status) {
-      throw createHttpError(404, 'Không tìm thấy yêu cầu đánh giá');
+      throw createHttpError(404, 'Không tìm thấy món ăn');
     }
 
     const isOpenForNutritionist =
