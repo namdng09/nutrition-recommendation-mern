@@ -250,17 +250,6 @@ export const DishService = {
     data: CreatePrivateDishRequest,
     image?: Express.Multer.File
   ) => {
-    const user = await UserModel.findById(userId).lean();
-    if (!user) {
-      throw createHttpError(404, 'Người dùng không tồn tại');
-    }
-    if (user.role !== ROLE.USER) {
-      throw createHttpError(
-        403,
-        'Chỉ người dùng mới có thể tạo món ăn riêng tư'
-      );
-    }
-
     const existingDish = await DishModel.findOne({ name: data.name });
     if (existingDish) {
       throw createHttpError(409, 'Món ăn với tên này đã tồn tại');
@@ -299,63 +288,20 @@ export const DishService = {
     parsed: QueryOptions,
     userId: string
   ): Promise<PaginateResult<Dish>> => {
-    const user = await UserModel.findById(userId, 'role').lean();
-    if (!user) {
-      throw createHttpError(404, 'Người dùng không tồn tại');
-    }
-    if (user.role !== ROLE.USER) {
-      throw createHttpError(
-        403,
-        'Chỉ người dùng mới có thể xem món ăn riêng tư'
-      );
-    }
-
     const options = buildPaginateOptions(parsed);
-    let { filter } = parsed;
 
-    filter = { ...filter, isPublic: false, 'user._id': userId };
+    const filter = {
+      ...parsed.filter,
+      isPublic: false,
+      'user._id': userId
+    };
 
-    let favoriteDishIds: Set<string> = new Set();
-
-    const userWithPreferences = await UserModel.findById(
-      userId,
-      'blockDishes favoriteDishes'
-    ).lean();
-
-    if (userWithPreferences?.blockDishes?.length) {
-      filter = { ...filter, _id: { $nin: userWithPreferences.blockDishes } };
-    }
-
-    if (userWithPreferences?.favoriteDishes?.length) {
-      favoriteDishIds = new Set(
-        userWithPreferences.favoriteDishes.map((id: unknown) => String(id))
-      );
-    }
-
-    const result = await DishModel.paginate(filter, options);
-
-    result.docs = result.docs.map(doc => ({
-      ...((doc as any).toObject?.() ?? doc),
-      isFavorited: favoriteDishIds.has(String((doc as any)._id))
-    })) as any;
-
-    return result;
+    return DishModel.paginate(filter, options);
   },
 
   viewPrivateDishDetail: async (id: string, userId: string) => {
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
-    }
-
-    const user = await UserModel.findById(userId, 'role favoriteDishes').lean();
-    if (!user) {
-      throw createHttpError(404, 'Người dùng không tồn tại');
-    }
-    if (user.role !== ROLE.USER) {
-      throw createHttpError(
-        403,
-        'Chỉ người dùng mới có thể xem món ăn riêng tư'
-      );
     }
 
     const dish = await DishModel.findById(id);
@@ -383,10 +329,7 @@ export const DishService = {
       return { ...ing, isDeleted };
     });
 
-    const isFavorited =
-      user.favoriteDishes?.some(fId => String(fId) === id) ?? false;
-
-    return { ...dishObj, ingredients, isFavorited };
+    return { ...dishObj, ingredients };
   },
 
   updatePrivateDish: async (
@@ -397,17 +340,6 @@ export const DishService = {
   ) => {
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
-    }
-
-    const user = await UserModel.findById(userId, 'role').lean();
-    if (!user) {
-      throw createHttpError(404, 'Người dùng không tồn tại');
-    }
-    if (user.role !== ROLE.USER) {
-      throw createHttpError(
-        403,
-        'Chỉ người dùng mới có thể cập nhật món ăn riêng tư'
-      );
     }
 
     const existingDish = await DishModel.findById(id);
@@ -458,17 +390,6 @@ export const DishService = {
   deletePrivateDish: async (id: string, userId: string) => {
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
-    }
-
-    const user = await UserModel.findById(userId, 'role').lean();
-    if (!user) {
-      throw createHttpError(404, 'Người dùng không tồn tại');
-    }
-    if (user.role !== ROLE.USER) {
-      throw createHttpError(
-        403,
-        'Chỉ người dùng mới có thể xóa món ăn riêng tư'
-      );
     }
 
     const dish = await DishModel.findById(id);
