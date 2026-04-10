@@ -6,20 +6,15 @@ export const submitReviewRequestSchema = z.object({
 
 export type SubmitReviewRequest = z.infer<typeof submitReviewRequestSchema>;
 
-export const addCommentRequestSchema = z.object({
-  content: z
-    .string('Nội dung bình luận không hợp lệ')
+export const evaluateReviewRequestSchema = z.object({
+  rating: z
+    .number('Điểm đánh giá không hợp lệ')
+    .min(1, 'Điểm đánh giá tối thiểu là 1')
+    .max(5, 'Điểm đánh giá tối đa là 5'),
+  feedback: z
+    .string('Nội dung phản hồi không hợp lệ')
     .trim()
-    .min(2, 'Nội dung bình luận phải có ít nhất 2 ký tự')
+    .min(2, 'Nội dung phản hồi phải có ít nhất 2 ký tự')
 });
 
-export type AddCommentRequest = z.infer<typeof addCommentRequestSchema>;
-
-export const rejectReviewRequestSchema = z.object({
-  rejectionReason: z
-    .string('Lý do từ chối không hợp lệ')
-    .trim()
-    .min(2, 'Lý do từ chối phải có ít nhất 2 ký tự')
-});
-
-export type RejectReviewRequest = z.infer<typeof rejectReviewRequestSchema>;
+export type EvaluateReviewRequest = z.infer<typeof evaluateReviewRequestSchema>;
