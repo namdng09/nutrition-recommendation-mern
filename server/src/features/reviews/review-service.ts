@@ -1,8 +1,10 @@
 import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
+import type { PaginateResult } from 'mongoose';
 
 import { REVIEW_STATUS } from '~/shared/constants/review-status';
 import { DishModel, UserModel } from '~/shared/database/models';
+import type { Dish } from '~/shared/database/models/dish-model';
 import {
   buildPaginateOptions,
   toObjectId,
@@ -59,7 +61,10 @@ export const ReviewService = {
     return dish.toObject();
   },
 
-  listReviews: async (parsed: QueryOptions, userId: string) => {
+  listReviews: async (
+    parsed: QueryOptions,
+    nutritionistId: string
+  ): Promise<PaginateResult<Dish>> => {
     const options = buildPaginateOptions(parsed);
     const baseFilter = parsed.filter ?? {};
 
@@ -69,20 +74,18 @@ export const ReviewService = {
         { 'evaluation.status': REVIEW_STATUS.PENDING },
         {
           'evaluation.status': REVIEW_STATUS.EVALUATED,
-          'evaluation.nutritionistId': userId
+          'evaluation.nutritionistId': nutritionistId
         }
       ]
     };
 
-    const result = await DishModel.paginate(dishFilter, {
+    return DishModel.paginate(dishFilter, {
       ...options,
       select: 'name image user evaluation createdAt updatedAt'
-    } as any);
-
-    return result;
+    });
   },
 
-  viewReviewDetail: async (dishId: string, userId: string) => {
+  viewReviewDetail: async (dishId: string, nutritionistId: string) => {
     if (!validateObjectId(dishId)) {
       throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
     }
@@ -98,7 +101,7 @@ export const ReviewService = {
     const isOpenForNutritionist =
       dish.evaluation?.status === REVIEW_STATUS.PENDING ||
       (dish.evaluation?.status === REVIEW_STATUS.EVALUATED &&
-        String(dish.evaluation?.nutritionistId) === userId);
+        String(dish.evaluation?.nutritionistId) === nutritionistId);
 
     if (!isOpenForNutritionist) {
       throw createHttpError(403, 'Bạn không có quyền xem yêu cầu đánh giá này');
