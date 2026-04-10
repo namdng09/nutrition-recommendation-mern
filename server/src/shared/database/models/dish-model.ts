@@ -8,6 +8,7 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 import { ALLERGEN } from '~/shared/constants/allergen';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
 import { NUTRITION_FOCUS } from '~/shared/constants/nutrition-focus';
+import { REVIEW_STATUS } from '~/shared/constants/review-status';
 import { UNIT } from '~/shared/constants/unit';
 
 import { nutritionSchema } from './ingredient-model';
@@ -62,7 +63,14 @@ const dishSchema = new Schema(
     tags: [{ type: String }],
     nutritionFocus: [
       { type: String, enum: Object.values(NUTRITION_FOCUS), required: true }
-    ]
+    ],
+    evaluation: {
+      nutritionistId: { type: Schema.Types.ObjectId, ref: 'User' },
+      rating: { type: Number, min: 1, max: 5 },
+      feedback: { type: String },
+      evaluatedAt: { type: Date },
+      status: { type: String, enum: Object.values(REVIEW_STATUS) }
+    }
   },
   {
     timestamps: true
