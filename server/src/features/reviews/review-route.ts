@@ -6,8 +6,7 @@ import { asyncHandler } from '~/shared/utils';
 
 import { ReviewController } from './review-controller';
 import {
-  addCommentRequestSchema,
-  rejectReviewRequestSchema,
+  evaluateReviewRequestSchema,
   submitReviewRequestSchema
 } from './review-dto';
 
@@ -36,33 +35,11 @@ router.get(
 );
 
 router.post(
-  '/:id/pick-up',
+  '/:id/evaluate',
   authenticate(),
   authorize([ROLE.NUTRITIONIST]),
-  asyncHandler(ReviewController.pickUpReview)
-);
-
-router.post(
-  '/:id/comments',
-  authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
-  validate(addCommentRequestSchema.shape),
-  asyncHandler(ReviewController.addComment)
-);
-
-router.post(
-  '/:id/approve',
-  authenticate(),
-  authorize([ROLE.NUTRITIONIST]),
-  asyncHandler(ReviewController.approveReview)
-);
-
-router.post(
-  '/:id/reject',
-  authenticate(),
-  authorize([ROLE.NUTRITIONIST]),
-  validate(rejectReviewRequestSchema.shape),
-  asyncHandler(ReviewController.rejectReview)
+  validate(evaluateReviewRequestSchema.shape),
+  asyncHandler(ReviewController.evaluateReview)
 );
 
 export default router;
