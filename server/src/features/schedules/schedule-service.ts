@@ -2,13 +2,11 @@ import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
 
 import { MEAL_TYPE } from '~/shared/constants/meal-type';
-import { REVIEW_STATUS } from '~/shared/constants/review-status';
 import { ROLE } from '~/shared/constants/role';
 import { WORKOUT_COUNTER_TYPE } from '~/shared/constants/workout-counter-type';
 import {
   DishModel,
   ExerciseModel,
-  ReviewModel,
   ScheduleModel,
   UserModel
 } from '~/shared/database/models';
@@ -685,35 +683,6 @@ export const ScheduleService = {
 
     if (dishes.length !== dishIds.size) {
       throw createHttpError(404, 'Không tìm thấy món ăn');
-    }
-
-    // Check private dishes: must be owned by user and approved
-    const privateDishes = dishes.filter(
-      dish => !dish.isPublic && dish.user?._id.toString() === userId
-    );
-
-    if (privateDishes.length > 0) {
-      const privateDishIds = privateDishes.map(dish => dish._id.toString());
-      const reviews = await ReviewModel.find({
-        dishId: { $in: privateDishIds },
-        userId,
-        status: REVIEW_STATUS.APPROVED
-      }).lean();
-
-      const approvedDishIds = new Set(
-        reviews.map(review => review.dishId.toString())
-      );
-
-      const unapprovedDishes = privateDishes.filter(
-        dish => !approvedDishIds.has(dish._id.toString())
-      );
-
-      if (unapprovedDishes.length > 0) {
-        throw createHttpError(
-          400,
-          'Món ăn riêng tư chưa được duyệt, không thể thêm vào lịch ăn'
-        );
-      }
     }
 
     // Check private dishes not owned by user
