@@ -31,11 +31,6 @@ export const CollectionService = {
     data: CreateCollectionRequest,
     image?: Express.Multer.File
   ) => {
-    // Check private dishes before creating collection
-    if (data.dishes && data.dishes.length > 0) {
-      await validatePrivateDishAccess(data.dishes, userId);
-    }
-
     const dishesData =
       data.dishes && data.dishes.length > 0
         ? await resolveDishSnapshots(data.dishes)
@@ -266,9 +261,6 @@ export const CollectionService = {
       );
     }
 
-    // Check private dishes before adding
-    await validatePrivateDishAccess(data.dishIds, userId);
-
     const newDishes = await resolveDishSnapshots(data.dishIds);
 
     collection.dishes.push(...newDishes);
@@ -341,26 +333,6 @@ async function resolveDishSnapshots(dishIds: string[]) {
     energy: getDishEnergy(dish),
     image: dish.image
   }));
-}
-
-async function validatePrivateDishAccess(dishIds: string[], userId: string) {
-  if (dishIds.length === 0) return;
-
-  const dishes = await DishModel.find({ _id: { $in: dishIds } })
-    .select('isPublic user')
-    .lean();
-
-  // Check private dishes not owned by user
-  const otherPrivateDishes = dishes.filter(
-    dish => !dish.isPublic && dish.user?._id.toString() !== userId
-  );
-
-  if (otherPrivateDishes.length > 0) {
-    throw createHttpError(
-      403,
-      'Bạn không có quyền sử dụng món ăn riêng tư của người khác'
-    );
-  }
 }
 
 async function saveCollectionImage(
