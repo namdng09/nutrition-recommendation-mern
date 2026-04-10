@@ -109,7 +109,7 @@ export const ReviewService = {
 
   evaluateReview: async (
     dishId: string,
-    userId: string,
+    nutritionistId: string,
     data: EvaluateReviewRequest
   ) => {
     if (!validateObjectId(dishId)) {
@@ -118,7 +118,7 @@ export const ReviewService = {
 
     const dish = await DishModel.findById(dishId);
     if (!dish) {
-      throw createHttpError(404, 'Không tìm thấy yêu cầu đánh giá');
+      throw createHttpError(404, 'Không tìm thấy món ăn');
     }
 
     if (!dish.evaluation?.status) {
@@ -131,7 +131,7 @@ export const ReviewService = {
 
     if (
       dish.evaluation.nutritionistId &&
-      String(dish.evaluation.nutritionistId) !== userId
+      String(dish.evaluation.nutritionistId) !== nutritionistId
     ) {
       throw createHttpError(403, 'Yêu cầu đã được xử lý bởi chuyên gia khác');
     }
@@ -143,7 +143,7 @@ export const ReviewService = {
     const now = new Date();
     dish.evaluation = {
       status: REVIEW_STATUS.EVALUATED,
-      nutritionistId: toObjectId(userId),
+      nutritionistId: toObjectId(nutritionistId),
       rating: data.rating,
       feedback: data.feedback,
       evaluatedAt: now
