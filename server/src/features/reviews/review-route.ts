@@ -23,19 +23,19 @@ router.post(
 router.get(
   '/',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
+  authorize([ROLE.NUTRITIONIST]),
   asyncHandler(ReviewController.viewReviews)
 );
 
 router.get(
-  '/:id',
+  '/:dishId',
   authenticate(),
-  authorize([ROLE.USER, ROLE.NUTRITIONIST]),
+  authorize([ROLE.NUTRITIONIST]),
   asyncHandler(ReviewController.viewReviewDetail)
 );
 
 router.post(
-  '/:id/evaluate',
+  '/:dishId/evaluate',
   authenticate(),
   authorize([ROLE.NUTRITIONIST]),
   validate(evaluateReviewRequestSchema.shape),
