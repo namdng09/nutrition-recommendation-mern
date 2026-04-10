@@ -63,20 +63,26 @@ export const ReviewService = {
       throw createHttpError(404, 'Người dùng không tồn tại');
     }
 
+    if (user.role !== ROLE.NUTRITIONIST) {
+      throw createHttpError(
+        403,
+        'Chỉ chuyên gia dinh dưỡng mới có thể xem danh sách yêu cầu đánh giá'
+      );
+    }
+
     const options = buildPaginateOptions(parsed);
     const baseFilter = parsed.filter ?? {};
 
-    const dishFilter =
-      user.role === ROLE.USER
-        ? {
-            ...baseFilter,
-            'user._id': userId,
-            'evaluation.status': { $exists: true }
-          }
-        : {
-            ...baseFilter,
-            'evaluation.status': REVIEW_STATUS.PENDING
-          };
+    const dishFilter = {
+      ...baseFilter,
+      $or: [
+        { 'evaluation.status': REVIEW_STATUS.PENDING },
+        {
+          'evaluation.status': REVIEW_STATUS.EVALUATED,
+          'evaluation.nutritionistId': userId
+        }
+      ]
+    };
 
     const result = await DishModel.paginate(dishFilter, {
       ...options,
@@ -86,9 +92,9 @@ export const ReviewService = {
     return result;
   },
 
-  viewReviewDetail: async (id: string, userId: string) => {
-    if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Định dạng ID yêu cầu đánh giá không hợp lệ');
+  viewReviewDetail: async (dishId: string, userId: string) => {
+    if (!validateObjectId(dishId)) {
+      throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
     }
 
     const user = await UserModel.findById(userId, 'role').lean();
@@ -96,7 +102,14 @@ export const ReviewService = {
       throw createHttpError(404, 'Người dùng không tồn tại');
     }
 
-    const dish = await DishModel.findById(id)
+    if (user.role !== ROLE.NUTRITIONIST) {
+      throw createHttpError(
+        403,
+        'Chỉ chuyên gia dinh dưỡng mới có thể xem chi tiết yêu cầu đánh giá'
+      );
+    }
+
+    const dish = await DishModel.findById(dishId)
       .select('name image isPublic user evaluation createdAt updatedAt')
       .lean();
 
@@ -104,15 +117,12 @@ export const ReviewService = {
       throw createHttpError(404, 'Không tìm thấy yêu cầu đánh giá');
     }
 
-    const isOwner = String(dish.user?._id) === userId;
     const isOpenForNutritionist =
-      dish.evaluation?.status === REVIEW_STATUS.PENDING;
+      dish.evaluation?.status === REVIEW_STATUS.PENDING ||
+      (dish.evaluation?.status === REVIEW_STATUS.EVALUATED &&
+        String(dish.evaluation?.nutritionistId) === userId);
 
-    if (user.role === ROLE.USER && !isOwner) {
-      throw createHttpError(403, 'Bạn không có quyền xem yêu cầu đánh giá này');
-    }
-
-    if (user.role === ROLE.NUTRITIONIST && !isOpenForNutritionist) {
+    if (!isOpenForNutritionist) {
       throw createHttpError(403, 'Bạn không có quyền xem yêu cầu đánh giá này');
     }
 
@@ -120,12 +130,12 @@ export const ReviewService = {
   },
 
   evaluateReview: async (
-    id: string,
+    dishId: string,
     userId: string,
     data: EvaluateReviewRequest
   ) => {
-    if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Định dạng ID yêu cầu đánh giá không hợp lệ');
+    if (!validateObjectId(dishId)) {
+      throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
     }
 
     const user = await UserModel.findById(userId, 'role').lean();
@@ -140,7 +150,7 @@ export const ReviewService = {
       );
     }
 
-    const dish = await DishModel.findById(id);
+    const dish = await DishModel.findById(dishId);
     if (!dish) {
       throw createHttpError(404, 'Không tìm thấy yêu cầu đánh giá');
     }

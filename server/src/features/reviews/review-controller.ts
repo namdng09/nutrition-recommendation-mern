@@ -34,7 +34,10 @@ export const ReviewController = {
 
   viewReviewDetail: async (req: Request, res: Response) => {
     const userId = req.user!._id.toString();
-    const result = await ReviewService.viewReviewDetail(req.params.id, userId);
+    const result = await ReviewService.viewReviewDetail(
+      req.params.dishId,
+      userId
+    );
 
     res
       .status(200)
@@ -46,7 +49,7 @@ export const ReviewController = {
   evaluateReview: async (req: Request, res: Response) => {
     const userId = req.user!._id.toString();
     const result = await ReviewService.evaluateReview(
-      req.params.id,
+      req.params.dishId,
       userId,
       req.body
     );
