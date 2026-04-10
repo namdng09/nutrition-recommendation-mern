@@ -7,6 +7,5 @@ export * from './grocery-model';
 export * from './ingredient-model';
 export * from './payment-model';
 export * from './post-model';
-export * from './review-model';
 export * from './schedule-model';
 export * from './user-model';
