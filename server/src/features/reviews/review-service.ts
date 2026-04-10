@@ -2,9 +2,12 @@ import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
 
 import { REVIEW_STATUS } from '~/shared/constants/review-status';
-import { ROLE } from '~/shared/constants/role';
 import { DishModel, UserModel } from '~/shared/database/models';
-import { buildPaginateOptions, validateObjectId } from '~/shared/utils';
+import {
+  buildPaginateOptions,
+  toObjectId,
+  validateObjectId
+} from '~/shared/utils';
 
 import type { EvaluateReviewRequest, SubmitReviewRequest } from './review-dto';
 
@@ -44,13 +47,12 @@ export const ReviewService = {
     }
 
     dish.evaluation = {
-      ...(dish.evaluation ?? {}),
       status: REVIEW_STATUS.PENDING,
-      nutritionistId: undefined,
-      rating: undefined,
-      feedback: undefined,
-      evaluatedAt: undefined
-    } as any;
+      nutritionistId: null,
+      rating: null,
+      feedback: null,
+      evaluatedAt: null
+    };
 
     await dish.save();
 
@@ -58,18 +60,6 @@ export const ReviewService = {
   },
 
   listReviews: async (parsed: QueryOptions, userId: string) => {
-    const user = await UserModel.findById(userId, 'role').lean();
-    if (!user) {
-      throw createHttpError(404, 'Người dùng không tồn tại');
-    }
-
-    if (user.role !== ROLE.NUTRITIONIST) {
-      throw createHttpError(
-        403,
-        'Chỉ chuyên gia dinh dưỡng mới có thể xem danh sách yêu cầu đánh giá'
-      );
-    }
-
     const options = buildPaginateOptions(parsed);
     const baseFilter = parsed.filter ?? {};
 
@@ -95,18 +85,6 @@ export const ReviewService = {
   viewReviewDetail: async (dishId: string, userId: string) => {
     if (!validateObjectId(dishId)) {
       throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
-    }
-
-    const user = await UserModel.findById(userId, 'role').lean();
-    if (!user) {
-      throw createHttpError(404, 'Người dùng không tồn tại');
-    }
-
-    if (user.role !== ROLE.NUTRITIONIST) {
-      throw createHttpError(
-        403,
-        'Chỉ chuyên gia dinh dưỡng mới có thể xem chi tiết yêu cầu đánh giá'
-      );
     }
 
     const dish = await DishModel.findById(dishId)
@@ -138,18 +116,6 @@ export const ReviewService = {
       throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
     }
 
-    const user = await UserModel.findById(userId, 'role').lean();
-    if (!user) {
-      throw createHttpError(404, 'Người dùng không tồn tại');
-    }
-
-    if (user.role !== ROLE.NUTRITIONIST) {
-      throw createHttpError(
-        403,
-        'Chỉ chuyên gia dinh dưỡng mới có thể đánh giá món ăn'
-      );
-    }
-
     const dish = await DishModel.findById(dishId);
     if (!dish) {
       throw createHttpError(404, 'Không tìm thấy yêu cầu đánh giá');
@@ -176,13 +142,12 @@ export const ReviewService = {
 
     const now = new Date();
     dish.evaluation = {
-      ...(dish.evaluation ?? {}),
       status: REVIEW_STATUS.EVALUATED,
-      nutritionistId: userId,
+      nutritionistId: toObjectId(userId),
       rating: data.rating,
       feedback: data.feedback,
       evaluatedAt: now
-    } as any;
+    };
 
     await dish.save();
 
