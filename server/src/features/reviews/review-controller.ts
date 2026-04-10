@@ -13,7 +13,10 @@ export const ReviewController = {
     res
       .status(201)
       .json(
-        ApiResponse.success('Gửi yêu cầu duyệt món ăn riêng thành công', result)
+        ApiResponse.success(
+          'Gửi yêu cầu đánh giá món ăn riêng thành công',
+          result
+        )
       );
   },
 
@@ -25,7 +28,7 @@ export const ReviewController = {
     res
       .status(200)
       .json(
-        ApiResponse.success('Lấy danh sách yêu cầu duyệt thành công', result)
+        ApiResponse.success('Lấy danh sách yêu cầu đánh giá thành công', result)
       );
   },
 
@@ -36,22 +39,13 @@ export const ReviewController = {
     res
       .status(200)
       .json(
-        ApiResponse.success('Lấy chi tiết yêu cầu duyệt thành công', result)
+        ApiResponse.success('Lấy chi tiết yêu cầu đánh giá thành công', result)
       );
   },
 
-  pickUpReview: async (req: Request, res: Response) => {
+  evaluateReview: async (req: Request, res: Response) => {
     const userId = req.user!._id.toString();
-    const result = await ReviewService.pickUpReview(req.params.id, userId);
-
-    res
-      .status(200)
-      .json(ApiResponse.success('Nhận yêu cầu duyệt thành công', result));
-  },
-
-  addComment: async (req: Request, res: Response) => {
-    const userId = req.user!._id.toString();
-    const result = await ReviewService.addComment(
+    const result = await ReviewService.evaluateReview(
       req.params.id,
       userId,
       req.body
@@ -59,33 +53,6 @@ export const ReviewController = {
 
     res
       .status(200)
-      .json(
-        ApiResponse.success(
-          'Thêm bình luận cho yêu cầu duyệt thành công',
-          result
-        )
-      );
-  },
-
-  approveReview: async (req: Request, res: Response) => {
-    const userId = req.user!._id.toString();
-    const result = await ReviewService.approveReview(req.params.id, userId);
-
-    res
-      .status(200)
-      .json(ApiResponse.success('Phê duyệt yêu cầu duyệt thành công', result));
-  },
-
-  rejectReview: async (req: Request, res: Response) => {
-    const userId = req.user!._id.toString();
-    const result = await ReviewService.rejectReview(
-      req.params.id,
-      userId,
-      req.body
-    );
-
-    res
-      .status(200)
-      .json(ApiResponse.success('Từ chối yêu cầu duyệt thành công', result));
+      .json(ApiResponse.success('Đánh giá món ăn thành công', result));
   }
 };
