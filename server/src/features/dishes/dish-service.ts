@@ -8,7 +8,6 @@ import {
   CollectionModel,
   DishModel,
   IngredientModel,
-  ReviewModel,
   ScheduleModel,
   UserModel
 } from '~/shared/database/models';
@@ -293,8 +292,6 @@ export const DishService = {
       dishId: newDish._id.toString()
     });
 
-    await createPrivateDishReviewThread(newDish._id.toString(), userId);
-
     return newDish;
   },
 
@@ -365,7 +362,10 @@ export const DishService = {
     if (!dish) {
       throw createHttpError(404, 'Không tìm thấy món ăn');
     }
-    if (dish.isPublic || dish.user?._id.toString() !== userId) {
+    if (dish.isPublic) {
+      throw createHttpError(403, 'Món ăn này không phải là món ăn riêng tư');
+    }
+    if (dish.user?._id.toString() !== userId) {
       throw createHttpError(403, 'Bạn không có quyền xem món ăn riêng tư này');
     }
 
@@ -415,13 +415,8 @@ export const DishService = {
       throw createHttpError(404, 'Không tìm thấy món ăn');
     }
     if (existingDish.isPublic || existingDish.user?._id.toString() !== userId) {
-      throw createHttpError(
-        403,
-        'Bạn không có quyền cập nhật món ăn riêng tư này'
-      );
+      throw createHttpError(403, 'Bạn không có quyền cập nhật món ăn này');
     }
-
-    await ensurePrivateDishEditable(id, userId);
 
     if (data.name) {
       const duplicate = await DishModel.findOne({
@@ -442,8 +437,8 @@ export const DishService = {
       );
     }
 
-    // Reset review status to DRAFT if user edits after submission
-    await resetReviewStatusToDraft(id, userId);
+    // Reset review status to PENDING if user edits after submission
+    await resetReviewStatusToPending(id, userId);
 
     const updatedDish = await DishModel.findByIdAndUpdate(id, updateData, {
       new: true
@@ -481,93 +476,31 @@ export const DishService = {
       throw createHttpError(404, 'Không tìm thấy món ăn');
     }
     if (dish.isPublic || dish.user?._id.toString() !== userId) {
-      throw createHttpError(403, 'Bạn không có quyền xóa món ăn riêng tư này');
+      throw createHttpError(403, 'Bạn không có quyền xóa món ăn này');
     }
-
-    // Only allow delete for DRAFT, PENDING and REJECTED status
-    await ensurePrivateDishDeletable(id, userId);
 
     if (dish.image) await deleteImage(dish._id.toString());
     await dish.deleteOne();
-
-    // Delete associated review thread
-    await ReviewModel.deleteOne({ dishId: id, userId });
 
     return dish;
   }
 };
 
-async function createPrivateDishReviewThread(dishId: string, userId: string) {
-  const existingThread = await ReviewModel.findOne({ dishId, userId });
-  if (existingThread) {
-    return existingThread;
-  }
-
-  return ReviewModel.create({
-    dishId,
-    userId,
-    status: REVIEW_STATUS.DRAFT
-  });
-}
-
-async function ensurePrivateDishEditable(dishId: string, userId: string) {
-  const review = await ReviewModel.findOne({ dishId, userId }).lean();
-  const status = review?.status ?? REVIEW_STATUS.DRAFT;
-
-  if (
-    status !== REVIEW_STATUS.DRAFT &&
-    status !== REVIEW_STATUS.REJECTED &&
-    status !== REVIEW_STATUS.PENDING
-  ) {
-    throw createHttpError(
-      403,
-      'Chỉ có thể sửa món ăn riêng tư khi đang ở trạng thái nháp, đang chờ duyệt hoặc bị từ chối'
-    );
-  }
-
-  return review;
-}
-
-async function ensurePrivateDishDeletable(dishId: string, userId: string) {
-  const review = await ReviewModel.findOne({ dishId, userId }).lean();
-  const status = review?.status ?? REVIEW_STATUS.DRAFT;
-
-  if (
-    status !== REVIEW_STATUS.DRAFT &&
-    status !== REVIEW_STATUS.REJECTED &&
-    status !== REVIEW_STATUS.PENDING
-  ) {
-    throw createHttpError(
-      403,
-      'Chỉ có thể xóa món ăn riêng tư khi đang ở trạng thái nháp, đang chờ duyệt hoặc bị từ chối'
-    );
-  }
-
-  return review;
-}
-
-async function resetReviewStatusToDraft(dishId: string, userId: string) {
-  const review = await ReviewModel.findOne({ dishId, userId });
-  if (!review) {
+async function resetReviewStatusToPending(dishId: string, userId: string) {
+  const dish = await DishModel.findById(dishId);
+  if (!dish || dish.user?._id.toString() !== userId) {
     return;
   }
 
-  // Only reset if status is PENDING or REJECTED
-  if (
-    review.status !== REVIEW_STATUS.PENDING &&
-    review.status !== REVIEW_STATUS.REJECTED
-  ) {
+  if (dish.evaluation?.status !== REVIEW_STATUS.PENDING) {
     return;
   }
 
-  review.status = REVIEW_STATUS.DRAFT;
-  review.nutritionistId = undefined as any;
-  review.pickedAt = undefined as any;
-  review.reviewedAt = undefined as any;
-  review.rejectionReason = undefined as any;
-  review.lastResubmittedAt = undefined as any;
-  review.submittedAt = undefined as any;
-  await review.save();
+  dish.evaluation = {
+    status: REVIEW_STATUS.PENDING
+  } as any;
+
+  await dish.save();
 }
 
 async function resolveIngredientSnapshots(
