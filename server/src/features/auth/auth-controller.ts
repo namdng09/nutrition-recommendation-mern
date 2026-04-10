@@ -15,7 +15,7 @@ export const AuthController = {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: false, // Cloudflare handles HTTPS, so no need for Secure flag
+      secure: true,
       sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
@@ -37,7 +37,7 @@ export const AuthController = {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: false, // Cloudflare handles HTTPS, so no need for Secure flag
+      secure: true,
       sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
@@ -60,7 +60,7 @@ export const AuthController = {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: false, // Cloudflare handles HTTPS, so no need for Secure flag
+      secure: true,
       sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
@@ -76,7 +76,7 @@ export const AuthController = {
   logout: async (req: Request, res: Response) => {
     res.clearCookie('refreshToken', {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none'
     });
 
