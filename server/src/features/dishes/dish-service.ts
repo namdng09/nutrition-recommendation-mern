@@ -369,9 +369,6 @@ export const DishService = {
       );
     }
 
-    // Reset review status to PENDING if user edits after submission
-    await resetReviewStatusToPending(id, userId);
-
     const updatedDish = await DishModel.findByIdAndUpdate(id, updateData, {
       new: true
     });
@@ -406,23 +403,6 @@ export const DishService = {
     return dish;
   }
 };
-
-async function resetReviewStatusToPending(dishId: string, userId: string) {
-  const dish = await DishModel.findById(dishId);
-  if (!dish || dish.user?._id.toString() !== userId) {
-    return;
-  }
-
-  if (dish.evaluation?.status !== REVIEW_STATUS.PENDING) {
-    return;
-  }
-
-  dish.evaluation = {
-    status: REVIEW_STATUS.PENDING
-  } as any;
-
-  await dish.save();
-}
 
 async function resolveIngredientSnapshots(
   items: CreateDishRequest['ingredients']
