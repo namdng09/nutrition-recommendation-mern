@@ -7,7 +7,6 @@ export default defineConfig({
     environment: 'node',
     setupFiles: ['./test/setup.ts'],
     exclude: ['**/node_modules/**', '**/dist/**'],
-    fileParallelism: false,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'clover', 'json'],
