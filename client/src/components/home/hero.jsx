@@ -1,8 +1,7 @@
 import {
   HiOutlineArrowRight,
   HiOutlineChartBar,
-  HiOutlineCheckBadge,
-  HiSparkles
+  HiOutlineCheckBadge
 } from 'react-icons/hi2';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router';
@@ -12,11 +11,6 @@ const Hero = () => {
   return (
     <section className='relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 md:py-16 grid md:grid-cols-2 gap-10 md:gap-16 items-center bg-background overflow-hidden'>
       <div className='relative z-10 order-2 md:order-1'>
-        <div className='inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs sm:text-sm font-medium mb-6 border text-green-light shadow-sm'>
-          <HiSparkles className='animate-pulse' />
-          Cá nhân hóa bởi AI
-        </div>
-
         <h1 className='text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight text-foreground'>
           Ăn <span className='text-primary'>thông minh</span>
           <br />

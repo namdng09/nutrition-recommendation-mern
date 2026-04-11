@@ -63,11 +63,6 @@ const GroceryHeader = ({ filters, onFilterChange }) => {
         <div className='relative p-6 sm:p-8 space-y-6'>
           <div className='flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between'>
             <div className='max-w-2xl'>
-              <div className='mb-3 inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-primary'>
-                <HiOutlineSparkles className='text-sm' />
-                Grocery Planner
-              </div>
-
               <h1 className='text-3xl sm:text-4xl font-black tracking-tight leading-tight text-foreground'>
                 Giỏ hàng <span className='text-primary'>thông minh</span>
               </h1>
