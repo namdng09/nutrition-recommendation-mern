@@ -23,18 +23,20 @@ vi.mock('~/shared/utils', async importOriginal => {
 const mockFindById = vi.mocked(IngredientModel.findById);
 const mockValidateObjectId = vi.mocked(validateObjectId);
 const mockDeleteImage = vi.mocked(deleteImage);
+const mockDeleteOne = vi.fn();
 
 const VALID_ID = 'abc123';
 const mockIngredient = {
   _id: { toString: () => VALID_ID },
   name: 'Cà chua',
-  deleteOne: vi.fn()
+  image: 'https://res.cloudinary.com/test/image/upload/v1234567890/image.jpg',
+  deleteOne: mockDeleteOne
 };
 
 describe('IngredientService.deleteIngredient', () => {
   afterEach(() => {
     vi.clearAllMocks();
-    mockIngredient.deleteOne.mockClear();
+    mockDeleteOne.mockClear();
   });
 
   describe('business logic', () => {
@@ -64,24 +66,13 @@ describe('IngredientService.deleteIngredient', () => {
     it('should delete ingredient successfully', async () => {
       mockValidateObjectId.mockReturnValue(true);
       mockFindById.mockResolvedValue(mockIngredient as any);
+      mockDeleteImage.mockResolvedValue({ success: true });
 
       const result = await IngredientService.deleteIngredient(VALID_ID);
 
-      expect(result).toBeDefined();
-      expect(result._id.toString()).toBe(VALID_ID);
-      expect(result.name).toBe('Cà chua');
-    });
-  });
-
-  describe('system', () => {
-    it('should call deleteImage after deleting ingredient', async () => {
-      mockValidateObjectId.mockReturnValue(true);
-      mockFindById.mockResolvedValue(mockIngredient as any);
-
-      await IngredientService.deleteIngredient(VALID_ID);
-
       expect(mockDeleteImage).toHaveBeenCalledWith(VALID_ID);
-      expect(mockIngredient.deleteOne).toHaveBeenCalled();
+      expect(mockDeleteOne).toHaveBeenCalled();
+      expect(result._id.toString()).toBe(VALID_ID);
     });
   });
 });

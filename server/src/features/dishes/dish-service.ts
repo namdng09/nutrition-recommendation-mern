@@ -2,6 +2,7 @@ import type { QueryOptions } from '@quarks/mongoose-query-parser';
 import createHttpError from 'http-errors';
 import type { HydratedDocument, PaginateResult } from 'mongoose';
 
+import { REVIEW_STATUS } from '~/shared/constants/review-status';
 import { ROLE } from '~/shared/constants/role';
 import {
   CollectionModel,
@@ -20,7 +21,12 @@ import {
   validateObjectId
 } from '~/shared/utils';
 
-import type { CreateDishRequest, UpdateDishRequest } from './dish-dto';
+import type {
+  CreateDishRequest,
+  CreatePrivateDishRequest,
+  UpdateDishRequest,
+  UpdatePrivateDishRequest
+} from './dish-dto';
 
 export const DishService = {
   createDish: async (
@@ -262,6 +268,165 @@ export const DishService = {
     });
 
     return result;
+  },
+
+  createPrivateDish: async (
+    userId: string,
+    userName: string,
+    data: CreatePrivateDishRequest,
+    image?: Express.Multer.File
+  ) => {
+    const existingDish = await DishModel.findOne({ name: data.name });
+    if (existingDish) {
+      throw createHttpError(409, 'Món ăn với tên này đã tồn tại');
+    }
+
+    const ingredients = await resolveIngredientSnapshots(data.ingredients);
+
+    const newDish = await DishModel.create({
+      user: { _id: userId, name: userName },
+      name: data.name,
+      description: data.description,
+      categories: data.categories,
+      nutritionFocus: data.nutritionFocus,
+      ingredients,
+      instructions: data.instructions,
+      nutrition: data.nutrition,
+      preparationTime: data.preparationTime,
+      cookTime: data.cookTime,
+      servings: data.servings || 1,
+      tags: data.tags,
+      isActive: data.isActive ?? true,
+      isPublic: false
+    });
+
+    if (image) await saveDishImage(newDish, image);
+
+    eventBus.emit(EVENTS.DISH_CREATED, {
+      userId,
+      dishId: newDish._id.toString()
+    });
+
+    return newDish;
+  },
+
+  viewPrivateDishes: async (
+    parsed: QueryOptions,
+    userId: string
+  ): Promise<PaginateResult<Dish>> => {
+    const options = buildPaginateOptions(parsed);
+
+    const filter = {
+      ...parsed.filter,
+      isPublic: false,
+      'user._id': userId
+    };
+
+    return DishModel.paginate(filter, options);
+  },
+
+  viewPrivateDishDetail: async (id: string, userId: string) => {
+    if (!validateObjectId(id)) {
+      throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
+    }
+
+    const dish = await DishModel.findById(id);
+    if (!dish) {
+      throw createHttpError(404, 'Không tìm thấy món ăn');
+    }
+    if (dish.isPublic) {
+      throw createHttpError(403, 'Món ăn này không phải là món ăn riêng tư');
+    }
+    if (dish.user?._id.toString() !== userId) {
+      throw createHttpError(403, 'Bạn không có quyền xem món ăn riêng tư này');
+    }
+
+    const ingredientIds = dish.ingredients.map(i => i.ingredientId);
+    const found = await IngredientModel.find(
+      { _id: { $in: ingredientIds } },
+      { _id: 1 }
+    ).lean();
+    const existingIds = new Set(found.map(i => i._id.toString()));
+
+    const dishObj = dish.toObject();
+    const ingredients = dishObj.ingredients.map(ing => {
+      const isDeleted =
+        !ing.ingredientId || !existingIds.has(ing.ingredientId.toString());
+      return { ...ing, isDeleted };
+    });
+
+    return { ...dishObj, ingredients };
+  },
+
+  updatePrivateDish: async (
+    id: string,
+    userId: string,
+    data: UpdatePrivateDishRequest,
+    image?: Express.Multer.File
+  ) => {
+    if (!validateObjectId(id)) {
+      throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
+    }
+
+    const existingDish = await DishModel.findById(id);
+    if (!existingDish) {
+      throw createHttpError(404, 'Không tìm thấy món ăn');
+    }
+    if (existingDish.isPublic || existingDish.user?._id.toString() !== userId) {
+      throw createHttpError(403, 'Bạn không có quyền cập nhật món ăn này');
+    }
+
+    if (data.name) {
+      const duplicate = await DishModel.findOne({
+        name: data.name,
+        _id: { $ne: id }
+      });
+      if (duplicate) {
+        throw createHttpError(409, 'Món ăn với tên này đã tồn tại');
+      }
+    }
+
+    const { ingredients: _ingredients, ...rest } = data;
+    const updateData: Record<string, unknown> = { ...rest, isPublic: false };
+
+    if (data.ingredients) {
+      updateData.ingredients = await resolveIngredientSnapshots(
+        data.ingredients
+      );
+    }
+
+    const updatedDish = await DishModel.findByIdAndUpdate(id, updateData, {
+      new: true
+    });
+
+    if (!updatedDish) {
+      throw createHttpError(404, 'Không tìm thấy món ăn');
+    }
+
+    if (image) await replaceDishImage(updatedDish, image);
+
+    await cascadeDishSnapshot(updatedDish);
+
+    return updatedDish;
+  },
+
+  deletePrivateDish: async (id: string, userId: string) => {
+    if (!validateObjectId(id)) {
+      throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
+    }
+
+    const dish = await DishModel.findById(id);
+    if (!dish) {
+      throw createHttpError(404, 'Không tìm thấy món ăn');
+    }
+    if (dish.isPublic || dish.user?._id.toString() !== userId) {
+      throw createHttpError(403, 'Bạn không có quyền xóa món ăn này');
+    }
+
+    if (dish.image) await deleteImage(dish._id.toString());
+    await dish.deleteOne();
+
+    return dish;
   }
 };
 

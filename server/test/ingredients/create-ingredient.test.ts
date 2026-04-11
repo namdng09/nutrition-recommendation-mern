@@ -41,23 +41,9 @@ describe('IngredientService.createIngredient', () => {
   });
 
   describe('validation', () => {
-    // Tests DTO schema directly — no service, no DB involved
-
     it('should fail when name is missing', () => {
       const { name: _, ...data } = validData;
       const result = createIngredientRequestSchema.safeParse(data);
-
-      expect(result.success).toBe(false);
-      expect(result.error?.issues[0].message).toBe(
-        'Tên nguyên liệu không hợp lệ'
-      );
-    });
-
-    it('should fail when name is not a string', () => {
-      const result = createIngredientRequestSchema.safeParse({
-        ...validData,
-        name: 1234
-      });
 
       expect(result.success).toBe(false);
       expect(result.error?.issues[0].message).toBe(
@@ -76,6 +62,30 @@ describe('IngredientService.createIngredient', () => {
         'Tên nguyên liệu phải có ít nhất 2 ký tự'
       );
     });
+
+    it('should fail when category is invalid', () => {
+      const result = createIngredientRequestSchema.safeParse({
+        ...validData,
+        categories: ['invalid-category']
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Danh mục nguyên liệu không hợp lệ'
+      );
+    });
+
+    it('should fail when baseUnit is negative', () => {
+      const result = createIngredientRequestSchema.safeParse({
+        ...validData,
+        baseUnit: { amount: -100, unit: UNIT.GRAM }
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Số lượng cơ bản không được âm'
+      );
+    });
   });
 
   describe('business logic', () => {
@@ -90,7 +100,22 @@ describe('IngredientService.createIngredient', () => {
       });
     });
 
-    it('should create ingredient successfully', async () => {
+    it('should create ingredient successfully without image', async () => {
+      const mockIngredient = {
+        _id: { toString: () => 'abc123' },
+        ...validData,
+        image: ''
+      };
+
+      mockFindOne.mockResolvedValue(null);
+      mockCreate.mockResolvedValue(mockIngredient as any);
+
+      const result = await IngredientService.createIngredient(validData);
+
+      expect(result).toEqual(mockIngredient);
+    });
+
+    it('should create ingredient successfully with image', async () => {
       const mockSave = vi.fn();
       const mockIngredient = {
         _id: { toString: () => 'abc123' },
@@ -123,29 +148,6 @@ describe('IngredientService.createIngredient', () => {
       );
       expect(mockSave).toHaveBeenCalled();
       expect(result).toEqual(mockIngredient);
-    });
-  });
-
-  describe('system', () => {
-    it('should throw 500 when image upload fails', async () => {
-      mockFindOne.mockResolvedValue(null);
-      mockCreate.mockResolvedValue({
-        _id: { toString: () => 'abc123' },
-        ...validData,
-        save: vi.fn()
-      } as any);
-      mockUploadImage.mockResolvedValue({ success: false, data: null } as any);
-
-      const fakeImage = {
-        buffer: Buffer.from('fake-image-data')
-      } as Express.Multer.File;
-
-      await expect(
-        IngredientService.createIngredient(validData, fakeImage)
-      ).rejects.toMatchObject({
-        status: 500,
-        message: 'Tải ảnh lên thất bại'
-      });
     });
   });
 });

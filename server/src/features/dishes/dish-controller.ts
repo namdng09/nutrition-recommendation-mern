@@ -72,5 +72,71 @@ export const DishController = {
     res
       .status(200)
       .json(ApiResponse.success('Xóa các món ăn thành công', result));
+  },
+
+  createPrivateDish: async (req: Request, res: Response) => {
+    const data = req.body;
+    const image = req.file;
+    const userId = req.user!._id.toString();
+    const userName = req.user!.name;
+
+    const result = await DishService.createPrivateDish(
+      userId,
+      userName,
+      data,
+      image
+    );
+
+    res
+      .status(201)
+      .json(ApiResponse.success('Tạo món ăn riêng tư thành công', result));
+  },
+
+  viewPrivateDishes: async (req: Request, res: Response) => {
+    const parsed = parseQuery(req.query);
+    const userId = req.user!._id.toString();
+
+    const result = await DishService.viewPrivateDishes(parsed, userId);
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Lấy danh sách món ăn riêng tư thành công', result)
+      );
+  },
+
+  viewPrivateDishDetail: async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const userId = req.user!._id.toString();
+
+    const result = await DishService.viewPrivateDishDetail(id, userId);
+
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Lấy thông tin món ăn riêng tư thành công', result)
+      );
+  },
+
+  updatePrivateDish: async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const data = req.body;
+    const image = req.file;
+    const userId = req.user!._id.toString();
+
+    const result = await DishService.updatePrivateDish(id, userId, data, image);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Cập nhật món ăn riêng tư thành công', result));
+  },
+
+  deletePrivateDish: async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const userId = req.user!._id.toString();
+
+    await DishService.deletePrivateDish(id, userId);
+
+    res.status(200).json(ApiResponse.success('Xóa món ăn riêng tư thành công'));
   }
 };

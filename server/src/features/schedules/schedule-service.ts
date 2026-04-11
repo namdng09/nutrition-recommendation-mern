@@ -677,12 +677,24 @@ export const ScheduleService = {
 
     const dishes = dishIds.size
       ? await DishModel.find({ _id: { $in: Array.from(dishIds) } })
-          .select('name image servings nutrition')
+          .select('name image servings nutrition isPublic user')
           .lean()
       : [];
 
     if (dishes.length !== dishIds.size) {
       throw createHttpError(404, 'Không tìm thấy món ăn');
+    }
+
+    // Check private dishes not owned by user
+    const otherPrivateDishes = dishes.filter(
+      dish => !dish.isPublic && dish.user?._id.toString() !== userId
+    );
+
+    if (otherPrivateDishes.length > 0) {
+      throw createHttpError(
+        403,
+        'Bạn không có quyền sử dụng món ăn riêng tư của người khác'
+      );
     }
 
     const dishById = new Map(dishes.map(dish => [dish._id.toString(), dish]));
