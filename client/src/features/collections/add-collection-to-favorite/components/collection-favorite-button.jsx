@@ -9,15 +9,24 @@ import { useAddCollectionToFavorite } from '../api/add-collection-to-favorite';
 export default function CollectionFavoriteButton({ collectionId }) {
   const { data: profile } = useProfile();
 
-  const { mutate: addFav } = useAddCollectionToFavorite();
-  const { mutate: removeFav } = useRemoveCollectionFromFavorite();
+  const { mutate: addFav, isPending: isAdding } = useAddCollectionToFavorite();
+  const { mutate: removeFav, isPending: isRemoving } =
+    useRemoveCollectionFromFavorite();
 
-  const favIds = profile?.favoriteCollections || [];
-  const isFav = favIds.includes(collectionId);
+  const favoriteCollections = profile?.favoriteCollections || [];
+
+  const favoriteCollectionIds = favoriteCollections.map(item =>
+    typeof item === 'string' ? item : item?._id
+  );
+
+  const isFav = favoriteCollectionIds.includes(collectionId);
+  const isLoading = isAdding || isRemoving;
 
   const handleClick = e => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (isLoading) return;
 
     if (isFav) removeFav(collectionId);
     else addFav(collectionId);
@@ -28,15 +37,16 @@ export default function CollectionFavoriteButton({ collectionId }) {
       onClick={handleClick}
       size='icon'
       variant='ghost'
-      className='rounded-full border border-border bg-white/80 hover:bg-pink-50 transition'
+      disabled={isLoading}
+      className='rounded-full border border-border bg-white/80 transition hover:bg-pink-50'
     >
       <Heart
         size={18}
-        className={
+        className={`transition-all duration-200 ${
           isFav
-            ? 'text-pink-500 fill-pink-500 scale-110 transition'
-            : 'text-pink-500 fill-none transition'
-        }
+            ? 'scale-110 fill-pink-500 text-pink-500'
+            : 'fill-none text-pink-500'
+        }`}
       />
     </Button>
   );

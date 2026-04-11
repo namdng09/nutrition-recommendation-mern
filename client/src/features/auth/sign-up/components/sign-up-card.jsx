@@ -34,6 +34,7 @@ const SignUpCard = () => {
     onSuccess: data => {
       const { accessToken } = data.data;
       dispatch(loadUser({ accessToken }));
+      toast.success(data.message || 'Đăng ký thành công');
       setSuccessData(data.data);
     },
     onError: error => {

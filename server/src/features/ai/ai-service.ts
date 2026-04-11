@@ -1,12 +1,22 @@
 import createHttpError from 'http-errors';
 
 import { agent, agentConfig } from '~/shared/config/ai-agent';
+import {
+  type AiQuotaEndpoint,
+  estimateReserveTokensForPrompt,
+  getDailyTokenLimit,
+  getNextQuotaResetAt,
+  getReserveTokenRangeForEndpoint,
+  resolveMembershipLevel
+} from '~/shared/config/ai-quota';
+import { ragConfig } from '~/shared/config/rag';
 import { DAY_OF_WEEK } from '~/shared/constants/day-of-week';
 import { DISH_CATEGORY } from '~/shared/constants/dish-category';
 import { EXERCISE_DIFFICULTY } from '~/shared/constants/exercise-difficulty';
 import { EXERCISE_TYPE } from '~/shared/constants/exercise-type';
 import { MEAL_SIZE } from '~/shared/constants/meal-size';
 import { MEAL_TYPE } from '~/shared/constants/meal-type';
+import { MEMBERSHIP_LEVEL } from '~/shared/constants/membership-level';
 import { NUTRITION_FOCUS } from '~/shared/constants/nutrition-focus';
 import { USER_TARGET } from '~/shared/constants/user-target';
 import {
@@ -19,6 +29,7 @@ import {
   ScheduleModel,
   UserModel
 } from '~/shared/database/models';
+import { createRagVectorStore } from '~/shared/utils';
 
 import type {
   AskAgentRequest,
@@ -145,6 +156,117 @@ type MealContextSummary = {
   }>;
 };
 
+type DishRetrievalMode = 'direct_mongodb' | 'rag_vector_search';
+
+type DishRetrievalResult = {
+  dishes: DishCandidate[];
+  mode: DishRetrievalMode;
+  ragMatchedDishIds?: number;
+};
+
+type ExerciseRetrievalMode = 'direct_mongodb' | 'rag_vector_search';
+
+type ExerciseRetrievalResult = {
+  exercises: ExerciseCandidate[];
+  mode: ExerciseRetrievalMode;
+  ragMatchedExerciseIds?: number;
+};
+
+type RecentMealDishContext = {
+  lookbackDays: number;
+  dishCounts: Map<string, number>;
+  recentDishNames: string[];
+  distinctDishCount: number;
+  totalDishPicks: number;
+};
+
+type MealRankingContext = {
+  targetDate: Date;
+  recentDishCounts: Map<string, number>;
+};
+
+type RecentWorkoutExerciseContext = {
+  lookbackDays: number;
+  exerciseCounts: Map<string, number>;
+  recentExerciseNames: string[];
+  distinctExerciseCount: number;
+  totalExercisePicks: number;
+};
+
+type WorkoutRankingContext = {
+  targetDate: Date;
+  recentExerciseCounts: Map<string, number>;
+};
+
+type AiUsageMetadata = {
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+};
+
+type AiInvocationResult = {
+  text: string;
+  usage: AiUsageMetadata;
+};
+
+type AiQuotaReservation = {
+  endpoint: AiQuotaEndpoint;
+  reservedTokens: number;
+};
+
+type AiQuotaSettlement = {
+  chargedTokens: number;
+  refundedTokens: number;
+  membershipLevel: string;
+  dailyTokenLimit: number;
+  remainingTokens: number;
+  quotaResetAt?: Date;
+};
+
+type AiResponseMeta = {
+  usage: AiUsageMetadata;
+  reservation: AiQuotaReservation;
+  settlement: AiQuotaSettlement;
+};
+
+type RagDishDocument = {
+  metadata?: {
+    sourceType?: string;
+    sourceId?: string;
+    metadata?: {
+      sourceType?: string;
+      sourceId?: string;
+    };
+  };
+};
+
+type RagDishVectorStore = {
+  similaritySearch: (
+    query: string,
+    k: number,
+    filter?: Record<string, unknown>
+  ) => Promise<RagDishDocument[]>;
+};
+
+type RagExerciseDocument = {
+  metadata?: {
+    sourceType?: string;
+    sourceId?: string;
+    metadata?: {
+      sourceType?: string;
+      sourceId?: string;
+    };
+  };
+};
+
+type RagExerciseVectorStore = {
+  similaritySearch: (
+    query: string,
+    k: number,
+    filter?: Record<string, unknown>
+  ) => Promise<RagExerciseDocument[]>;
+};
+
 const DEFAULT_MEAL_TYPE_ORDER = [
   MEAL_TYPE.BREAKFAST,
   MEAL_TYPE.LUNCH,
@@ -228,6 +350,8 @@ const RECOVERY_TYPES = new Set<string>([
   EXERCISE_TYPE.YOGA
 ]);
 
+const MEAL_HISTORY_LOOKBACK_DAYS = 7;
+
 const dayOfWeekByIndex: Record<number, string> = {
   0: DAY_OF_WEEK.SUNDAY,
   1: DAY_OF_WEEK.MONDAY,
@@ -260,180 +384,394 @@ export const AiService = {
     userId: string,
     payload: RecommendDailyMealsRequest
   ): Promise<DailyMealRecommendationResponse> => {
-    const user = await getUserProfileForRecommendation(userId);
+    let reservation: AiQuotaReservation | null = null;
+    let aiInvocation: AiInvocationResult | null = null;
 
-    const targetDate = payload.date;
-    const dayOfWeek = getDayOfWeek(targetDate);
-    const mealSlots = buildMealSlots(user.mealSettings);
-    const candidateDishes = await getCandidateDishes(user);
+    try {
+      const user = await getUserProfileForRecommendation(userId);
 
-    if (!candidateDishes.length) {
-      throw createHttpError(
-        404,
-        'Không có món ăn phù hợp với hồ sơ người dùng hiện tại'
+      const targetDate = payload.date;
+      const dayOfWeek = getDayOfWeek(targetDate);
+      const mealSlots = buildMealSlots(user.mealSettings);
+      const recentMealContext = await getRecentMealDishContext(
+        userId,
+        targetDate,
+        MEAL_HISTORY_LOOKBACK_DAYS
       );
+      const dishRetrieval = await getCandidateDishes(user, mealSlots);
+      const candidateDishes = dishRetrieval.dishes;
+      console.log(
+        `[RAG] Meal retrieval mode=${dishRetrieval.mode}, ragMatchedDishIds=${dishRetrieval.ragMatchedDishIds ?? 'N/A'}, candidateDishesAfterHardFilters=${candidateDishes.length}, recentDistinctDishes(${recentMealContext.lookbackDays}d)=${recentMealContext.distinctDishCount}`
+      );
+
+      if (!candidateDishes.length) {
+        throw createHttpError(
+          404,
+          'Không có món ăn phù hợp với hồ sơ người dùng hiện tại'
+        );
+      }
+
+      const dishesById = new Map(candidateDishes.map(dish => [dish._id, dish]));
+      const candidatesByMealType = new Map<string, DishCandidate[]>();
+      mealSlots.forEach(slot => {
+        candidatesByMealType.set(
+          slot.mealType,
+          pickCandidatesForMeal(slot, candidateDishes, user, {
+            targetDate,
+            recentDishCounts: recentMealContext.dishCounts
+          })
+        );
+      });
+
+      const dishCatalog = buildPromptCatalog(
+        mealSlots,
+        candidatesByMealType,
+        dishesById
+      );
+
+      const inputForPrompt = buildPromptInput(user);
+      const retrievalSummary = buildRetrievalSummary(
+        candidateDishes.length,
+        mealSlots,
+        candidatesByMealType,
+        dishRetrieval.mode,
+        dishRetrieval.ragMatchedDishIds,
+        recentMealContext
+      );
+      const prompt = mealRecommendationPrompt(inputForPrompt, {
+        dateISO: targetDate.toISOString(),
+        dayOfWeek,
+        mealSlots,
+        dishCatalog,
+        retrievalSummary
+      });
+
+      const estimatedReserve = estimateReserveTokensForPrompt(
+        'recommend_daily_meals',
+        prompt
+      );
+      console.log(
+        `[AI_QUOTA] endpoint=recommend_daily_meals promptChars=${prompt.length} estimatedReserve=${estimatedReserve}`
+      );
+      reservation = await reserveAiTokensForRecommendation(
+        userId,
+        'recommend_daily_meals',
+        estimatedReserve
+      );
+      aiInvocation = await invokeAi(prompt);
+      const quotaSettlement = await settleAiTokenUsage(
+        userId,
+        reservation,
+        aiInvocation.usage
+      );
+      const aiMeta: AiResponseMeta = {
+        usage: aiInvocation.usage,
+        reservation,
+        settlement: quotaSettlement
+      };
+      const aiSelection = parseAiSelection(aiInvocation.text);
+
+      const meals = materializeMeals({
+        mealSlots,
+        aiSelection,
+        dishesById,
+        candidatesByMealType
+      });
+      const scheduleMeals = toScheduleMealPayloads(meals, dishesById);
+      const schedule = await upsertScheduleMeals({
+        user,
+        date: targetDate,
+        dayOfWeek,
+        meals: scheduleMeals
+      });
+
+      return await toAiRecommendedScheduleResponse(schedule.toObject(), aiMeta);
+    } catch (error) {
+      if (reservation && !aiInvocation) {
+        await refundReservedAiTokens(userId, reservation);
+      }
+      throw error;
     }
-
-    const dishesById = new Map(candidateDishes.map(dish => [dish._id, dish]));
-    const candidatesByMealType = new Map<string, DishCandidate[]>();
-    mealSlots.forEach(slot => {
-      candidatesByMealType.set(
-        slot.mealType,
-        pickCandidatesForMeal(slot, candidateDishes, user)
-      );
-    });
-
-    const dishCatalog = buildPromptCatalog(
-      mealSlots,
-      candidatesByMealType,
-      dishesById
-    );
-
-    const inputForPrompt = buildPromptInput(user);
-    const retrievalSummary = buildRetrievalSummary(
-      candidateDishes.length,
-      mealSlots,
-      candidatesByMealType
-    );
-    const prompt = mealRecommendationPrompt(inputForPrompt, {
-      dateISO: targetDate.toISOString(),
-      dayOfWeek,
-      mealSlots,
-      dishCatalog,
-      retrievalSummary
-    });
-
-    const aiText = await invokeAi(prompt);
-    const aiSelection = parseAiSelection(aiText);
-
-    const meals = materializeMeals({
-      mealSlots,
-      aiSelection,
-      dishesById,
-      candidatesByMealType
-    });
-
-    return {
-      date: targetDate.toISOString(),
-      dayOfWeek,
-      meals
-    };
   },
 
   recommendDailyWorkout: async (
     userId: string,
     payload: RecommendDailyWorkoutRequest
   ): Promise<DailyWorkoutRecommendationResponse> => {
-    const user = await getUserProfileForRecommendation(userId);
+    let reservation: AiQuotaReservation | null = null;
+    let aiInvocation: AiInvocationResult | null = null;
 
-    const targetDate = payload.date;
-    const dayOfWeek = getDayOfWeek(targetDate);
+    try {
+      const user = await getUserProfileForRecommendation(userId);
 
-    const candidateExercises = await getCandidateExercises();
-    if (!candidateExercises.length) {
-      throw createHttpError(404, 'Không có bài tập phù hợp trong hệ thống');
+      const targetDate = payload.date;
+      const dayOfWeek = getDayOfWeek(targetDate);
+      const mealContext = await getMealContextForDate(userId, targetDate);
+      const recentWorkoutContext = await getRecentWorkoutExerciseContext(
+        userId,
+        targetDate,
+        7
+      );
+      const exerciseRetrieval = await getCandidateExercises(
+        user,
+        mealContext,
+        recentWorkoutContext
+      );
+      const candidateExercises = exerciseRetrieval.exercises;
+      console.log(
+        `[RAG] Workout retrieval mode=${exerciseRetrieval.mode}, ragMatchedExerciseIds=${exerciseRetrieval.ragMatchedExerciseIds ?? 'N/A'}, candidateExercisesAfterHardFilters=${candidateExercises.length}, recentDistinctExercises(${recentWorkoutContext.lookbackDays}d)=${recentWorkoutContext.distinctExerciseCount}`
+      );
+
+      if (!candidateExercises.length) {
+        throw createHttpError(404, 'Không có bài tập phù hợp trong hệ thống');
+      }
+
+      const rankedExercises = rankCandidateExercises(candidateExercises, user, {
+        targetDate,
+        recentExerciseCounts: recentWorkoutContext.exerciseCounts
+      });
+      const recentExerciseIds = new Set(
+        Array.from(recentWorkoutContext.exerciseCounts.keys())
+      );
+      const diversifiedExercises = diversifyExercisesByRecency(
+        rankedExercises,
+        recentExerciseIds
+      );
+      const targetExerciseCount = resolveTargetExerciseCount(
+        payload.maxExercises,
+        user.activityLevel,
+        diversifiedExercises.length
+      );
+
+      const exerciseCatalog = buildExerciseCatalog(diversifiedExercises);
+      const inputForPrompt = buildWorkoutPromptInput(user);
+      const retrievalSummary = buildWorkoutRetrievalSummary(
+        candidateExercises.length,
+        targetExerciseCount,
+        mealContext,
+        exerciseRetrieval.mode,
+        exerciseRetrieval.ragMatchedExerciseIds,
+        recentWorkoutContext
+      );
+
+      const prompt = exerciseRecommendationPrompt(inputForPrompt, {
+        dateISO: targetDate.toISOString(),
+        dayOfWeek,
+        targetExerciseCount,
+        exerciseCatalog,
+        retrievalSummary
+      });
+
+      const estimatedReserve = estimateReserveTokensForPrompt(
+        'recommend_daily_workout',
+        prompt
+      );
+      console.log(
+        `[AI_QUOTA] endpoint=recommend_daily_workout promptChars=${prompt.length} estimatedReserve=${estimatedReserve}`
+      );
+      reservation = await reserveAiTokensForRecommendation(
+        userId,
+        'recommend_daily_workout',
+        estimatedReserve
+      );
+      aiInvocation = await invokeAi(prompt);
+      const quotaSettlement = await settleAiTokenUsage(
+        userId,
+        reservation,
+        aiInvocation.usage
+      );
+      const aiMeta: AiResponseMeta = {
+        usage: aiInvocation.usage,
+        reservation,
+        settlement: quotaSettlement
+      };
+      const aiSelection = parseAiWorkoutSelection(aiInvocation.text);
+
+      const selectedExercises = materializeExercises({
+        aiSelection,
+        rankedExercises: diversifiedExercises,
+        targetExerciseCount,
+        recentExerciseIds
+      });
+
+      const workout = buildWorkoutEntries(selectedExercises);
+
+      const schedule = await upsertScheduleWorkout({
+        user,
+        date: targetDate,
+        dayOfWeek,
+        workout
+      });
+
+      return await toAiRecommendedScheduleResponse(schedule.toObject(), aiMeta);
+    } catch (error) {
+      if (reservation && !aiInvocation) {
+        await refundReservedAiTokens(userId, reservation);
+      }
+      throw error;
+    }
+  }
+};
+
+const applyMembershipExpiryIfNeeded = (user: any, now: Date): boolean => {
+  if (user.membershipLevel !== MEMBERSHIP_LEVEL.VIP) return false;
+  const expiresAt =
+    user.membershipExpiresAt instanceof Date
+      ? user.membershipExpiresAt
+      : user.membershipExpiresAt
+        ? new Date(user.membershipExpiresAt)
+        : null;
+
+  if (!expiresAt || Number.isNaN(expiresAt.getTime()) || now < expiresAt) {
+    return false;
+  }
+
+  const downgradedLevel = MEMBERSHIP_LEVEL.NORMAL;
+  const downgradedLimit = getDailyTokenLimit(downgradedLevel);
+
+  user.membershipLevel = downgradedLevel;
+  user.membershipExpiresAt = undefined;
+  user.aiDailyTokenLimit = downgradedLimit;
+  user.aiTokens = Math.min(toNonNegativeInt(user.aiTokens), downgradedLimit);
+
+  return true;
+};
+
+const refreshDailyQuotaIfNeeded = (user: any, now: Date): boolean => {
+  const membershipLevel = resolveMembershipLevel(user.membershipLevel);
+  const dailyLimit = getDailyTokenLimit(membershipLevel);
+  const resetAt =
+    user.aiQuotaResetAt instanceof Date
+      ? user.aiQuotaResetAt
+      : user.aiQuotaResetAt
+        ? new Date(user.aiQuotaResetAt)
+        : null;
+
+  const shouldReset =
+    !resetAt || Number.isNaN(resetAt.getTime()) || now >= resetAt;
+
+  if (shouldReset) {
+    user.aiTokens = dailyLimit;
+    user.aiDailyTokenLimit = dailyLimit;
+    user.aiQuotaResetAt = getNextQuotaResetAt(now);
+    return true;
+  }
+
+  let changed = false;
+  if (toNonNegativeInt(user.aiDailyTokenLimit) !== dailyLimit) {
+    user.aiDailyTokenLimit = dailyLimit;
+    if (toNonNegativeInt(user.aiTokens) > dailyLimit) {
+      user.aiTokens = dailyLimit;
+    }
+    changed = true;
+  }
+
+  if (typeof user.aiTokens !== 'number' || Number.isNaN(user.aiTokens)) {
+    user.aiTokens = 0;
+    changed = true;
+  }
+
+  return changed;
+};
+
+const reserveAiTokensForRecommendation = async (
+  userId: string,
+  endpoint: AiQuotaEndpoint,
+  requestedReserveTokens: number
+): Promise<AiQuotaReservation> => {
+  const user = await UserModel.findById(userId);
+  if (!user) {
+    throw createHttpError(404, 'Không tìm thấy người dùng');
+  }
+  if (!user.isActive) {
+    throw createHttpError(403, 'Tài khoản người dùng đang bị vô hiệu hóa');
+  }
+
+  const now = new Date();
+  const reserveRange = getReserveTokenRangeForEndpoint(endpoint);
+  const reserveTokens = Math.max(
+    reserveRange.min,
+    Math.min(reserveRange.max, toNonNegativeInt(requestedReserveTokens))
+  );
+
+  const changedByExpiry = applyMembershipExpiryIfNeeded(user, now);
+  const changedByRefresh = refreshDailyQuotaIfNeeded(user, now);
+  const normalizedTokens = toNonNegativeInt(user.aiTokens);
+  user.aiTokens = normalizedTokens;
+
+  if (normalizedTokens < reserveTokens) {
+    if (changedByExpiry || changedByRefresh) {
+      await user.save();
     }
 
-    const rankedExercises = rankCandidateExercises(candidateExercises, user);
-    const recentExerciseIds = await getRecentWorkoutExerciseIds(
-      userId,
-      targetDate,
-      7
+    throw createHttpError(
+      429,
+      'Bạn đã hết token AI trong ngày. Vui lòng thử lại sau khi quota được làm mới.'
     );
-    const diversifiedExercises = diversifyExercisesByRecency(
-      rankedExercises,
-      recentExerciseIds
-    );
-    const targetExerciseCount = resolveTargetExerciseCount(
-      payload.maxExercises,
-      user.activityLevel,
-      diversifiedExercises.length
-    );
-
-    const exerciseCatalog = buildExerciseCatalog(diversifiedExercises);
-    const inputForPrompt = buildWorkoutPromptInput(user);
-    const mealContext = await getMealContextForDate(userId, targetDate);
-    const retrievalSummary = buildWorkoutRetrievalSummary(
-      candidateExercises.length,
-      targetExerciseCount,
-      mealContext
-    );
-
-    const prompt = exerciseRecommendationPrompt(inputForPrompt, {
-      dateISO: targetDate.toISOString(),
-      dayOfWeek,
-      targetExerciseCount,
-      exerciseCatalog,
-      retrievalSummary
-    });
-
-    const aiText = await invokeAi(prompt);
-    const aiSelection = parseAiWorkoutSelection(aiText);
-
-    const selectedExercises = materializeExercises({
-      aiSelection,
-      rankedExercises: diversifiedExercises,
-      targetExerciseCount
-    });
-
-    const workout = buildWorkoutEntries(selectedExercises);
-
-    const schedule = await upsertScheduleWorkout({
-      user,
-      date: targetDate,
-      dayOfWeek,
-      workout
-    });
-
-    const scheduleObj = schedule.toObject();
-
-    const sanitizedWorkout = (scheduleObj.workout ?? []).map(item => ({
-      exerciseId: item.exerciseId?.toString(),
-      exerciseName: item.exerciseName,
-      exerciseType: item.exerciseType,
-      exerciseTutorial: item.exerciseTutorial ?? '',
-      logType: item.logType,
-      distanceTarget: item.distanceTarget
-        ? {
-            value: item.distanceTarget.value,
-            unit: item.distanceTarget.unit
-          }
-        : undefined,
-      weightAndRepsTarget: item.weightAndRepsTarget
-        ? {
-            reps: item.weightAndRepsTarget.reps,
-            sets: item.weightAndRepsTarget.sets,
-            weight:
-              typeof item.weightAndRepsTarget.weight === 'number'
-                ? item.weightAndRepsTarget.weight
-                : undefined
-          }
-        : undefined,
-      durationTarget: item.durationTarget
-        ? { seconds: item.durationTarget.seconds }
-        : undefined,
-      isCompleted: item.isCompleted ?? false
-    }));
-
-    return {
-      schedule: {
-        ...scheduleObj,
-        _id: scheduleObj._id?.toString(),
-        date:
-          scheduleObj.date instanceof Date
-            ? scheduleObj.date.toISOString()
-            : scheduleObj.date,
-        dayOfWeek:
-          typeof scheduleObj.dayOfWeek === 'string'
-            ? scheduleObj.dayOfWeek
-            : String(scheduleObj.dayOfWeek),
-        user: scheduleObj.user
-          ? { ...scheduleObj.user, _id: scheduleObj.user._id?.toString() }
-          : scheduleObj.user,
-        workout: sanitizedWorkout
-      }
-    };
   }
+
+  user.aiTokens = normalizedTokens - reserveTokens;
+  await user.save();
+
+  return {
+    endpoint,
+    reservedTokens: reserveTokens
+  };
+};
+
+const refundReservedAiTokens = async (
+  userId: string,
+  reservation: AiQuotaReservation
+) => {
+  await UserModel.findByIdAndUpdate(userId, {
+    $inc: { aiTokens: reservation.reservedTokens }
+  });
+};
+
+const settleAiTokenUsage = async (
+  userId: string,
+  reservation: AiQuotaReservation,
+  usage: AiUsageMetadata
+): Promise<AiQuotaSettlement> => {
+  const normalizedTotal = toNonNegativeInt(usage.totalTokens);
+  const chargedTokens = Math.min(normalizedTotal, reservation.reservedTokens);
+  const refundedTokens = Math.max(
+    0,
+    reservation.reservedTokens - chargedTokens
+  );
+
+  if (refundedTokens > 0) {
+    await UserModel.findByIdAndUpdate(userId, {
+      $inc: { aiTokens: refundedTokens }
+    });
+  }
+
+  if (normalizedTotal > reservation.reservedTokens) {
+    console.warn(
+      `[AI_QUOTA] totalTokens (${normalizedTotal}) exceeded reservedTokens (${reservation.reservedTokens}) for endpoint=${reservation.endpoint}`
+    );
+  }
+
+  const user = await UserModel.findById(userId).select(
+    'membershipLevel aiDailyTokenLimit aiTokens aiQuotaResetAt'
+  );
+  if (!user) {
+    throw createHttpError(404, 'Không tìm thấy người dùng');
+  }
+
+  return {
+    chargedTokens,
+    refundedTokens,
+    membershipLevel: resolveMembershipLevel(user.membershipLevel),
+    dailyTokenLimit: toNonNegativeInt(user.aiDailyTokenLimit),
+    remainingTokens: toNonNegativeInt(user.aiTokens),
+    quotaResetAt:
+      user.aiQuotaResetAt instanceof Date
+        ? user.aiQuotaResetAt
+        : user.aiQuotaResetAt
+          ? new Date(user.aiQuotaResetAt)
+          : undefined
+  };
 };
 
 const getUserProfileForRecommendation = async (
@@ -544,39 +882,32 @@ const toGoal = (
   };
 };
 
-const getCandidateDishes = async (
+const mapDishCandidate = (dish: any): DishCandidate => ({
+  _id: dish._id.toString(),
+  name: dish.name,
+  image: dish.image ?? undefined,
+  servings: dish.servings ?? 1,
+  nutrition: dish.nutrition ?? null,
+  categories: [...(dish.categories ?? [])],
+  nutritionFocus: [...(dish.nutritionFocus ?? [])],
+  tags: [...(dish.tags ?? [])],
+  preparationTime: dish.preparationTime ?? undefined,
+  cookTime: dish.cookTime ?? undefined,
+  ingredients: (dish.ingredients ?? []).map((ingredient: any) => ({
+    ingredientId: ingredient.ingredientId?.toString(),
+    allergens: [...(ingredient.allergens ?? [])]
+  }))
+});
+
+const applyDishHardFilters = (
+  dishes: DishCandidate[],
   user: UserProfileForRecommendation
-): Promise<DishCandidate[]> => {
+) => {
   const blockedDishSet = new Set(user.blockDishes);
   const blockedIngredientSet = new Set(user.blockIngredients);
   const allergenSet = new Set(user.allergens);
 
-  const dishes = await DishModel.find({
-    isActive: true,
-    isPublic: true
-  })
-    .select(
-      'name image servings nutrition categories nutritionFocus tags preparationTime cookTime ingredients'
-    )
-    .lean();
-
   return dishes
-    .map(dish => ({
-      _id: dish._id.toString(),
-      name: dish.name,
-      image: dish.image ?? undefined,
-      servings: dish.servings ?? 1,
-      nutrition: dish.nutrition ?? null,
-      categories: [...(dish.categories ?? [])],
-      nutritionFocus: [...(dish.nutritionFocus ?? [])],
-      tags: [...(dish.tags ?? [])],
-      preparationTime: dish.preparationTime ?? undefined,
-      cookTime: dish.cookTime ?? undefined,
-      ingredients: (dish.ingredients ?? []).map(ingredient => ({
-        ingredientId: ingredient.ingredientId?.toString(),
-        allergens: [...(ingredient.allergens ?? [])]
-      }))
-    }))
     .filter(dish => !blockedDishSet.has(dish._id))
     .filter(
       dish =>
@@ -594,21 +925,390 @@ const getCandidateDishes = async (
     );
 };
 
-const getCandidateExercises = async (): Promise<ExerciseCandidate[]> => {
-  const exercises = await ExerciseModel.find({ isActive: true })
+const orderDishesByRagPriority = (
+  dishes: DishCandidate[],
+  ragDishIds: string[]
+) => {
+  if (!ragDishIds.length) return dishes;
+  const rank = new Map(ragDishIds.map((id, index) => [id, index]));
+  return [...dishes].sort(
+    (left, right) =>
+      (rank.get(left._id) ?? Number.MAX_SAFE_INTEGER) -
+      (rank.get(right._id) ?? Number.MAX_SAFE_INTEGER)
+  );
+};
+
+const getCandidateDishesFromMongo = async (
+  user: UserProfileForRecommendation,
+  preferredDishIds?: string[]
+): Promise<DishCandidate[]> => {
+  const query: Record<string, unknown> = {
+    isActive: true,
+    isPublic: true
+  };
+
+  if (preferredDishIds?.length) {
+    query._id = { $in: preferredDishIds };
+  }
+
+  const dishes = await DishModel.find(query)
+    .select(
+      'name image servings nutrition categories nutritionFocus tags preparationTime cookTime ingredients'
+    )
+    .lean();
+
+  const mapped = dishes.map(mapDishCandidate);
+  const filtered = applyDishHardFilters(mapped, user);
+
+  return preferredDishIds?.length
+    ? orderDishesByRagPriority(filtered, preferredDishIds)
+    : filtered;
+};
+
+const toDishRagGoalHints = (target?: string) => {
+  if (target === USER_TARGET.BUILD_MUSCLE) {
+    return [NUTRITION_FOCUS.HIGH_PROTEIN];
+  }
+  if (target === USER_TARGET.LOSE_FAT) {
+    return [NUTRITION_FOCUS.LOW_FAT, NUTRITION_FOCUS.LOW_CARB];
+  }
+  return [];
+};
+
+const buildDishRagQuery = (
+  user: UserProfileForRecommendation,
+  slot: MealSlot
+) => {
+  const categoryHints = slot.dishCategories.length
+    ? slot.dishCategories
+    : (MEAL_TYPE_CATEGORY_HINTS[slot.mealType] ?? []);
+  const goalHints = toDishRagGoalHints(user.goal?.target);
+
+  return [
+    `Meal type: ${slot.mealType}`,
+    `Preferred categories: ${
+      categoryHints.length ? categoryHints.join(', ') : 'N/A'
+    }`,
+    `Preferred types: ${
+      slot.preferredTypes.length ? slot.preferredTypes.join(', ') : 'N/A'
+    }`,
+    `Goal: ${user.goal?.target ?? 'N/A'}`,
+    `Diet: ${user.diet ?? 'N/A'}`,
+    `Nutrition hints: ${goalHints.length ? goalHints.join(', ') : 'N/A'}`,
+    `Available time: ${slot.availableTime ?? 'N/A'}`,
+    `Cooking preference: ${slot.cookingPreference ?? 'N/A'}`,
+    `Complexity: ${slot.complexity ?? 'N/A'}`,
+    `Allergens to avoid: ${
+      user.allergens.length ? user.allergens.join(', ') : 'N/A'
+    }`
+  ].join('\n');
+};
+
+const extractDishSourceId = (document: RagDishDocument) => {
+  const metadata = document.metadata;
+  if (
+    metadata?.sourceType === 'dish' &&
+    typeof metadata.sourceId === 'string'
+  ) {
+    return metadata.sourceId;
+  }
+
+  if (
+    metadata?.metadata?.sourceType === 'dish' &&
+    typeof metadata.metadata.sourceId === 'string'
+  ) {
+    return metadata.metadata.sourceId;
+  }
+
+  return undefined;
+};
+
+const findDishIdsByRag = async (
+  user: UserProfileForRecommendation,
+  mealSlots: MealSlot[]
+) => {
+  if (!mealSlots.length) return [];
+
+  const vectorStore = createRagVectorStore() as RagDishVectorStore;
+  const filter = {
+    'metadata.sourceType': 'dish',
+    'metadata.isPublic': true
+  };
+  const perSlotTopK = Math.max(25, Math.min(80, ragConfig.defaultTopK * 8));
+  const seen = new Set<string>();
+  const rankedDishIds: string[] = [];
+
+  for (const slot of mealSlots) {
+    const query = buildDishRagQuery(user, slot);
+    const docs = await vectorStore.similaritySearch(query, perSlotTopK, filter);
+
+    docs.forEach(doc => {
+      const sourceId = extractDishSourceId(doc);
+      if (sourceId && !seen.has(sourceId)) {
+        seen.add(sourceId);
+        rankedDishIds.push(sourceId);
+      }
+    });
+  }
+
+  return rankedDishIds;
+};
+
+const getCandidateDishes = async (
+  user: UserProfileForRecommendation,
+  mealSlots: MealSlot[]
+): Promise<DishRetrievalResult> => {
+  if (!ragConfig.enabled) {
+    return {
+      dishes: await getCandidateDishesFromMongo(user),
+      mode: 'direct_mongodb'
+    };
+  }
+
+  try {
+    const ragDishIds = await findDishIdsByRag(user, mealSlots);
+
+    if (!ragDishIds.length) {
+      return {
+        dishes: await getCandidateDishesFromMongo(user),
+        mode: 'direct_mongodb',
+        ragMatchedDishIds: 0
+      };
+    }
+
+    const ragScopedCandidates = await getCandidateDishesFromMongo(
+      user,
+      ragDishIds
+    );
+
+    if (!ragScopedCandidates.length) {
+      return {
+        dishes: await getCandidateDishesFromMongo(user),
+        mode: 'direct_mongodb',
+        ragMatchedDishIds: ragDishIds.length
+      };
+    }
+
+    return {
+      dishes: ragScopedCandidates,
+      mode: 'rag_vector_search',
+      ragMatchedDishIds: ragDishIds.length
+    };
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    console.warn(
+      `[RAG] Meal retrieval fallback to direct MongoDB filtering. Reason: ${reason}`
+    );
+    return {
+      dishes: await getCandidateDishesFromMongo(user),
+      mode: 'direct_mongodb'
+    };
+  }
+};
+
+const mapExerciseCandidate = (exercise: any): ExerciseCandidate => ({
+  _id: exercise._id.toString(),
+  name: exercise.name,
+  tutorial: exercise.tutorial ?? '',
+  difficulty: exercise.difficulty,
+  type: exercise.type,
+  logType: exercise.logType,
+  muscles: (exercise.muscles ?? []).map((muscle: any) => muscle.name),
+  equipments: (exercise.equipments ?? []).map(
+    (equipment: any) => equipment.name
+  )
+});
+
+const orderExercisesByRagPriority = (
+  exercises: ExerciseCandidate[],
+  ragExerciseIds: string[]
+) => {
+  if (!ragExerciseIds.length) return exercises;
+  const rank = new Map(ragExerciseIds.map((id, index) => [id, index]));
+  return [...exercises].sort(
+    (left, right) =>
+      (rank.get(left._id) ?? Number.MAX_SAFE_INTEGER) -
+      (rank.get(right._id) ?? Number.MAX_SAFE_INTEGER)
+  );
+};
+
+const getCandidateExercisesFromMongo = async (
+  preferredExerciseIds?: string[]
+): Promise<ExerciseCandidate[]> => {
+  const query: Record<string, unknown> = {
+    isActive: true
+  };
+
+  if (preferredExerciseIds?.length) {
+    query._id = { $in: preferredExerciseIds };
+  }
+
+  const exercises = await ExerciseModel.find(query)
     .select('name tutorial difficulty type logType muscles equipments')
     .lean();
 
-  return exercises.map(exercise => ({
-    _id: exercise._id.toString(),
-    name: exercise.name,
-    tutorial: exercise.tutorial ?? '',
-    difficulty: exercise.difficulty,
-    type: exercise.type,
-    logType: exercise.logType,
-    muscles: (exercise.muscles ?? []).map(muscle => muscle.name),
-    equipments: (exercise.equipments ?? []).map(equipment => equipment.name)
-  }));
+  const mapped = exercises.map(mapExerciseCandidate);
+  return preferredExerciseIds?.length
+    ? orderExercisesByRagPriority(mapped, preferredExerciseIds)
+    : mapped;
+};
+
+const toExerciseRagGoalTypeHints = (target?: string) => {
+  if (target === USER_TARGET.BUILD_MUSCLE) {
+    return Array.from(MUSCLE_GOAL_TYPES);
+  }
+  if (target === USER_TARGET.LOSE_FAT) {
+    return Array.from(FAT_LOSS_TYPES);
+  }
+  if (target === USER_TARGET.MAINTAIN_WEIGHT) {
+    return Array.from(RECOVERY_TYPES);
+  }
+  return [];
+};
+
+const buildExerciseRagQuery = (
+  user: UserProfileForRecommendation,
+  mealContext: MealContextSummary | null,
+  recentWorkoutContext?: RecentWorkoutExerciseContext
+) => {
+  const goalTypeHints = toExerciseRagGoalTypeHints(user.goal?.target);
+  const targetDifficulty = resolveTargetDifficulty(user.activityLevel);
+  const mealHintLines = mealContext
+    ? mealContext.meals
+        .slice(0, 6)
+        .map(meal => {
+          const dishes = meal.dishes.length ? meal.dishes.join(', ') : 'N/A';
+          const calories =
+            typeof meal.calories === 'number' ? `${meal.calories} kcal` : 'N/A';
+          return `- ${meal.mealType}: dishes=${dishes}; calories=${calories}`;
+        })
+        .join('\n')
+    : 'N/A';
+
+  return [
+    `Goal: ${user.goal?.target ?? 'N/A'}`,
+    `Activity level: ${user.activityLevel ?? 'N/A'}`,
+    `Target difficulty: ${targetDifficulty ?? 'N/A'}`,
+    `Preferred exercise types: ${
+      goalTypeHints.length ? goalTypeHints.join(', ') : 'N/A'
+    }`,
+    `Medical history: ${
+      user.medicalHistory.length ? user.medicalHistory.join(', ') : 'N/A'
+    }`,
+    `Estimated meal calories today: ${
+      mealContext?.totalCalories !== undefined
+        ? `${mealContext.totalCalories} kcal`
+        : 'N/A'
+    }`,
+    `Recent exercises to de-prioritize: ${
+      recentWorkoutContext?.recentExerciseNames?.length
+        ? recentWorkoutContext.recentExerciseNames.join(', ')
+        : 'N/A'
+    }`,
+    'Meals context:',
+    mealHintLines
+  ].join('\n');
+};
+
+const extractExerciseSourceId = (document: RagExerciseDocument) => {
+  const metadata = document.metadata;
+  if (
+    metadata?.sourceType === 'exercise' &&
+    typeof metadata.sourceId === 'string'
+  ) {
+    return metadata.sourceId;
+  }
+
+  if (
+    metadata?.metadata?.sourceType === 'exercise' &&
+    typeof metadata.metadata.sourceId === 'string'
+  ) {
+    return metadata.metadata.sourceId;
+  }
+
+  return undefined;
+};
+
+const findExerciseIdsByRag = async (
+  user: UserProfileForRecommendation,
+  mealContext: MealContextSummary | null,
+  recentWorkoutContext?: RecentWorkoutExerciseContext
+) => {
+  const vectorStore = createRagVectorStore() as RagExerciseVectorStore;
+  const filter = {
+    'metadata.sourceType': 'exercise',
+    'metadata.isPublic': true
+  };
+  const topK = Math.max(30, Math.min(100, ragConfig.defaultTopK * 10));
+  const query = buildExerciseRagQuery(user, mealContext, recentWorkoutContext);
+  const docs = await vectorStore.similaritySearch(query, topK, filter);
+  const seen = new Set<string>();
+  const rankedExerciseIds: string[] = [];
+
+  docs.forEach(doc => {
+    const sourceId = extractExerciseSourceId(doc);
+    if (sourceId && !seen.has(sourceId)) {
+      seen.add(sourceId);
+      rankedExerciseIds.push(sourceId);
+    }
+  });
+
+  return rankedExerciseIds;
+};
+
+const getCandidateExercises = async (
+  user: UserProfileForRecommendation,
+  mealContext: MealContextSummary | null,
+  recentWorkoutContext?: RecentWorkoutExerciseContext
+): Promise<ExerciseRetrievalResult> => {
+  if (!ragConfig.enabled) {
+    return {
+      exercises: await getCandidateExercisesFromMongo(),
+      mode: 'direct_mongodb'
+    };
+  }
+
+  try {
+    const ragExerciseIds = await findExerciseIdsByRag(
+      user,
+      mealContext,
+      recentWorkoutContext
+    );
+
+    if (!ragExerciseIds.length) {
+      return {
+        exercises: await getCandidateExercisesFromMongo(),
+        mode: 'direct_mongodb',
+        ragMatchedExerciseIds: 0
+      };
+    }
+
+    const ragScopedCandidates =
+      await getCandidateExercisesFromMongo(ragExerciseIds);
+
+    if (!ragScopedCandidates.length) {
+      return {
+        exercises: await getCandidateExercisesFromMongo(),
+        mode: 'direct_mongodb',
+        ragMatchedExerciseIds: ragExerciseIds.length
+      };
+    }
+
+    return {
+      exercises: ragScopedCandidates,
+      mode: 'rag_vector_search',
+      ragMatchedExerciseIds: ragExerciseIds.length
+    };
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    console.warn(
+      `[RAG] Workout retrieval fallback to direct MongoDB filtering. Reason: ${reason}`
+    );
+    return {
+      exercises: await getCandidateExercisesFromMongo(),
+      mode: 'direct_mongodb'
+    };
+  }
 };
 
 const getDayOfWeek = (date: Date): string =>
@@ -677,6 +1377,26 @@ const toDishCount = (mealSize?: string) => {
 const getDishTotalTime = (dish: DishCandidate) =>
   (dish.preparationTime ?? 0) + (dish.cookTime ?? 0);
 
+const dateKey = (date: Date) => date.toISOString().slice(0, 10);
+
+const stableHash = (value: string) => {
+  let hash = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash * 31 + value.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash);
+};
+
+const getDateDishJitter = (dishId: string, targetDate: Date) => {
+  const hash = stableHash(`${dateKey(targetDate)}:${dishId}`);
+  return (hash % 1000) / 1000 - 0.5;
+};
+
+const getDateExerciseJitter = (exerciseId: string, targetDate: Date) => {
+  const hash = stableHash(`${dateKey(targetDate)}:${exerciseId}`);
+  return (hash % 1000) / 1000 - 0.5;
+};
+
 const filterByMealTypeHint = (mealType: string, dishes: DishCandidate[]) => {
   const hints = MEAL_TYPE_CATEGORY_HINTS[mealType] ?? [];
   if (!hints.length) return dishes;
@@ -691,7 +1411,8 @@ const filterByMealTypeHint = (mealType: string, dishes: DishCandidate[]) => {
 const pickCandidatesForMeal = (
   slot: MealSlot,
   candidateDishes: DishCandidate[],
-  user: UserProfileForRecommendation
+  user: UserProfileForRecommendation,
+  rankingContext: MealRankingContext
 ) => {
   let scoped = candidateDishes;
 
@@ -721,8 +1442,8 @@ const pickCandidatesForMeal = (
 
   return [...scoped].sort(
     (left, right) =>
-      scoreDishForMeal(right, slot, user, favoriteSet) -
-      scoreDishForMeal(left, slot, user, favoriteSet)
+      scoreDishForMeal(right, slot, user, favoriteSet, rankingContext) -
+      scoreDishForMeal(left, slot, user, favoriteSet, rankingContext)
   );
 };
 
@@ -730,7 +1451,8 @@ const scoreDishForMeal = (
   dish: DishCandidate,
   slot: MealSlot,
   user: UserProfileForRecommendation,
-  favoriteSet: Set<string>
+  favoriteSet: Set<string>,
+  rankingContext: MealRankingContext
 ) => {
   let score = 0;
 
@@ -771,6 +1493,13 @@ const scoreDishForMeal = (
     }
   }
 
+  const recentCount = rankingContext.recentDishCounts.get(dish._id) ?? 0;
+  if (recentCount > 0) {
+    score -= Math.min(18, recentCount * 6);
+  }
+
+  score += getDateDishJitter(dish._id, rankingContext.targetDate);
+
   return score;
 };
 
@@ -788,7 +1517,8 @@ const difficultyDistance = (value: string, target: string) => {
 
 const scoreExerciseForUser = (
   exercise: ExerciseCandidate,
-  user: UserProfileForRecommendation
+  user: UserProfileForRecommendation,
+  rankingContext: WorkoutRankingContext
 ) => {
   let score = 0;
 
@@ -815,16 +1545,26 @@ const scoreExerciseForUser = (
     score += 1;
   }
 
+  const recentCount =
+    rankingContext.recentExerciseCounts.get(exercise._id) ?? 0;
+  if (recentCount > 0) {
+    score -= Math.min(18, recentCount * 6);
+  }
+
+  score += getDateExerciseJitter(exercise._id, rankingContext.targetDate);
+
   return score;
 };
 
 const rankCandidateExercises = (
   exercises: ExerciseCandidate[],
-  user: UserProfileForRecommendation
+  user: UserProfileForRecommendation,
+  rankingContext: WorkoutRankingContext
 ) =>
   [...exercises].sort(
     (left, right) =>
-      scoreExerciseForUser(right, user) - scoreExerciseForUser(left, user)
+      scoreExerciseForUser(right, user, rankingContext) -
+      scoreExerciseForUser(left, user, rankingContext)
   );
 
 const buildPromptCatalog = (
@@ -963,7 +1703,10 @@ const buildWorkoutPromptInput = (
 const buildRetrievalSummary = (
   totalCandidates: number,
   mealSlots: MealSlot[],
-  candidatesByMealType: Map<string, DishCandidate[]>
+  candidatesByMealType: Map<string, DishCandidate[]>,
+  mode: DishRetrievalMode,
+  ragMatchedDishIds?: number,
+  recentMealContext?: RecentMealDishContext
 ) => {
   const detail = mealSlots
     .map(slot => {
@@ -972,8 +1715,27 @@ const buildRetrievalSummary = (
     })
     .join('\n');
 
+  const modeText =
+    mode === 'rag_vector_search'
+      ? 'Current retrieval mode: RAG vector search + hard filters.'
+      : 'Current retrieval mode: direct MongoDB filtering (RAG disabled or fallback).';
+  const ragCountText =
+    typeof ragMatchedDishIds === 'number'
+      ? `RAG matched dish IDs before hard filters: ${ragMatchedDishIds}.`
+      : null;
+  const recentContextText = recentMealContext
+    ? `Recent history window: ${recentMealContext.lookbackDays} days; distinct dishes=${recentMealContext.distinctDishCount}; total dish picks=${recentMealContext.totalDishPicks}.`
+    : null;
+  const recentDishHintText =
+    recentMealContext && recentMealContext.recentDishNames.length
+      ? `Recently used dishes (de-prioritize): ${recentMealContext.recentDishNames.join(', ')}.`
+      : null;
+
   return [
-    'Current retrieval mode: direct MongoDB filtering (RAG not enabled yet).',
+    modeText,
+    ...(ragCountText ? [ragCountText] : []),
+    ...(recentContextText ? [recentContextText] : []),
+    ...(recentDishHintText ? [recentDishHintText] : []),
     `Total candidates after hard filters: ${totalCandidates}.`,
     'Per-meal candidates:',
     detail
@@ -1043,11 +1805,11 @@ const getMealContextForDate = async (
   };
 };
 
-const getRecentWorkoutExerciseIds = async (
+const getRecentMealDishContext = async (
   userId: string,
   date: Date,
   lookbackDays: number
-) => {
+): Promise<RecentMealDishContext> => {
   const start = new Date(date);
   start.setDate(start.getDate() - Math.max(0, lookbackDays));
 
@@ -1055,18 +1817,84 @@ const getRecentWorkoutExerciseIds = async (
     'user._id': userId,
     date: { $gte: start, $lt: date }
   })
-    .select('workout.exerciseId')
+    .select('meals.dishes.dishId meals.dishes.name')
     .lean();
 
-  const ids = new Set<string>();
+  const dishCounts = new Map<string, number>();
+  const dishNames = new Map<string, string>();
+  let totalDishPicks = 0;
+
   schedules.forEach(schedule => {
-    schedule.workout?.forEach(item => {
-      const id = item.exerciseId?.toString();
-      if (id) ids.add(id);
+    schedule.meals?.forEach(meal => {
+      meal.dishes?.forEach(dish => {
+        const dishId = dish.dishId?.toString();
+        if (!dishId) return;
+        dishCounts.set(dishId, (dishCounts.get(dishId) ?? 0) + 1);
+        if (!dishNames.has(dishId) && dish.name) {
+          dishNames.set(dishId, dish.name);
+        }
+        totalDishPicks += 1;
+      });
     });
   });
 
-  return ids;
+  const recentDishNames = Array.from(dishCounts.entries())
+    .sort((left, right) => right[1] - left[1])
+    .slice(0, 12)
+    .map(([dishId]) => dishNames.get(dishId) ?? dishId);
+
+  return {
+    lookbackDays: Math.max(0, lookbackDays),
+    dishCounts,
+    recentDishNames,
+    distinctDishCount: dishCounts.size,
+    totalDishPicks
+  };
+};
+
+const getRecentWorkoutExerciseContext = async (
+  userId: string,
+  date: Date,
+  lookbackDays: number
+): Promise<RecentWorkoutExerciseContext> => {
+  const start = new Date(date);
+  start.setDate(start.getDate() - Math.max(0, lookbackDays));
+
+  const schedules = await ScheduleModel.find({
+    'user._id': userId,
+    date: { $gte: start, $lt: date }
+  })
+    .select('workout.exerciseId workout.exerciseName')
+    .lean();
+
+  const exerciseCounts = new Map<string, number>();
+  const exerciseNames = new Map<string, string>();
+  let totalExercisePicks = 0;
+
+  schedules.forEach(schedule => {
+    schedule.workout?.forEach(item => {
+      const id = item.exerciseId?.toString();
+      if (!id) return;
+      exerciseCounts.set(id, (exerciseCounts.get(id) ?? 0) + 1);
+      if (!exerciseNames.has(id) && item.exerciseName) {
+        exerciseNames.set(id, item.exerciseName);
+      }
+      totalExercisePicks += 1;
+    });
+  });
+
+  const recentExerciseNames = Array.from(exerciseCounts.entries())
+    .sort((left, right) => right[1] - left[1])
+    .slice(0, 12)
+    .map(([exerciseId]) => exerciseNames.get(exerciseId) ?? exerciseId);
+
+  return {
+    lookbackDays: Math.max(0, lookbackDays),
+    exerciseCounts,
+    recentExerciseNames,
+    distinctExerciseCount: exerciseCounts.size,
+    totalExercisePicks
+  };
 };
 
 const diversifyExercisesByRecency = (
@@ -1092,7 +1920,10 @@ const diversifyExercisesByRecency = (
 const buildWorkoutRetrievalSummary = (
   totalCandidates: number,
   targetExerciseCount: number,
-  mealContext: MealContextSummary | null
+  mealContext: MealContextSummary | null,
+  mode: ExerciseRetrievalMode,
+  ragMatchedExerciseIds?: number,
+  recentWorkoutContext?: RecentWorkoutExerciseContext
 ) => {
   const mealLines = mealContext
     ? mealContext.meals
@@ -1112,9 +1943,27 @@ const buildWorkoutRetrievalSummary = (
     mealContext?.totalCalories !== undefined
       ? `~${mealContext.totalCalories} kcal`
       : 'N/A';
+  const modeText =
+    mode === 'rag_vector_search'
+      ? 'Current retrieval mode: RAG vector search (exercise) + MongoDB hard filters.'
+      : 'Current retrieval mode: direct MongoDB filtering (RAG disabled or fallback).';
+  const ragCountText =
+    typeof ragMatchedExerciseIds === 'number'
+      ? `RAG matched exercise IDs before hard filters: ${ragMatchedExerciseIds}.`
+      : null;
+  const recentContextText = recentWorkoutContext
+    ? `Recent history window: ${recentWorkoutContext.lookbackDays} days; distinct exercises=${recentWorkoutContext.distinctExerciseCount}; total exercise picks=${recentWorkoutContext.totalExercisePicks}.`
+    : null;
+  const recentExerciseHintText =
+    recentWorkoutContext && recentWorkoutContext.recentExerciseNames.length
+      ? `Recently used exercises (de-prioritize): ${recentWorkoutContext.recentExerciseNames.join(', ')}.`
+      : null;
 
   return [
-    'Current retrieval mode: direct MongoDB filtering (RAG not enabled yet).',
+    modeText,
+    ...(ragCountText ? [ragCountText] : []),
+    ...(recentContextText ? [recentContextText] : []),
+    ...(recentExerciseHintText ? [recentExerciseHintText] : []),
     `Total exercise candidates: ${totalCandidates}.`,
     `Target exercise count: ${targetExerciseCount}.`,
     'Meals planned for this day:',
@@ -1123,12 +1972,46 @@ const buildWorkoutRetrievalSummary = (
   ].join('\n');
 };
 
-const invokeAi = async (prompt: string) => {
+const toNonNegativeInt = (value: unknown): number => {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return 0;
+  return Math.max(0, Math.round(numeric));
+};
+
+const normalizeUsageMetadata = (raw: unknown): AiUsageMetadata => {
+  const inputTokens =
+    toNonNegativeInt((raw as any)?.input_tokens) ||
+    toNonNegativeInt((raw as any)?.promptTokens) ||
+    toNonNegativeInt((raw as any)?.prompt_tokens);
+  const outputTokens =
+    toNonNegativeInt((raw as any)?.output_tokens) ||
+    toNonNegativeInt((raw as any)?.completionTokens) ||
+    toNonNegativeInt((raw as any)?.completion_tokens);
+  const totalTokens =
+    toNonNegativeInt((raw as any)?.total_tokens) ||
+    toNonNegativeInt((raw as any)?.totalTokens) ||
+    inputTokens + outputTokens;
+
+  return {
+    inputTokens,
+    outputTokens,
+    totalTokens
+  };
+};
+
+const invokeAi = async (prompt: string): Promise<AiInvocationResult> => {
   const result = await agent.invoke({
     messages: [{ role: 'user', content: prompt }]
   });
   const lastMessage = result.messages?.[result.messages.length - 1];
-  return normalizeContent(lastMessage?.content);
+  const text = normalizeContent(lastMessage?.content);
+
+  const usage = normalizeUsageMetadata(
+    (lastMessage as any)?.usage_metadata ??
+      (result as any)?.llmOutput?.tokenUsage
+  );
+
+  return { text, usage };
 };
 
 const parseAiSelection = (aiText: string) => {
@@ -1300,15 +2183,20 @@ const resolveTargetExerciseCount = (
 const materializeExercises = ({
   aiSelection,
   rankedExercises,
-  targetExerciseCount
+  targetExerciseCount,
+  recentExerciseIds
 }: {
   aiSelection: Array<{ exerciseId: string }> | null;
   rankedExercises: ExerciseCandidate[];
   targetExerciseCount: number;
+  recentExerciseIds?: Set<string>;
 }) => {
   const byId = new Map(rankedExercises.map(item => [item._id, item]));
   const selected: ExerciseCandidate[] = [];
   const used = new Set<string>();
+  const deferredRecentFromAi: ExerciseCandidate[] = [];
+  const isRecent = (exerciseId: string) =>
+    Boolean(recentExerciseIds?.has(exerciseId));
 
   if (aiSelection?.length) {
     for (const item of aiSelection) {
@@ -1316,11 +2204,33 @@ const materializeExercises = ({
       const exercise = byId.get(item.exerciseId);
       if (!exercise) continue;
       if (used.has(exercise._id)) continue;
+      if (isRecent(exercise._id)) {
+        deferredRecentFromAi.push(exercise);
+        continue;
+      }
       used.add(exercise._id);
       selected.push(exercise);
     }
   }
 
+  // Phase 1: prefer non-recent exercises.
+  for (const exercise of rankedExercises) {
+    if (selected.length >= targetExerciseCount) break;
+    if (used.has(exercise._id)) continue;
+    if (isRecent(exercise._id)) continue;
+    used.add(exercise._id);
+    selected.push(exercise);
+  }
+
+  // Phase 2: fallback to AI-picked recent exercises.
+  for (const exercise of deferredRecentFromAi) {
+    if (selected.length >= targetExerciseCount) break;
+    if (used.has(exercise._id)) continue;
+    used.add(exercise._id);
+    selected.push(exercise);
+  }
+
+  // Phase 3: final fallback allows all remaining exercises.
   for (const exercise of rankedExercises) {
     if (selected.length >= targetExerciseCount) break;
     if (used.has(exercise._id)) continue;
@@ -1429,6 +2339,72 @@ const toDishResponse = (dish: DishCandidate, servings: number) => ({
   nutrition: normalizeNutrition(dish.nutrition)
 });
 
+const toScheduleMealPayloads = (
+  meals: ReturnType<typeof materializeMeals>,
+  dishesById: Map<string, DishCandidate>
+) =>
+  meals.map(meal => ({
+    mealType: meal.mealType,
+    dishes: meal.dishes.map(dish => {
+      const dishCandidate = dishesById.get(dish.dishId);
+      const energy = calculateDishCalories(dishCandidate);
+
+      return {
+        dishId: dish.dishId,
+        name: dish.name,
+        energy: energy || undefined,
+        servings: dish.servings,
+        image: dish.image,
+        isEaten: false
+      };
+    })
+  }));
+
+const upsertScheduleMeals = async ({
+  user,
+  date,
+  dayOfWeek,
+  meals
+}: {
+  user: UserProfileForRecommendation;
+  date: Date;
+  dayOfWeek: string;
+  meals: Array<{
+    mealType: string;
+    dishes: Array<{
+      dishId: string;
+      name: string;
+      energy?: number;
+      servings: number;
+      image?: string;
+      isEaten: boolean;
+    }>;
+  }>;
+}) => {
+  const existing = await ScheduleModel.findOne({
+    'user._id': user._id,
+    date
+  });
+
+  if (existing) {
+    existing.dayOfWeek = dayOfWeek as any;
+    existing.meals = meals as any;
+    await existing.save();
+    return existing;
+  }
+
+  return ScheduleModel.create({
+    user: {
+      _id: user._id,
+      name: user.name
+    },
+    date,
+    dayOfWeek,
+    meals,
+    workout: []
+  });
+};
+
 const upsertScheduleWorkout = async ({
   user,
   date,
@@ -1480,6 +2456,216 @@ const upsertScheduleWorkout = async ({
     meals,
     workout
   });
+};
+
+const toIsoString = (value: unknown): string | undefined => {
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === 'string') {
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) return parsed.toISOString();
+  }
+  return undefined;
+};
+
+const addNutritionItemsTotal = (
+  target: Map<string, NutritionItem>,
+  items: NutritionItem[] | null | undefined,
+  multiplier: number
+) => {
+  if (!items?.length) return;
+
+  for (const item of items) {
+    const label = item?.label ?? undefined;
+    const unit = item?.unit ?? undefined;
+    const value = item?.value;
+    if (!label || !unit || typeof value !== 'number') continue;
+
+    const key = `${label}|${unit}`;
+    const current = target.get(key);
+    if (current) {
+      current.value = (current.value ?? 0) + value * multiplier;
+    } else {
+      target.set(key, {
+        label,
+        unit,
+        value: value * multiplier
+      });
+    }
+  }
+};
+
+const buildTotalNutritionFromSchedule = async (scheduleObj: any) => {
+  const dishServingPairs: Array<{ dishId: string; servings: number }> = [];
+  const uniqueDishIds = new Set<string>();
+
+  (scheduleObj.meals ?? []).forEach((meal: any) => {
+    (meal.dishes ?? []).forEach((dish: any) => {
+      const dishId = dish.dishId?.toString();
+      if (!dishId) return;
+
+      const servings =
+        typeof dish.servings === 'number' && Number.isFinite(dish.servings)
+          ? dish.servings
+          : 1;
+
+      dishServingPairs.push({
+        dishId,
+        servings
+      });
+      uniqueDishIds.add(dishId);
+    });
+  });
+
+  if (!uniqueDishIds.size) {
+    return {
+      nutrients: [],
+      minerals: [],
+      vitamins: []
+    };
+  }
+
+  const dishes = await DishModel.find({
+    _id: { $in: Array.from(uniqueDishIds) }
+  })
+    .select('nutrition')
+    .lean();
+
+  const nutritionByDishId = new Map<string, DishNutrition>(
+    dishes.map(dish => [dish._id.toString(), (dish as any).nutrition ?? null])
+  );
+
+  const totalNutrients = new Map<string, NutritionItem>();
+  const totalMinerals = new Map<string, NutritionItem>();
+  const totalVitamins = new Map<string, NutritionItem>();
+
+  dishServingPairs.forEach(({ dishId, servings }) => {
+    const nutrition = nutritionByDishId.get(dishId);
+    if (!nutrition) return;
+
+    addNutritionItemsTotal(totalNutrients, nutrition.nutrients, servings);
+    addNutritionItemsTotal(totalMinerals, nutrition.minerals, servings);
+    addNutritionItemsTotal(totalVitamins, nutrition.vitamins, servings);
+  });
+
+  return {
+    nutrients: Array.from(totalNutrients.values()).map(item => ({
+      label: item.label ?? undefined,
+      unit: item.unit ?? undefined,
+      value: item.value ?? undefined
+    })),
+    minerals: Array.from(totalMinerals.values()).map(item => ({
+      label: item.label ?? undefined,
+      unit: item.unit ?? undefined,
+      value: item.value ?? undefined
+    })),
+    vitamins: Array.from(totalVitamins.values()).map(item => ({
+      label: item.label ?? undefined,
+      unit: item.unit ?? undefined,
+      value: item.value ?? undefined
+    }))
+  };
+};
+
+const toAiRecommendedScheduleResponse = (
+  scheduleObj: any,
+  aiMeta?: AiResponseMeta
+): Promise<DailyMealRecommendationResponse> => {
+  const sanitizedMeals: DailyMealRecommendationResponse['meals'] = [];
+  (scheduleObj.meals ?? []).forEach((meal: any) => {
+    const dishes: DailyMealRecommendationResponse['meals'][number]['dishes'] =
+      [];
+    (meal.dishes ?? []).forEach((dish: any) => {
+      const dishId = dish.dishId?.toString();
+      if (!dishId) return;
+
+      dishes.push({
+        dishId,
+        name: dish.name,
+        energy: typeof dish.energy === 'number' ? dish.energy : undefined,
+        servings: typeof dish.servings === 'number' ? dish.servings : 1,
+        image: dish.image ?? undefined,
+        isEaten: dish.isEaten ?? false
+      });
+    });
+
+    sanitizedMeals.push({
+      mealType: meal.mealType,
+      notes: meal.notes ?? undefined,
+      dishes
+    });
+  });
+
+  const sanitizedWorkout: DailyMealRecommendationResponse['workout'] = [];
+  (scheduleObj.workout ?? []).forEach((item: any) => {
+    const exerciseId = item.exerciseId?.toString();
+    if (!exerciseId) return;
+
+    sanitizedWorkout.push({
+      exerciseId,
+      exerciseName: item.exerciseName,
+      exerciseType: item.exerciseType,
+      exerciseTutorial: item.exerciseTutorial ?? '',
+      logType: item.logType,
+      distanceTarget: item.distanceTarget
+        ? {
+            value: item.distanceTarget.value,
+            unit: item.distanceTarget.unit
+          }
+        : undefined,
+      weightAndRepsTarget: item.weightAndRepsTarget
+        ? {
+            reps: item.weightAndRepsTarget.reps,
+            sets: item.weightAndRepsTarget.sets,
+            weight:
+              typeof item.weightAndRepsTarget.weight === 'number'
+                ? item.weightAndRepsTarget.weight
+                : undefined
+          }
+        : undefined,
+      durationTarget: item.durationTarget
+        ? { seconds: item.durationTarget.seconds }
+        : undefined,
+      isCompleted: item.isCompleted ?? false
+    });
+  });
+
+  const dateIso = toIsoString(scheduleObj.date) ?? new Date().toISOString();
+  return buildTotalNutritionFromSchedule(scheduleObj).then(totalNutrition => ({
+    scheduleId: scheduleObj._id.toString(),
+    date: dateIso,
+    dayOfWeek: scheduleObj.dayOfWeek ?? getDayOfWeek(new Date(dateIso)),
+    user: {
+      _id: scheduleObj.user?._id?.toString() ?? '',
+      name: scheduleObj.user?.name ?? ''
+    },
+    meals: sanitizedMeals,
+    workout: sanitizedWorkout,
+    totalNutrition,
+    notes: scheduleObj.notes ?? undefined,
+    createdAt: toIsoString(scheduleObj.createdAt),
+    updatedAt: toIsoString(scheduleObj.updatedAt),
+    aiUsage: aiMeta
+      ? {
+          endpoint: aiMeta.reservation.endpoint,
+          provider: agentConfig.provider,
+          model: agentConfig.model,
+          inputTokens: aiMeta.usage.inputTokens,
+          outputTokens: aiMeta.usage.outputTokens,
+          totalTokens: aiMeta.usage.totalTokens,
+          reservedTokens: aiMeta.reservation.reservedTokens,
+          chargedTokens: aiMeta.settlement.chargedTokens,
+          refundedTokens: aiMeta.settlement.refundedTokens
+        }
+      : undefined,
+    aiQuota: aiMeta
+      ? {
+          membershipLevel: aiMeta.settlement.membershipLevel,
+          dailyTokenLimit: aiMeta.settlement.dailyTokenLimit,
+          remainingTokens: aiMeta.settlement.remainingTokens,
+          quotaResetAt: toIsoString(aiMeta.settlement.quotaResetAt)
+        }
+      : undefined
+  }));
 };
 
 const normalizeContent = (content: unknown): string => {

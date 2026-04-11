@@ -9,5 +9,6 @@ export * from './multer';
 export * from './paginate-options';
 export * from './paginate-response';
 export * from './query-parser';
+export * from './rag';
 export * from './validate-object-id';
 export * from './vietnamese-normalizer';

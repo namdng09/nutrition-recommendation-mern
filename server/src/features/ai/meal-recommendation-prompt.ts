@@ -112,7 +112,7 @@ const mealRecommendationPrompt = (
   const dishCatalogBlock = formatDishCatalog(dishCatalog);
   const retrievalBlock = retrievalSummary
     ? `     
-     Retrieval notes (reserved for RAG upgrade):
+     Retrieval notes:
 ${retrievalSummary}
 `
     : '';
@@ -162,6 +162,7 @@ ${dishCatalogBlock}
        MEAL_RECOMMENDATION_PROMPT_CONFIG.minServings
      } and ${MEAL_RECOMMENDATION_PROMPT_CONFIG.maxServings}.
      - Do not repeat the same dishId across different meals in the same day unless there are not enough unique dishes.
+     - Use retrieval notes to reduce repeating dishes from recent days when alternatives exist.
      - Respect allergens, meal constraints, user goal, and nutrition balance.
      - Do NOT invent new fields.
      
