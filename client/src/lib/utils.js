@@ -251,3 +251,24 @@ export const getHoverImage = url => {
   if (!url) return url;
   return url;
 };
+
+export const DISH_CATEGORY_OPTIONS = [
+  { value: 'Khai vị', label: 'Khai vị' },
+  { value: 'Món chính', label: 'Món chính' },
+  { value: 'Món ăn kèm', label: 'Món ăn kèm' },
+  { value: 'Tráng miệng', label: 'Tráng miệng' },
+  { value: 'Súp', label: 'Súp' },
+  { value: 'Salad', label: 'Salad' },
+  { value: 'Đồ uống', label: 'Đồ uống' },
+  { value: 'Bữa sáng', label: 'Bữa sáng' },
+  { value: 'Ăn nhẹ', label: 'Ăn nhẹ' },
+  { value: 'Nước sốt', label: 'Nước sốt' }
+];
+
+export const NUTRITION_FOCUS_OPTIONS = [
+  { value: 'Giàu đạm', label: 'Giàu đạm' },
+  { value: 'Ít tinh bột', label: 'Ít tinh bột' },
+  { value: 'Ít béo', label: 'Ít béo' },
+  { value: 'Giàu chất xơ', label: 'Giàu chất xơ' },
+  { value: 'Ít muối', label: 'Ít muối' }
+];

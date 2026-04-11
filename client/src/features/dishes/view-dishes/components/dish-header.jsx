@@ -38,7 +38,7 @@ export default function DishHeader({ total = 0 }) {
           </span>
 
           <Link
-            to='/create-dish'
+            to='/create-private-dish'
             className='inline-flex items-center gap-2 rounded-full bg-emerald-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-700'
           >
             <FaPlus className='text-xs' />
