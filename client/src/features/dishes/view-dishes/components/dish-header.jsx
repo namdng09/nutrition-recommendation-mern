@@ -1,4 +1,5 @@
-import { FaListUl, FaUtensils } from 'react-icons/fa';
+import { FaListUl, FaPlus, FaUtensils } from 'react-icons/fa';
+import { Link } from 'react-router';
 
 export default function DishHeader({ total = 0 }) {
   return (
@@ -30,11 +31,19 @@ export default function DishHeader({ total = 0 }) {
           </p>
         </div>
 
-        <div className='self-start md:self-end'>
+        <div className='flex self-start gap-3 md:self-end'>
           <span className='inline-flex items-center gap-2 rounded-full bg-card/80 px-4 py-2 text-sm font-bold text-secondary-foreground shadow-sm backdrop-blur'>
             <FaListUl className='text-emerald-600' />
             {total} món ăn khả dụng
           </span>
+
+          <Link
+            to='/create-dish'
+            className='inline-flex items-center gap-2 rounded-full bg-emerald-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-700'
+          >
+            <FaPlus className='text-xs' />
+            Tạo món ăn của riêng bạn
+          </Link>
         </div>
       </div>
     </div>
