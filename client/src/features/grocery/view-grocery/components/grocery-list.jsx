@@ -1,49 +1,54 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { useGroceries } from '../api/view-grocery';
 import GroceryPagination from './grocery-pagination';
 import GroceryReceipt from './grocery-receipt';
+
+const areIdsEqual = (left, right) =>
+  left.length === right.length &&
+  left.every((id, index) => id === right[index]);
 
 const GroceryList = ({ filters = {}, page = 1, onPageChange }) => {
   const { data } = useGroceries(filters, page);
   const lists = data?.docs ?? [];
   const [expandedIds, setExpandedIds] = useState([]);
 
-  const visibleLists = lists.filter(list => {
+  const visibleLists = useMemo(() => {
     const status = filters?.status ?? 'all';
 
-    if (status === 'done') {
-      return (
-        list.ingredients.length > 0 &&
-        list.ingredients.every(item => item.isPurchased)
-      );
-    }
-
-    if (status === 'pending') {
-      return (
-        list.ingredients.length === 0 ||
-        list.ingredients.some(item => !item.isPurchased)
-      );
-    }
-
-    return true;
-  });
-
-  useEffect(() => {
-    if (!visibleLists.length) {
-      setExpandedIds([]);
-      return;
-    }
-
-    setExpandedIds(prev => {
-      const visibleIdSet = new Set(visibleLists.map(item => item._id));
-      const next = prev.filter(id => visibleIdSet.has(id));
-
-      if (next.length === 0 && visibleLists[0]?._id) {
-        return [visibleLists[0]._id];
+    return lists.filter(list => {
+      if (status === 'done') {
+        return (
+          list.ingredients.length > 0 &&
+          list.ingredients.every(item => item.isPurchased)
+        );
       }
 
-      return next;
+      if (status === 'pending') {
+        return (
+          list.ingredients.length === 0 ||
+          list.ingredients.some(item => !item.isPurchased)
+        );
+      }
+
+      return true;
+    });
+  }, [lists, filters?.status]);
+
+  useEffect(() => {
+    setExpandedIds(prev => {
+      if (!visibleLists.length) {
+        return prev.length ? [] : prev;
+      }
+
+      const visibleIdSet = new Set(visibleLists.map(item => item._id));
+      let next = prev.filter(id => visibleIdSet.has(id));
+
+      if (next.length === 0 && visibleLists[0]?._id) {
+        next = [visibleLists[0]._id];
+      }
+
+      return areIdsEqual(prev, next) ? prev : next;
     });
   }, [visibleLists]);
 
