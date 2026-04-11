@@ -1,25 +1,6 @@
 import { FaFilter, FaRedoAlt, FaSearch } from 'react-icons/fa';
 
-const NUTRITION_OPTIONS = [
-  { label: 'Giàu đạm', value: 'Giàu đạm' },
-  { label: 'Ít tinh bột', value: 'Ít tinh bột' },
-  { label: 'Ít béo', value: 'Ít béo' },
-  { label: 'Giàu chất xơ', value: 'Giàu chất xơ' },
-  { label: 'Ít muối', value: 'Ít muối' }
-];
-
-const CATEGORY_OPTIONS = [
-  { label: 'Khai vị', value: 'Khai vị' },
-  { label: 'Món chính', value: 'Món chính' },
-  { label: 'Món ăn kèm', value: 'Món ăn kèm' },
-  { label: 'Tráng miệng', value: 'Tráng miệng' },
-  { label: 'Súp', value: 'Súp' },
-  { label: 'Salad', value: 'Salad' },
-  { label: 'Đồ uống', value: 'Đồ uống' },
-  { label: 'Bữa sáng', value: 'Bữa sáng' },
-  { label: 'Ăn nhẹ', value: 'Ăn nhẹ' },
-  { label: 'Nước sốt', value: 'Nước sốt' }
-];
+import { DISH_CATEGORY_OPTIONS, NUTRITION_FOCUS_OPTIONS } from '~/lib/utils';
 
 function ToggleChip({ active, children, onClick }) {
   return (
@@ -86,7 +67,7 @@ export default function DishFilters({ filters, onChange, onReset, onSearch }) {
             Chế độ dinh dưỡng
           </label>
           <div className='flex flex-wrap gap-3'>
-            {NUTRITION_OPTIONS.map(option => (
+            {NUTRITION_FOCUS_OPTIONS.map(option => (
               <ToggleChip
                 key={option.value}
                 active={filters.nutritionFocus.includes(option.value)}
@@ -103,7 +84,7 @@ export default function DishFilters({ filters, onChange, onReset, onSearch }) {
             Danh mục món ăn
           </label>
           <div className='flex flex-wrap gap-3'>
-            {CATEGORY_OPTIONS.map(option => (
+            {DISH_CATEGORY_OPTIONS.map(option => (
               <ToggleChip
                 key={option.value}
                 active={filters.categories.includes(option.value)}

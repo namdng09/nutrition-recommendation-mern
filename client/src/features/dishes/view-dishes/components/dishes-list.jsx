@@ -24,18 +24,21 @@ import DishesPagination from './dishes-pagination';
 const DEFAULT_FILTERS = {
   name: '',
   categories: [],
-  nutritionFocus: []
+  nutritionFocus: [],
+  isFavorited: false
 };
 
 export default function DishesList() {
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+  const [showMyDishes, setShowMyDishes] = useState(false);
   const [draftFilters, setDraftFilters] = useState(DEFAULT_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
 
   const { data } = useDishes({
     page,
     limit: 6,
+    isPublic: showMyDishes ? false : true,
     ...(appliedFilters.name?.trim()
       ? { name: appliedFilters.name.trim() }
       : {}),
@@ -44,7 +47,8 @@ export default function DishesList() {
       : {}),
     ...(appliedFilters.nutritionFocus.length
       ? { nutritionFocus: appliedFilters.nutritionFocus }
-      : {})
+      : {}),
+    ...(appliedFilters.isFavorited ? { isFavorited: true } : {})
   });
 
   const dishes = data?.docs || [];
@@ -68,10 +72,16 @@ export default function DishesList() {
     setAppliedFilters(DEFAULT_FILTERS);
   };
 
+  const handleToggleMyDishes = () => {
+    setPage(1);
+    setShowMyDishes(prev => !prev);
+  };
+
   const activeFilterCount =
     (appliedFilters.name?.trim() ? 1 : 0) +
     appliedFilters.categories.length +
-    appliedFilters.nutritionFocus.length;
+    appliedFilters.nutritionFocus.length +
+    (appliedFilters.isFavorited ? 1 : 0);
 
   useEffect(() => {
     if (showFilters) {
@@ -123,20 +133,47 @@ export default function DishesList() {
         <DishHeader total={data?.totalDocs} />
 
         <div className='flex flex-wrap items-center justify-between gap-3'>
-          <button
-            type='button'
-            onClick={() => setShowFilters(true)}
-            className='inline-flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white transition hover:brightness-110'
-          >
-            <FaFilter size={13} />
-            Bộ lọc món ăn
-          </button>
+          <div className='flex flex-wrap items-center gap-3'>
+            <button
+              type='button'
+              onClick={() => setShowFilters(true)}
+              className='inline-flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white transition hover:brightness-110'
+            >
+              <FaFilter size={13} />
+              Bộ lọc món ăn
+            </button>
 
-          {activeFilterCount > 0 && (
-            <span className='inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700'>
-              Đang áp dụng {activeFilterCount} bộ lọc
-            </span>
-          )}
+            <button
+              type='button'
+              onClick={handleToggleMyDishes}
+              className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold transition ${
+                showMyDishes
+                  ? 'bg-orange-500 text-white hover:brightness-110'
+                  : 'border border-border bg-background text-foreground hover:bg-muted'
+              }`}
+            >
+              <FaUser className='text-xs' />
+              Món ăn của tôi
+            </button>
+          </div>
+
+          <div className='flex flex-wrap items-center gap-2'>
+            {showMyDishes ? (
+              <span className='inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-xs font-bold text-orange-700'>
+                Đang hiển thị món ăn bạn tạo
+              </span>
+            ) : (
+              <span className='inline-flex items-center rounded-full bg-sky-100 px-3 py-1 text-xs font-bold text-sky-700'>
+                Đang hiển thị món ăn hệ thống
+              </span>
+            )}
+
+            {activeFilterCount > 0 && (
+              <span className='inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700'>
+                Đang áp dụng {activeFilterCount} bộ lọc
+              </span>
+            )}
+          </div>
         </div>
 
         {!dishes?.length && <DishEmpty />}
