@@ -24,6 +24,7 @@ export const useRemoveCollectionFromFavorite = () => {
       await queryClient.cancelQueries({
         queryKey: QUERY_KEYS.PROFILE
       });
+
       const previous = queryClient.getQueryData(QUERY_KEYS.PROFILE);
 
       queryClient.setQueryData(QUERY_KEYS.PROFILE, old => {
@@ -31,22 +32,28 @@ export const useRemoveCollectionFromFavorite = () => {
 
         return {
           ...old,
-          favoriteCollections:
-            old.favoriteCollections?.filter(id => id !== collectionId) || []
+          favoriteCollections: (old.favoriteCollections || []).filter(item => {
+            const id = typeof item === 'string' ? item : item?._id;
+            return id !== collectionId;
+          })
         };
       });
 
       return { previous };
     },
+
     onError: (_, __, context) => {
       if (context?.previous) {
         queryClient.setQueryData(QUERY_KEYS.PROFILE, context.previous);
       }
+
       toast.error('Không thể xoá khỏi yêu thích');
     },
+
     onSuccess: res => {
       toast.success(res.message || 'Đã xoá khỏi yêu thích');
     },
+
     onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.PROFILE

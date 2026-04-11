@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  FaChevronRight,
-  FaFireAlt,
-  FaLock,
-  FaLockOpen,
-  FaUser
-} from 'react-icons/fa';
+import { FaChevronRight, FaFireAlt, FaLockOpen, FaUser } from 'react-icons/fa';
 import { Link } from 'react-router';
 
 import StatBadge from '~/features/dishes/view-dishes/components/dish-stat-badge';
@@ -18,12 +12,13 @@ import CollectionPagination from './collection-pagination';
 export default function CollectionsList() {
   const [page, setPage] = useState(1);
   const { data } = useCollections();
-  const collections = data?.docs ?? [];
+
+  const collections = (data?.docs ?? []).filter(col => col.isPublic);
 
   return (
     <div className='mx-auto w-full max-w-7xl animate-in space-y-6 fade-in duration-700'>
       <CollectionsHeader
-        totalDocs={data?.totalDocs}
+        totalDocs={collections.length}
         hasCollections={collections.length > 0}
       />
 
@@ -53,20 +48,10 @@ export default function CollectionsList() {
 
                   <div className='absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent' />
 
-                  <div className='absolute left-4 top-4 right-4 flex items-start justify-between gap-3'>
-                    <span
-                      className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] shadow-lg ${
-                        col.isPublic
-                          ? 'bg-emerald-500/95 text-white'
-                          : 'bg-slate-900/90 text-white'
-                      }`}
-                    >
-                      {col.isPublic ? (
-                        <FaLockOpen size={9} />
-                      ) : (
-                        <FaLock size={9} />
-                      )}
-                      {col.isPublic ? 'Công khai' : 'Riêng tư'}
+                  <div className='absolute left-4 right-4 top-4 flex items-start justify-between gap-3'>
+                    <span className='inline-flex items-center gap-1.5 rounded-full bg-emerald-500/95 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-white shadow-lg'>
+                      <FaLockOpen size={9} />
+                      Công khai
                     </span>
                   </div>
                 </div>

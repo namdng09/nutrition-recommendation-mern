@@ -21,29 +21,42 @@ export const useAddCollectionToFavorite = () => {
       await queryClient.cancelQueries({
         queryKey: QUERY_KEYS.PROFILE
       });
+
       const previous = queryClient.getQueryData(QUERY_KEYS.PROFILE);
+
       queryClient.setQueryData(QUERY_KEYS.PROFILE, old => {
         if (!old) return old;
 
+        const current = old.favoriteCollections || [];
+        const currentIds = current.map(item =>
+          typeof item === 'string' ? item : item?._id
+        );
+
+        if (currentIds.includes(collectionId)) return old;
+
         return {
           ...old,
-          favoriteCollections: [
-            ...(old.favoriteCollections || []),
-            collectionId
-          ]
+          favoriteCollections: [...current, collectionId]
         };
       });
+
       return { previous };
     },
-    onError: (_, __, context) => {
+
+    onError: (err, _, context) => {
       if (context?.previous) {
         queryClient.setQueryData(QUERY_KEYS.PROFILE, context.previous);
       }
-      toast.error('Không thể thêm vào yêu thích');
+
+      toast.error(
+        err.response?.data?.message || 'Không thể thêm vào yêu thích'
+      );
     },
+
     onSuccess: res => {
       toast.success(res.message || 'Đã thêm vào yêu thích');
     },
+
     onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.PROFILE

@@ -29,18 +29,19 @@ export const useRecommendDailyWorkout = ({ onSuccess } = {}) => {
     mutationFn: recommendDailyWorkout,
 
     onSuccess: res => {
-      const nextSchedule = res?.data?.schedule;
+      const nextSchedule = res?.data;
 
-      if (nextSchedule?._id) {
+      if (nextSchedule?.scheduleId) {
         queryClient.setQueriesData({ queryKey: QUERY_KEYS.SCHEDULES }, old => {
           if (!old) return old;
 
           if (Array.isArray(old)) {
             return old.map(item =>
-              item?._id === nextSchedule._id
+              item?._id === nextSchedule.scheduleId
                 ? {
                     ...item,
-                    ...nextSchedule
+                    ...nextSchedule,
+                    _id: nextSchedule.scheduleId
                   }
                 : item
             );
@@ -51,31 +52,41 @@ export const useRecommendDailyWorkout = ({ onSuccess } = {}) => {
           return {
             ...old,
             docs: oldDocs.map(item =>
-              item?._id === nextSchedule._id
+              item?._id === nextSchedule.scheduleId
                 ? {
                     ...item,
-                    ...nextSchedule
+                    ...nextSchedule,
+                    _id: nextSchedule.scheduleId
                   }
                 : item
             )
           };
         });
 
-        queryClient.setQueryData(QUERY_KEYS.SCHEDULE(nextSchedule._id), old => {
-          if (!old) return nextSchedule;
+        queryClient.setQueryData(
+          QUERY_KEYS.SCHEDULE(nextSchedule.scheduleId),
+          old => {
+            if (!old) {
+              return {
+                ...nextSchedule,
+                _id: nextSchedule.scheduleId
+              };
+            }
 
-          return {
-            ...old,
-            ...nextSchedule
-          };
-        });
+            return {
+              ...old,
+              ...nextSchedule,
+              _id: nextSchedule.scheduleId
+            };
+          }
+        );
 
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.SCHEDULES
         });
 
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.SCHEDULE(nextSchedule._id)
+          queryKey: QUERY_KEYS.SCHEDULE(nextSchedule.scheduleId)
         });
       }
 

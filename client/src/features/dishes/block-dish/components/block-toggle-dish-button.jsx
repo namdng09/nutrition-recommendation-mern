@@ -9,14 +9,22 @@ import { useBlockDish } from '../api/block-dish';
 export default function BlockToggleDishButton({ dishId }) {
   const { data: profile } = useProfile();
 
-  const { mutate: block } = useBlockDish();
-  const { mutate: unblock } = useUnblockDish();
+  const { mutate: block, isPending: isBlocking } = useBlockDish();
+  const { mutate: unblock, isPending: isUnblocking } = useUnblockDish();
 
-  const blocked = profile?.blockDishes?.includes(dishId);
+  const blockedDishes = profile?.blockDishes || [];
+  const blockedDishIds = blockedDishes.map(item =>
+    typeof item === 'string' ? item : item?._id
+  );
+
+  const blocked = blockedDishIds.includes(dishId);
+  const isLoading = isBlocking || isUnblocking;
 
   const handleClick = e => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (isLoading) return;
 
     if (blocked) {
       unblock(dishId);
@@ -30,17 +38,17 @@ export default function BlockToggleDishButton({ dishId }) {
       onClick={handleClick}
       size='icon'
       variant='ghost'
-      className={`rounded-full transition-all duration-300 active:scale-95 shadow-sm
-    ${
-      blocked
-        ? 'bg-red-600 text-white border-red-700 hover:bg-red-700 shadow-red-200 animate-in fade-in zoom-in'
-        : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200'
-    } border`}
+      disabled={isLoading}
+      className={`rounded-full border shadow-sm transition-all duration-300 active:scale-95 ${
+        blocked
+          ? 'animate-in zoom-in fade-in border-red-700 bg-red-600 text-white shadow-red-200 hover:bg-red-700'
+          : 'border-slate-200 bg-slate-100 text-slate-500 hover:bg-slate-200'
+      }`}
     >
       <FaBan
         size={14}
         className={`transition-transform duration-500 ${
-          blocked ? 'rotate-[360deg] scale-125' : 'rotate-0 scale-100'
+          blocked ? 'scale-125 rotate-[360deg]' : 'scale-100 rotate-0'
         }`}
       />
     </Button>

@@ -43,7 +43,7 @@ export const NAV_LINKS = [
   {
     label: 'Dinh dưỡng',
     children: [
-      { to: '/collections', label: 'Gợi ý bữa ăn' },
+      { to: '/collections', label: 'Bộ sưu tập món ăn' },
       { to: '/dishes', label: 'Món ăn' },
       { to: '/ingredients', label: 'Nguyên liệu' }
     ]

@@ -10,6 +10,8 @@ import { queryClient } from '~/lib/query-client';
 import router from '~/routes/router';
 import store from '~/store/index';
 
+import FeedbackChatWidget from './features/feedback/create-feedback/components/feedback-chat-widget';
+
 const App = () => {
   return (
     <Provider store={store}>
@@ -24,7 +26,13 @@ const App = () => {
           <Toaster position='top-right' />
           <RouterProvider router={router} />
         </ThemeProvider>
-        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+        {import.meta.env.DEV && (
+          <ReactQueryDevtools
+            initialIsOpen={false}
+            buttonPosition='bottom-left'
+          />
+        )}
+        <FeedbackChatWidget />
       </QueryClientProvider>
     </Provider>
   );
