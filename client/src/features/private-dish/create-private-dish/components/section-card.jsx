@@ -5,15 +5,15 @@ export default function SectionCard({
   children
 }) {
   return (
-    <section className='rounded-[32px] border border-slate-200/80 bg-white shadow-[0_8px_30px_rgba(15,23,42,0.06)]'>
-      <div className='border-b border-slate-100 px-6 py-5 md:px-7'>
+    <section className='overflow-hidden rounded-[32px] border border-border bg-card text-card-foreground shadow-sm'>
+      <div className='border-b border-border px-6 py-5 md:px-7'>
         <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
           <div>
-            <h2 className='text-lg font-black tracking-tight text-slate-900 md:text-[20px]'>
+            <h2 className='text-lg font-black tracking-tight text-foreground md:text-[20px]'>
               {title}
             </h2>
             {description ? (
-              <p className='mt-1 text-sm leading-relaxed text-slate-500'>
+              <p className='mt-1 text-sm leading-relaxed text-muted-foreground'>
                 {description}
               </p>
             ) : null}

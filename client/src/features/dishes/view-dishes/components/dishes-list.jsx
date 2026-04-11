@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import {
   FaChevronRight,
   FaClock,
+  FaEdit,
   FaFilter,
   FaFireAlt,
   FaTimes,
@@ -276,14 +277,26 @@ export default function DishesList() {
                       <DishFavoriteButton dishId={dish._id} />
 
                       {showMyDishes && isOwnedByCurrentUser && (
-                        <button
-                          type='button'
-                          onClick={e => handleDeleteDish(e, dish)}
-                          disabled={isDeletingDish}
-                          className='inline-flex h-10 w-10 items-center justify-center rounded-full bg-red-500 text-white shadow-md transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60'
-                        >
-                          <FaTrash className='text-xs' />
-                        </button>
+                        <>
+                          <Link
+                            to={`/private-dishes/${dish._id}/edit`}
+                            onClick={e => e.stopPropagation()}
+                            className='inline-flex items-center gap-2 rounded-full bg-emerald-500 px-3 py-2 text-xs font-bold text-white shadow-md transition hover:bg-emerald-600'
+                          >
+                            <FaEdit className='text-xs' />
+                            <span>Sửa</span>
+                          </Link>
+
+                          <button
+                            type='button'
+                            onClick={e => handleDeleteDish(e, dish)}
+                            disabled={isDeletingDish}
+                            className='inline-flex items-center gap-2 rounded-full bg-red-500 px-3 py-2 text-xs font-bold text-white shadow-md transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60'
+                          >
+                            <FaTrash className='text-xs' />
+                            <span>Xóa</span>
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>

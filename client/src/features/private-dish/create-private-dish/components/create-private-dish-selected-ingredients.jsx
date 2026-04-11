@@ -68,9 +68,15 @@ export default function CreatePrivateDishSelectedIngredients({
                       <div className='min-w-0 flex-1'>
                         <div className='flex flex-wrap items-start gap-3'>
                           <div className='min-w-0 flex-1'>
-                            <h3 className='truncate text-lg font-black tracking-tight text-foreground md:text-xl'>
-                              {ingredient.detail?.name || 'Nguyên liệu'}
-                            </h3>
+                            <div className='flex items-center gap-2'>
+                              <h3 className='truncate text-lg font-black tracking-tight text-foreground md:text-xl'>
+                                {ingredient.detail?.name || 'Nguyên liệu'}
+                              </h3>
+
+                              <span className='inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700'>
+                                100g
+                              </span>
+                            </div>
                           </div>
                         </div>
 

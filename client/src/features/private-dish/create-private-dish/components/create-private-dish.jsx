@@ -295,7 +295,7 @@ export default function CreatePrivateDish() {
 
   const { mutate: createPrivateDish, isPending } = useCreatePrivateDish({
     onSuccess: dish => {
-      navigate(`/dishes/${dish._id}`);
+      navigate(`/private-dishes/${dish._id}`);
     }
   });
 
