@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   HiOutlineAdjustments,
   HiOutlineSearch,
@@ -10,12 +10,42 @@ import { IoFilterOutline } from 'react-icons/io5';
 import CreateGroceryModal from '../../create-grocery/components/create-grocery-modal';
 import { useGroceries } from '../api/view-grocery';
 
-const GroceryHeader = () => {
+const GroceryHeader = ({ filters, onFilterChange }) => {
   const [openModal, setOpenModal] = useState(false);
+  const [nameInput, setNameInput] = useState(filters?.name ?? '');
 
-  const { data } = useGroceries();
+  const { data } = useGroceries(filters, 1);
   const lists = data?.docs ?? [];
-  const [active, setActive] = useState('all');
+  const active = filters?.status ?? 'all';
+
+  const filteredLists = useMemo(() => {
+    if (active === 'done') {
+      return lists.filter(
+        l => l.ingredients.length && l.ingredients.every(i => i.isPurchased)
+      );
+    }
+
+    if (active === 'pending') {
+      return lists.filter(
+        l => !l.ingredients.length || l.ingredients.some(i => !i.isPurchased)
+      );
+    }
+
+    return lists;
+  }, [lists, active]);
+
+  useEffect(() => {
+    setNameInput(filters?.name ?? '');
+  }, [filters?.name]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      onFilterChange?.({ name: nameInput.trim() });
+    }, 350);
+
+    return () => clearTimeout(timeout);
+  }, [nameInput, onFilterChange]);
+
   const total = lists.length;
   const done = lists.filter(
     l => l.ingredients.length && l.ingredients.every(i => i.isPurchased)
@@ -71,6 +101,8 @@ const GroceryHeader = () => {
               <HiOutlineSearch className='absolute left-4 top-1/2 -translate-y-1/2 text-xl text-muted-foreground/50' />
 
               <input
+                value={nameInput}
+                onChange={e => setNameInput(e.target.value)}
                 placeholder='Tìm kiếm danh sách đi chợ...'
                 className='w-full rounded-2xl border border-border/50 bg-background/70 px-12 py-3.5 text-sm font-medium shadow-sm transition-all placeholder:text-muted-foreground/50 focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-4 focus:ring-primary/10'
               />
@@ -82,7 +114,17 @@ const GroceryHeader = () => {
                 Lọc
               </button>
 
-              <button className='inline-flex items-center justify-center gap-2 rounded-2xl border border-border/50 bg-background/70 px-5 py-3.5 text-sm font-bold text-foreground/70 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-muted whitespace-nowrap'>
+              <button
+                onClick={() =>
+                  onFilterChange?.({
+                    sort:
+                      filters?.sort === '-createdAt'
+                        ? 'createdAt'
+                        : '-createdAt'
+                  })
+                }
+                className='inline-flex items-center justify-center gap-2 rounded-2xl border border-border/50 bg-background/70 px-5 py-3.5 text-sm font-bold text-foreground/70 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-muted whitespace-nowrap'
+              >
                 <HiOutlineAdjustments className='text-lg' />
                 Sắp xếp
               </button>
@@ -94,23 +136,30 @@ const GroceryHeader = () => {
               label='Tất cả'
               count={total}
               isActive={active === 'all'}
-              onClick={() => setActive('all')}
+              onClick={() => onFilterChange?.({ status: 'all' })}
             />
 
             <QuickStat
               label='Đang chờ'
               count={pending}
               isActive={active === 'pending'}
-              onClick={() => setActive('pending')}
+              onClick={() => onFilterChange?.({ status: 'pending' })}
             />
 
             <QuickStat
               label='Hoàn thành'
               count={done}
               isActive={active === 'done'}
-              onClick={() => setActive('done')}
+              onClick={() => onFilterChange?.({ status: 'done' })}
             />
           </div>
+
+          {filteredLists.length !== lists.length && (
+            <p className='text-xs font-semibold text-muted-foreground'>
+              Đang hiển thị {filteredLists.length}/{lists.length} danh sách theo
+              bộ lọc.
+            </p>
+          )}
         </div>
       </div>
     </div>
