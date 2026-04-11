@@ -1,4 +1,14 @@
-import { FaTimes } from 'react-icons/fa';
+import { useMemo, useState } from 'react';
+import {
+  FaChevronDown,
+  FaChevronUp,
+  FaFilter,
+  FaSearch,
+  FaTimes,
+  FaUndo
+} from 'react-icons/fa';
+
+import { INGREDIENT_CATEGORY } from '~/lib/utils';
 
 const getNutrientValue = (nutrition, label) => {
   return nutrition?.nutrients?.find(item => item.label === label);
@@ -11,6 +21,65 @@ export default function DishIngredientPickerModal({
   selectedIngredientIds,
   onSelect
 }) {
+  const [showFilters, setShowFilters] = useState(false);
+
+  const [searchInput, setSearchInput] = useState('');
+  const [draftCategories, setDraftCategories] = useState([]);
+
+  const [appliedSearchName, setAppliedSearchName] = useState('');
+  const [appliedCategories, setAppliedCategories] = useState([]);
+
+  const categoryOptions = useMemo(() => {
+    return Object.values(INGREDIENT_CATEGORY);
+  }, []);
+
+  const toggleDraftCategory = category => {
+    setDraftCategories(prev =>
+      prev.includes(category)
+        ? prev.filter(item => item !== category)
+        : [...prev, category]
+    );
+  };
+
+  const handleSearch = () => {
+    setAppliedSearchName(searchInput.trim());
+    setAppliedCategories(draftCategories);
+    setShowFilters(false);
+  };
+
+  const handleSearchKeyDown = e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSearch();
+    }
+  };
+
+  const resetFilters = () => {
+    setSearchInput('');
+    setDraftCategories([]);
+    setAppliedSearchName('');
+    setAppliedCategories([]);
+    setShowFilters(false);
+  };
+
+  const filteredIngredients = useMemo(() => {
+    const normalizedSearch = appliedSearchName.trim().toLowerCase();
+
+    return ingredientOptions.filter(item => {
+      const matchesName =
+        !normalizedSearch ||
+        item.name?.toLowerCase().includes(normalizedSearch);
+
+      const matchesCategory =
+        appliedCategories.length === 0 ||
+        (item.categories || []).some(category =>
+          appliedCategories.includes(category)
+        );
+
+      return matchesName && matchesCategory;
+    });
+  }, [ingredientOptions, appliedSearchName, appliedCategories]);
+
   if (!open) return null;
 
   return (
@@ -25,10 +94,6 @@ export default function DishIngredientPickerModal({
           <div className='border-b border-border px-6 py-5 md:px-7'>
             <div className='flex items-start justify-between gap-4'>
               <div>
-                <div className='mb-2 inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-primary'>
-                  Ingredient Library
-                </div>
-
                 <h2 className='text-2xl font-black tracking-tight text-foreground'>
                   Chọn nguyên liệu
                 </h2>
@@ -46,15 +111,111 @@ export default function DishIngredientPickerModal({
                 <FaTimes />
               </button>
             </div>
+
+            <div className='mt-5 flex flex-wrap items-center gap-3'>
+              <button
+                type='button'
+                onClick={() => setShowFilters(prev => !prev)}
+                className='inline-flex h-11 items-center gap-2 rounded-2xl border border-border bg-background px-4 text-sm font-bold text-foreground shadow-sm transition hover:bg-accent'
+              >
+                <FaFilter className='text-xs' />
+                Bộ lọc
+                {showFilters ? (
+                  <FaChevronUp className='text-[11px]' />
+                ) : (
+                  <FaChevronDown className='text-[11px]' />
+                )}
+              </button>
+
+              {(searchInput ||
+                draftCategories.length > 0 ||
+                appliedSearchName ||
+                appliedCategories.length > 0) && (
+                <button
+                  type='button'
+                  onClick={resetFilters}
+                  className='inline-flex h-11 items-center gap-2 rounded-2xl border border-border bg-background px-4 text-sm font-bold text-foreground shadow-sm transition hover:bg-accent'
+                >
+                  <FaUndo className='text-xs' />
+                  Đặt lại
+                </button>
+              )}
+
+              <p className='text-sm text-muted-foreground'>
+                {filteredIngredients.length} nguyên liệu
+              </p>
+            </div>
           </div>
 
+          {showFilters ? (
+            <div className='border-b border-border px-6 py-5 md:px-7'>
+              <div className='space-y-6'>
+                <div>
+                  <p className='mb-3 text-xs font-black uppercase tracking-[0.18em] text-primary'>
+                    Search by name
+                  </p>
+
+                  <div className='relative'>
+                    <FaSearch className='pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground' />
+                    <input
+                      type='text'
+                      value={searchInput}
+                      onChange={e => setSearchInput(e.target.value)}
+                      onKeyDown={handleSearchKeyDown}
+                      placeholder='Ví dụ: cà rốt, thịt bò, hành tím...'
+                      className='h-12 w-full rounded-2xl border border-border bg-background pl-11 pr-4 text-sm text-foreground shadow-sm outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-4 focus:ring-primary/10'
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <p className='mb-3 text-xs font-black uppercase tracking-[0.18em] text-primary'>
+                    Danh mục nguyên liệu
+                  </p>
+
+                  <div className='flex flex-wrap gap-3'>
+                    {categoryOptions.map(category => {
+                      const isActive = draftCategories.includes(category);
+
+                      return (
+                        <button
+                          key={category}
+                          type='button'
+                          onClick={() => toggleDraftCategory(category)}
+                          className={`rounded-full border px-4 py-2.5 text-sm font-bold transition ${
+                            isActive
+                              ? 'border-primary bg-primary text-primary-foreground shadow-md'
+                              : 'border-border bg-background text-foreground hover:bg-accent'
+                          }`}
+                        >
+                          {category}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className='flex justify-end'>
+                  <button
+                    type='button'
+                    onClick={handleSearch}
+                    className='inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-primary px-5 text-sm font-bold text-primary-foreground shadow-sm transition hover:opacity-90'
+                  >
+                    <FaSearch className='text-xs' />
+                    Tìm kiếm
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
           <div className='grid flex-1 grid-cols-1 gap-4 overflow-y-auto p-5 md:grid-cols-2 xl:grid-cols-3'>
-            {ingredientOptions.length === 0 ? (
+            {filteredIngredients.length === 0 ? (
               <div className='col-span-full rounded-3xl border border-dashed border-border bg-muted/40 px-4 py-14 text-center text-sm text-muted-foreground'>
-                Không có nguyên liệu nào.
+                Không có nguyên liệu phù hợp.
               </div>
             ) : (
-              ingredientOptions.map(item => {
+              filteredIngredients.map(item => {
                 const energy = getNutrientValue(item.nutrition, 'Năng lượng');
                 const isAdded = selectedIngredientIds.includes(item._id);
                 const primaryCategory = item.categories?.[0];
@@ -66,9 +227,7 @@ export default function DishIngredientPickerModal({
                   >
                     <div className='flex items-start gap-4'>
                       <img
-                        src={
-                          item.image || 'https://placehold.co/120x120?text=Food'
-                        }
+                        src={item.image}
                         alt={item.name}
                         className='h-20 w-20 shrink-0 rounded-2xl border border-border object-cover shadow-sm'
                       />

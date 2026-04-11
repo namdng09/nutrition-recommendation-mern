@@ -9,12 +9,6 @@ export default function DishHeader({ total = 0 }) {
 
       <div className='relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between'>
         <div className='max-w-2xl space-y-4'>
-          <div className='inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1.5'>
-            <span className='text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-700/80'>
-              Dish Library
-            </span>
-          </div>
-
           <div className='flex items-center gap-3'>
             <div className='flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-lg'>
               <FaUtensils className='text-xl' />
@@ -31,17 +25,19 @@ export default function DishHeader({ total = 0 }) {
           </p>
         </div>
 
-        <div className='flex self-start gap-3 md:self-end'>
-          <span className='inline-flex items-center gap-2 rounded-full bg-card/80 px-4 py-2 text-sm font-bold text-secondary-foreground shadow-sm backdrop-blur'>
-            <FaListUl className='text-emerald-600' />
-            {total} món ăn khả dụng
-          </span>
+        <div className='flex flex-col gap-3 sm:flex-row sm:items-center lg:justify-end'>
+          <div className='inline-flex h-12 items-center gap-3 rounded-2xl border border-border/70 bg-card/80 px-4 text-sm font-bold text-foreground shadow-sm backdrop-blur'>
+            <span className='flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600'>
+              <FaListUl className='text-[13px]' />
+            </span>
+            <span>{total} món ăn khả dụng</span>
+          </div>
 
           <Link
             to='/create-private-dish'
-            className='inline-flex items-center gap-2 rounded-full bg-emerald-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-700'
+            className='inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(5,150,105,0.25)] transition hover:-translate-y-0.5 hover:bg-emerald-700'
           >
-            <FaPlus className='text-xs' />
+            <FaPlus className='text-[11px]' />
             Tạo món ăn của riêng bạn
           </Link>
         </div>
