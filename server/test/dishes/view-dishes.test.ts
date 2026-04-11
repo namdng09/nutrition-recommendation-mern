@@ -22,118 +22,86 @@ vi.mock('~/shared/utils', async importOriginal => {
 });
 
 const mockPaginate = vi.mocked(DishModel.paginate);
-const mockFindByIdUser = vi.mocked(UserModel.findById);
+const mockFindById = vi.mocked(UserModel.findById);
 const mockBuildPaginateOptions = vi.mocked(buildPaginateOptions);
+
+const parsedQuery = { filter: {}, limit: 10 } as any;
+const fakeOptions = { limit: 10, page: 1 };
+
+const makeDocs = (items: Array<{ _id: string; name: string }>) =>
+  items.map(item => ({ ...item, toObject: () => ({ ...item }) }));
+
+const mockUser = (
+  data: {
+    blockDishes?: string[];
+    favoriteDishes?: string[];
+  } | null
+) => {
+  mockFindById.mockReturnValue({
+    lean: vi.fn().mockResolvedValue(data)
+  } as any);
+};
 
 describe('DishService.viewDishes', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('business logic', () => {
-    it('should return paginated dishes successfully', async () => {
-      const fakeOptions = { limit: 10, page: 1 };
-      const fakeResult = {
-        docs: [
-          { name: 'Phở bò', _id: 'id1' },
-          { name: 'Bún chả', _id: 'id2' },
-          { name: 'Salad rau', _id: 'id3' }
-        ],
-        totalDocs: 3,
-        limit: 10,
-        page: 1
-      };
+  it('should return paginated dishes without any filter when no userId', async () => {
+    const docs = makeDocs([
+      { _id: 'id1', name: 'Phở bò' },
+      { _id: 'id2', name: 'Bún chả' }
+    ]);
 
-      mockBuildPaginateOptions.mockReturnValue(fakeOptions as any);
-      mockPaginate.mockResolvedValue(fakeResult as any);
+    mockBuildPaginateOptions.mockReturnValue(fakeOptions as any);
+    mockPaginate.mockResolvedValue({
+      docs,
+      totalDocs: 2,
+      limit: 10,
+      page: 1
+    } as any);
 
-      const result = await DishService.viewDishes({
-        filter: {},
-        limit: 10
-      } as any);
+    const result = await DishService.viewDishes(parsedQuery);
 
-      expect(result).toBeDefined();
-      expect(result.docs).toBeDefined();
-      expect(Array.isArray(result.docs)).toBe(true);
-      expect(result.docs.length).toBe(3);
-      expect(result.totalDocs).toBe(3);
-    });
+    expect(mockPaginate).toHaveBeenCalledWith({}, fakeOptions);
+    expect(result.docs).toHaveLength(2);
+  });
 
-    it('should filter out blocked dishes when userId is provided', async () => {
-      const userId = 'user123';
-      const fakeOptions = { limit: 10, page: 1 };
-      const fakeUser = {
-        blockDishes: ['blocked-id-1'],
-        favoriteDishes: ['favorite-id-1']
-      };
-      const fakeResult = {
-        docs: [
-          { name: 'Phở bò', _id: 'favorite-id-1' },
-          { name: 'Bún chả', _id: 'id2' }
-        ],
-        totalDocs: 2,
-        limit: 10,
-        page: 1
-      };
+  it('should apply filter when user has blockDishes', async () => {
+    const blockedId = 'blocked-id-1';
+    const docs = makeDocs([{ _id: 'id2', name: 'Bún chả' }]);
 
-      mockFindByIdUser.mockReturnValue({
-        lean: vi.fn().mockResolvedValue(fakeUser)
-      } as any);
-      mockBuildPaginateOptions.mockReturnValue(fakeOptions as any);
-      mockPaginate.mockResolvedValue(fakeResult as any);
+    mockBuildPaginateOptions.mockReturnValue(fakeOptions as any);
+    mockUser({ blockDishes: [blockedId], favoriteDishes: [] });
+    mockPaginate.mockResolvedValue({ docs } as any);
 
-      const result = await DishService.viewDishes(
-        {
-          filter: {},
-          limit: 10
-        } as any,
-        userId
-      );
+    await DishService.viewDishes(parsedQuery, 'user-id');
 
-      expect(result).toBeDefined();
-      expect(result.docs.length).toBe(2);
-    });
+    expect(mockPaginate).toHaveBeenCalledWith(
+      expect.objectContaining({ _id: { $nin: [blockedId] } }),
+      fakeOptions
+    );
+  });
 
-    it('should add isFavorited flag to dishes', async () => {
-      const userId = 'user123';
-      const fakeOptions = { limit: 10, page: 1 };
-      const fakeUser = {
-        blockDishes: [],
-        favoriteDishes: ['id1']
-      };
-      const fakeResult = {
-        docs: [
-          {
-            name: 'Phở bò',
-            _id: 'id1',
-            toObject: vi.fn(() => ({ name: 'Phở bò', _id: 'id1' }))
-          },
-          {
-            name: 'Bún chả',
-            _id: 'id2',
-            toObject: vi.fn(() => ({ name: 'Bún chả', _id: 'id2' }))
-          }
-        ],
-        totalDocs: 2,
-        limit: 10,
-        page: 1
-      };
+  it('should mark isFavorited=true only for dishes in user favorites', async () => {
+    const favId = 'fav-id-1';
+    const docs = makeDocs([
+      { _id: favId, name: 'Phở bò' },
+      { _id: 'id2', name: 'Bún chả' }
+    ]);
 
-      mockFindByIdUser.mockReturnValue({
-        lean: vi.fn().mockResolvedValue(fakeUser)
-      } as any);
-      mockBuildPaginateOptions.mockReturnValue(fakeOptions as any);
-      mockPaginate.mockResolvedValue(fakeResult as any);
+    mockBuildPaginateOptions.mockReturnValue(fakeOptions as any);
+    mockUser({ blockDishes: [], favoriteDishes: [favId] });
+    mockPaginate.mockResolvedValue({
+      docs,
+      totalDocs: 2,
+      limit: 10,
+      page: 1
+    } as any);
 
-      const result = await DishService.viewDishes(
-        {
-          filter: {},
-          limit: 10
-        } as any,
-        userId
-      );
+    const result = await DishService.viewDishes(parsedQuery, 'user-id');
 
-      expect(result.docs.length).toBe(2);
-    });
+    expect((result.docs[0] as any).isFavorited).toBe(true);
+    expect((result.docs[1] as any).isFavorited).toBe(false);
   });
 });
