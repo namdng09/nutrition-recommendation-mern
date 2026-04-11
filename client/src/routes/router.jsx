@@ -54,6 +54,14 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/dishes/[id]/page'))
           },
           {
+            path: 'private-dishes/:id',
+            Component: lazy(() => import('~/app/private-dish/[id]/page'))
+          },
+          {
+            path: 'private-dishes/:id/edit',
+            Component: lazy(() => import('~/app/private-dish/[id]/edit/page'))
+          },
+          {
             path: 'exercises',
             Component: lazy(() => import('~/app/exercises/page'))
           },
