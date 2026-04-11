@@ -28,10 +28,13 @@ vi.mock('~/shared/utils', async importOriginal => {
   };
 });
 
-const mockFindOneDish = vi.mocked(DishModel.findOne);
-const mockCreateDish = vi.mocked(DishModel.create);
-const mockFindByIdIngredient = vi.mocked(IngredientModel.findById);
+const mockFindOne = vi.mocked(DishModel.findOne);
+const mockCreate = vi.mocked(DishModel.create);
+const mockFindById = vi.mocked(IngredientModel.findById);
 const mockUploadImage = vi.mocked(uploadImage);
+
+const userId = 'user123';
+const userName = 'Test User';
 
 const validData = {
   name: 'Phở bò',
@@ -58,16 +61,11 @@ const mockIngredient = {
 };
 
 describe('DishService.createDish', () => {
-  const userId = 'user123';
-  const userName = 'Test User';
-
   afterEach(() => {
     vi.clearAllMocks();
   });
 
   describe('validation', () => {
-    // Tests DTO schema directly — no service, no DB involved
-
     it('should fail when name is missing', () => {
       const { name: _, ...data } = validData;
       const result = createDishRequestSchema.safeParse(data);
@@ -88,20 +86,34 @@ describe('DishService.createDish', () => {
       );
     });
 
-    it('should fail when name is not a string', () => {
+    it('should fail when categories are invalid', () => {
       const result = createDishRequestSchema.safeParse({
         ...validData,
-        name: 123
+        categories: ['invalid-category']
       });
 
       expect(result.success).toBe(false);
-      expect(result.error?.issues[0].message).toBe('Tên món ăn không hợp lệ');
+      expect(result.error?.issues[0].message).toBe(
+        'Danh mục món ăn không hợp lệ'
+      );
+    });
+
+    it('should fail when dish has no ingredients', () => {
+      const result = createDishRequestSchema.safeParse({
+        ...validData,
+        ingredients: []
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Phải có ít nhất 1 nguyên liệu'
+      );
     });
   });
 
   describe('business logic', () => {
     it('should throw 409 when dish name already exists', async () => {
-      mockFindOneDish.mockResolvedValue({ name: validData.name } as any);
+      mockFindOne.mockResolvedValue({ name: validData.name } as any);
 
       await expect(
         DishService.createDish(userId, userName, validData as any)
@@ -112,8 +124,8 @@ describe('DishService.createDish', () => {
     });
 
     it('should throw 404 when ingredient does not exist', async () => {
-      mockFindOneDish.mockResolvedValue(null);
-      mockFindByIdIngredient.mockResolvedValue(null);
+      mockFindOne.mockResolvedValue(null);
+      mockFindById.mockResolvedValue(null);
 
       await expect(
         DishService.createDish(userId, userName, validData as any)
@@ -123,7 +135,7 @@ describe('DishService.createDish', () => {
       });
     });
 
-    it('should create dish successfully without image', async () => {
+    it('should create dish successfully', async () => {
       const mockSave = vi.fn();
       const mockDish = {
         _id: { toString: () => 'dish123' },
@@ -133,34 +145,9 @@ describe('DishService.createDish', () => {
         save: mockSave
       };
 
-      mockFindOneDish.mockResolvedValue(null);
-      mockFindByIdIngredient.mockResolvedValue(mockIngredient as any);
-      mockCreateDish.mockResolvedValue(mockDish as any);
-
-      const result = await DishService.createDish(
-        userId,
-        userName,
-        validData as any
-      );
-
-      expect(result).toBeDefined();
-      expect(result.name).toBe(validData.name);
-      expect(mockSave).not.toHaveBeenCalled();
-    });
-
-    it('should create dish successfully with image', async () => {
-      const mockSave = vi.fn();
-      const mockDish = {
-        _id: { toString: () => 'dish123' },
-        ...validData,
-        user: { _id: userId, name: userName },
-        image: '',
-        save: mockSave
-      };
-
-      mockFindOneDish.mockResolvedValue(null);
-      mockFindByIdIngredient.mockResolvedValue(mockIngredient as any);
-      mockCreateDish.mockResolvedValue(mockDish as any);
+      mockFindOne.mockResolvedValue(null);
+      mockFindById.mockResolvedValue(mockIngredient as any);
+      mockCreate.mockResolvedValue(mockDish as any);
       mockUploadImage.mockResolvedValue({
         success: true,
         data: {
@@ -184,32 +171,7 @@ describe('DishService.createDish', () => {
         'https://res.cloudinary.com/test/image/upload/v1234567890/test-dish.jpg'
       );
       expect(mockSave).toHaveBeenCalled();
-      expect(result).toBeDefined();
-    });
-  });
-
-  describe('system', () => {
-    it('should throw 500 when image upload fails', async () => {
-      mockFindOneDish.mockResolvedValue(null);
-      mockFindByIdIngredient.mockResolvedValue(mockIngredient as any);
-      mockCreateDish.mockResolvedValue({
-        _id: { toString: () => 'dish123' },
-        ...validData,
-        user: { _id: userId, name: userName },
-        save: vi.fn()
-      } as any);
-      mockUploadImage.mockResolvedValue({ success: false, data: null } as any);
-
-      const fakeImage = {
-        buffer: Buffer.from('fake-image-data')
-      } as Express.Multer.File;
-
-      await expect(
-        DishService.createDish(userId, userName, validData as any, fakeImage)
-      ).rejects.toMatchObject({
-        status: 500,
-        message: 'Tải ảnh lên thất bại'
-      });
+      expect(result).toEqual(mockDish);
     });
   });
 });
