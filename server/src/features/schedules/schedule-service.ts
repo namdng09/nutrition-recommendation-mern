@@ -21,17 +21,11 @@ import {
 
 import {
   AddScheduleWorkoutExerciseRequest,
-  addScheduleWorkoutExerciseRequestSchema,
   CreateScheduleRequest,
-  createScheduleRequestSchema,
   UpdateScheduleDishStatusRequest,
-  updateScheduleDishStatusRequestSchema,
   UpdateScheduleMealsRequest,
-  updateScheduleMealsRequestSchema,
   UpdateScheduleRequest,
-  updateScheduleRequestSchema,
-  UpdateScheduleWorkoutExerciseRequest,
-  updateScheduleWorkoutExerciseRequestSchema
+  UpdateScheduleWorkoutExerciseRequest
 } from './schedule-dto';
 
 type ScheduleMeal = {
@@ -258,17 +252,6 @@ export const ScheduleService = {
     userName: string,
     data: CreateScheduleRequest
   ) => {
-    const validation = createScheduleRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-    }
-
     const user = await UserModel.findById(userId);
 
     if (!user) {
@@ -438,13 +421,6 @@ export const ScheduleService = {
     role: string | undefined,
     data: UpdateScheduleRequest
   ) => {
-    const validation = updateScheduleRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
     }
@@ -489,13 +465,6 @@ export const ScheduleService = {
     userId: string,
     data: AddScheduleWorkoutExerciseRequest
   ) => {
-    const validation = addScheduleWorkoutExerciseRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
     }
@@ -532,14 +501,6 @@ export const ScheduleService = {
     exerciseId: string,
     data: UpdateScheduleWorkoutExerciseRequest
   ) => {
-    const validation =
-      updateScheduleWorkoutExerciseRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
     }
@@ -642,13 +603,6 @@ export const ScheduleService = {
     userId: string,
     data: UpdateScheduleMealsRequest
   ) => {
-    const validation = updateScheduleMealsRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
     }
@@ -773,13 +727,6 @@ export const ScheduleService = {
     dishId: string,
     data: UpdateScheduleDishStatusRequest
   ) => {
-    const validation = updateScheduleDishStatusRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
     }
