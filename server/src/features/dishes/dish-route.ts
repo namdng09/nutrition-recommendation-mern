@@ -7,8 +7,10 @@ import { asyncHandler, handleSingleImageUpload } from '~/shared/utils';
 import { DishController } from './dish-controller';
 import {
   createDishRequestSchema,
+  createPrivateDishRequestSchema,
   deleteBulkRequestSchema,
-  updateDishRequestSchema
+  updateDishRequestSchema,
+  updatePrivateDishRequestSchema
 } from './dish-dto';
 
 const router = Router();
@@ -34,6 +36,45 @@ router.delete(
   authorize([ROLE.NUTRITIONIST, ROLE.ADMIN]),
   validate(deleteBulkRequestSchema.shape),
   asyncHandler(DishController.deleteBulk)
+);
+
+router.post(
+  '/private',
+  authenticate(),
+  authorize([ROLE.USER]),
+  handleSingleImageUpload('image'),
+  validate(createPrivateDishRequestSchema.shape),
+  asyncHandler(DishController.createPrivateDish)
+);
+
+router.get(
+  '/private',
+  authenticate(),
+  authorize([ROLE.USER]),
+  asyncHandler(DishController.viewPrivateDishes)
+);
+
+router.get(
+  '/private/:id',
+  authenticate(),
+  authorize([ROLE.USER]),
+  asyncHandler(DishController.viewPrivateDishDetail)
+);
+
+router.put(
+  '/private/:id',
+  authenticate(),
+  authorize([ROLE.USER]),
+  handleSingleImageUpload('image'),
+  validate(updatePrivateDishRequestSchema.shape),
+  asyncHandler(DishController.updatePrivateDish)
+);
+
+router.delete(
+  '/private/:id',
+  authenticate(),
+  authorize([ROLE.USER]),
+  asyncHandler(DishController.deletePrivateDish)
 );
 
 router.get(

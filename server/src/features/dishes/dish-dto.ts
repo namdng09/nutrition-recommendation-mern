@@ -111,9 +111,71 @@ export const createDishRequestSchema = z.object({
 
 export type CreateDishRequest = z.infer<typeof createDishRequestSchema>;
 
+export const createPrivateDishRequestSchema = z.object({
+  name: z
+    .string('Tên món ăn không hợp lệ')
+    .trim()
+    .min(2, 'Tên món ăn phải có ít nhất 2 ký tự'),
+  description: z.string().trim().optional(),
+  categories: z.preprocess(
+    parseJSON,
+    z
+      .array(
+        z.enum(Object.values(DISH_CATEGORY), 'Danh mục món ăn không hợp lệ')
+      )
+      .min(1, 'Phải có ít nhất 1 danh mục')
+  ),
+  ingredients: z.preprocess(
+    parseJSON,
+    z.array(dishIngredientSchema).min(1, 'Phải có ít nhất 1 nguyên liệu')
+  ),
+  instructions: z.preprocess(
+    parseJSON,
+    z.array(instructionSchema).min(1, 'Phải có ít nhất 1 bước hướng dẫn')
+  ),
+  nutrition: z.preprocess(parseJSON, detailNutritionSchema).optional(),
+  image: z.file().optional(),
+  preparationTime: z.coerce
+    .number()
+    .min(1, 'Số phút phải lớn hơn hoặc bằng 1')
+    .optional(),
+  cookTime: z.coerce
+    .number()
+    .min(1, 'Số phút phải lớn hơn hoặc bằng 1')
+    .optional(),
+  servings: z.coerce
+    .number()
+    .min(1, 'Số lượng phải lớn hơn hoặc bằng 1')
+    .optional(),
+  tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
+  nutritionFocus: z.preprocess(
+    parseJSON,
+    z
+      .array(
+        z.enum(
+          Object.values(NUTRITION_FOCUS),
+          'Danh mục dinh dưỡng không hợp lệ'
+        )
+      )
+      .min(1, 'Phải có ít nhất 1 danh mục')
+  ),
+  isActive: booleanSchema.optional()
+});
+
+export type CreatePrivateDishRequest = z.infer<
+  typeof createPrivateDishRequestSchema
+>;
+
 export const updateDishRequestSchema = createDishRequestSchema.partial();
 
 export type UpdateDishRequest = z.infer<typeof updateDishRequestSchema>;
+
+export const updatePrivateDishRequestSchema =
+  createPrivateDishRequestSchema.partial();
+
+export type UpdatePrivateDishRequest = z.infer<
+  typeof updatePrivateDishRequestSchema
+>;
 
 export const deleteBulkRequestSchema = z.object({
   ids: z.array(z.string().trim().min(1)).min(1, 'Cần ít nhất một ID món ăn')

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import createHttpError from 'http-errors';
-import { z, ZodType } from 'zod';
+import { z } from 'zod';
 
 const formatZodErrors = (errors: z.ZodError['issues']): string => {
   const seen = new Set<string>();
@@ -24,7 +24,7 @@ const formatZodErrors = (errors: z.ZodError['issues']): string => {
  * Generic middleware to validate request body fields using Zod.
  * @param fields - An object mapping field names to Zod schemas.
  */
-export const validate = (fields: Record<string, ZodType<any>>) => {
+export const validate = (fields: z.ZodRawShape) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const schema = z.object(fields);
     const result = schema.safeParse(req.body);
@@ -41,7 +41,7 @@ export const validate = (fields: Record<string, ZodType<any>>) => {
  * Generic middleware to validate request query parameters using Zod.
  * @param fields - An object mapping query param names to Zod schemas.
  */
-export const validateQuery = (fields: Record<string, ZodType<any>>) => {
+export const validateQuery = (fields: z.ZodRawShape) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const schema = z.object(fields);
     const result = schema.safeParse(req.query);

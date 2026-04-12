@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   HiFire,
   HiOutlineChevronRight,
@@ -19,6 +20,8 @@ import DishCheckin from '../../update-dish-status-in-schedule/components/dish-ch
 import ScheduleProgress from '../../update-dish-status-in-schedule/components/schedule-progress';
 import AddFoodModal from './add-food-modal';
 import AITokenUsage from './ai-token-usage';
+import AlternativeDishButton from './alternative-dish-button';
+import AlternativeDishModal from './alternative-dish-modal';
 import DeleteDishModal from './delete-dish-modal';
 
 const MEAL_CONFIG = {
@@ -42,6 +45,10 @@ export default function ScheduleTodayCard({
   isGeneratingAI
 }) {
   const { data: profile } = useProfileForPage();
+  const [openAlternativeDishModal, setOpenAlternativeDishModal] =
+    useState(false);
+  const [selectedDishForAlternative, setSelectedDishForAlternative] =
+    useState(null);
 
   const targetCalories = profile?.nutritionTarget?.caloriesTarget ?? undefined;
   const remainingTokens = profile?.aiTokens;
@@ -207,7 +214,16 @@ export default function ScheduleTodayCard({
                       </div>
                     </Link>
 
-                    <div className='absolute right-2 top-2 opacity-0 transition group-hover:opacity-100'>
+                    <div className='absolute right-2 top-2 flex items-center gap-2 opacity-0 transition group-hover:opacity-100'>
+                      <AlternativeDishButton
+                        dish={dish}
+                        mealType={meal.mealType}
+                        onOpen={selectedDish => {
+                          setSelectedDishForAlternative(selectedDish);
+                          setOpenAlternativeDishModal(true);
+                        }}
+                      />
+
                       <DeleteDishModal
                         scheduleId={schedule._id}
                         mealType={meal.mealType}
@@ -253,6 +269,18 @@ export default function ScheduleTodayCard({
           </div>
         ))}
       </div>
+
+      <AlternativeDishModal
+        open={openAlternativeDishModal}
+        onClose={() => {
+          setOpenAlternativeDishModal(false);
+          setSelectedDishForAlternative(null);
+        }}
+        mealType={selectedDishForAlternative?.mealType || ''}
+        scheduleId={schedule._id}
+        scheduleMeals={schedule.meals}
+        baseDish={selectedDishForAlternative}
+      />
 
       <Link
         to={`/schedules/day/${schedule._id}/nutrition`}
