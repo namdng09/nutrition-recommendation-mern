@@ -11,7 +11,7 @@ const collectionSchema = new Schema(
       _id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
       name: { type: String, required: true }
     },
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique: true },
     description: { type: String },
     image: { type: String },
     isPublic: { type: Boolean, default: false },
