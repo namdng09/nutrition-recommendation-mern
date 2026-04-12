@@ -28,7 +28,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
   SidebarTrigger,
   useSidebar
 } from '~/components/ui/sidebar';
@@ -149,8 +148,8 @@ export function ProfileSidebar({ ...props }) {
       )}
 
       <Sidebar
-        collapsible={isMobile ? 'offcanvas' : 'icon'}
-        className='md:top-20 md:h-[calc(100svh-5rem)]'
+        collapsible={isMobile ? 'offcanvas' : 'none'}
+        className='md:sticky md:top-20 md:h-[calc(100svh-5rem)] md:self-start'
         {...props}
       >
         {/* Enhanced Header with User Info */}
@@ -263,8 +262,6 @@ export function ProfileSidebar({ ...props }) {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>
-
-        {!isMobile && <SidebarRail />}
       </Sidebar>
     </>
   );

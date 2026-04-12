@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 
 const Footer = () => {
   return (
-    <footer className='relative z-20 mt-7 w-full bg-gradient-to-b from-transparent to-muted/20'>
+    <footer className='relative mt-7 w-full bg-gradient-to-b from-transparent to-muted/20'>
       <div className='mx-auto max-w-8xl px-4 pb-6 pt-4 sm:px-6 lg:px-8'>
         <div className='overflow-hidden rounded-[28px] border border-border/50 bg-background/80 shadow-[0_12px_40px_-20px_rgba(0,0,0,0.18)] backdrop-blur supports-[backdrop-filter]:bg-background/70'>
           <div className='flex flex-col gap-5 px-5 py-5 sm:px-6 sm:py-6 lg:flex-row lg:items-center lg:justify-between lg:px-8'>
