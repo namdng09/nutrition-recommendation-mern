@@ -11,39 +11,45 @@ const Hero = () => {
   return (
     <section className='relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 md:py-16 grid md:grid-cols-2 gap-10 md:gap-16 items-center bg-background overflow-hidden'>
       <div className='relative z-10 order-2 md:order-1'>
-        <h1 className='text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight text-foreground'>
+        <div className='inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs font-bold text-primary shadow-sm'>
+          <HiOutlineCheckBadge className='text-base' />
+          EatDee đồng hành cùng mục tiêu sức khỏe của bạn
+        </div>
+
+        <h1 className='mt-5 text-4xl font-black leading-[1.05] tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl'>
           Ăn <span className='text-primary'>thông minh</span>
           <br />
-          Sống khỏe mạnh
+          <span className='text-foreground'>Sống khỏe mạnh</span>
         </h1>
 
-        <p className='mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-lg'>
+        <p className='mt-6 max-w-xl text-base leading-8 text-muted-foreground sm:text-lg'>
           EatDee giúp bạn thiết kế thực đơn khoa học, theo dõi dinh dưỡng và đạt
-          mục tiêu cân nặng chỉ với vài bước chạm.
+          mục tiêu cân nặng với trải nghiệm đơn giản, trực quan và dễ duy trì
+          mỗi ngày.
         </p>
 
-        <div className='mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4'>
+        <div className='mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4'>
           <Link
             to={user ? '/schedules/day' : '/auth/login'}
-            className='group flex justify-center items-center gap-2 bg-primary text-primary-foreground font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-xl shadow-lg shadow-primary/20 active:scale-95 transition'
+            className='group inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-primary px-6 text-sm font-bold text-primary-foreground shadow-[0_12px_28px_rgba(59,130,246,0.22)] transition-all duration-200 hover:opacity-95 sm:h-14 sm:px-8 sm:text-base'
           >
             Bắt đầu miễn phí
-            <HiOutlineArrowRight className='group-hover:translate-x-1 transition-transform' />
+            <HiOutlineArrowRight className='text-lg transition-transform duration-200 group-hover:translate-x-1' />
           </Link>
 
-          <button className='flex justify-center items-center gap-2 bg-secondary text-secondary-foreground font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-xl border border-border hover:bg-muted transition'>
+          <button className='inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-border bg-card px-6 text-sm font-bold text-foreground shadow-sm transition-colors duration-200 hover:bg-accent sm:h-14 sm:px-8 sm:text-base'>
             Xem cách hoạt động
           </button>
         </div>
 
-        <div className='mt-8 flex flex-wrap gap-4 text-xs sm:text-sm text-muted-foreground'>
-          <div className='flex items-center gap-2'>
-            <HiOutlineCheckBadge className='text-primary text-lg' />
+        <div className='mt-8 flex flex-wrap gap-3 sm:gap-4'>
+          <div className='inline-flex items-center gap-2 rounded-full bg-muted/60 px-4 py-2 text-xs font-medium text-muted-foreground sm:text-sm'>
+            <HiOutlineCheckBadge className='text-lg text-primary' />
             Kế hoạch khoa học
           </div>
 
-          <div className='flex items-center gap-2'>
-            <HiOutlineChartBar className='text-primary text-lg' />
+          <div className='inline-flex items-center gap-2 rounded-full bg-muted/60 px-4 py-2 text-xs font-medium text-muted-foreground sm:text-sm'>
+            <HiOutlineChartBar className='text-lg text-primary' />
             Báo cáo chi tiết
           </div>
         </div>
