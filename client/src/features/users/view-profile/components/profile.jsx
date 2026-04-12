@@ -110,14 +110,8 @@ const Profile = () => {
 
   const handleSaveNutritionistProfile = data => {
     updateNutritionistProfile(data, {
-      onSuccess: () => {
-        toast.success('Hồ sơ dinh dưỡng được cập nhật thành công');
-      },
-      onError: error => {
-        toast.error(
-          error?.response?.data?.message || 'Cập nhật hồ sơ dinh dưỡng thất bại'
-        );
-      }
+      onSuccess: () => {},
+      onError: () => {}
     });
   };
 
