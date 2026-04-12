@@ -29,10 +29,6 @@ export const AchievementService = {
     });
   },
 
-  getAllDefinitions: () => {
-    return Object.values(ACHIEVEMENTS);
-  },
-
   getUserAchievements: async (userId: string) => {
     const user = await UserModel.findById(userId, 'achievements').lean();
     const unlockedKeys = new Set((user?.achievements ?? []).map(r => r.key));
