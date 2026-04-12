@@ -1,5 +1,13 @@
 import React from 'react';
-import { FaClipboardCheck, FaCommentDots, FaStar } from 'react-icons/fa';
+import {
+  FaClipboardCheck,
+  FaCommentDots,
+  FaStar,
+  FaUserMd
+} from 'react-icons/fa';
+import { Link } from 'react-router';
+
+import { useNutritionistDetail } from '~/features/users/view-nutritionist-detail/api/view-nutritionist-detail';
 
 function EvaluationInfoCard({ label, value, tone = 'stone', icon = null }) {
   const toneMap = {
@@ -34,12 +42,74 @@ function EvaluationInfoCard({ label, value, tone = 'stone', icon = null }) {
   );
 }
 
+function EvaluatedNutritionistCard({ nutritionistId }) {
+  const { data } = useNutritionistDetail(nutritionistId);
+  const nutritionist = data?.data || data;
+
+  return (
+    <Link
+      to={`/nutritionists/${nutritionistId}`}
+      className='group mt-5 flex items-center gap-4 rounded-[30px] border border-border/70 bg-card p-4 shadow-[0_10px_28px_rgba(15,23,42,0.04)] transition-all duration-200 hover:border-primary/20 hover:bg-accent/40 hover:shadow-[0_14px_34px_rgba(15,23,42,0.06)]'
+    >
+      <div className='relative shrink-0'>
+        {nutritionist?.avatar ? (
+          <img
+            src={nutritionist.avatar}
+            alt={nutritionist.name}
+            className='h-14 w-14 rounded-[20px] border border-border object-cover shadow-sm'
+          />
+        ) : (
+          <div className='flex h-14 w-14 items-center justify-center rounded-[20px] bg-primary/10 text-primary shadow-sm'>
+            <FaUserMd className='text-lg' />
+          </div>
+        )}
+
+        <div className='absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-background bg-emerald-500 text-white shadow-sm'>
+          <FaUserMd className='text-[10px]' />
+        </div>
+      </div>
+
+      <div className='min-w-0 flex-1'>
+        <p className='text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground'>
+          Chuyên gia đã đánh giá món ăn của bạn
+        </p>
+        <p className='mt-1 truncate text-base font-black tracking-tight text-foreground'>
+          {nutritionist?.name || 'Đang tải thông tin chuyên gia'}
+        </p>
+        <p className='mt-1 text-sm text-muted-foreground'>
+          Xem thông tin chi tiết chuyên gia
+        </p>
+      </div>
+
+      <div className='flex h-10 w-10 items-center justify-center rounded-2xl bg-muted/70 text-muted-foreground transition-all duration-200 group-hover:bg-primary/10 group-hover:text-primary'>
+        <svg
+          viewBox='0 0 20 20'
+          fill='none'
+          className='h-4 w-4'
+          xmlns='http://www.w3.org/2000/svg'
+        >
+          <path
+            d='M7.5 5L12.5 10L7.5 15'
+            stroke='currentColor'
+            strokeWidth='1.8'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+          />
+        </svg>
+      </div>
+    </Link>
+  );
+}
+
 export default function PrivateDishFeedback({
   evaluation,
   formattedEvaluatedAt,
   SectionCard
 }) {
   if (!evaluation) return null;
+
+  const nutritionistId =
+    evaluation?.nutritionist?._id || evaluation?.nutritionistId;
 
   return (
     <SectionCard
@@ -69,6 +139,10 @@ export default function PrivateDishFeedback({
           tone='sky'
         />
       </div>
+
+      {nutritionistId ? (
+        <EvaluatedNutritionistCard nutritionistId={nutritionistId} />
+      ) : null}
 
       <div className='mt-5 rounded-[28px] border border-border bg-muted/40 p-5 shadow-[0_8px_24px_rgba(15,23,42,0.03)]'>
         <div className='flex items-center gap-3'>
