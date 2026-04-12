@@ -252,7 +252,7 @@ export default function DishesList() {
               >
                 <div className='relative h-60 w-full overflow-hidden bg-muted'>
                   <img
-                    src={dish.image || '/placeholder.png'}
+                    src={dish.image || '/logo2.png'}
                     alt={dish.name}
                     className='h-full w-full object-cover transition-transform duration-700'
                   />

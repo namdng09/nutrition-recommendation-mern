@@ -15,7 +15,7 @@ export default function PrivateDishHeaderInfo({
       <div className='grid gap-0 lg:grid-cols-[420px_minmax(0,1fr)]'>
         <div className='relative border-b border-border bg-muted lg:border-b-0 lg:border-r'>
           <img
-            src={dish.image || '/placeholder.png'}
+            src={dish.image || '/logo2.png'}
             alt={dish.name}
             className='aspect-[4/5] h-full w-full object-cover'
           />

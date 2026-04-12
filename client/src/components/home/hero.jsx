@@ -37,9 +37,14 @@ const Hero = () => {
             <HiOutlineArrowRight className='text-lg transition-transform duration-200 group-hover:translate-x-1' />
           </Link>
 
-          <button className='inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-border bg-card px-6 text-sm font-bold text-foreground shadow-sm transition-colors duration-200 hover:bg-accent sm:h-14 sm:px-8 sm:text-base'>
+          <a
+            href='https://www.youtube.com/watch?v=7uLCm3g_CLM'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-border bg-card px-6 text-sm font-bold text-foreground shadow-sm transition-colors duration-200 hover:bg-accent sm:h-14 sm:px-8 sm:text-base'
+          >
             Xem cách hoạt động
-          </button>
+          </a>
         </div>
 
         <div className='mt-8 flex flex-wrap gap-3 sm:gap-4'>
