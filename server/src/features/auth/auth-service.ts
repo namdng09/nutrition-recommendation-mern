@@ -19,25 +19,14 @@ import {
 
 import {
   type LoginRequest,
-  loginRequestSchema,
   type LoginResponse,
   type LoginWithProviderResponse,
-  type ResetPasswordRequest,
-  resetPasswordRequestSchema,
   type SignUpRequest,
-  signUpRequestSchema,
   type SignUpResponse
 } from './auth-dto';
 
 export const AuthService = {
   login: async (data: LoginRequest): Promise<LoginResponse> => {
-    const validation = loginRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
     const auth = await AuthModel.findOne({
       provider: 'local',
       providerId: data.email

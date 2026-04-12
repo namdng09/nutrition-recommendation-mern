@@ -9,15 +9,24 @@ import { useAddIngredientToFavorite } from '../api/add-ingredient-to-favorite';
 export default function FavoriteIngredientDetailButton({ ingredientId }) {
   const { data: profile } = useProfile();
 
-  const { mutate: addFav } = useAddIngredientToFavorite();
-  const { mutate: removeFav } = useRemoveIngredientFromFavorite();
+  const { mutate: addFav, isPending: isAdding } = useAddIngredientToFavorite();
+  const { mutate: removeFav, isPending: isRemoving } =
+    useRemoveIngredientFromFavorite();
 
-  const favIds = profile?.favoriteIngredients || [];
-  const isFav = favIds.includes(ingredientId);
+  const favoriteIngredients = profile?.favoriteIngredients || [];
+
+  const favoriteIngredientIds = favoriteIngredients.map(item =>
+    typeof item === 'string' ? item : item?._id
+  );
+
+  const isFav = favoriteIngredientIds.includes(ingredientId);
+  const isLoading = isAdding || isRemoving;
 
   const handleClick = e => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (isLoading) return;
 
     if (isFav) {
       removeFav(ingredientId);
@@ -31,18 +40,16 @@ export default function FavoriteIngredientDetailButton({ ingredientId }) {
       onClick={handleClick}
       size='icon'
       variant='ghost'
-      className='rounded-full bg-white/80 backdrop-blur border border-border hover:bg-pink-50 transition'
+      disabled={isLoading}
+      className='rounded-full border border-border bg-white/80 backdrop-blur transition hover:bg-pink-50'
     >
       <Heart
         size={18}
-        className={`
-          transition-all duration-200
-          ${
-            isFav
-              ? 'text-pink-500 fill-pink-500 scale-110'
-              : 'text-pink-500 fill-none'
-          }
-        `}
+        className={`transition-all duration-200 ${
+          isFav
+            ? 'scale-110 fill-pink-500 text-pink-500'
+            : 'fill-none text-pink-500'
+        }`}
       />
     </Button>
   );

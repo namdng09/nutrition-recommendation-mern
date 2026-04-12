@@ -32,9 +32,9 @@ vi.mock('~/shared/utils', async importOriginal => {
   };
 });
 
-const mockFindOneDish = vi.mocked(DishModel.findOne);
-const mockFindByIdDish = vi.mocked(DishModel.findById);
-const mockFindByIdAndUpdateDish = vi.mocked(DishModel.findByIdAndUpdate);
+const mockFindById = vi.mocked(DishModel.findById);
+const mockFindOne = vi.mocked(DishModel.findOne);
+const mockFindByIdAndUpdate = vi.mocked(DishModel.findByIdAndUpdate);
 const mockFindByIdIngredient = vi.mocked(IngredientModel.findById);
 const mockValidateObjectId = vi.mocked(validateObjectId);
 const mockUploadImage = vi.mocked(uploadImage);
@@ -53,21 +53,27 @@ describe('DishService.updateDish', () => {
   });
 
   describe('validation', () => {
-    // Tests DTO schema directly — no service, no DB involved
-
-    it('should fail when name is not a string', () => {
-      const result = updateDishRequestSchema.safeParse({ name: 1234 });
-
-      expect(result.success).toBe(false);
-      expect(result.error?.issues[0].message).toBe('Tên món ăn không hợp lệ');
-    });
-
     it('should fail when name is too short', () => {
-      const result = updateDishRequestSchema.safeParse({ name: 'A' });
+      const result = updateDishRequestSchema.safeParse({
+        ...validData,
+        name: 'A'
+      });
 
       expect(result.success).toBe(false);
       expect(result.error?.issues[0].message).toBe(
         'Tên món ăn phải có ít nhất 2 ký tự'
+      );
+    });
+
+    it('should fail when category is invalid', () => {
+      const result = updateDishRequestSchema.safeParse({
+        ...validData,
+        categories: ['invalid-category']
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Danh mục món ăn không hợp lệ'
       );
     });
   });
@@ -86,7 +92,7 @@ describe('DishService.updateDish', () => {
 
     it('should throw 404 when dish does not exist', async () => {
       mockValidateObjectId.mockReturnValue(true);
-      mockFindByIdDish.mockResolvedValue(null);
+      mockFindById.mockResolvedValue(null);
 
       await expect(
         DishService.updateDish(VALID_ID, userId, validData as any)
@@ -98,11 +104,10 @@ describe('DishService.updateDish', () => {
 
     it('should throw 403 when user is not the owner', async () => {
       mockValidateObjectId.mockReturnValue(true);
-      const mockDish = {
+      mockFindById.mockResolvedValue({
         _id: { toString: () => VALID_ID },
-        user: { _id: 'other-user-123' }
-      };
-      mockFindByIdDish.mockResolvedValue(mockDish as any);
+        user: { _id: 'other-user' }
+      } as any);
 
       await expect(
         DishService.updateDish(VALID_ID, userId, validData as any)
@@ -114,63 +119,29 @@ describe('DishService.updateDish', () => {
 
     it('should throw 409 when updating to a name that already exists', async () => {
       mockValidateObjectId.mockReturnValue(true);
-      mockFindByIdDish.mockResolvedValue({
+      mockFindById.mockResolvedValue({
         _id: { toString: () => VALID_ID },
         user: { _id: { toString: () => userId } }
       } as any);
-      mockFindOneDish.mockResolvedValue({ name: validData.name } as any);
+      mockFindOne.mockResolvedValue({ name: validData.name } as any);
 
       await expect(
-        DishService.updateDish(VALID_ID, userId, validData as any)
+        DishService.updateDish(VALID_ID, userId, {
+          name: validData.name
+        } as any)
       ).rejects.toMatchObject({
         status: 409,
         message: 'Món ăn với tên này đã tồn tại'
       });
     });
 
-    it('should update dish successfully', async () => {
-      const mockDish = {
-        _id: { toString: () => VALID_ID },
-        user: { _id: { toString: () => userId } },
-        name: validData.name,
-        image: '',
-        save: vi.fn()
-      };
-
-      mockValidateObjectId.mockReturnValue(true);
-      mockFindByIdDish.mockResolvedValue(mockDish as any);
-      mockFindOneDish.mockResolvedValue(null);
-      mockFindByIdAndUpdateDish.mockResolvedValue(mockDish as any);
-      mockUploadImage.mockResolvedValue({
-        success: true,
-        data: {
-          secure_url:
-            'https://res.cloudinary.com/test/image/upload/v1234567890/test.jpg'
-        }
-      } as any);
-
-      const fakeImage = {
-        buffer: Buffer.from('fake-image-data')
-      } as Express.Multer.File;
-
-      const result = await DishService.updateDish(
-        VALID_ID,
-        userId,
-        validData as any,
-        fakeImage
-      );
-
-      expect(result).toBeDefined();
-      expect(mockDeleteImage).toHaveBeenCalledWith(VALID_ID);
-    });
-
     it('should throw 404 when ingredient does not exist', async () => {
       mockValidateObjectId.mockReturnValue(true);
-      mockFindByIdDish.mockResolvedValue({
+      mockFindById.mockResolvedValue({
         _id: { toString: () => VALID_ID },
         user: { _id: { toString: () => userId } }
       } as any);
-      mockFindOneDish.mockResolvedValue(null);
+      mockFindOne.mockResolvedValue(null);
       mockFindByIdIngredient.mockResolvedValue(null);
 
       const updateDataWithIngredient = {
@@ -194,34 +165,75 @@ describe('DishService.updateDish', () => {
         message: 'Không tìm thấy nguyên liệu với ID: ing123'
       });
     });
-  });
 
-  describe('system', () => {
-    it('should throw 500 when image upload fails', async () => {
+    it('should update dish successfully without image', async () => {
       const mockDish = {
         _id: { toString: () => VALID_ID },
         user: { _id: { toString: () => userId } },
-        name: validData.name,
-        image: '',
-        save: vi.fn()
+        ...validData
       };
 
       mockValidateObjectId.mockReturnValue(true);
-      mockFindByIdDish.mockResolvedValue(mockDish as any);
-      mockFindOneDish.mockResolvedValue(null);
-      mockFindByIdAndUpdateDish.mockResolvedValue(mockDish as any);
-      mockUploadImage.mockResolvedValue({ success: false, data: null } as any);
+      mockFindById.mockResolvedValue({
+        _id: { toString: () => VALID_ID },
+        user: { _id: { toString: () => userId } }
+      } as any);
+      mockFindOne.mockResolvedValue(null);
+      mockFindByIdAndUpdate.mockResolvedValue(mockDish as any);
+
+      const result = await DishService.updateDish(
+        VALID_ID,
+        userId,
+        validData as any
+      );
+
+      expect(result).toEqual(mockDish);
+      expect(mockUploadImage).not.toHaveBeenCalled();
+    });
+
+    it('should update dish successfully with image', async () => {
+      const mockSave = vi.fn();
+      const mockDish = {
+        _id: { toString: () => VALID_ID },
+        user: { _id: { toString: () => userId } },
+        ...validData,
+        image: '',
+        save: mockSave
+      };
+
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindById.mockResolvedValue({
+        _id: { toString: () => VALID_ID },
+        user: { _id: { toString: () => userId } }
+      } as any);
+      mockFindOne.mockResolvedValue(null);
+      mockFindByIdAndUpdate.mockResolvedValue(mockDish as any);
+      mockUploadImage.mockResolvedValue({
+        success: true,
+        data: {
+          secure_url:
+            'https://res.cloudinary.com/test/image/upload/v1234567890/test.jpg'
+        }
+      } as any);
 
       const fakeImage = {
         buffer: Buffer.from('fake-image-data')
       } as Express.Multer.File;
 
-      await expect(
-        DishService.updateDish(VALID_ID, userId, validData as any, fakeImage)
-      ).rejects.toMatchObject({
-        status: 500,
-        message: 'Tải ảnh lên thất bại'
-      });
+      const result = await DishService.updateDish(
+        VALID_ID,
+        userId,
+        validData as any,
+        fakeImage
+      );
+
+      expect(mockDeleteImage).toHaveBeenCalledWith(VALID_ID);
+      expect(mockUploadImage).toHaveBeenCalledWith(fakeImage.buffer, VALID_ID);
+      expect(mockDish.image).toBe(
+        'https://res.cloudinary.com/test/image/upload/v1234567890/test.jpg'
+      );
+      expect(mockSave).toHaveBeenCalled();
+      expect(result).toEqual(mockDish);
     });
   });
 });

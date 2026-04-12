@@ -10,8 +10,6 @@ export default function DishesPagination({
   onPrev,
   onNext
 }) {
-  if (!totalPages || totalPages <= 1) return null;
-
   return (
     <div className='flex items-center justify-between'>
       <Button variant='outline' onClick={onPrev} disabled={!hasPrevPage}>

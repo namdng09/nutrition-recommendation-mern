@@ -13,12 +13,13 @@ export default function IngredientsToolbar({
   const [inputValue, setInputValue] = useState(name);
 
   useEffect(() => {
+    if (inputValue === name) return;
     const timer = setTimeout(() => {
       onNameChange(inputValue);
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [inputValue, onNameChange]);
+  }, [inputValue, name, onNameChange]);
 
   useEffect(() => {
     setInputValue(name);

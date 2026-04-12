@@ -18,20 +18,28 @@ export const useAddIngredientToFavorite = () => {
     mutationFn: addIngredientToFavorite,
 
     onMutate: async ingredientId => {
-      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.PROFILE });
+      await queryClient.cancelQueries({
+        queryKey: QUERY_KEYS.PROFILE
+      });
 
       const previousProfile = queryClient.getQueryData(QUERY_KEYS.PROFILE);
+
       queryClient.setQueryData(QUERY_KEYS.PROFILE, old => {
         if (!old) return old;
 
+        const current = old.favoriteIngredients || [];
+        const currentIds = current.map(item =>
+          typeof item === 'string' ? item : item?._id
+        );
+
+        if (currentIds.includes(ingredientId)) return old;
+
         return {
           ...old,
-          favoriteIngredients: [
-            ...(old.favoriteIngredients || []),
-            ingredientId
-          ]
+          favoriteIngredients: [...current, ingredientId]
         };
       });
+
       return { previousProfile };
     },
 
@@ -39,13 +47,16 @@ export const useAddIngredientToFavorite = () => {
       if (context?.previousProfile) {
         queryClient.setQueryData(QUERY_KEYS.PROFILE, context.previousProfile);
       }
+
       toast.error(
         err.response?.data?.message || 'Không thể thêm vào yêu thích'
       );
     },
+
     onSuccess: res => {
       toast.success(res.message || 'Đã thêm vào yêu thích');
     },
+
     onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.PROFILE

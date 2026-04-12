@@ -12,6 +12,7 @@ const removeIngredientFromFavorite = async ingredientId => {
     '/api/users/me/favorites/ingredients',
     { data: formData }
   );
+
   return response.data;
 };
 
@@ -22,7 +23,9 @@ export const useRemoveIngredientFromFavorite = () => {
     mutationFn: removeIngredientFromFavorite,
 
     onMutate: async ingredientId => {
-      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.PROFILE });
+      await queryClient.cancelQueries({
+        queryKey: QUERY_KEYS.PROFILE
+      });
 
       const previous = queryClient.getQueryData(QUERY_KEYS.PROFILE);
 
@@ -31,22 +34,28 @@ export const useRemoveIngredientFromFavorite = () => {
 
         return {
           ...old,
-          favoriteIngredients: old.favoriteIngredients.filter(
-            id => id !== ingredientId
-          )
+          favoriteIngredients: (old.favoriteIngredients || []).filter(item => {
+            const id = typeof item === 'string' ? item : item?._id;
+            return id !== ingredientId;
+          })
         };
       });
+
       return { previous };
     },
+
     onError: (_, __, context) => {
       if (context?.previous) {
         queryClient.setQueryData(QUERY_KEYS.PROFILE, context.previous);
       }
+
       toast.error('Không thể xoá yêu thích');
     },
+
     onSuccess: res => {
       toast.success(res.message || 'Đã xoá khỏi yêu thích');
     },
+
     onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.PROFILE

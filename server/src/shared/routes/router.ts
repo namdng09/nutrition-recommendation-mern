@@ -12,6 +12,7 @@ import groceryRoute from '~/features/groceries/grocery-route';
 import ingredientRoute from '~/features/ingredients/ingredient-route';
 import paymentRoute from '~/features/payments/payment-route';
 import postRoute from '~/features/posts/post-route';
+import reviewRoute from '~/features/reviews/review-route';
 import scheduleRoute from '~/features/schedules/schedule-route';
 import userRoute from '~/features/users/user-route';
 
@@ -23,6 +24,7 @@ router.use('/users', userRoute);
 router.use('/dashboard', dashboardRoute);
 router.use('/ingredients', ingredientRoute);
 router.use('/dishes', dishRoute);
+router.use('/reviews', reviewRoute);
 router.use('/feedback', feedbackRoute);
 router.use('/collections', collectionRoute);
 router.use('/schedules', scheduleRoute);

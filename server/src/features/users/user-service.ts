@@ -236,10 +236,6 @@ const refreshAiQuotaOnProfileRead = async (user: HydratedDocument<User>) => {
 
 export const UserService = {
   addFavoriteDish: async (userId: string, dishId: string) => {
-    if (!validateObjectId(dishId)) {
-      throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
-    }
-
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
       { $addToSet: { favoriteDishes: dishId } },
@@ -254,10 +250,6 @@ export const UserService = {
   },
 
   removeFavoriteDish: async (userId: string, dishId: string) => {
-    if (!validateObjectId(dishId)) {
-      throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
-    }
-
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
       { $pull: { favoriteDishes: dishId } },
@@ -272,10 +264,6 @@ export const UserService = {
   },
 
   addFavoriteIngredient: async (userId: string, ingredientId: string) => {
-    if (!validateObjectId(ingredientId)) {
-      throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
-    }
-
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
       { $addToSet: { favoriteIngredients: ingredientId } },
@@ -290,10 +278,6 @@ export const UserService = {
   },
 
   removeFavoriteIngredient: async (userId: string, ingredientId: string) => {
-    if (!validateObjectId(ingredientId)) {
-      throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
-    }
-
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
       { $pull: { favoriteIngredients: ingredientId } },
@@ -308,10 +292,6 @@ export const UserService = {
   },
 
   addFavoriteCollection: async (userId: string, collectionId: string) => {
-    if (!validateObjectId(collectionId)) {
-      throw createHttpError(400, 'Định dạng ID bộ sưu tập không hợp lệ');
-    }
-
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
       { $addToSet: { favoriteCollections: collectionId } },
@@ -326,10 +306,6 @@ export const UserService = {
   },
 
   removeFavoriteCollection: async (userId: string, collectionId: string) => {
-    if (!validateObjectId(collectionId)) {
-      throw createHttpError(400, 'Định dạng ID bộ sưu tập không hợp lệ');
-    }
-
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
       { $pull: { favoriteCollections: collectionId } },
@@ -344,10 +320,6 @@ export const UserService = {
   },
 
   addBlockDish: async (userId: string, dishId: string) => {
-    if (!validateObjectId(dishId)) {
-      throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
-    }
-
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
       { $addToSet: { blockDishes: dishId } },
@@ -362,10 +334,6 @@ export const UserService = {
   },
 
   removeBlockDish: async (userId: string, dishId: string) => {
-    if (!validateObjectId(dishId)) {
-      throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
-    }
-
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
       { $pull: { blockDishes: dishId } },
@@ -380,10 +348,6 @@ export const UserService = {
   },
 
   addBlockIngredient: async (userId: string, ingredientId: string) => {
-    if (!validateObjectId(ingredientId)) {
-      throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
-    }
-
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
       { $addToSet: { blockIngredients: ingredientId } },
@@ -398,10 +362,6 @@ export const UserService = {
   },
 
   removeBlockIngredient: async (userId: string, ingredientId: string) => {
-    if (!validateObjectId(ingredientId)) {
-      throw createHttpError(400, 'Định dạng ID nguyên liệu không hợp lệ');
-    }
-
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
       { $pull: { blockIngredients: ingredientId } },
@@ -501,6 +461,10 @@ export const UserService = {
   },
 
   viewProfile: async (id: string) => {
+    if (!validateObjectId(id)) {
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
+    }
+
     const user = await UserModel.findById(id)
       .populate({
         path: 'favoriteDishes',
@@ -555,6 +519,10 @@ export const UserService = {
   },
 
   onboardUser: async (id: string, data: OnboardingRequest) => {
+    if (!validateObjectId(id)) {
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
+    }
+
     const user = await UserModel.findById(id);
 
     if (!user) {
@@ -634,6 +602,10 @@ export const UserService = {
     data: UpdateProfileRequest,
     avatar?: Express.Multer.File
   ) => {
+    if (!validateObjectId(id)) {
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
+    }
+
     const { weight, ...rest } = data as UpdatePhysicalStats;
 
     const updateOp = weight
@@ -656,10 +628,6 @@ export const UserService = {
   },
 
   viewUserDetail: async (id: string) => {
-    if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-    }
-
     const user = await UserModel.findById(id);
 
     if (!user) {
@@ -697,10 +665,6 @@ export const UserService = {
     data: UpdateUserRequest,
     currentUserId: string
   ) => {
-    if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-    }
-
     if (id === currentUserId && data.isActive === 'false') {
       throw createHttpError(
         400,
@@ -720,10 +684,6 @@ export const UserService = {
   },
 
   deleteUser: async (id: string, currentUserId: string) => {
-    if (!validateObjectId(id)) {
-      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-    }
-
     if (id === currentUserId) {
       throw createHttpError(
         400,
@@ -752,12 +712,6 @@ export const UserService = {
   },
 
   deleteBulk: async (ids: string[], currentUserId: string) => {
-    ids.forEach(id => {
-      if (!validateObjectId(id)) {
-        throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-      }
-    });
-
     if (ids.includes(currentUserId)) {
       throw createHttpError(400, 'Không thể xóa tài khoản của chính mình');
     }
@@ -786,6 +740,10 @@ export const UserService = {
     data: UploadCertificateRequest,
     file: Express.Multer.File
   ) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
+    }
+
     const user = await UserModel.findById(userId);
 
     if (!user) {
@@ -842,6 +800,10 @@ export const UserService = {
     userId: string,
     data: UpdateNutritionistProfile
   ) => {
+    if (!validateObjectId(userId)) {
+      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
+    }
+
     const user = await UserModel.findById(userId);
 
     if (!user) {
@@ -865,10 +827,6 @@ export const UserService = {
     userId: string,
     data: UpdateNutritionistProfile
   ) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-    }
-
     const user = await UserModel.findById(userId);
 
     if (!user) {
@@ -889,10 +847,6 @@ export const UserService = {
   },
 
   approveCertificate: async (userId: string) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-    }
-
     const user = await UserModel.findById(userId);
 
     if (!user) {
@@ -927,10 +881,6 @@ export const UserService = {
   },
 
   rejectCertificate: async (userId: string, data: RejectCertificateRequest) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-    }
-
     const user = await UserModel.findById(userId);
 
     if (!user) {
@@ -969,10 +919,6 @@ export const UserService = {
     userId: string,
     showCertificate: boolean
   ) => {
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-    }
-
     const user = await UserModel.findById(userId);
 
     if (!user) {

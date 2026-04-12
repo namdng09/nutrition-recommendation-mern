@@ -21,26 +21,12 @@ import {
 
 import {
   AddScheduleWorkoutExerciseRequest,
-  addScheduleWorkoutExerciseRequestSchema,
   CreateScheduleRequest,
-  createScheduleRequestSchema,
   UpdateScheduleDishStatusRequest,
-  updateScheduleDishStatusRequestSchema,
   UpdateScheduleMealsRequest,
-  updateScheduleMealsRequestSchema,
   UpdateScheduleRequest,
-  updateScheduleRequestSchema,
-  UpdateScheduleWorkoutExerciseRequest,
-  updateScheduleWorkoutExerciseRequestSchema
+  UpdateScheduleWorkoutExerciseRequest
 } from './schedule-dto';
-
-type ScheduleMeal = {
-  mealType?: string;
-  notes?: string;
-  dishes?: Array<{
-    dishId?: string;
-  }>;
-};
 
 type MealType = (typeof MEAL_TYPE)[keyof typeof MEAL_TYPE];
 
@@ -56,51 +42,130 @@ type DishNutrition = {
   vitamins?: NutritionItem[] | null;
 } | null;
 
-type ScheduleWorkout = UpdateScheduleRequest['workout'];
-type ScheduleWorkoutInput = NonNullable<ScheduleWorkout>;
+type ScheduleWorkoutInput = NonNullable<UpdateScheduleRequest['workout']>;
 type ScheduleWorkoutExerciseInput = ScheduleWorkoutInput[number];
+type LoadedDish = Awaited<ReturnType<typeof loadDishesByIds>>[number];
+type IncomingScheduleMealDish = NonNullable<
+  UpdateScheduleMealsRequest['meals'][number]['dishes']
+>[number];
+
+const collectDishIdsOrThrow = (meals: UpdateScheduleMealsRequest['meals']) => {
+  const dishIds = new Set<string>();
+  meals.forEach(meal => {
+    meal.dishes?.forEach(dish => {
+      if (!dish.dishId) {
+        throw createHttpError(400, 'ID món ăn là bắt buộc');
+      }
+      dishIds.add(dish.dishId);
+    });
+  });
+
+  return dishIds;
+};
+
+const loadDishesByIds = async (dishIds: Set<string>) =>
+  dishIds.size
+    ? ((await DishModel.find({ _id: { $in: Array.from(dishIds) } })
+        .select('name image servings nutrition isPublic user')
+        .lean()) as Array<{
+        _id: { toString: () => string };
+        isPublic?: boolean;
+        user?: { _id?: { toString: () => string } } | null;
+        servings?: number;
+        name?: string;
+        image?: string;
+        nutrition?: unknown;
+      }>)
+    : [];
+
+const buildMergedWorkoutPayload = (
+  exerciseId: string,
+  workoutExercise: unknown,
+  data: UpdateScheduleWorkoutExerciseRequest
+): ScheduleWorkoutExerciseInput => {
+  const source = workoutExercise as {
+    logType?: ScheduleWorkoutExerciseInput['logType'] | null;
+    distanceTarget?: ScheduleWorkoutExerciseInput['distanceTarget'] | null;
+    weightAndRepsTarget?: {
+      reps: number;
+      sets?: number;
+      weight?: number | null;
+    } | null;
+    durationTarget?: ScheduleWorkoutExerciseInput['durationTarget'] | null;
+    isCompleted?: boolean;
+  };
+
+  const existingWeightAndRepsTarget = source.weightAndRepsTarget
+    ? {
+        reps: source.weightAndRepsTarget.reps,
+        sets: source.weightAndRepsTarget.sets,
+        weight:
+          typeof source.weightAndRepsTarget.weight === 'number'
+            ? source.weightAndRepsTarget.weight
+            : undefined
+      }
+    : undefined;
+
+  return {
+    exerciseId,
+    logType: (data.logType ?? source.logType) as
+      | ScheduleWorkoutExerciseInput['logType']
+      | undefined,
+    distanceTarget: data.distanceTarget ?? source.distanceTarget ?? undefined,
+    weightAndRepsTarget:
+      data.weightAndRepsTarget ?? existingWeightAndRepsTarget ?? undefined,
+    durationTarget: data.durationTarget ?? source.durationTarget ?? undefined,
+    isCompleted: data.isCompleted ?? source.isCompleted ?? false
+  };
+};
+
+const WORKOUT_TARGET_RULES = {
+  [WORKOUT_COUNTER_TYPE.DISTANCE]: {
+    requiredKey: 'distanceTarget',
+    requiredError: 'Bài tập Distance cần distanceTarget',
+    exclusiveError: 'Bài tập Distance chỉ được dùng distanceTarget'
+  },
+  [WORKOUT_COUNTER_TYPE.WEIGHT_AND_REPS]: {
+    requiredKey: 'weightAndRepsTarget',
+    requiredError: 'Bài tập WeightAndReps cần weightAndRepsTarget',
+    exclusiveError: 'Bài tập WeightAndReps chỉ được dùng weightAndRepsTarget'
+  },
+  [WORKOUT_COUNTER_TYPE.DURATION]: {
+    requiredKey: 'durationTarget',
+    requiredError: 'Bài tập Duration cần durationTarget',
+    exclusiveError: 'Bài tập Duration chỉ được dùng durationTarget'
+  }
+} as const;
 
 const validateWorkoutTargets = (
   logType: string,
   item: ScheduleWorkoutExerciseInput
 ) => {
-  if (logType === WORKOUT_COUNTER_TYPE.DISTANCE) {
-    if (!item.distanceTarget) {
-      throw createHttpError(400, 'Bài tập Distance cần distanceTarget');
-    }
-    if (item.weightAndRepsTarget || item.durationTarget) {
-      throw createHttpError(
-        400,
-        'Bài tập Distance chỉ được dùng distanceTarget'
-      );
-    }
+  const rule =
+    WORKOUT_TARGET_RULES[logType as keyof typeof WORKOUT_TARGET_RULES];
+
+  if (!rule) return;
+
+  const targetEntries = [
+    ['distanceTarget', item.distanceTarget],
+    ['weightAndRepsTarget', item.weightAndRepsTarget],
+    ['durationTarget', item.durationTarget]
+  ] as const;
+
+  const requiredTarget = targetEntries.find(
+    ([key]) => key === rule.requiredKey
+  )?.[1];
+
+  if (!requiredTarget) {
+    throw createHttpError(400, rule.requiredError);
   }
 
-  if (logType === WORKOUT_COUNTER_TYPE.WEIGHT_AND_REPS) {
-    if (!item.weightAndRepsTarget) {
-      throw createHttpError(
-        400,
-        'Bài tập WeightAndReps cần weightAndRepsTarget'
-      );
-    }
-    if (item.distanceTarget || item.durationTarget) {
-      throw createHttpError(
-        400,
-        'Bài tập WeightAndReps chỉ được dùng weightAndRepsTarget'
-      );
-    }
-  }
+  const hasOtherTargets = targetEntries.some(
+    ([key, value]) => key !== rule.requiredKey && Boolean(value)
+  );
 
-  if (logType === WORKOUT_COUNTER_TYPE.DURATION) {
-    if (!item.durationTarget) {
-      throw createHttpError(400, 'Bài tập Duration cần durationTarget');
-    }
-    if (item.distanceTarget || item.weightAndRepsTarget) {
-      throw createHttpError(
-        400,
-        'Bài tập Duration chỉ được dùng durationTarget'
-      );
-    }
+  if (hasOtherTargets) {
+    throw createHttpError(400, rule.exclusiveError);
   }
 };
 
@@ -109,10 +174,18 @@ const mealTypeValues = Object.values(MEAL_TYPE) as MealType[];
 const isValidMealType = (value: string): value is MealType =>
   mealTypeValues.includes(value as MealType);
 
-const validateDishIds = (meals?: ScheduleMeal[]) => {
+const validateDishIds = (
+  meals?: UpdateScheduleRequest['meals'] | UpdateScheduleMealsRequest['meals']
+) => {
   if (!meals) return;
 
-  meals.forEach(meal => {
+  const mealsToValidate = meals as Array<{
+    dishes?: Array<{
+      dishId?: string;
+    }>;
+  }>;
+
+  mealsToValidate.forEach(meal => {
     meal.dishes?.forEach(dish => {
       if (dish.dishId && !validateObjectId(dish.dishId)) {
         throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
@@ -135,6 +208,97 @@ const calculateDishEnergy = (dish: unknown) => {
       : undefined;
 
   return isValidNumber(energyValue) ? energyValue : 0;
+};
+
+const createScheduleMealDishPayload = (
+  dishInfo: LoadedDish,
+  dish: IncomingScheduleMealDish
+) => {
+  const baseEnergy = calculateDishEnergy(dishInfo);
+  const requestedServings = dish.servings ?? dishInfo.servings ?? 1;
+
+  return {
+    dishId: dishInfo._id,
+    name: dishInfo.name,
+    image: dishInfo.image,
+    servings: requestedServings,
+    energy: baseEnergy * requestedServings,
+    isEaten: dish.isEaten ?? false
+  };
+};
+
+const findDishIndexByDishId = (
+  dishes: {
+    findIndex: (
+      predicate: (dish: {
+        dishId?: { toString: () => string } | null;
+      }) => boolean
+    ) => number;
+  },
+  dishId: string
+) => dishes.findIndex(dish => dish.dishId?.toString() === dishId);
+
+const buildDishByIdMap = (dishes: LoadedDish[]) =>
+  new Map(dishes.map(dish => [dish._id.toString(), dish] as const));
+
+const buildMealsByTypeMap = (schedule: {
+  meals: Array<{ mealType: string }>;
+}) => new Map(schedule.meals.map(meal => [meal.mealType, meal] as const));
+
+const getOrCreateMealByType = (
+  schedule: {
+    meals: {
+      create: (payload: { mealType: string; dishes: [] }) => any;
+      push: (meal: any) => number;
+    };
+  },
+  mealsByType: Map<string, any>,
+  mealType: string
+) => {
+  let targetMeal = mealsByType.get(mealType);
+  if (!targetMeal) {
+    targetMeal = schedule.meals.create({
+      mealType,
+      dishes: []
+    });
+    schedule.meals.push(targetMeal);
+    mealsByType.set(mealType, targetMeal);
+  }
+
+  return targetMeal;
+};
+
+const upsertDishToMeal = (
+  dishes: {
+    create: (payload: unknown) => any;
+    push: (item: any) => number;
+    [index: number]: {
+      isEaten?: boolean;
+      [key: string]: unknown;
+    };
+  } & {
+    findIndex: (
+      predicate: (dish: {
+        dishId?: { toString: () => string } | null;
+      }) => boolean
+    ) => number;
+  },
+  targetDishId: string,
+  dishPayload: Record<string, unknown>,
+  isEaten: boolean | undefined
+) => {
+  const existingIndex = findDishIndexByDishId(dishes, targetDishId);
+
+  if (existingIndex >= 0) {
+    Object.assign(dishes[existingIndex], dishPayload);
+    if (isEaten !== undefined) {
+      dishes[existingIndex].isEaten = isEaten;
+    }
+    return;
+  }
+
+  const createdDish = dishes.create(dishPayload);
+  dishes.push(createdDish);
 };
 
 const scaleNutritionItems = (
@@ -185,6 +349,127 @@ const addNutritionItemsTotal = (
       });
     }
   }
+};
+
+const collectScheduleDishIds = (
+  meals:
+    | Iterable<{
+        dishes?: Iterable<{
+          dishId?: {
+            toString: () => string;
+          } | null;
+        }> | null;
+      }>
+    | undefined
+) => {
+  const dishIds = new Set<string>();
+
+  for (const meal of meals ?? []) {
+    for (const dish of meal.dishes ?? []) {
+      const dishId = dish.dishId?.toString();
+      if (dishId) {
+        dishIds.add(dishId);
+      }
+    }
+  }
+
+  return dishIds;
+};
+
+const buildNutritionByDishId = (
+  dishes: Array<{
+    _id: {
+      toString: () => string;
+    };
+    nutrition?: DishNutrition;
+    servings?: number;
+  }>
+) => {
+  const nutritionByDishId = new Map<
+    string,
+    { nutrition: DishNutrition; servings: number }
+  >();
+
+  dishes.forEach(dish => {
+    nutritionByDishId.set(dish._id.toString(), {
+      nutrition: dish.nutrition ?? null,
+      servings: dish.servings ?? 1
+    });
+  });
+
+  return nutritionByDishId;
+};
+
+const enrichMealsWithNutrition = (
+  meals:
+    | Iterable<{
+        dishes?: Iterable<{
+          dishId?: {
+            toString: () => string;
+          } | null;
+          servings?: number | null;
+        }> | null;
+      }>
+    | undefined,
+  nutritionByDishId: Map<string, { nutrition: DishNutrition; servings: number }>
+) => {
+  const totalNutrients = new Map<string, NutritionItem>();
+  const totalMinerals = new Map<string, NutritionItem>();
+  const totalVitamins = new Map<string, NutritionItem>();
+
+  const mealsWithNutrition = Array.from(meals ?? []).map(meal => {
+    const dishes = meal.dishes
+      ? Array.from(meal.dishes).map(dish => {
+          const dishId = dish.dishId?.toString();
+          if (!dishId) {
+            return {
+              ...dish,
+              nutrition: scaleDishNutrition(null, 1)
+            };
+          }
+
+          const detail = nutritionByDishId.get(dishId);
+          if (!detail) {
+            return {
+              ...dish,
+              nutrition: scaleDishNutrition(null, 1)
+            };
+          }
+
+          const servings =
+            typeof dish.servings === 'number'
+              ? dish.servings
+              : (detail.servings ?? 1);
+
+          const scaledNutrition = scaleDishNutrition(
+            detail.nutrition,
+            servings
+          );
+
+          addNutritionItemsTotal(totalNutrients, scaledNutrition.nutrients, 1);
+          addNutritionItemsTotal(totalMinerals, scaledNutrition.minerals, 1);
+          addNutritionItemsTotal(totalVitamins, scaledNutrition.vitamins, 1);
+
+          return {
+            ...dish
+          };
+        })
+      : undefined;
+
+    return {
+      ...meal,
+      dishes
+    };
+  });
+
+  return {
+    mealsWithNutrition,
+    totalNutrition: {
+      nutrients: Array.from(totalNutrients.values()),
+      minerals: Array.from(totalMinerals.values()),
+      vitamins: Array.from(totalVitamins.values())
+    }
+  };
 };
 
 const ensureUniqueWorkoutExerciseIds = (items: ScheduleWorkoutInput) => {
@@ -258,17 +543,6 @@ export const ScheduleService = {
     userName: string,
     data: CreateScheduleRequest
   ) => {
-    const validation = createScheduleRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
-    if (!validateObjectId(userId)) {
-      throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
-    }
-
     const user = await UserModel.findById(userId);
 
     if (!user) {
@@ -346,16 +620,7 @@ export const ScheduleService = {
     }
 
     const scheduleData = schedule.toObject();
-    const dishIds = new Set<string>();
-
-    scheduleData.meals?.forEach(meal => {
-      meal.dishes?.forEach(dish => {
-        const dishId = dish.dishId?.toString();
-        if (dishId) {
-          dishIds.add(dishId);
-        }
-      });
-    });
+    const dishIds = collectScheduleDishIds(scheduleData.meals);
 
     if (!dishIds.size) {
       return scheduleData;
@@ -366,64 +631,11 @@ export const ScheduleService = {
     })
       .select('nutrition servings')
       .lean();
-
-    const nutritionByDishId = new Map<
-      string,
-      { nutrition: DishNutrition; servings: number }
-    >();
-
-    dishes.forEach(dish => {
-      nutritionByDishId.set(dish._id.toString(), {
-        nutrition: dish.nutrition ?? null,
-        servings: dish.servings ?? 1
-      });
-    });
-
-    const totalNutrients = new Map<string, NutritionItem>();
-    const totalMinerals = new Map<string, NutritionItem>();
-    const totalVitamins = new Map<string, NutritionItem>();
-
-    const mealsWithNutrition = scheduleData.meals?.map(meal => ({
-      ...meal,
-      dishes: meal.dishes?.map(dish => {
-        const dishId = dish.dishId?.toString();
-        if (!dishId) {
-          return {
-            ...dish,
-            nutrition: scaleDishNutrition(null, 1)
-          };
-        }
-
-        const detail = nutritionByDishId.get(dishId);
-        if (!detail) {
-          return {
-            ...dish,
-            nutrition: scaleDishNutrition(null, 1)
-          };
-        }
-
-        const servings =
-          typeof dish.servings === 'number'
-            ? dish.servings
-            : (detail.servings ?? 1);
-
-        const scaledNutrition = scaleDishNutrition(detail.nutrition, servings);
-
-        addNutritionItemsTotal(totalNutrients, scaledNutrition.nutrients, 1);
-        addNutritionItemsTotal(totalMinerals, scaledNutrition.minerals, 1);
-        addNutritionItemsTotal(totalVitamins, scaledNutrition.vitamins, 1);
-
-        return {
-          ...dish
-        };
-      })
-    }));
-
-    const totalNutrition = {
-      nutrients: Array.from(totalNutrients.values()),
-      minerals: Array.from(totalMinerals.values()),
-      vitamins: Array.from(totalVitamins.values())
-    };
+    const nutritionByDishId = buildNutritionByDishId(dishes);
+    const { mealsWithNutrition, totalNutrition } = enrichMealsWithNutrition(
+      scheduleData.meals,
+      nutritionByDishId
+    );
 
     return {
       ...scheduleData,
@@ -438,13 +650,6 @@ export const ScheduleService = {
     role: string | undefined,
     data: UpdateScheduleRequest
   ) => {
-    const validation = updateScheduleRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
     }
@@ -489,13 +694,6 @@ export const ScheduleService = {
     userId: string,
     data: AddScheduleWorkoutExerciseRequest
   ) => {
-    const validation = addScheduleWorkoutExerciseRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
     }
@@ -532,14 +730,6 @@ export const ScheduleService = {
     exerciseId: string,
     data: UpdateScheduleWorkoutExerciseRequest
   ) => {
-    const validation =
-      updateScheduleWorkoutExerciseRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
     }
@@ -566,28 +756,17 @@ export const ScheduleService = {
       throw createHttpError(404, 'Không tìm thấy bài tập trong workout');
     }
 
-    const existingWeightAndRepsTarget = workoutExercise.weightAndRepsTarget
-      ? {
-          reps: workoutExercise.weightAndRepsTarget.reps,
-          sets: workoutExercise.weightAndRepsTarget.sets,
-          weight:
-            typeof workoutExercise.weightAndRepsTarget.weight === 'number'
-              ? workoutExercise.weightAndRepsTarget.weight
-              : undefined
-        }
-      : undefined;
-
-    const mergedPayload: ScheduleWorkoutExerciseInput = {
+    const mergedPayload = buildMergedWorkoutPayload(
       exerciseId,
-      logType: data.logType ?? workoutExercise.logType,
-      distanceTarget:
-        data.distanceTarget ?? workoutExercise.distanceTarget ?? undefined,
-      weightAndRepsTarget:
-        data.weightAndRepsTarget ?? existingWeightAndRepsTarget ?? undefined,
-      durationTarget:
-        data.durationTarget ?? workoutExercise.durationTarget ?? undefined,
-      isCompleted: data.isCompleted ?? workoutExercise.isCompleted ?? false
-    };
+      {
+        logType: workoutExercise.logType,
+        distanceTarget: workoutExercise.distanceTarget,
+        weightAndRepsTarget: workoutExercise.weightAndRepsTarget,
+        durationTarget: workoutExercise.durationTarget,
+        isCompleted: workoutExercise.isCompleted
+      },
+      data
+    );
 
     const [resolvedExercise] = await resolveScheduleWorkoutExercises([
       mergedPayload
@@ -642,13 +821,6 @@ export const ScheduleService = {
     userId: string,
     data: UpdateScheduleMealsRequest
   ) => {
-    const validation = updateScheduleMealsRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
     }
@@ -665,50 +837,42 @@ export const ScheduleService = {
 
     validateDishIds(data.meals);
 
-    const dishIds = new Set<string>();
-    data.meals.forEach(meal => {
-      meal.dishes?.forEach(dish => {
-        if (!dish.dishId) {
-          throw createHttpError(400, 'ID món ăn là bắt buộc');
-        }
-        dishIds.add(dish.dishId);
-      });
-    });
-
-    const dishes = dishIds.size
-      ? await DishModel.find({ _id: { $in: Array.from(dishIds) } })
-          .select('name image servings nutrition')
-          .lean()
-      : [];
+    const dishIds = collectDishIdsOrThrow(data.meals);
+    const dishes = await loadDishesByIds(dishIds);
 
     if (dishes.length !== dishIds.size) {
       throw createHttpError(404, 'Không tìm thấy món ăn');
     }
 
-    const dishById = new Map(dishes.map(dish => [dish._id.toString(), dish]));
-
-    const mealsByType = new Map(
-      schedule.meals.map(meal => [meal.mealType, meal])
+    const otherPrivateDishes = dishes.filter(
+      dish => !dish.isPublic && dish.user?._id?.toString() !== userId
     );
 
-    data.meals.forEach(incomingMeal => {
-      let targetMeal = mealsByType.get(incomingMeal.mealType);
+    if (otherPrivateDishes.length > 0) {
+      throw createHttpError(
+        403,
+        'Bạn không có quyền sử dụng món ăn riêng tư của người khác'
+      );
+    }
 
-      if (!targetMeal) {
-        targetMeal = schedule.meals.create({
-          mealType: incomingMeal.mealType,
-          dishes: []
-        });
-        schedule.meals.push(targetMeal);
-        mealsByType.set(incomingMeal.mealType, targetMeal);
-      }
+    const dishById = buildDishByIdMap(dishes);
+    const mealsByType = buildMealsByTypeMap(schedule);
+
+    data.meals.forEach(incomingMeal => {
+      const targetMeal = getOrCreateMealByType(
+        schedule,
+        mealsByType,
+        incomingMeal.mealType
+      );
 
       if (incomingMeal.notes !== undefined) {
         targetMeal.notes = incomingMeal.notes;
       }
 
       if (incomingMeal.dishes?.length) {
-        const existingDishes = targetMeal.dishes ?? [];
+        if (!targetMeal.dishes) {
+          return;
+        }
 
         incomingMeal.dishes.forEach(dish => {
           const dishInfo = dish.dishId ? dishById.get(dish.dishId) : null;
@@ -717,35 +881,15 @@ export const ScheduleService = {
             throw createHttpError(404, 'Không tìm thấy món ăn');
           }
 
-          const baseEnergy = calculateDishEnergy(dishInfo);
-          const requestedServings = dish.servings ?? dishInfo.servings ?? 1;
+          const dishPayload = createScheduleMealDishPayload(dishInfo, dish);
 
-          const dishPayload = {
-            dishId: dishInfo._id,
-            name: dishInfo.name,
-            image: dishInfo.image,
-            servings: requestedServings,
-            energy: baseEnergy * requestedServings,
-            isEaten: dish.isEaten ?? false
-          };
-
-          const existingIndex = existingDishes.findIndex(
-            existingDish =>
-              existingDish.dishId?.toString() === dishInfo._id.toString()
+          upsertDishToMeal(
+            targetMeal.dishes,
+            dishInfo._id.toString(),
+            dishPayload,
+            dish.isEaten
           );
-
-          if (existingIndex >= 0) {
-            Object.assign(existingDishes[existingIndex], dishPayload);
-            if (dish.isEaten !== undefined) {
-              existingDishes[existingIndex].isEaten = dish.isEaten;
-            }
-          } else {
-            const createdDish = existingDishes.create(dishPayload);
-            existingDishes.push(createdDish);
-          }
         });
-
-        targetMeal.dishes = existingDishes;
       }
     });
 
@@ -761,13 +905,6 @@ export const ScheduleService = {
     dishId: string,
     data: UpdateScheduleDishStatusRequest
   ) => {
-    const validation = updateScheduleDishStatusRequestSchema.safeParse(data);
-
-    if (!validation.success) {
-      const firstError = validation.error.issues[0];
-      throw createHttpError(400, firstError.message);
-    }
-
     if (!validateObjectId(id)) {
       throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
     }
@@ -870,7 +1007,9 @@ export const ScheduleService = {
       throw createHttpError(404, 'Không tìm thấy bữa ăn');
     }
 
-    const dishes = meal.dishes ?? [];
+    const dishes = (meal.dishes ?? []) as Array<{
+      dishId?: { toString: () => string } | null;
+    }>;
     const dishIndex = dishes.findIndex(
       dish => dish.dishId?.toString() === dishId
     );

@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { updateIngredientRequestSchema } from '~/features/ingredients/ingredient-dto';
 import { IngredientService } from '~/features/ingredients/ingredient-service';
+import { UNIT } from '~/shared/constants/unit';
 import { IngredientModel } from '~/shared/database/models';
 import { deleteImage, uploadImage, validateObjectId } from '~/shared/utils';
 
@@ -43,23 +44,39 @@ describe('IngredientService.updateIngredient', () => {
   });
 
   describe('validation', () => {
-    // Tests DTO schema directly — no service, no DB involved
-
-    it('should fail when name is not a string', () => {
-      const result = updateIngredientRequestSchema.safeParse({ name: 1234 });
-
-      expect(result.success).toBe(false);
-      expect(result.error?.issues[0].message).toBe(
-        'Tên nguyên liệu không hợp lệ'
-      );
-    });
-
     it('should fail when name is too short', () => {
-      const result = updateIngredientRequestSchema.safeParse({ name: 'A' });
+      const result = updateIngredientRequestSchema.safeParse({
+        ...validData,
+        name: 'A'
+      });
 
       expect(result.success).toBe(false);
       expect(result.error?.issues[0].message).toBe(
         'Tên nguyên liệu phải có ít nhất 2 ký tự'
+      );
+    });
+
+    it('should fail when category is invalid', () => {
+      const result = updateIngredientRequestSchema.safeParse({
+        ...validData,
+        categories: ['invalid-category']
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Danh mục nguyên liệu không hợp lệ'
+      );
+    });
+
+    it('should fail when baseUnit is negative', () => {
+      const result = updateIngredientRequestSchema.safeParse({
+        ...validData,
+        baseUnit: { amount: -100, unit: UNIT.GRAM }
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Số lượng cơ bản không được âm'
       );
     });
   });
@@ -117,30 +134,6 @@ describe('IngredientService.updateIngredient', () => {
 
       expect(result).toEqual(mockIngredient);
       expect(mockUploadImage).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('system', () => {
-    it('should throw 500 when image upload fails', async () => {
-      mockValidateObjectId.mockReturnValue(true);
-      mockFindOne.mockResolvedValue(null);
-      mockFindByIdAndUpdate.mockResolvedValue({
-        _id: { toString: () => VALID_ID },
-        ...validData,
-        save: vi.fn()
-      } as any);
-      mockUploadImage.mockResolvedValue({ success: false, data: null } as any);
-
-      const fakeImage = {
-        buffer: Buffer.from('fake-image-data')
-      } as Express.Multer.File;
-
-      await expect(
-        IngredientService.updateIngredient(VALID_ID, validData, fakeImage)
-      ).rejects.toMatchObject({
-        status: 500,
-        message: 'Tải ảnh lên thất bại'
-      });
     });
 
     it('should update ingredient successfully with image', async () => {

@@ -24,5 +24,7 @@ export const QUERY_KEYS = {
   EXERCISES: ['exercises'],
   EXERCISE: id => ['exercise', id],
   FEEDBACKS: ['feedbacks'],
-  FEEDBACK: id => ['feedback', id]
+  FEEDBACK: id => ['feedback', id],
+  PRIVATE_DISHES: ['private-dishes'],
+  PRIVATE_DISH: id => ['private-dish', id]
 };

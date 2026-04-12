@@ -12,13 +12,6 @@ export default function CollectionsHeader({ totalDocs = 0, hasCollections }) {
 
         <div className='relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between'>
           <div className='max-w-2xl space-y-4'>
-            <div className='inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-3 py-1.5'>
-              <FaFolderOpen className='text-sky-600' size={14} />
-              <span className='text-[11px] font-bold uppercase tracking-[0.22em] text-sky-700/80'>
-                Recipe Collections
-              </span>
-            </div>
-
             <div className='flex items-center gap-3'>
               <div className='flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-600 text-white shadow-lg'>
                 <FaFolderOpen size={18} />

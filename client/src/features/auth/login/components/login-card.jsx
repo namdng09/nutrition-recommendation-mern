@@ -63,6 +63,7 @@ const LoginCard = () => {
       const role = decodedToken?.role;
 
       dispatch(loadUser({ accessToken, isRemember: variables.isRemember }));
+      toast.success(data.message || 'Đăng nhập thành công');
 
       if (role === ROLE.ADMIN) {
         navigate('/admin');
@@ -78,8 +79,6 @@ const LoginCard = () => {
       } else {
         navigate(hasOnboarded ? '/' : '/onboarding');
       }
-
-      toast.success(data.message || 'Đăng nhập thành công');
     },
     onError: error => {
       toast.error(

@@ -30,13 +30,6 @@ export const AchievementController = {
     });
   },
 
-  getAllDefinitions: (_req: Request, res: Response) => {
-    const result = AchievementService.getAllDefinitions();
-    res
-      .status(200)
-      .json(ApiResponse.success('Lấy danh sách thành tựu thành công', result));
-  },
-
   getUserAchievements: async (req: Request, res: Response) => {
     const userId = req.user!._id.toString();
     const result = await AchievementService.getUserAchievements(userId);

@@ -9,12 +9,6 @@ export default function ExerciseHeader() {
 
       <div className='relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between'>
         <div className='max-w-2xl space-y-4'>
-          <div className='inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5'>
-            <span className='text-[11px] font-bold uppercase tracking-[0.22em] text-primary/70'>
-              Workout Library
-            </span>
-          </div>
-
           <h2 className='flex flex-wrap items-center gap-3 text-3xl font-black tracking-tight sm:text-4xl'>
             <span className='flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-sm'>
               <HiOutlineSparkles className='text-[22px]' />

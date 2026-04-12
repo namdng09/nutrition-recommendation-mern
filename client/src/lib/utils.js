@@ -43,7 +43,7 @@ export const NAV_LINKS = [
   {
     label: 'Dinh dưỡng',
     children: [
-      { to: '/collections', label: 'Gợi ý bữa ăn' },
+      { to: '/collections', label: 'Bộ sưu tập món ăn' },
       { to: '/dishes', label: 'Món ăn' },
       { to: '/ingredients', label: 'Nguyên liệu' }
     ]
@@ -250,4 +250,51 @@ export const getPreviewImage = url => {
 export const getHoverImage = url => {
   if (!url) return url;
   return url;
+};
+
+export const DISH_CATEGORY_OPTIONS = [
+  { value: 'Khai vị', label: 'Khai vị' },
+  { value: 'Món chính', label: 'Món chính' },
+  { value: 'Món ăn kèm', label: 'Món ăn kèm' },
+  { value: 'Tráng miệng', label: 'Tráng miệng' },
+  { value: 'Súp', label: 'Súp' },
+  { value: 'Salad', label: 'Salad' },
+  { value: 'Đồ uống', label: 'Đồ uống' },
+  { value: 'Bữa sáng', label: 'Bữa sáng' },
+  { value: 'Ăn nhẹ', label: 'Ăn nhẹ' },
+  { value: 'Nước sốt', label: 'Nước sốt' }
+];
+
+export const NUTRITION_FOCUS_OPTIONS = [
+  { value: 'Giàu đạm', label: 'Giàu đạm' },
+  { value: 'Ít tinh bột', label: 'Ít tinh bột' },
+  { value: 'Ít béo', label: 'Ít béo' },
+  { value: 'Giàu chất xơ', label: 'Giàu chất xơ' },
+  { value: 'Ít muối', label: 'Ít muối' }
+];
+
+export const INGREDIENT_CATEGORY = {
+  VEGETABLES: 'Rau củ',
+  FRUITS: 'Trái cây',
+  GRAINS: 'Ngũ cốc',
+  MEAT: 'Thịt',
+  POULTRY: 'Gia cầm',
+  SEAFOOD: 'Hải sản',
+  DAIRY: 'Sản phẩm từ sữa',
+  EGGS: 'Trứng',
+  LEGUMES: 'Đậu & họ đậu',
+  NUTS_SEEDS: 'Hạt & hạt giống',
+  OILS_FATS: 'Dầu & chất béo',
+  HERBS_SPICES: 'Rau thơm & gia vị',
+  CONDIMENTS: 'Gia vị & nước chấm',
+  SWEETENERS: 'Chất tạo ngọt',
+  BEVERAGES: 'Đồ uống',
+  BAKING: 'Nguyên liệu làm bánh',
+  PASTA_NOODLES: 'Mì & sợi',
+  BREAD: 'Bánh mì',
+  SNACKS: 'Đồ ăn vặt',
+  FROZEN: 'Thực phẩm đông lạnh',
+  CANNED: 'Thực phẩm đóng hộp',
+  SUPPLEMENTS: 'Thực phẩm bổ sung',
+  OTHER: 'Khác'
 };

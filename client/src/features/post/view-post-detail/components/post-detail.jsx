@@ -7,6 +7,7 @@ import {
 import { FiArrowLeft, FiHeart } from 'react-icons/fi';
 import { Link, useParams } from 'react-router';
 
+import { useProfile } from '~/features/users/view-profile/api/view-profile';
 import { formatDateVI } from '~/lib/utils';
 
 import { useTogglePostLike } from '../../toggle-post-like/api/toggle-post-like';
@@ -16,7 +17,14 @@ import PostComments from './post-comment';
 export default function PostDetail() {
   const { id } = useParams();
   const { data } = usePostDetail(id);
-  const { mutate: toggleLike } = useTogglePostLike();
+  const { data: profile } = useProfile();
+  const { mutate: toggleLike, isPending } = useTogglePostLike();
+
+  const likeIds = (data?.likes || []).map(item =>
+    typeof item === 'string' ? item : item?._id
+  );
+
+  const isLiked = profile?._id ? likeIds.includes(profile._id) : false;
   const likeCount = data?.likes?.length || 0;
 
   return (
@@ -64,11 +72,16 @@ export default function PostDetail() {
               <div className='flex items-center gap-3'>
                 <button
                   onClick={() => toggleLike(data._id)}
-                  className='group flex items-center gap-2 rounded-full bg-secondary/60 px-5 py-2.5 transition-all hover:bg-primary/10 hover:text-primary active:scale-95'
+                  disabled={isPending}
+                  className='group flex items-center gap-2 rounded-full bg-secondary/60 px-5 py-2.5 transition-all hover:bg-primary/10 hover:text-primary active:scale-95 disabled:opacity-60'
                 >
                   <FiHeart
                     size={18}
-                    className='transition-colors group-hover:fill-current'
+                    className={`transition-all ${
+                      isLiked
+                        ? 'fill-pink-500 text-pink-500'
+                        : 'text-current group-hover:fill-current'
+                    }`}
                   />
                   <span className='text-sm font-black'>{likeCount}</span>
                 </button>
