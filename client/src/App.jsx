@@ -5,9 +5,12 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { RouterProvider } from 'react-router';
 
+import { Toaster } from '~/components/ui/sonner';
 import { queryClient } from '~/lib/query-client';
 import router from '~/routes/router';
 import store from '~/store/index';
+
+import FeedbackChatWidget from './features/feedback/create-feedback/components/feedback-chat-widget';
 
 const App = () => {
   return (
@@ -20,9 +23,16 @@ const App = () => {
           enableSystem={true}
           disableTransitionOnChange
         >
+          <Toaster position='top-right' />
           <RouterProvider router={router} />
         </ThemeProvider>
-        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+        {import.meta.env.DEV && (
+          <ReactQueryDevtools
+            initialIsOpen={false}
+            buttonPosition='bottom-left'
+          />
+        )}
+        <FeedbackChatWidget />
       </QueryClientProvider>
     </Provider>
   );

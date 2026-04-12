@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   HiFire,
   HiOutlineChevronRight,
@@ -18,6 +19,9 @@ import DeleteScheduleModal from '../../delete-schedule/components/delete-schedul
 import DishCheckin from '../../update-dish-status-in-schedule/components/dish-check-in';
 import ScheduleProgress from '../../update-dish-status-in-schedule/components/schedule-progress';
 import AddFoodModal from './add-food-modal';
+import AITokenUsage from './ai-token-usage';
+import AlternativeDishButton from './alternative-dish-button';
+import AlternativeDishModal from './alternative-dish-modal';
 import DeleteDishModal from './delete-dish-modal';
 
 const MEAL_CONFIG = {
@@ -41,7 +45,14 @@ export default function ScheduleTodayCard({
   isGeneratingAI
 }) {
   const { data: profile } = useProfileForPage();
+  const [openAlternativeDishModal, setOpenAlternativeDishModal] =
+    useState(false);
+  const [selectedDishForAlternative, setSelectedDishForAlternative] =
+    useState(null);
+
   const targetCalories = profile?.nutritionTarget?.caloriesTarget ?? undefined;
+  const remainingTokens = profile?.aiTokens;
+  const dailyTokenLimit = profile?.aiDailyTokenLimit;
 
   return (
     <div className='rounded-[32px] border border-border bg-card p-6 shadow-sm'>
@@ -97,6 +108,11 @@ export default function ScheduleTodayCard({
               <p className='text-[11px] text-muted-foreground'>
                 Tạo nhanh lịch ăn phù hợp với mục tiêu trong ngày
               </p>
+
+              <AITokenUsage
+                remainingTokens={remainingTokens}
+                dailyTokenLimit={dailyTokenLimit}
+              />
             </div>
 
             <button
@@ -120,9 +136,9 @@ export default function ScheduleTodayCard({
       <div className='space-y-8'>
         {schedule.meals.map(meal => (
           <div key={meal._id} className='relative'>
-            <div className='flex items-center justify-between mb-4'>
+            <div className='mb-4 flex items-center justify-between'>
               <div className='flex items-center gap-3'>
-                <span className='flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-xl border border-primary/10'>
+                <span className='flex h-10 w-10 items-center justify-center rounded-xl border border-primary/10 bg-primary/10 text-xl'>
                   {getMealIcon(meal.mealType)}
                 </span>
                 <h5 className='text-sm font-black uppercase tracking-wider text-foreground'>
@@ -135,7 +151,7 @@ export default function ScheduleTodayCard({
                 scheduleId={schedule._id}
                 scheduleMeals={schedule.meals}
               >
-                <button className='p-2 text-muted-foreground hover:bg-muted rounded-full transition-colors'>
+                <button className='rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted'>
                   <HiOutlineDotsVertical size={18} />
                 </button>
               </AddFoodModal>
@@ -146,7 +162,7 @@ export default function ScheduleTodayCard({
                 meal.dishes.map(dish => (
                   <div
                     key={dish.dishId}
-                    className='relative group flex items-center gap-3'
+                    className='group relative flex items-center gap-3'
                   >
                     <DishCheckin
                       scheduleId={schedule._id}
@@ -156,7 +172,7 @@ export default function ScheduleTodayCard({
 
                     <Link
                       to={`/dishes/${dish.dishId}`}
-                      className='flex-1 flex items-center gap-4 p-3 rounded-2xl border border-border/50 bg-background/50 hover:bg-card hover:border-primary/30 hover:shadow-sm transition-all duration-200'
+                      className='flex flex-1 items-center gap-4 rounded-2xl border border-border/50 bg-background/50 p-3 transition-all duration-200 hover:border-primary/30 hover:bg-card hover:shadow-sm'
                     >
                       <div className='h-14 w-14 shrink-0 overflow-hidden rounded-[16px] border border-border bg-muted'>
                         {dish.image ? (
@@ -175,8 +191,8 @@ export default function ScheduleTodayCard({
                         )}
                       </div>
 
-                      <div className='flex-1 min-w-0'>
-                        <h4 className='truncate text-[14px] font-bold text-foreground leading-tight'>
+                      <div className='min-w-0 flex-1'>
+                        <h4 className='truncate text-[14px] font-bold leading-tight text-foreground'>
                           {dish.name}
                         </h4>
 
@@ -198,14 +214,23 @@ export default function ScheduleTodayCard({
                       </div>
                     </Link>
 
-                    <div className='absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition'>
+                    <div className='absolute right-2 top-2 flex items-center gap-2 opacity-0 transition group-hover:opacity-100'>
+                      <AlternativeDishButton
+                        dish={dish}
+                        mealType={meal.mealType}
+                        onOpen={selectedDish => {
+                          setSelectedDishForAlternative(selectedDish);
+                          setOpenAlternativeDishModal(true);
+                        }}
+                      />
+
                       <DeleteDishModal
                         scheduleId={schedule._id}
                         mealType={meal.mealType}
                         dishId={dish.dishId}
                       >
                         <button
-                          className='flex h-7 w-7 items-center justify-center rounded-full bg-destructive text-white shadow hover:scale-110 hover:bg-destructive/90 transition'
+                          className='flex h-7 w-7 items-center justify-center rounded-full bg-destructive text-white shadow transition hover:scale-110 hover:bg-destructive/90'
                           title='Xoá món'
                         >
                           <HiOutlineTrash size={14} />
@@ -222,19 +247,19 @@ export default function ScheduleTodayCard({
             </div>
 
             {meal.notes && meal.notes.trim() !== '' && (
-              <div className='group mt-4 relative overflow-hidden rounded-[20px] border-2 border-primary/10 bg-primary/3 px-4 py-3.5 transition-all duration-300'>
-                <div className='absolute left-0 top-0 bottom-0 w-1 bg-primary/20' />
+              <div className='group relative mt-4 overflow-hidden rounded-[20px] border-2 border-primary/10 bg-primary/3 px-4 py-3.5 transition-all duration-300'>
+                <div className='absolute bottom-0 left-0 top-0 w-1 bg-primary/20' />
 
                 <div className='flex gap-3'>
                   <div className='flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
                     <HiOutlineClipboardList size={14} />
                   </div>
 
-                  <div className='flex-1 min-w-0'>
-                    <p className='text-[10px] font-black uppercase tracking-widest text-primary/60 mb-0.5'>
+                  <div className='min-w-0 flex-1'>
+                    <p className='mb-0.5 text-[10px] font-black uppercase tracking-widest text-primary/60'>
                       Ghi chú bữa ăn
                     </p>
-                    <p className='text-[13px] font-medium text-foreground/80 leading-relaxed italic'>
+                    <p className='text-[13px] font-medium italic leading-relaxed text-foreground/80'>
                       "{meal.notes}"
                     </p>
                   </div>
@@ -245,9 +270,21 @@ export default function ScheduleTodayCard({
         ))}
       </div>
 
+      <AlternativeDishModal
+        open={openAlternativeDishModal}
+        onClose={() => {
+          setOpenAlternativeDishModal(false);
+          setSelectedDishForAlternative(null);
+        }}
+        mealType={selectedDishForAlternative?.mealType || ''}
+        scheduleId={schedule._id}
+        scheduleMeals={schedule.meals}
+        baseDish={selectedDishForAlternative}
+      />
+
       <Link
         to={`/schedules/day/${schedule._id}/nutrition`}
-        className='mt-10 w-full flex items-center justify-center gap-2 rounded-[20px] bg-primary py-4 text-[12px] font-black tracking-widest text-primary-foreground shadow-lg shadow-primary/20 hover:brightness-110 active:scale-[0.98] transition-all'
+        className='mt-10 flex w-full items-center justify-center gap-2 rounded-[20px] bg-primary py-4 text-[12px] font-black tracking-widest text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:brightness-110 active:scale-[0.98]'
       >
         PHÂN TÍCH DINH DƯỠNG
         <HiOutlineChevronRight size={16} />

@@ -49,7 +49,7 @@ export default function ScheduleNutritionPie({ schedule }) {
         </div>
       </div>
 
-      <div className='relative h-[320px] w-full rounded-[32px] p-4 dark:bg-muted/10 sm:h-[360px]'>
+      <div className='relative h-[320px] w-full rounded-[32px] p-3 dark:bg-muted/10 sm:h-[360px]'>
         <ResponsiveContainer width='100%' height='100%'>
           <PieChart>
             <Pie

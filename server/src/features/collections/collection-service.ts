@@ -78,10 +78,15 @@ export const CollectionService = {
 
     const result = await CollectionModel.paginate(filter, options);
 
-    result.docs = result.docs.map(doc => ({
-      ...((doc as any).toObject?.() ?? doc),
-      isFavorited: favoriteCollectionIds.has(String((doc as any)._id))
-    })) as any;
+    result.docs = result.docs.map(doc => {
+      const collectionDoc = doc as HydratedDocument<Collection>;
+      const normalizedDoc = collectionDoc.toObject();
+
+      return {
+        ...normalizedDoc,
+        isFavorited: favoriteCollectionIds.has(String(normalizedDoc._id))
+      };
+    });
 
     return result;
   },

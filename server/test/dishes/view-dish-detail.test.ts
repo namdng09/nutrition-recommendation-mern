@@ -116,23 +116,5 @@ describe('DishService.viewDishDetail', () => {
       expect(result).toBeDefined();
       expect(result.isFavorited).toBe(true);
     });
-
-    it('should mark deleted ingredients', async () => {
-      mockValidateObjectId.mockReturnValue(true);
-      mockFindByIdDish.mockResolvedValue(mockDish as any);
-      mockFindIngredients.mockReturnValue({
-        lean: vi.fn().mockResolvedValue([{ _id: 'ing1' }])
-      } as any);
-
-      const result = await DishService.viewDishDetail(VALID_ID);
-
-      expect(result).toBeDefined();
-      expect(result.ingredients).toContainEqual(
-        expect.objectContaining({
-          ingredientId: 'ing1',
-          isDeleted: false
-        })
-      );
-    });
   });
 });

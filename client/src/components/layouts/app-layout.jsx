@@ -1,9 +1,7 @@
-import { useTheme } from 'next-themes';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Outlet, useLocation } from 'react-router';
 
-import { Toaster } from '~/components/ui/sonner';
 import { Spinner } from '~/components/ui/spinner';
 import { ROLE } from '~/constants/role';
 import useAchievementSse from '~/hooks/useAchievementSse';
@@ -15,7 +13,6 @@ import {
 
 const AppLayout = () => {
   const { user, loading, initialized } = useSelector(state => state.auth);
-  const { theme } = useTheme();
   const dispatch = useDispatch();
   const location = useLocation();
 
@@ -55,7 +52,6 @@ const AppLayout = () => {
   return (
     <>
       <Outlet />
-      <Toaster position='top-right' theme={theme} />
     </>
   );
 };

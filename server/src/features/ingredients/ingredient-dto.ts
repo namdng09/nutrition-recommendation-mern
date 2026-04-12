@@ -9,19 +9,19 @@ import { booleanSchema, parseJSON } from '~/shared/utils/dto-parsers';
 
 const nutrientItemSchema = z.object({
   label: z.enum(Object.values(NUTRIENTS), 'Chất dinh dưỡng không hợp lệ'),
-  value: z.coerce.number().min(0),
+  value: z.coerce.number().min(0, 'Đơn vị phải lớn hơn hoặc bằng 0'),
   unit: z.enum(Object.values(UNIT), 'Đơn vị chất dinh dưỡng không hợp lệ')
 });
 
 const mineralItemSchema = z.object({
   label: z.enum(Object.values(NUTRITION_MINERAL), 'Khoáng chất không hợp lệ'),
-  value: z.coerce.number().min(0),
+  value: z.coerce.number().min(0, 'Đơn vị phải lớn hơn hoặc bằng 0'),
   unit: z.enum(Object.values(UNIT), 'Đơn vị khoáng chất không hợp lệ')
 });
 
 const vitaminItemSchema = z.object({
   label: z.enum(Object.values(NUTRITION_VITAMIN), 'Vitamin không hợp lệ'),
-  value: z.coerce.number().min(0),
+  value: z.coerce.number().min(0, 'Đơn vị phải lớn hơn hoặc bằng 0'),
   unit: z.enum(Object.values(UNIT), 'Đơn vị vitamin không hợp lệ')
 });
 
@@ -32,8 +32,8 @@ const detailNutritionSchema = z.object({
 });
 
 const unitSchema = z.object({
-  value: z.coerce.number().min(0),
-  unit: z.string().trim().min(1),
+  value: z.coerce.number().min(0, 'Đơn vị phải lớn hơn hoặc bằng 0'),
+  unit: z.string().trim().min(1, 'Đơn vị phụ không được để trống'),
   isDefault: booleanSchema
 });
 
@@ -57,8 +57,8 @@ export const createIngredientRequestSchema = z.object({
     parseJSON,
     z.object(
       {
-        amount: z.coerce.number().min(0),
-        unit: z.string().trim().min(1)
+        amount: z.coerce.number().min(0, 'Số lượng cơ bản không được âm'),
+        unit: z.string().trim().min(1, 'Đơn vị cơ bản không được để trống')
       },
       'Đơn vị cơ bản là bắt buộc'
     )

@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Món ăn riêng bị từ chối</title>
+  </head>
+  <body
+    style="
+      font-family: 'Segoe UI', Arial, sans-serif;
+      padding: 0;
+      margin: 0;
+      background-color: #f4f4f4;
+    "
+  >
+    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff">
+      <div
+        style="
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+          padding: 35px 20px;
+          text-align: center;
+        "
+      >
+        <h1
+          style="color: #ffffff; margin: 0; font-size: 26px; font-weight: bold"
+        >
+          Món Ăn Riêng Bị Từ Chối
+        </h1>
+      </div>
+
+      <div style="padding: 35px 30px">
+        <h2 style="color: #333; font-size: 20px; margin-bottom: 15px">
+          Xin chào {{name}}!
+        </h2>
+
+        <p
+          style="
+            font-size: 16px;
+            line-height: 1.7;
+            color: #555;
+            margin-bottom: 25px;
+          "
+        >
+          Rất tiếc, món ăn riêng của bạn đã bị
+          <strong style="color: #ef4444">từ chối</strong>. Vui lòng xem lý do
+          bên dưới và điều chỉnh lại trước khi gửi yêu cầu duyệt mới.
+        </p>
+
+        <div
+          style="
+            background: #fbeaea;
+            border-left: 4px solid #ef4444;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+          "
+        >
+          <p style="margin: 8px 0; font-size: 15px; color: #222">
+            <span style="display: inline-block; width: 150px; font-weight: bold"
+              >Tên món ăn:</span
+            >
+            <span>{{dishName}}</span>
+          </p>
+          <p style="margin: 8px 0; font-size: 15px; color: #222">
+            <span style="display: inline-block; width: 150px; font-weight: bold"
+              >Trạng thái:</span
+            >
+            <span style="color: #ef4444; font-weight: bold">Bị từ chối</span>
+          </p>
+          <p style="margin: 8px 0; font-size: 15px; color: #222">
+            <span style="display: inline-block; width: 150px; font-weight: bold"
+              >Lý do:</span
+            >
+            <span>{{rejectionReason}}</span>
+          </p>
+        </div>
+
+        <p style="font-size: 14px; color: #888; margin-top: 20px">
+          Hãy chỉnh sửa món ăn theo góp ý và gửi lại yêu cầu duyệt khi sẵn sàng.
+        </p>
+      </div>
+
+      <div
+        style="
+          background-color: #f8f8f8;
+          padding: 25px;
+          text-align: center;
+          border-top: 1px solid #eee;
+        "
+      >
+        <p style="font-size: 12px; color: #999; margin: 8px 0">
+          Email này được gửi tự động, vui lòng không trả lời trực tiếp.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

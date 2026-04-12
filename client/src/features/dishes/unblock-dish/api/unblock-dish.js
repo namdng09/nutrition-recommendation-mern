@@ -7,9 +7,11 @@ import { QUERY_KEYS } from '~/lib/query-keys';
 const unblockDish = async dishId => {
   const formData = new FormData();
   formData.append('dishId', dishId);
+
   const response = await apiClient.delete('/api/users/me/blocks/dishes', {
     data: formData
   });
+
   return response.data;
 };
 
@@ -20,26 +22,39 @@ export const useUnblockDish = () => {
     mutationFn: unblockDish,
 
     onMutate: async dishId => {
-      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.PROFILE });
+      await queryClient.cancelQueries({
+        queryKey: QUERY_KEYS.PROFILE
+      });
+
       const previous = queryClient.getQueryData(QUERY_KEYS.PROFILE);
+
       queryClient.setQueryData(QUERY_KEYS.PROFILE, old => {
         if (!old) return old;
+
         return {
           ...old,
-          blockDishes: (old.blockDishes || []).filter(id => id !== dishId)
+          blockDishes: (old.blockDishes || []).filter(item => {
+            const id = typeof item === 'string' ? item : item?._id;
+            return id !== dishId;
+          })
         };
       });
+
       return { previous };
     },
-    onError: (_, __, context) => {
+
+    onError: (err, _, context) => {
       if (context?.previous) {
         queryClient.setQueryData(QUERY_KEYS.PROFILE, context.previous);
       }
-      toast.error('Không thể bỏ chặn món');
+
+      toast.error(err?.response?.data?.message || 'Không thể bỏ chặn món');
     },
+
     onSuccess: res => {
       toast.success(res.message || 'Đã bỏ chặn món');
     },
+
     onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.PROFILE

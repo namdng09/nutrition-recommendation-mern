@@ -27,6 +27,7 @@ export default function IngredientsList() {
         name={name}
         onNameChange={useCallback(
           val => {
+            if (val === name) return;
             setSearchParams(prev => {
               const next = new URLSearchParams(prev);
               if (val) next.set('name', val);
@@ -35,7 +36,7 @@ export default function IngredientsList() {
               return next;
             });
           },
-          [setSearchParams]
+          [name, setSearchParams]
         )}
         totalDocs={data?.totalDocs ?? 0}
         page={data?.page ?? 1}

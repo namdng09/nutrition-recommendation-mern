@@ -8,11 +8,15 @@ const baseSignUpSchema = {
   name: yup.string().min(1, 'Tên là bắt buộc').required('Tên là bắt buộc'),
   password: yup
     .string()
-    .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
+    .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/,
+      'Mật khẩu phải gồm chữ thường, chữ hoa, số và ký tự đặc biệt'
+    )
     .required('Mật khẩu là bắt buộc'),
   confirmPassword: yup
     .string()
-    .min(6, 'Xác nhận mật khẩu phải có ít nhất 6 ký tự')
+    .min(8, 'Xác nhận mật khẩu phải có ít nhất 8 ký tự')
     .oneOf([yup.ref('password')], 'Mật khẩu không khớp')
     .required('Xác nhận mật khẩu là bắt buộc'),
   avatar: yup

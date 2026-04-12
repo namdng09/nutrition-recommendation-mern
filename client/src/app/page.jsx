@@ -31,8 +31,8 @@ const Page = () => {
       <Hero />
       <Stats />
       <NutritionistList />
-      <Features />
       <PackagesSection />
+      <Features />
     </div>
   );
 };

@@ -9,6 +9,8 @@ import apiClient from '~/lib/api-client';
 import { decodeToken } from '~/lib/auth-tokens';
 import { loadUser } from '~/store/features/auth-slice';
 
+const getOAuthSuccessKey = accessToken => `oauth_success_toast:${accessToken}`;
+
 const AuthCallbackPage = () => {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
@@ -17,8 +19,15 @@ const AuthCallbackPage = () => {
   useEffect(() => {
     const accessToken = searchParams.get('accessToken');
     if (accessToken) {
+      const successKey = getOAuthSuccessKey(accessToken);
+      const hasShownSuccess = sessionStorage.getItem(successKey);
+
       dispatch(loadUser({ accessToken, isRemember: true }));
-      toast.success('Đăng nhập thành công!');
+
+      if (!hasShownSuccess) {
+        toast.success('Đăng nhập thành công!');
+        sessionStorage.setItem(successKey, '1');
+      }
     }
   }, [dispatch, searchParams]);
 

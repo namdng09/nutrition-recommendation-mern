@@ -18,13 +18,6 @@ const PackagesSection = () => {
       </div>
 
       <PackagesGrid />
-
-      <p className='text-center mt-8 md:mt-12 text-xs sm:text-sm text-muted-foreground'>
-        Bạn có thắc mắc?{' '}
-        <span className='text-primary font-bold cursor-pointer underline underline-offset-4'>
-          Liên hệ đội ngũ chuyên gia
-        </span>
-      </p>
     </section>
   );
 };

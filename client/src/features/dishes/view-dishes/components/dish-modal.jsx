@@ -1,9 +1,16 @@
-import { HiFire, HiPlus } from 'react-icons/hi';
+import { useMemo, useState } from 'react';
+import {
+  HiAdjustmentsHorizontal,
+  HiChevronDown,
+  HiChevronUp
+} from 'react-icons/hi2';
 import { IoClose } from 'react-icons/io5';
 
 import { useUpdateScheduleMeals } from '~/features/schedule/update-schedule/api/update-schedule';
 
 import { useDishes } from '../api/view-dishes';
+import DishFilterPanel from './dish-filter-panel';
+import DishSelectionGrid from './dish-selection-grid';
 
 export default function DishModal({
   open,
@@ -12,10 +19,41 @@ export default function DishModal({
   scheduleId,
   scheduleMeals
 }) {
-  const { data } = useDishes({ limit: 1000 });
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const [appliedFilters, setAppliedFilters] = useState({
+    name: '',
+    categories: [],
+    nutritionFocus: ''
+  });
+
+  const [draftFilters, setDraftFilters] = useState({
+    name: '',
+    categories: [],
+    nutritionFocus: ''
+  });
+
+  const dishQuery = useMemo(
+    () => ({
+      limit: 1000,
+      ...(appliedFilters.name.trim()
+        ? { name: appliedFilters.name.trim() }
+        : {}),
+      ...(appliedFilters.categories.length
+        ? { categories: appliedFilters.categories.join(',') }
+        : {}),
+      ...(appliedFilters.nutritionFocus
+        ? { nutritionFocus: appliedFilters.nutritionFocus }
+        : {})
+    }),
+    [appliedFilters]
+  );
+
+  const { data } = useDishes(dishQuery);
   const dishes = data?.docs || [];
 
   const updateMealsMutation = useUpdateScheduleMeals();
+
   if (!open) return null;
 
   const buildDishPayload = dishes =>
@@ -34,6 +72,7 @@ export default function DishModal({
       }
 
       const existed = meal.dishes.find(d => (d.dishId || d._id) === dish._id);
+
       if (existed) {
         return {
           mealType: meal.mealType,
@@ -58,6 +97,42 @@ export default function DishModal({
     onClose();
   };
 
+  const handleOpenFilters = () => {
+    setDraftFilters(appliedFilters);
+    setIsFilterOpen(prev => !prev);
+  };
+
+  const handleApplyFilters = () => {
+    setAppliedFilters(draftFilters);
+    setIsFilterOpen(false);
+  };
+
+  const handleResetDraftFilters = () => {
+    setDraftFilters({
+      name: '',
+      categories: [],
+      nutritionFocus: ''
+    });
+  };
+
+  const toggleCategory = categoryValue => {
+    setDraftFilters(prev => {
+      const exists = prev.categories.includes(categoryValue);
+
+      return {
+        ...prev,
+        categories: exists
+          ? prev.categories.filter(item => item !== categoryValue)
+          : [...prev.categories, categoryValue]
+      };
+    });
+  };
+
+  const hasAppliedFilters =
+    appliedFilters.name ||
+    appliedFilters.categories.length > 0 ||
+    appliedFilters.nutritionFocus;
+
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
       <div
@@ -65,8 +140,8 @@ export default function DishModal({
         onClick={onClose}
       />
 
-      <div className='relative z-10 w-full max-w-lg rounded-[32px] bg-card border border-border shadow-2xl overflow-hidden'>
-        <div className='flex items-center justify-between p-6 border-b border-border/50 bg-muted/20'>
+      <div className='relative z-10 flex w-full max-w-4xl flex-col overflow-hidden rounded-[32px] border border-border bg-card shadow-2xl'>
+        <div className='flex items-center justify-between border-b border-border/50 bg-muted/20 p-6'>
           <div>
             <h3 className='text-xl font-black'>Thêm món ăn</h3>
             <p className='mt-0.5 text-[11px] font-bold uppercase tracking-widest text-primary'>
@@ -76,73 +151,71 @@ export default function DishModal({
 
           <button
             onClick={onClose}
-            className='flex h-9 w-9 items-center justify-center rounded-full border border-transparent hover:border-border hover:bg-background transition'
+            className='flex h-9 w-9 items-center justify-center rounded-full border border-transparent transition hover:border-border hover:bg-background'
           >
             <IoClose size={20} />
           </button>
         </div>
 
-        <div className='max-h-[500px] overflow-y-auto p-4 space-y-3 custom-scrollbar'>
-          {dishes.map(dish => {
-            const calories =
-              dish.nutrition?.nutrients?.find(n => n.label === 'Năng lượng')
-                ?.value ?? 0;
-            const totalTime =
-              (dish.preparationTime ?? 0) + (dish.cookTime ?? 0);
+        <div className='flex items-center gap-3 px-4 py-4'>
+          <button
+            type='button'
+            onClick={handleOpenFilters}
+            className='inline-flex h-10 items-center gap-2 rounded-2xl border border-border bg-background px-4 text-sm font-bold text-foreground transition hover:bg-accent'
+          >
+            <HiAdjustmentsHorizontal size={18} />
+            Bộ lọc
+            {isFilterOpen ? (
+              <HiChevronUp size={16} />
+            ) : (
+              <HiChevronDown size={16} />
+            )}
+          </button>
 
-            return (
-              <div
-                key={dish._id}
-                className='group flex items-center gap-4 rounded-2xl border border-border/60 bg-background/40 p-3 transition-all
-                           hover:border-primary/40 hover:bg-card hover:shadow-md'
-              >
-                <div className='h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-border'>
-                  <img
-                    src={dish.image}
-                    alt={dish.name}
-                    className='h-full w-full object-cover transition-transform duration-500 group-hover:scale-110'
-                  />
-                </div>
-
-                <div className='flex-1 min-w-0'>
-                  <div className='mb-1 flex flex-wrap gap-1'>
-                    {dish.categories?.map((cat, idx) => (
-                      <span
-                        key={idx}
-                        className='rounded bg-muted px-1.5 py-0.5 text-[9px] font-black uppercase tracking-tighter text-muted-foreground/70'
-                      >
-                        {cat}
-                      </span>
-                    ))}
-                  </div>
-
-                  <h4 className='truncate text-sm font-bold text-foreground'>
-                    {dish.name}
-                  </h4>
-
-                  <div className='mt-1.5 flex items-center gap-3 text-[11px]'>
-                    <span className='flex items-center gap-1 font-black text-destructive'>
-                      <HiFire size={14} />
-                      {calories} kcal
-                    </span>
-                    <span className='h-1 w-1 rounded-full bg-border' />
-                    <span className='text-muted-foreground'>
-                      {totalTime} phút
-                    </span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => handleAddDish(dish)}
-                  className='flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground
-                             shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95'
-                >
-                  <HiPlus size={20} />
-                </button>
-              </div>
-            );
-          })}
+          <span className='text-sm font-medium text-primary/70'>
+            {dishes.length} món ăn
+          </span>
         </div>
+
+        <DishFilterPanel
+          isFilterOpen={isFilterOpen}
+          draftFilters={draftFilters}
+          setDraftFilters={setDraftFilters}
+          toggleCategory={toggleCategory}
+          handleResetDraftFilters={handleResetDraftFilters}
+          handleApplyFilters={handleApplyFilters}
+        />
+
+        {hasAppliedFilters ? (
+          <div className='flex flex-wrap gap-2 border-b border-border/50 bg-background/60 px-4 py-3'>
+            {appliedFilters.name ? (
+              <span className='rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold text-primary'>
+                Tên: {appliedFilters.name}
+              </span>
+            ) : null}
+
+            {appliedFilters.categories.map(category => (
+              <span
+                key={category}
+                className='rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold text-primary'
+              >
+                Danh mục: {category}
+              </span>
+            ))}
+
+            {appliedFilters.nutritionFocus ? (
+              <span className='rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold text-primary'>
+                Dinh dưỡng: {appliedFilters.nutritionFocus}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
+
+        <DishSelectionGrid
+          dishes={dishes}
+          isFilterOpen={isFilterOpen}
+          handleAddDish={handleAddDish}
+        />
 
         <div className='border-t border-border/50 bg-muted/10 p-4 text-center'>
           <p className='text-[10px] italic font-medium text-muted-foreground'>
