@@ -23,6 +23,15 @@ export default function DishesList() {
 
   const name = searchParams.get('name') ?? '';
   const ingredient = searchParams.get('ingredient') ?? '';
+  const categories = searchParams.get('categories') ?? '';
+  const nutritionFocus = searchParams.get('nutritionFocus') ?? '';
+  const tags = searchParams.get('tags') ?? '';
+  const minServings = searchParams.get('servings[gte]') ?? '';
+  const maxServings = searchParams.get('servings[lte]') ?? '';
+  const maxPreparationTime = searchParams.get('preparationTime[lte]') ?? '';
+  const maxCookTime = searchParams.get('cookTime[lte]') ?? '';
+  const favoritesOnly = searchParams.get('favoritesOnly') === 'true';
+  const includeBlocked = searchParams.get('includeBlocked') === 'true';
   const page = Number(searchParams.get('page') ?? 1);
 
   const params = useMemo(() => {
@@ -33,9 +42,32 @@ export default function DishesList() {
 
     if (name) nextParams.name = name;
     if (ingredient) nextParams['ingredients.name'] = ingredient;
+    if (categories) nextParams.categories = categories;
+    if (nutritionFocus) nextParams.nutritionFocus = nutritionFocus;
+    if (tags) nextParams.tags = tags;
+    if (minServings) nextParams['servings[gte]'] = Number(minServings);
+    if (maxServings) nextParams['servings[lte]'] = Number(maxServings);
+    if (maxPreparationTime)
+      nextParams['preparationTime[lte]'] = Number(maxPreparationTime);
+    if (maxCookTime) nextParams['cookTime[lte]'] = Number(maxCookTime);
+    if (favoritesOnly) nextParams.favoritesOnly = true;
+    if (includeBlocked) nextParams.includeBlocked = true;
 
     return nextParams;
-  }, [ingredient, name, page]);
+  }, [
+    categories,
+    favoritesOnly,
+    includeBlocked,
+    ingredient,
+    maxCookTime,
+    maxPreparationTime,
+    maxServings,
+    minServings,
+    name,
+    nutritionFocus,
+    page,
+    tags
+  ]);
 
   const { data } = useDishes(params);
   const dishes = data?.docs || [];

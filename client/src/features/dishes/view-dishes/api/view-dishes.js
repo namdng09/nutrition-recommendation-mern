@@ -5,7 +5,11 @@ import { buildQueryParams } from '~/lib/build-query-params';
 import { QUERY_KEYS } from '~/lib/query-keys';
 
 const fetchDishes = async params => {
-  const searchParams = buildQueryParams(params, ['name', 'ingredients.name']);
+  const searchParams = buildQueryParams(params, [
+    'name',
+    'ingredients.name',
+    'tags'
+  ]);
   const response = await apiClient.get(
     `/api/dishes?${searchParams.toString()}`
   );

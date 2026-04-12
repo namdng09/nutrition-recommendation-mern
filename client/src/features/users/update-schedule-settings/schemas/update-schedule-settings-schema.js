@@ -8,11 +8,14 @@ import { MEAL_SIZE } from '~/constants/meal-size';
 import { MEAL_TYPE } from '~/constants/meal-type';
 
 const getEnumValues = obj => Object.values(obj);
+const scheduleMealTypes = getEnumValues(MEAL_TYPE).filter(
+  mealType => mealType !== MEAL_TYPE.ALL
+);
 
 const mealSettingSchema = yup.object({
   name: yup
     .string()
-    .oneOf(getEnumValues(MEAL_TYPE), 'Loại bữa ăn không hợp lệ')
+    .oneOf(scheduleMealTypes, 'Loại bữa ăn không hợp lệ')
     .required('Loại bữa ăn là bắt buộc'),
   dishCategories: yup
     .array()
@@ -46,5 +49,18 @@ export const updateScheduleSettingsSchema = yup.object({
     .array()
     .of(mealSettingSchema)
     .min(1, 'Phải có ít nhất một bữa ăn')
+    .max(10, 'Chỉ được có tối đa 10 bữa ăn')
     .required('Cài đặt bữa ăn là bắt buộc')
+    .test(
+      'unique-meal-types',
+      'Mỗi loại bữa ăn chỉ nên xuất hiện một lần',
+      mealSettings => {
+        if (!mealSettings || mealSettings.length === 0) {
+          return true;
+        }
+
+        const mealTypeCount = new Set(mealSettings.map(item => item.name)).size;
+        return mealTypeCount === mealSettings.length;
+      }
+    )
 });
