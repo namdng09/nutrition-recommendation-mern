@@ -1,6 +1,12 @@
-import React, { useState } from 'react';
-import { FaChevronRight, FaFireAlt, FaLockOpen, FaUser } from 'react-icons/fa';
-import { Link } from 'react-router';
+import React, { useCallback, useMemo } from 'react';
+import {
+  FaChevronRight,
+  FaFireAlt,
+  FaLock,
+  FaLockOpen,
+  FaUser
+} from 'react-icons/fa';
+import { Link, useSearchParams } from 'react-router';
 
 import StatBadge from '~/features/dishes/view-dishes/components/dish-stat-badge';
 
