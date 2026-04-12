@@ -3,11 +3,14 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { IngredientService } from '~/features/ingredients/ingredient-service';
 import { INGREDIENT_CATEGORY } from '~/shared/constants/ingredient-category';
 import { UNIT } from '~/shared/constants/unit';
-import { IngredientModel } from '~/shared/database/models';
+import { IngredientModel, UserModel } from '~/shared/database/models';
 import { validateObjectId } from '~/shared/utils';
 
 vi.mock('~/shared/database/models', () => ({
   IngredientModel: {
+    findById: vi.fn()
+  },
+  UserModel: {
     findById: vi.fn()
   }
 }));
@@ -21,6 +24,7 @@ vi.mock('~/shared/utils', async importOriginal => {
 });
 
 const mockFindById = vi.mocked(IngredientModel.findById);
+const mockFindByIdUser = vi.mocked(UserModel.findById);
 const mockValidateObjectId = vi.mocked(validateObjectId);
 
 const VALID_ID = 'abc123';
@@ -66,7 +70,7 @@ describe('IngredientService.viewIngredientDetail', () => {
       });
     });
 
-    it('should return ingredient detail successfully', async () => {
+    it('should return ingredient detail successfully without userId', async () => {
       mockValidateObjectId.mockReturnValue(true);
       mockFindById.mockResolvedValue(mockIngredient as any);
 
@@ -81,6 +85,26 @@ describe('IngredientService.viewIngredientDetail', () => {
       expect(result.baseUnit).toHaveProperty('unit', UNIT.GRAM);
       expect(result.nutrition).toBeDefined();
       expect(result.isActive).toBe(true);
+      expect(result.isFavorited).toBe(false);
+    });
+
+    it('should return ingredient detail with favorite status when userId provided', async () => {
+      const userId = 'user123';
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindById.mockResolvedValue(mockIngredient as any);
+      mockFindByIdUser.mockReturnValue({
+        lean: vi.fn().mockResolvedValue({
+          favoriteIngredients: [VALID_ID]
+        })
+      } as any);
+
+      const result = await IngredientService.viewIngredientDetail(
+        VALID_ID,
+        userId
+      );
+
+      expect(result).toBeDefined();
+      expect(result.isFavorited).toBe(true);
     });
   });
 });

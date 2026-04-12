@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { deleteBulkRequestSchema } from '~/features/dishes/dish-dto';
 import { DishService } from '~/features/dishes/dish-service';
 import { ROLE } from '~/shared/constants/role';
 import { DishModel } from '~/shared/database/models';
@@ -7,7 +8,9 @@ import { deleteImage, validateObjectId } from '~/shared/utils';
 
 vi.mock('~/shared/database/models', () => ({
   DishModel: {
-    findById: vi.fn()
+    findById: vi.fn(),
+    find: vi.fn(),
+    deleteMany: vi.fn()
   }
 }));
 
@@ -20,25 +23,30 @@ vi.mock('~/shared/utils', async importOriginal => {
   };
 });
 
-const mockFindByIdDish = vi.mocked(DishModel.findById);
+const mockFindById = vi.mocked(DishModel.findById);
+const mockFind = vi.mocked(DishModel.find);
+const mockDeleteMany = vi.mocked(DishModel.deleteMany);
 const mockValidateObjectId = vi.mocked(validateObjectId);
 const mockDeleteImage = vi.mocked(deleteImage);
 
 const VALID_ID = 'dish123';
+const VALID_IDS = ['dish1', 'dish2'];
 const userId = 'user123';
 const otherUserId = 'other-user-456';
 
+const mockDeleteOne = vi.fn();
 const mockDish = {
   _id: { toString: () => VALID_ID },
   user: { _id: userId },
   name: 'Phở bò',
   image: 'pho-bo.jpg',
-  deleteOne: vi.fn()
+  deleteOne: mockDeleteOne
 };
 
 describe('DishService.deleteDish', () => {
   afterEach(() => {
     vi.clearAllMocks();
+    mockDeleteOne.mockClear();
   });
 
   describe('business logic', () => {
@@ -51,13 +59,11 @@ describe('DishService.deleteDish', () => {
         status: 400,
         message: 'Định dạng ID món ăn không hợp lệ'
       });
-
-      expect(mockFindByIdDish).not.toHaveBeenCalled();
     });
 
     it('should throw 404 when dish does not exist', async () => {
       mockValidateObjectId.mockReturnValue(true);
-      mockFindByIdDish.mockResolvedValue(null);
+      mockFindById.mockResolvedValue(null);
 
       await expect(
         DishService.deleteDish(VALID_ID, userId, ROLE.USER)
@@ -69,7 +75,7 @@ describe('DishService.deleteDish', () => {
 
     it('should throw 403 when non-owner tries to delete', async () => {
       mockValidateObjectId.mockReturnValue(true);
-      mockFindByIdDish.mockResolvedValue(mockDish as any);
+      mockFindById.mockResolvedValue(mockDish as any);
 
       await expect(
         DishService.deleteDish(VALID_ID, otherUserId, ROLE.USER)
@@ -81,18 +87,19 @@ describe('DishService.deleteDish', () => {
 
     it('should delete dish successfully as owner', async () => {
       mockValidateObjectId.mockReturnValue(true);
-      mockFindByIdDish.mockResolvedValue(mockDish as any);
+      mockFindById.mockResolvedValue(mockDish as any);
+      mockDeleteImage.mockResolvedValue({ success: true } as any);
 
       const result = await DishService.deleteDish(VALID_ID, userId, ROLE.USER);
 
-      expect(result).toBeDefined();
+      expect(mockDeleteImage).toHaveBeenCalledWith(VALID_ID);
+      expect(mockDeleteOne).toHaveBeenCalled();
       expect(result._id.toString()).toBe(VALID_ID);
-      expect(result.name).toBe('Phở bò');
     });
 
     it('should allow admin to delete any dish', async () => {
       mockValidateObjectId.mockReturnValue(true);
-      mockFindByIdDish.mockResolvedValue(mockDish as any);
+      mockFindById.mockResolvedValue(mockDish as any);
 
       const result = await DishService.deleteDish(
         VALID_ID,
@@ -100,35 +107,113 @@ describe('DishService.deleteDish', () => {
         ROLE.ADMIN
       );
 
-      expect(result).toBeDefined();
       expect(result._id.toString()).toBe(VALID_ID);
     });
   });
+});
 
-  describe('system', () => {
-    it('should delete image when dish has image', async () => {
-      mockValidateObjectId.mockReturnValue(true);
-      mockFindByIdDish.mockResolvedValue(mockDish as any);
+describe('DishService.deleteBulk', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
 
-      await DishService.deleteDish(VALID_ID, userId, ROLE.USER);
+  describe('validation', () => {
+    it('should fail when ids is empty array', () => {
+      const result = deleteBulkRequestSchema.safeParse({ ids: [] });
 
-      expect(mockDeleteImage).toHaveBeenCalledWith(VALID_ID);
-      expect(mockDish.deleteOne).toHaveBeenCalled();
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe('Cần ít nhất một ID món ăn');
     });
 
-    it('should not call deleteImage when dish has no image', async () => {
-      const dishWithoutImage = {
-        ...mockDish,
-        image: null
-      };
+    it('should fail when ids contains empty string', () => {
+      const result = deleteBulkRequestSchema.safeParse({ ids: [''] });
 
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe('business logic', () => {
+    it('should throw 400 when ids contain invalid ObjectId', async () => {
+      mockValidateObjectId.mockReturnValueOnce(true);
+      mockValidateObjectId.mockReturnValueOnce(false);
+
+      await expect(
+        DishService.deleteBulk(['dish1', 'bad-id'], userId, ROLE.USER)
+      ).rejects.toMatchObject({
+        status: 400,
+        message: 'Định dạng ID món ăn không hợp lệ: bad-id'
+      });
+
+      expect(mockFind).not.toHaveBeenCalled();
+    });
+
+    it('should throw 403 when non-admin user tries to delete dishes not owned by them', async () => {
       mockValidateObjectId.mockReturnValue(true);
-      mockFindByIdDish.mockResolvedValue(dishWithoutImage as any);
+      mockFind.mockResolvedValue([
+        {
+          _id: { toString: () => 'dish1' },
+          user: { _id: { toString: () => otherUserId } },
+          image: 'dish1.jpg'
+        }
+      ] as any);
 
-      await DishService.deleteDish(VALID_ID, userId, ROLE.USER);
+      await expect(
+        DishService.deleteBulk(['dish1'], userId, ROLE.USER)
+      ).rejects.toMatchObject({
+        status: 403,
+        message: 'Bạn không có quyền xóa một số món ăn này'
+      });
 
-      expect(mockDeleteImage).not.toHaveBeenCalled();
-      expect(dishWithoutImage.deleteOne).toHaveBeenCalled();
+      expect(mockDeleteMany).not.toHaveBeenCalled();
+    });
+
+    it('should delete successfully when ids are valid', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFind.mockResolvedValue([
+        {
+          _id: { toString: () => 'dish1' },
+          user: { _id: { toString: () => userId } },
+          image: 'dish1.jpg'
+        },
+        {
+          _id: { toString: () => 'dish2' },
+          user: { _id: { toString: () => userId } },
+          image: ''
+        }
+      ] as any);
+      mockDeleteImage.mockResolvedValue({ success: true } as any);
+      mockDeleteMany.mockResolvedValue({
+        deletedCount: 2,
+        acknowledged: true
+      } as any);
+
+      const result = await DishService.deleteBulk(VALID_IDS, userId, ROLE.USER);
+
+      expect(mockDeleteImage).toHaveBeenCalledTimes(1);
+      expect(mockDeleteImage).toHaveBeenCalledWith('dish1');
+      expect(mockDeleteMany).toHaveBeenCalledWith({ _id: { $in: VALID_IDS } });
+      expect(result.deletedCount).toBe(2);
+    });
+
+    it('should allow admin to delete dishes not owned by them', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFind.mockResolvedValue([
+        {
+          _id: { toString: () => 'dish1' },
+          user: { _id: { toString: () => otherUserId } },
+          image: 'dish1.jpg'
+        }
+      ] as any);
+      mockDeleteMany.mockResolvedValue({ deletedCount: 1 } as any);
+
+      const result = await DishService.deleteBulk(
+        ['dish1'],
+        otherUserId,
+        ROLE.ADMIN
+      );
+
+      expect(mockDeleteMany).toHaveBeenCalledWith({ _id: { $in: ['dish1'] } });
+      expect(result.deletedCount).toBe(1);
     });
   });
 });

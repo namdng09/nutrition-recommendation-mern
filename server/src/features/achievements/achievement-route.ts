@@ -8,9 +8,6 @@ import { AchievementController } from './achievement-controller';
 
 const router = Router();
 
-// Public — anyone can browse achievement definitions
-router.get('/', asyncHandler(AchievementController.getAllDefinitions));
-
 router.get('/sse', authenticateSse, AchievementController.subscribe);
 
 router.get(

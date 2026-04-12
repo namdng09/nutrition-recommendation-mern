@@ -69,10 +69,15 @@ export const IngredientService = {
 
     const result = await IngredientModel.paginate(filter, options);
 
-    result.docs = result.docs.map(doc => ({
-      ...((doc as any).toObject?.() ?? doc),
-      isFavorited: favoriteIngredientIds.has(String((doc as any)._id))
-    })) as any;
+    result.docs = result.docs.map(doc => {
+      const ingredientDoc = doc as HydratedDocument<Ingredient>;
+      const normalizedDoc = ingredientDoc.toObject();
+
+      return {
+        ...normalizedDoc,
+        isFavorited: favoriteIngredientIds.has(String(normalizedDoc._id))
+      };
+    });
 
     return result;
   },

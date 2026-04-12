@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { updateDishRequestSchema } from '~/features/dishes/dish-dto';
+import { updatePrivateDishRequestSchema } from '~/features/dishes/dish-dto';
 import { DishService } from '~/features/dishes/dish-service';
 import { DishModel, IngredientModel } from '~/shared/database/models';
 import { deleteImage, uploadImage, validateObjectId } from '~/shared/utils';
@@ -43,18 +43,18 @@ const mockDeleteImage = vi.mocked(deleteImage);
 const VALID_ID = 'dish123';
 const userId = 'user123';
 const validData = {
-  name: 'Phở bò đặc biệt',
-  description: 'Phở bò với topping đầy đủ'
+  name: 'Phở bò private đặc biệt',
+  description: 'Phở bò private với topping đầy đủ'
 };
 
-describe('DishService.updateDish', () => {
+describe('DishService.updatePrivateDish', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
   describe('validation', () => {
     it('should fail when name is too short', () => {
-      const result = updateDishRequestSchema.safeParse({
+      const result = updatePrivateDishRequestSchema.safeParse({
         ...validData,
         name: 'A'
       });
@@ -66,7 +66,7 @@ describe('DishService.updateDish', () => {
     });
 
     it('should fail when category is invalid', () => {
-      const result = updateDishRequestSchema.safeParse({
+      const result = updatePrivateDishRequestSchema.safeParse({
         ...validData,
         categories: ['invalid-category']
       });
@@ -83,7 +83,7 @@ describe('DishService.updateDish', () => {
       mockValidateObjectId.mockReturnValue(false);
 
       await expect(
-        DishService.updateDish('invalid-id', userId, validData as any)
+        DishService.updatePrivateDish('invalid-id', userId, validData as any)
       ).rejects.toMatchObject({
         status: 400,
         message: 'Định dạng ID món ăn không hợp lệ'
@@ -95,22 +95,23 @@ describe('DishService.updateDish', () => {
       mockFindById.mockResolvedValue(null);
 
       await expect(
-        DishService.updateDish(VALID_ID, userId, validData as any)
+        DishService.updatePrivateDish(VALID_ID, userId, validData as any)
       ).rejects.toMatchObject({
         status: 404,
         message: 'Không tìm thấy món ăn'
       });
     });
 
-    it('should throw 403 when user is not the owner', async () => {
+    it('should throw 403 when dish is public', async () => {
       mockValidateObjectId.mockReturnValue(true);
       mockFindById.mockResolvedValue({
         _id: { toString: () => VALID_ID },
-        user: { _id: 'other-user' }
+        isPublic: true,
+        user: { _id: { toString: () => userId } }
       } as any);
 
       await expect(
-        DishService.updateDish(VALID_ID, userId, validData as any)
+        DishService.updatePrivateDish(VALID_ID, userId, validData as any)
       ).rejects.toMatchObject({
         status: 403,
         message: 'Bạn không có quyền cập nhật món ăn này'
@@ -121,12 +122,13 @@ describe('DishService.updateDish', () => {
       mockValidateObjectId.mockReturnValue(true);
       mockFindById.mockResolvedValue({
         _id: { toString: () => VALID_ID },
+        isPublic: false,
         user: { _id: { toString: () => userId } }
       } as any);
       mockFindOne.mockResolvedValue({ name: validData.name } as any);
 
       await expect(
-        DishService.updateDish(VALID_ID, userId, {
+        DishService.updatePrivateDish(VALID_ID, userId, {
           name: validData.name
         } as any)
       ).rejects.toMatchObject({
@@ -139,6 +141,7 @@ describe('DishService.updateDish', () => {
       mockValidateObjectId.mockReturnValue(true);
       mockFindById.mockResolvedValue({
         _id: { toString: () => VALID_ID },
+        isPublic: false,
         user: { _id: { toString: () => userId } }
       } as any);
       mockFindOne.mockResolvedValue(null);
@@ -155,7 +158,7 @@ describe('DishService.updateDish', () => {
       };
 
       await expect(
-        DishService.updateDish(
+        DishService.updatePrivateDish(
           VALID_ID,
           userId,
           updateDataWithIngredient as any
@@ -166,9 +169,10 @@ describe('DishService.updateDish', () => {
       });
     });
 
-    it('should update dish successfully without image', async () => {
+    it('should update private dish successfully without image', async () => {
       const mockDish = {
         _id: { toString: () => VALID_ID },
+        isPublic: false,
         user: { _id: { toString: () => userId } },
         ...validData
       };
@@ -176,12 +180,13 @@ describe('DishService.updateDish', () => {
       mockValidateObjectId.mockReturnValue(true);
       mockFindById.mockResolvedValue({
         _id: { toString: () => VALID_ID },
+        isPublic: false,
         user: { _id: { toString: () => userId } }
       } as any);
       mockFindOne.mockResolvedValue(null);
       mockFindByIdAndUpdate.mockResolvedValue(mockDish as any);
 
-      const result = await DishService.updateDish(
+      const result = await DishService.updatePrivateDish(
         VALID_ID,
         userId,
         validData as any
@@ -191,10 +196,11 @@ describe('DishService.updateDish', () => {
       expect(mockUploadImage).not.toHaveBeenCalled();
     });
 
-    it('should update dish successfully with image', async () => {
+    it('should update private dish successfully with image', async () => {
       const mockSave = vi.fn();
       const mockDish = {
         _id: { toString: () => VALID_ID },
+        isPublic: false,
         user: { _id: { toString: () => userId } },
         ...validData,
         image: '',
@@ -204,6 +210,7 @@ describe('DishService.updateDish', () => {
       mockValidateObjectId.mockReturnValue(true);
       mockFindById.mockResolvedValue({
         _id: { toString: () => VALID_ID },
+        isPublic: false,
         user: { _id: { toString: () => userId } }
       } as any);
       mockFindOne.mockResolvedValue(null);
@@ -212,7 +219,7 @@ describe('DishService.updateDish', () => {
         success: true,
         data: {
           secure_url:
-            'https://res.cloudinary.com/test/image/upload/v1234567890/test.jpg'
+            'https://res.cloudinary.com/test/image/upload/v1234567890/test-private-update.jpg'
         }
       } as any);
 
@@ -220,7 +227,7 @@ describe('DishService.updateDish', () => {
         buffer: Buffer.from('fake-image-data')
       } as Express.Multer.File;
 
-      const result = await DishService.updateDish(
+      const result = await DishService.updatePrivateDish(
         VALID_ID,
         userId,
         validData as any,
@@ -230,7 +237,7 @@ describe('DishService.updateDish', () => {
       expect(mockDeleteImage).toHaveBeenCalledWith(VALID_ID);
       expect(mockUploadImage).toHaveBeenCalledWith(fakeImage.buffer, VALID_ID);
       expect(mockDish.image).toBe(
-        'https://res.cloudinary.com/test/image/upload/v1234567890/test.jpg'
+        'https://res.cloudinary.com/test/image/upload/v1234567890/test-private-update.jpg'
       );
       expect(mockSave).toHaveBeenCalled();
       expect(result).toEqual(mockDish);
