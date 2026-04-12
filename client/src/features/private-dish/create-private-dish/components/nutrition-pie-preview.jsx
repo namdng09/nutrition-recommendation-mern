@@ -152,42 +152,48 @@ export default function NutritionPiePreview({ nutrition }) {
       </div>
 
       <div className='mt-7 grid grid-cols-3 gap-4'>
-        <div className='rounded-[24px] border border-orange-500/20 bg-orange-500/10 p-5 text-center'>
+        <div className='min-w-0 rounded-[24px] border border-orange-500/20 bg-orange-500/10 p-5 text-center'>
           <div className='mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-500/15 text-orange-600 dark:text-orange-300'>
             <FaFireAlt size={17} />
           </div>
           <p className='text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground'>
             Calo
           </p>
-          <p className='mt-1 text-2xl font-black tracking-tight text-foreground'>
+          <p className='mt-1 break-all px-1 text-xl font-black leading-tight tracking-tight text-foreground'>
             {nutrients.calories?.value ?? 0}
-            <span className='ml-1 text-[10px] text-muted-foreground'>kcal</span>
+            <span className='mt-1 block text-[10px] font-medium text-muted-foreground'>
+              kcal
+            </span>
           </p>
         </div>
 
-        <div className='rounded-[24px] border border-emerald-500/20 bg-emerald-500/10 p-5 text-center'>
+        <div className='min-w-0 rounded-[24px] border border-emerald-500/20 bg-emerald-500/10 p-5 text-center'>
           <div className='mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-300'>
             <FaDrumstickBite size={17} />
           </div>
           <p className='text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground'>
             Đạm
           </p>
-          <p className='mt-1 text-2xl font-black tracking-tight text-foreground'>
+          <p className='mt-1 break-all px-1 text-xl font-black leading-tight tracking-tight text-foreground'>
             {formatGram(nutrients.protein?.value)}
-            <span className='ml-1 text-[10px] text-muted-foreground'>g</span>
+            <span className='mt-1 block text-[10px] font-medium text-muted-foreground'>
+              g
+            </span>
           </p>
         </div>
 
-        <div className='rounded-[24px] border border-sky-500/20 bg-sky-500/10 p-5 text-center'>
+        <div className='min-w-0 rounded-[24px] border border-sky-500/20 bg-sky-500/10 p-5 text-center'>
           <div className='mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-500/15 text-sky-600 dark:text-sky-300'>
             <FaEllipsisH size={17} />
           </div>
           <p className='text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground'>
             Khác
           </p>
-          <p className='mt-1 text-2xl font-black tracking-tight text-foreground'>
+          <p className='mt-1 break-all px-1 text-xl font-black leading-tight tracking-tight text-foreground'>
             {getOtherNutrition(nutrients)}
-            <span className='ml-1 text-[10px] text-muted-foreground'>g</span>
+            <span className='mt-1 block text-[10px] font-medium text-muted-foreground'>
+              g
+            </span>
           </p>
         </div>
       </div>
