@@ -2,12 +2,10 @@ import React from 'react';
 import {
   FaArrowLeft,
   FaCarrot,
-  FaCheckCircle,
   FaClock,
   FaEdit,
   FaFireAlt,
   FaListOl,
-  FaPaperPlane,
   FaTrash,
   FaUser,
   FaUtensils
@@ -17,7 +15,7 @@ import { Link, useNavigate, useParams } from 'react-router';
 import DishFavoriteDetailButton from '~/features/dishes/add-dish-to-favorite/components/dish-favorite-detail-button';
 import BlockToggleDishButton from '~/features/dishes/block-dish/components/block-toggle-dish-button';
 import DishStat from '~/features/dishes/view-dishes-detail/components/dish-stat';
-import { useSubmitReviewRequest } from '~/features/review/submit-review-request/api/submit-review-request';
+import SubmitReviewButton from '~/features/review/submit-review-request/components/submit-review-button';
 
 import { useDeletePrivateDish } from '../../delete-private-dish/api/delete-private-dish';
 import { usePrivateDishDetail } from '../api/view-private-dish-detail';
@@ -34,9 +32,6 @@ export default function PrivateDishDetail() {
       }
     });
 
-  const { mutate: submitReviewRequest, isPending: isSubmittingReview } =
-    useSubmitReviewRequest();
-
   if (!dish) {
     return <div className='p-20 text-center'>Đang tải món ăn...</div>;
   }
@@ -47,15 +42,9 @@ export default function PrivateDishDetail() {
   const totalTime = (dish.preparationTime ?? 0) + (dish.cookTime ?? 0);
 
   const reviewStatus = dish?.evaluation?.status || '';
-  const isReviewSubmitted = reviewStatus === 'Đang chờ đánh giá';
 
   const handleDeleteDish = () => {
     deletePrivateDish({ id: dish._id });
-  };
-
-  const handleSubmitReview = () => {
-    if (isReviewSubmitted) return;
-    submitReviewRequest({ dishId: dish._id });
   };
 
   return (
@@ -80,30 +69,7 @@ export default function PrivateDishDetail() {
           <div className='hidden h-8 w-px bg-border sm:block' />
 
           <div className='flex flex-wrap items-center gap-2'>
-            <button
-              type='button'
-              onClick={handleSubmitReview}
-              disabled={isSubmittingReview || isReviewSubmitted}
-              className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold text-white shadow-md transition disabled:cursor-not-allowed disabled:opacity-60 ${
-                isReviewSubmitted
-                  ? 'bg-emerald-600'
-                  : 'bg-sky-600 hover:bg-sky-700'
-              }`}
-            >
-              {isReviewSubmitted ? (
-                <>
-                  <FaCheckCircle className='text-xs' />
-                  Đã gửi review
-                </>
-              ) : (
-                <>
-                  <FaPaperPlane className='text-xs' />
-                  {isSubmittingReview
-                    ? 'Đang gửi review...'
-                    : 'Gửi chuyên gia review'}
-                </>
-              )}
-            </button>
+            <SubmitReviewButton dishId={dish._id} reviewStatus={reviewStatus} />
 
             <Link
               to={`/private-dishes/${dish._id}/edit`}
