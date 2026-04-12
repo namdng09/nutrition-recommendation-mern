@@ -7,10 +7,12 @@ export default function SubmitReviewButton({ dishId, reviewStatus }) {
   const { mutate: submitReviewRequest, isPending: isSubmittingReview } =
     useSubmitReviewRequest();
 
-  const isReviewSubmitted = reviewStatus === 'Đang chờ đánh giá';
+  const isPendingReview = reviewStatus === 'Đang chờ đánh giá';
+  const isReviewed = reviewStatus === 'Đã được đánh giá';
+  const isDisabled = isSubmittingReview || isPendingReview || isReviewed;
 
   const handleSubmitReview = () => {
-    if (isReviewSubmitted) return;
+    if (isDisabled) return;
     submitReviewRequest({ dishId });
   };
 
@@ -18,12 +20,21 @@ export default function SubmitReviewButton({ dishId, reviewStatus }) {
     <button
       type='button'
       onClick={handleSubmitReview}
-      disabled={isSubmittingReview || isReviewSubmitted}
+      disabled={isDisabled}
       className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold text-white shadow-md transition disabled:cursor-not-allowed disabled:opacity-60 ${
-        isReviewSubmitted ? 'bg-emerald-600' : 'bg-sky-600 hover:bg-sky-700'
+        isReviewed
+          ? 'bg-emerald-600'
+          : isPendingReview
+            ? 'bg-amber-500'
+            : 'bg-sky-600 hover:bg-sky-700'
       }`}
     >
-      {isReviewSubmitted ? (
+      {isReviewed ? (
+        <>
+          <FaCheckCircle className='text-xs' />
+          Đã được đánh giá
+        </>
+      ) : isPendingReview ? (
         <>
           <FaCheckCircle className='text-xs' />
           Đã gửi review
