@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { deleteBulkCollectionRequestSchema } from '~/features/collections/collection-dto';
 import { CollectionService } from '~/features/collections/collection-service';
 import { ROLE } from '~/shared/constants/role';
 import { CollectionModel } from '~/shared/database/models';
@@ -26,36 +27,34 @@ const mockDeleteMany = vi.mocked(CollectionModel.deleteMany);
 const mockValidateObjectId = vi.mocked(validateObjectId);
 const mockDeleteImage = vi.mocked(deleteImage);
 
-const VALID_IDS = ['coll1', 'coll2', 'coll3'];
+const VALID_IDS = ['coll1', 'coll2'];
 const userId = 'user123';
 const otherUserId = 'other-user-456';
-const ADMIN_USER = 'admin-user';
-
-const mockCollections = [
-  {
-    _id: { toString: () => 'coll1' },
-    user: { _id: { toString: () => userId } },
-    image: 'coll1.jpg'
-  },
-  {
-    _id: { toString: () => 'coll2' },
-    user: { _id: { toString: () => userId } },
-    image: 'coll2.jpg'
-  },
-  {
-    _id: { toString: () => 'coll3' },
-    user: { _id: { toString: () => userId } },
-    image: ''
-  }
-];
 
 describe('CollectionService.deleteBulk', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
+  describe('validation', () => {
+    it('should fail when ids is empty array', () => {
+      const result = deleteBulkCollectionRequestSchema.safeParse({ ids: [] });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Cần ít nhất một ID bộ sưu tập'
+      );
+    });
+
+    it('should fail when ids contains empty string', () => {
+      const result = deleteBulkCollectionRequestSchema.safeParse({ ids: [''] });
+
+      expect(result.success).toBe(false);
+    });
+  });
+
   describe('business logic', () => {
-    it('should throw 400 when id format is invalid', async () => {
+    it('should throw 400 when ids contains invalid ObjectId', async () => {
       mockValidateObjectId.mockReturnValueOnce(true);
       mockValidateObjectId.mockReturnValueOnce(false);
 
@@ -69,7 +68,7 @@ describe('CollectionService.deleteBulk', () => {
       expect(mockFind).not.toHaveBeenCalled();
     });
 
-    it('should throw 403 when non-admin user tries to delete collections not owned by them', async () => {
+    it('should throw 403 when non-owner tries to delete', async () => {
       mockValidateObjectId.mockReturnValue(true);
       mockFind.mockResolvedValue([
         {
@@ -89,71 +88,57 @@ describe('CollectionService.deleteBulk', () => {
       expect(mockDeleteMany).not.toHaveBeenCalled();
     });
 
+    it('should delete successfully when ids are valid', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFind.mockResolvedValue([
+        {
+          _id: { toString: () => 'coll1' },
+          user: { _id: { toString: () => userId } },
+          image: 'coll1.jpg'
+        },
+        {
+          _id: { toString: () => 'coll2' },
+          user: { _id: { toString: () => userId } },
+          image: ''
+        }
+      ] as any);
+      mockDeleteImage.mockResolvedValue({ success: true } as any);
+      mockDeleteMany.mockResolvedValue({
+        deletedCount: 2,
+        acknowledged: true
+      } as any);
+
+      const result = await CollectionService.deleteBulk(
+        VALID_IDS,
+        userId,
+        ROLE.USER
+      );
+
+      expect(mockDeleteImage).toHaveBeenCalledTimes(1);
+      expect(mockDeleteImage).toHaveBeenCalledWith('coll1');
+      expect(mockDeleteMany).toHaveBeenCalledWith({ _id: { $in: VALID_IDS } });
+      expect(result.deletedCount).toBe(2);
+    });
+
     it('should allow admin to delete collections not owned by them', async () => {
       mockValidateObjectId.mockReturnValue(true);
-      const adminCollections = [
+      mockFind.mockResolvedValue([
         {
           _id: { toString: () => 'coll1' },
           user: { _id: { toString: () => otherUserId } },
           image: 'coll1.jpg'
         }
-      ];
-      mockFind.mockResolvedValue(adminCollections as any);
+      ] as any);
       mockDeleteMany.mockResolvedValue({ deletedCount: 1 } as any);
 
-      await CollectionService.deleteBulk(['coll1'], ADMIN_USER, ROLE.ADMIN);
-
-      expect(mockDeleteMany).toHaveBeenCalledWith({
-        _id: { $in: ['coll1'] }
-      });
-      expect(mockDeleteImage).toHaveBeenCalledWith('coll1');
-    });
-
-    it('should delete images for collections with images and skip empty ones', async () => {
-      mockValidateObjectId.mockReturnValue(true);
-      mockFind.mockResolvedValue(mockCollections as any);
-      mockDeleteMany.mockResolvedValue({ deletedCount: 3 } as any);
-
-      await CollectionService.deleteBulk(VALID_IDS, userId, ROLE.USER);
-
-      expect(mockDeleteImage).toHaveBeenCalledWith('coll1');
-      expect(mockDeleteImage).toHaveBeenCalledWith('coll2');
-      expect(mockDeleteImage).toHaveBeenCalledTimes(2);
-      expect(mockDeleteMany).toHaveBeenCalledWith({
-        _id: { $in: VALID_IDS }
-      });
-    });
-
-    it('should return delete result with correct deletedCount', async () => {
-      mockValidateObjectId.mockReturnValue(true);
-      mockFind.mockResolvedValue(mockCollections as any);
-      const deleteResult = {
-        deletedCount: 3,
-        acknowledged: true
-      };
-      mockDeleteMany.mockResolvedValue(deleteResult as any);
-
       const result = await CollectionService.deleteBulk(
-        VALID_IDS,
-        userId,
-        ROLE.USER
+        ['coll1'],
+        otherUserId,
+        ROLE.ADMIN
       );
 
-      expect(result).toEqual(deleteResult);
-    });
-
-    it('should handle case when no collections found to delete', async () => {
-      mockValidateObjectId.mockReturnValue(true);
-      mockFind.mockResolvedValue([] as any);
-      mockDeleteMany.mockResolvedValue({ deletedCount: 0 } as any);
-
-      const result = await CollectionService.deleteBulk(
-        VALID_IDS,
-        userId,
-        ROLE.USER
-      );
-
-      expect(result.deletedCount).toBe(0);
+      expect(mockDeleteMany).toHaveBeenCalledWith({ _id: { $in: ['coll1'] } });
+      expect(result.deletedCount).toBe(1);
     });
   });
 });

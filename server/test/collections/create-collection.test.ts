@@ -1,189 +1,152 @@
-import mongoose from 'mongoose';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi
-} from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { createCollectionRequestSchema } from '~/features/collections/collection-dto';
 import { CollectionService } from '~/features/collections/collection-service';
-import { DISH_CATEGORY } from '~/shared/constants/dish-category';
-import { UNIT } from '~/shared/constants/unit';
 import { CollectionModel, DishModel } from '~/shared/database/models';
+import { uploadImage, validateObjectId } from '~/shared/utils';
 
-// Mock Cloudinary upload
-vi.mock('~/shared/utils/cloudinary', () => ({
-  uploadImage: vi.fn().mockResolvedValue({
-    success: true,
-    data: {
-      secure_url:
-        'https://res.cloudinary.com/test/image/upload/v1234567890/test-collection.jpg',
-      public_id: 'test-collection',
-      format: 'jpg'
-    }
-  }),
-  deleteImage: vi.fn().mockResolvedValue({ success: true })
+vi.mock('~/shared/database/models', () => ({
+  CollectionModel: {
+    create: vi.fn()
+  },
+  DishModel: {
+    find: vi.fn()
+  }
 }));
 
-// Import mocked functions to customize per test
-import * as cloudinaryUtils from '~/shared/utils/cloudinary';
+vi.mock('~/shared/utils', async importOriginal => {
+  const actual = await importOriginal<typeof import('~/shared/utils')>();
+  return {
+    ...actual,
+    uploadImage: vi.fn(),
+    deleteImage: vi.fn(),
+    validateObjectId: vi.fn()
+  };
+});
+
+const mockCreate = vi.mocked(CollectionModel.create);
+const mockFind = vi.mocked(DishModel.find);
+const mockUploadImage = vi.mocked(uploadImage);
+const mockValidateObjectId = vi.mocked(validateObjectId);
+
+const userId = 'user123';
+const userName = 'Nutritionist';
+const dishId = 'dish1';
+
+const validData = {
+  name: 'Bua an giam can',
+  description: 'Bo suu tap mon an giam can',
+  dishes: [dishId],
+  tags: ['healthy']
+};
+
+const makeDish = (id: string, name: string, energy = 250) => ({
+  _id: id,
+  name,
+  image: 'dish.jpg',
+  nutrition: { nutrients: [{ value: energy }] }
+});
 
 describe('CollectionService.createCollection', () => {
-  const userId = new mongoose.Types.ObjectId().toString();
-  const userName = 'Test User';
-  let dishId: string;
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
 
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
+  describe('validation', () => {
+    it('should fail when name is missing', () => {
+      const { name: _, ...data } = validData;
+      const result = createCollectionRequestSchema.safeParse(data);
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Tên bộ sưu tập không hợp lệ'
       );
-    }
-  });
-
-  beforeEach(async () => {
-    // Clean up database before each test
-    await CollectionModel.deleteMany({});
-    await DishModel.deleteMany({});
-
-    // Reset mocks
-    vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValue({
-      success: true,
-      data: {
-        secure_url:
-          'https://res.cloudinary.com/test/image/upload/v1234567890/test-collection.jpg',
-        public_id: 'test-collection',
-        format: 'jpg'
-      } as any
     });
 
-    // Create test dish
-    const dish = await DishModel.create({
-      user: { _id: userId, name: userName },
-      name: 'Phở bò',
-      description: 'Phở bò truyền thống',
-      categories: [DISH_CATEGORY.MAIN_COURSE],
-      ingredients: [
-        {
-          ingredientId: new mongoose.Types.ObjectId(),
-          name: 'Thịt bò',
-          nutrients: {
-            calories: { value: 250, unit: UNIT.KILOCALORIE },
-            carbs: { value: 0, unit: UNIT.GRAM },
-            fat: { value: 15, unit: UNIT.GRAM },
-            protein: { value: 26, unit: UNIT.GRAM },
-            fiber: { value: 0, unit: UNIT.GRAM },
-            sodium: { value: 72, unit: UNIT.MILLIGRAM },
-            cholesterol: { value: 90, unit: UNIT.MILLIGRAM }
-          },
-          baseUnit: { amount: 100, unit: UNIT.GRAM },
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
+    it('should fail when name is too short', () => {
+      const result = createCollectionRequestSchema.safeParse({
+        ...validData,
+        name: 'A'
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Tên phải có ít nhất 2 ký tự'
+      );
+    });
+
+    it('should fail when no dishes are provided', () => {
+      const result = createCollectionRequestSchema.safeParse({
+        ...validData,
+        dishes: []
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Phải có ít nhất một món ăn'
+      );
+    });
+  });
+
+  describe('business logic', () => {
+    it('should throw 400 when dish id format is invalid', async () => {
+      mockValidateObjectId.mockReturnValue(false);
+
+      await expect(
+        CollectionService.createCollection(userId, userName, validData as any)
+      ).rejects.toMatchObject({
+        status: 400,
+        message: `Định dạng ID món ăn không hợp lệ: ${dishId}`
+      });
+    });
+
+    it('should throw 404 when dish does not exist', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFind.mockResolvedValue([] as any);
+
+      await expect(
+        CollectionService.createCollection(userId, userName, validData as any)
+      ).rejects.toMatchObject({
+        status: 404,
+        message: 'Một hoặc nhiều món ăn không tồn tại'
+      });
+    });
+
+    it('should create collection successfully', async () => {
+      const mockSave = vi.fn();
+      const mockCollection = {
+        _id: { toString: () => 'collection1' },
+        name: validData.name,
+        dishes: [{ dishId, name: 'Pho bo', energy: 250, image: 'dish.jpg' }],
+        image: '',
+        save: mockSave
+      };
+
+      mockValidateObjectId.mockReturnValue(true);
+      mockFind.mockResolvedValue([makeDish(dishId, 'Pho bo')] as any);
+      mockCreate.mockResolvedValue(mockCollection as any);
+      mockUploadImage.mockResolvedValue({
+        success: true,
+        data: {
+          secure_url:
+            'https://res.cloudinary.com/test/image/upload/collection.jpg'
         }
-      ],
-      instructions: [{ step: 1, description: 'Luộc xương' }],
-      isActive: true
-    });
-    dishId = dish._id.toString();
-  });
+      } as any);
 
-  afterEach(async () => {
-    // Clean up after each test
-    await CollectionModel.deleteMany({});
-    await DishModel.deleteMany({});
-  });
+      const fakeImage = { buffer: Buffer.from('img') } as Express.Multer.File;
 
-  afterAll(async () => {
-    // Close connection
-    await mongoose.connection.close();
-  });
-
-  // Branch - Happy case: create collection successfully
-  it('should create collection successfully successfully', async () => {
-    const collectionData = {
-      name: 'Món ăn Việt',
-      description: 'Các món ăn truyền thống Việt Nam',
-      dishes: [dishId]
-    };
-
-    const collection = await CollectionService.createCollection(
-      userId,
-      userName,
-      collectionData,
-      undefined
-    );
-
-    expect(collection).toBeDefined();
-    expect(collection.name).toBe('Món ăn Việt');
-    expect(collection.dishes).toHaveLength(1);
-    expect(collection.dishes[0].dishId?.toString()).toBe(dishId);
-    expect(collection.dishes[0].name).toBe('Phở bò');
-  });
-
-  // Branch - Invalid dish ID format
-  it('should throw error when dish ID format is invalid', async () => {
-    const collectionData = {
-      name: 'Món ăn Việt',
-      dishes: ['invalid-id']
-    };
-
-    await expect(
-      CollectionService.createCollection(
+      const result = await CollectionService.createCollection(
         userId,
         userName,
-        collectionData as any,
-        undefined
-      )
-    ).rejects.toThrow('Định dạng ID món ăn không hợp lệ');
-  });
-
-  // Branch - Dish does not exist
-  it('should throw error when dish does not exist', async () => {
-    const nonExistentId = new mongoose.Types.ObjectId().toString();
-    const collectionData = {
-      name: 'Món ăn Việt',
-      dishes: [nonExistentId]
-    };
-
-    await expect(
-      CollectionService.createCollection(
-        userId,
-        userName,
-        collectionData,
-        undefined
-      )
-    ).rejects.toThrow('Một hoặc nhiều món ăn không tồn tại');
-  });
-
-  // Branch - Image upload failure
-  it('should throw error when image upload fails', async () => {
-    // Mock upload to fail
-    vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValueOnce({
-      success: false,
-      error: 'Upload failed'
-    } as any);
-
-    const collectionData = {
-      name: 'Món ăn giảm cân',
-      description: 'Bộ sưu tập món ăn giảm cân'
-    };
-
-    const fakeImage = {
-      buffer: Buffer.from('fake-image-data'),
-      originalname: 'test-collection.jpg'
-    } as Express.Multer.File;
-
-    await expect(
-      CollectionService.createCollection(
-        userId,
-        userName,
-        collectionData,
+        validData as any,
         fakeImage
-      )
-    ).rejects.toThrow('Tải ảnh lên thất bại');
+      );
+
+      expect(mockCollection.image).toBe(
+        'https://res.cloudinary.com/test/image/upload/collection.jpg'
+      );
+      expect(mockSave).toHaveBeenCalled();
+      expect(result).toEqual(mockCollection);
+    });
   });
 });
