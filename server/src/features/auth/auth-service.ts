@@ -18,9 +18,11 @@ import {
 } from '~/shared/utils';
 
 import {
+  ForgotPasswordRequest,
   type LoginRequest,
   type LoginResponse,
   type LoginWithProviderResponse,
+  ResetPasswordRequest,
   type SignUpRequest,
   type SignUpResponse
 } from './auth-dto';
@@ -242,7 +244,9 @@ export const AuthService = {
     return accessToken;
   },
 
-  forgotPassword: async (email: string): Promise<void> => {
+  forgotPassword: async (data: ForgotPasswordRequest): Promise<void> => {
+    const email = data.email;
+
     const user = await UserModel.findOne({ email });
 
     if (!user) {
@@ -264,7 +268,12 @@ export const AuthService = {
     });
   },
 
-  resetPassword: async (token: string, password: string): Promise<void> => {
+  resetPassword: async (
+    token: string,
+    data: ResetPasswordRequest
+  ): Promise<void> => {
+    const password = data.password;
+
     const storedLastResetToken = await AuthModel.findOne({
       lastResetPasswordToken: token
     });
