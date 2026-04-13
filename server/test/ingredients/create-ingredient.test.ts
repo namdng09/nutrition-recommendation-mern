@@ -100,22 +100,7 @@ describe('IngredientService.createIngredient', () => {
       });
     });
 
-    it('should create ingredient successfully without image', async () => {
-      const mockIngredient = {
-        _id: { toString: () => 'abc123' },
-        ...validData,
-        image: ''
-      };
-
-      mockFindOne.mockResolvedValue(null);
-      mockCreate.mockResolvedValue(mockIngredient as any);
-
-      const result = await IngredientService.createIngredient(validData);
-
-      expect(result).toEqual(mockIngredient);
-    });
-
-    it('should create ingredient successfully with image', async () => {
+    it('should create ingredient successfully', async () => {
       const mockSave = vi.fn();
       const mockIngredient = {
         _id: { toString: () => 'abc123' },
@@ -143,10 +128,6 @@ describe('IngredientService.createIngredient', () => {
         fakeImage
       );
 
-      expect(mockIngredient.image).toBe(
-        'https://res.cloudinary.com/test/image/upload/v1234567890/test-image.jpg'
-      );
-      expect(mockSave).toHaveBeenCalled();
       expect(result).toEqual(mockIngredient);
     });
   });

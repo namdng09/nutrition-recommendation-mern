@@ -83,7 +83,7 @@ describe('IngredientService.viewIngredients', () => {
     );
   });
 
-  it('should mark isFavorited=true only for ingredients in user favorites', async () => {
+  it('should mark favorite for ingredients in user favorites', async () => {
     const favId = 'fav-id-1';
     const docs = makeDocs([
       { _id: favId, name: 'Cà chua' },
