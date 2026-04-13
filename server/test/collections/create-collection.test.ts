@@ -7,7 +7,8 @@ import { uploadImage, validateObjectId } from '~/shared/utils';
 
 vi.mock('~/shared/database/models', () => ({
   CollectionModel: {
-    create: vi.fn()
+    create: vi.fn(),
+    findOne: vi.fn()
   },
   DishModel: {
     find: vi.fn()
@@ -25,6 +26,7 @@ vi.mock('~/shared/utils', async importOriginal => {
 });
 
 const mockCreate = vi.mocked(CollectionModel.create);
+const mockFindOne = vi.mocked(CollectionModel.findOne);
 const mockFind = vi.mocked(DishModel.find);
 const mockUploadImage = vi.mocked(uploadImage);
 const mockValidateObjectId = vi.mocked(validateObjectId);
@@ -49,7 +51,7 @@ const makeDish = (id: string, name: string, energy = 250) => ({
 
 describe('CollectionService.createCollection', () => {
   afterEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('validation', () => {
@@ -97,6 +99,17 @@ describe('CollectionService.createCollection', () => {
       ).rejects.toMatchObject({
         status: 400,
         message: `Định dạng ID món ăn không hợp lệ: ${dishId}`
+      });
+    });
+
+    it('should throw 400 when collection name already exists', async () => {
+      mockFindOne.mockResolvedValue({ name: validData.name } as any);
+
+      await expect(
+        CollectionService.createCollection(userId, userName, validData as any)
+      ).rejects.toMatchObject({
+        status: 400,
+        message: 'Tên bộ sưu tập đã tồn tại'
       });
     });
 

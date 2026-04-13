@@ -8,7 +8,8 @@ import { deleteImage, uploadImage, validateObjectId } from '~/shared/utils';
 vi.mock('~/shared/database/models', () => ({
   CollectionModel: {
     findById: vi.fn(),
-    findByIdAndUpdate: vi.fn()
+    findByIdAndUpdate: vi.fn(),
+    findOne: vi.fn()
   },
   DishModel: {
     find: vi.fn()
@@ -26,6 +27,7 @@ vi.mock('~/shared/utils', async importOriginal => {
 });
 
 const mockFindById = vi.mocked(CollectionModel.findById);
+const mockFindOne = vi.mocked(CollectionModel.findOne);
 const mockFindByIdAndUpdate = vi.mocked(CollectionModel.findByIdAndUpdate);
 const mockFindDishes = vi.mocked(DishModel.find);
 const mockValidateObjectId = vi.mocked(validateObjectId);
@@ -43,7 +45,7 @@ const validData = {
 
 describe('CollectionService.updateCollection', () => {
   afterEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('validation', () => {
@@ -85,6 +87,22 @@ describe('CollectionService.updateCollection', () => {
       });
     });
 
+    it('should throw 409 when updating to a name that already exists', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindById.mockResolvedValue({
+        name: 'Bo suu tap cu',
+        user: { _id: { toString: () => userId } }
+      } as any);
+      mockFindOne.mockResolvedValue({ name: validData.name } as any);
+
+      await expect(
+        CollectionService.updateCollection(VALID_ID, userId, validData as any)
+      ).rejects.toMatchObject({
+        status: 409,
+        message: 'Tên bộ sưu tập đã tồn tại'
+      });
+    });
+
     it('should throw 403 when user is not owner', async () => {
       mockValidateObjectId.mockReturnValue(true);
       mockFindById.mockResolvedValue({
@@ -102,6 +120,7 @@ describe('CollectionService.updateCollection', () => {
     it('should throw 400 when dish id format is invalid', async () => {
       mockValidateObjectId.mockImplementation((id: string) => id === VALID_ID);
       mockFindById.mockResolvedValue({
+        name: validData.name,
         user: { _id: { toString: () => userId } }
       } as any);
 
@@ -116,6 +135,7 @@ describe('CollectionService.updateCollection', () => {
     it('should throw 404 when dish does not exist', async () => {
       mockValidateObjectId.mockReturnValue(true);
       mockFindById.mockResolvedValue({
+        name: validData.name,
         user: { _id: { toString: () => userId } }
       } as any);
       mockFindDishes.mockResolvedValue([] as any);
@@ -139,6 +159,7 @@ describe('CollectionService.updateCollection', () => {
 
       mockValidateObjectId.mockReturnValue(true);
       mockFindById.mockResolvedValue({
+        name: validData.name,
         user: { _id: { toString: () => userId } }
       } as any);
       mockFindDishes.mockResolvedValue([
