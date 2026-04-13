@@ -1,93 +1,71 @@
-import mongoose from 'mongoose';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it
-} from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PostService } from '~/features/posts/post-service';
-import { POST_CATEGORY } from '~/shared/constants/post-category';
-import { ROLE } from '~/shared/constants/role';
-import { PostModel } from '~/shared/database/models';
+import { PostModel } from '~/shared/database/models/post-model';
+import { validateObjectId } from '~/shared/utils';
 
-describe('PostService.viewPostDetail', () => {
-  let postId: string;
-  let postWithoutViewsId: string;
-  let userId: string;
+vi.mock('~/shared/database/models/post-model', () => ({
+  PostModel: {
+    findById: vi.fn()
+  }
+}));
 
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
-      );
-    }
-    userId = new mongoose.Types.ObjectId().toString();
+vi.mock('~/shared/utils', async importOriginal => {
+  const actual = await importOriginal<typeof import('~/shared/utils')>();
+  return {
+    ...actual,
+    validateObjectId: vi.fn()
+  };
+});
+
+const mockFindById = vi.mocked(PostModel.findById);
+const mockValidateObjectId = vi.mocked(validateObjectId);
+
+describe('PostService.viewPostDetail (UC38)', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
-  beforeEach(async () => {
-    // Clean up database before each test
-    await PostModel.deleteMany({});
+  it('should throw 400 when id format is invalid', async () => {
+    mockValidateObjectId.mockReturnValue(false);
 
-    // Create test post
-    const post = await PostModel.create({
-      author: {
-        _id: userId,
-        name: 'Test User',
-        role: ROLE.NUTRITIONIST
-      },
-      title: 'Cách giảm cân hiệu quả',
-      content: 'Nội dung chi tiết về giảm cân...',
-      slug: 'cach-giam-can-hieu-qua',
-      category: POST_CATEGORY.NUTRITION,
-      tags: ['giảm cân'],
-      isPublished: true,
-      publishedAt: new Date(),
-      views: 10
+    await expect(
+      PostService.viewPostDetail('invalid-id')
+    ).rejects.toMatchObject({
+      status: 400,
+      message: 'ID bài viết không hợp lệ'
     });
-    postId = post._id.toString();
   });
 
-  afterEach(async () => {
-    // Clean up after each test
-    await PostModel.deleteMany({});
+  it('should throw 404 when post does not exist', async () => {
+    mockValidateObjectId.mockReturnValue(true);
+    mockFindById.mockResolvedValue(null);
+
+    await expect(
+      PostService.viewPostDetail('507f1f77bcf86cd799439011')
+    ).rejects.toMatchObject({
+      status: 404,
+      message: 'Không tìm thấy bài viết'
+    });
   });
 
-  afterAll(async () => {
-    // Close connection
-    await mongoose.connection.close();
-  });
+  it('should return post detail and increment views', async () => {
+    const mockSave = vi.fn();
+    const mockPost = {
+      _id: { toString: () => '507f1f77bcf86cd799439011' },
+      title: 'Cach giam can',
+      content: 'Noi dung bai viet',
+      views: 10,
+      save: mockSave
+    };
 
-  // Branch - Happy case
-  it('should get post detail successfully and increment views', async () => {
-    const post = await PostService.viewPostDetail(postId);
+    mockValidateObjectId.mockReturnValue(true);
+    mockFindById.mockResolvedValue(mockPost as any);
 
-    expect(post).toBeDefined();
-    expect(post._id.toString()).toBe(postId);
-    expect(post.title).toBe('Cách giảm cân hiệu quả');
-    expect(post.content).toBeDefined();
-    expect(post.slug).toBe('cach-giam-can-hieu-qua');
-    expect(post.views).toBe(11);
-    expect(post.author?._id.toString()).toBe(userId);
-  });
+    const result = await PostService.viewPostDetail('507f1f77bcf86cd799439011');
 
-  // Branch - Invalid ID
-  it('should throw error when id format is invalid', async () => {
-    await expect(PostService.viewPostDetail('invalid-id')).rejects.toThrow(
-      'ID bài viết không hợp lệ'
-    );
-  });
-
-  // Branch - Post not found
-  it('should throw error when post does not exist', async () => {
-    const nonExistentId = new mongoose.Types.ObjectId().toString();
-
-    await expect(PostService.viewPostDetail(nonExistentId)).rejects.toThrow(
-      'Không tìm thấy bài viết'
-    );
+    expect(result).toEqual(mockPost);
+    expect(mockPost.views).toBe(11);
+    expect(mockSave).toHaveBeenCalled();
   });
 });
