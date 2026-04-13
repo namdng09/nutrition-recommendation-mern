@@ -1,19 +1,12 @@
 import { Eye, Search, Star, X } from 'lucide-react';
-import { useMemo, useState, useTransition } from 'react';
+import { useMemo, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
-import { useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 
 import { DataTableColumnHeader } from '~/components/admin/data-table-column-header';
 import CommonTable from '~/components/common-table';
 import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle
-} from '~/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
 import {
@@ -29,11 +22,8 @@ import {
   REVIEW_STATUS_OPTIONS
 } from '~/constants/review-status';
 import { useNutritionistReviews } from '~/features/review/submit-review-request/api/get-reviews';
-import { useNutritionistReviewDetail } from '~/features/review/submit-review-request/api/view-review-detail';
 import { buildQueryParams } from '~/lib/build-query-params';
 import { formatDate } from '~/lib/utils';
-
-import EvaluateReviews from './evaluate-reviews';
 
 const ReviewsSkeleton = () => {
   return (
@@ -60,14 +50,9 @@ const getStatusClassName = status => {
 };
 
 const GetReviews = () => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isPending, startTransition] = useTransition();
-
-  const [selectedDishId, setSelectedDishId] = useState(null);
-  const [selectedDishName, setSelectedDishName] = useState('');
-  const [selectedDishStatus, setSelectedDishStatus] = useState('');
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [isEvaluateOpen, setIsEvaluateOpen] = useState(false);
 
   const form = useForm({
     values: {
@@ -90,15 +75,6 @@ const GetReviews = () => {
     isError,
     refetch: refetchReviews
   } = useNutritionistReviews(params);
-
-  const {
-    data: reviewDetail,
-    isLoading: isDetailLoading,
-    isError: isDetailError,
-    refetch: refetchDetail
-  } = useNutritionistReviewDetail(selectedDishId, {
-    enabled: isDetailOpen && !!selectedDishId
-  });
 
   const handleSearch = values => {
     const sort = searchParams.get('sort');
@@ -132,20 +108,6 @@ const GetReviews = () => {
     startTransition(() => {
       setSearchParams(queryParams);
     });
-  };
-
-  const openDetailDialog = dish => {
-    setSelectedDishId(dish._id);
-    setSelectedDishName(dish.name || '');
-    setSelectedDishStatus(dish.evaluation?.status || '');
-    setIsDetailOpen(true);
-  };
-
-  const openEvaluateDialog = dish => {
-    setSelectedDishId(dish._id);
-    setSelectedDishName(dish.name || '');
-    setSelectedDishStatus(dish.evaluation?.status || '');
-    setIsEvaluateOpen(true);
   };
 
   const columns = useMemo(
@@ -226,7 +188,9 @@ const GetReviews = () => {
               <Button
                 variant='ghost'
                 size='icon'
-                onClick={() => openDetailDialog(row.original)}
+                onClick={() =>
+                  navigate(`/nutritionist/reviews/${row.original._id}`)
+                }
                 title='Xem chi tiết review'
               >
                 <Eye className='h-4 w-4' />
@@ -235,7 +199,11 @@ const GetReviews = () => {
               <Button
                 size='sm'
                 disabled={!canEvaluate}
-                onClick={() => openEvaluateDialog(row.original)}
+                onClick={() =>
+                  navigate(
+                    `/nutritionist/reviews/${row.original._id}?action=evaluate`
+                  )
+                }
               >
                 Đánh giá
               </Button>
@@ -245,12 +213,8 @@ const GetReviews = () => {
         enableSorting: false
       }
     ],
-    []
+    [navigate]
   );
-
-  const canEvaluateCurrentDish =
-    (reviewDetail?.evaluation?.status || selectedDishStatus) ===
-    REVIEW_STATUS.PENDING;
 
   const hasFilters = form.watch('name') || form.watch('status');
 
@@ -345,118 +309,6 @@ const GetReviews = () => {
           emptyMessage='Chưa có yêu cầu review món riêng từ người dùng.'
         />
       ) : null}
-
-      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <DialogContent className='sm:max-w-2xl'>
-          <DialogHeader>
-            <DialogTitle>Chi tiết yêu cầu review</DialogTitle>
-            <DialogDescription>
-              Thông tin chi tiết món ăn được người dùng gửi đến chuyên gia
-            </DialogDescription>
-          </DialogHeader>
-
-          {isDetailLoading ? (
-            <div className='space-y-3'>
-              <Skeleton className='h-56 w-full rounded-md' />
-              <Skeleton className='h-8 w-3/4' />
-              <Skeleton className='h-24 w-full' />
-            </div>
-          ) : null}
-
-          {isDetailError ? (
-            <div className='rounded-md border border-destructive/40 bg-destructive/5 p-4'>
-              <p className='text-sm text-destructive'>
-                Không thể tải chi tiết yêu cầu review. Vui lòng thử lại.
-              </p>
-              <Button
-                variant='outline'
-                className='mt-3'
-                onClick={() => refetchDetail()}
-              >
-                Tải lại
-              </Button>
-            </div>
-          ) : null}
-
-          {!isDetailLoading && !isDetailError && reviewDetail ? (
-            <div className='space-y-4'>
-              <div className='grid gap-4 sm:grid-cols-[180px_minmax(0,1fr)]'>
-                <img
-                  src={reviewDetail.image || '/logo2.png'}
-                  alt={reviewDetail.name}
-                  className='h-44 w-full rounded-md object-cover border'
-                />
-
-                <div className='space-y-3'>
-                  <h3 className='text-xl font-semibold'>{reviewDetail.name}</h3>
-
-                  <div className='flex flex-wrap items-center gap-2'>
-                    <Badge
-                      variant='outline'
-                      className={getStatusClassName(
-                        reviewDetail.evaluation?.status
-                      )}
-                    >
-                      {reviewDetail.evaluation?.status || '-'}
-                    </Badge>
-
-                    {reviewDetail.evaluation?.rating ? (
-                      <Badge variant='secondary'>
-                        <Star className='h-3.5 w-3.5 fill-amber-400 text-amber-400' />
-                        {reviewDetail.evaluation.rating}/5
-                      </Badge>
-                    ) : null}
-                  </div>
-
-                  <p className='text-sm text-muted-foreground'>
-                    Người gửi: <strong>{reviewDetail.user?.name || '-'}</strong>
-                  </p>
-
-                  <p className='text-sm text-muted-foreground'>
-                    Ngày tạo yêu cầu: {formatDate(reviewDetail.createdAt)}
-                  </p>
-
-                  <p className='text-sm text-muted-foreground'>
-                    Chuyên gia đánh giá:{' '}
-                    <strong>
-                      {reviewDetail.evaluation?.nutritionist?.name ||
-                        'Chưa có chuyên gia xử lý'}
-                    </strong>
-                  </p>
-                </div>
-              </div>
-
-              <div className='rounded-md border p-3 bg-muted/30'>
-                <p className='text-sm font-medium mb-1'>Nội dung phản hồi</p>
-                <p className='text-sm text-muted-foreground whitespace-pre-line'>
-                  {reviewDetail.evaluation?.feedback ||
-                    'Chưa có phản hồi từ chuyên gia.'}
-                </p>
-              </div>
-
-              {canEvaluateCurrentDish ? (
-                <div className='flex justify-end'>
-                  <Button onClick={() => setIsEvaluateOpen(true)}>
-                    Đánh giá món ăn này
-                  </Button>
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-        </DialogContent>
-      </Dialog>
-
-      <EvaluateReviews
-        open={isEvaluateOpen}
-        onOpenChange={setIsEvaluateOpen}
-        dishId={selectedDishId}
-        dishName={selectedDishName}
-        onSuccess={() => {
-          if (isDetailOpen) {
-            refetchDetail();
-          }
-        }}
-      />
     </>
   );
 };

@@ -342,6 +342,12 @@ const router = createBrowserRouter([
           {
             path: 'reviews/',
             Component: lazy(() => import('~/app/nutritionist/reviews/page'))
+          },
+          {
+            path: 'reviews/:id',
+            Component: lazy(
+              () => import('~/app/nutritionist/reviews/[id]/page')
+            )
           }
         ]
       },
