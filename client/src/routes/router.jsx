@@ -334,6 +334,10 @@ const router = createBrowserRouter([
             Component: lazy(
               () => import('~/app/nutritionist/manage-posts/[id]/page')
             )
+          },
+          {
+            path: 'feedbacks/',
+            Component: lazy(() => import('~/app/nutritionist/feedbacks/page'))
           }
         ]
       },
@@ -346,6 +350,7 @@ const router = createBrowserRouter([
         ),
         // Component: AdminLayout,
         children: [
+          {},
           {
             path: '',
             Component: lazy(() => import('~/app/admin/page'))
@@ -408,6 +413,16 @@ const router = createBrowserRouter([
             Component: lazy(() => import('~/app/admin/manage-posts/[id]/page'))
           },
 
+          //admin manage payments
+          {
+            path: 'manage-payments/',
+            Component: lazy(() => import('~/app/admin/manage-payments/page'))
+          },
+          {
+            path: 'payments/',
+            Component: lazy(() => import('~/app/admin/payments/page'))
+          },
+
           //admin manage exercises
           {
             path: 'manage-exercises/',
@@ -424,6 +439,10 @@ const router = createBrowserRouter([
             Component: lazy(
               () => import('~/app/admin/manage-exercises/[id]/page')
             )
+          },
+          {
+            path: 'feedbacks/',
+            Component: lazy(() => import('~/app/admin/feedbacks/page'))
           }
         ]
       },

@@ -101,7 +101,7 @@ const CreateDishForm = () => {
       servings: 1,
       tags: [],
       isActive: true,
-      isPublic: false
+      isPublic: true
     }
   });
 

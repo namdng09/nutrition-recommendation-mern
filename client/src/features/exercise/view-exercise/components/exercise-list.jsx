@@ -11,20 +11,57 @@ import { Link } from 'react-router';
 import { getPreviewImage, isGifUrl } from '~/lib/utils';
 
 import { useExercises } from '../api/view-exercise';
+import ExerciseFilter from './exercise-filter';
 import ExerciseHeader from './exercise-header';
 import ExercisePagination from './exercise-pagination';
 
 export default function ExerciseList() {
   const [page, setPage] = useState(1);
+  const [filters, setFilters] = useState({
+    name: '',
+    difficulty: '',
+    type: '',
+    logType: '',
+    muscle: '',
+    equipment: ''
+  });
+
+  const { muscle, equipment, ...baseFilters } = filters;
+
   const { data } = useExercises({
+    ...baseFilters,
+    ...(muscle ? { 'muscles.name': muscle } : {}),
+    ...(equipment ? { 'equipments.name': equipment } : {}),
     page,
     limit: 9
   });
   const exercises = data?.docs ?? [];
 
+  const handleSearch = nextFilters => {
+    setPage(1);
+    setFilters(nextFilters);
+  };
+
+  const handleReset = () => {
+    setPage(1);
+    setFilters({
+      name: '',
+      difficulty: '',
+      type: '',
+      logType: '',
+      muscle: '',
+      equipment: ''
+    });
+  };
+
   return (
     <div className='max-w-7xl mx-auto px-4 py-10 space-y-12'>
       <ExerciseHeader />
+      <ExerciseFilter
+        filters={filters}
+        onSearch={handleSearch}
+        onReset={handleReset}
+      />
 
       <div className='grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3'>
         {exercises.map(ex => {
@@ -116,6 +153,17 @@ export default function ExerciseList() {
           );
         })}
       </div>
+
+      {!exercises.length && (
+        <div className='rounded-3xl border border-dashed border-border bg-card/60 px-6 py-12 text-center'>
+          <p className='text-lg font-bold text-foreground'>
+            Không tìm thấy bài tập phù hợp
+          </p>
+          <p className='mt-1 text-sm text-muted-foreground'>
+            Hãy thử đổi từ khóa hoặc bỏ bớt điều kiện lọc.
+          </p>
+        </div>
+      )}
 
       <div className='border-border'>
         <ExercisePagination
