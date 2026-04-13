@@ -48,6 +48,7 @@ export function ProfileSidebar({ ...props }) {
   const displayName = profile?.name || user?.name || 'User';
   const displayEmail = profile?.email || user?.email || '';
   const avatarSrc = profile?.avatar;
+  const isNutritionist = user?.role === ROLE.NUTRITIONIST;
 
   // Helper function to get user initials
   const getUserInitials = () => {
@@ -60,82 +61,91 @@ export function ProfileSidebar({ ...props }) {
   };
 
   // Navigation groups
-  const navGroups = [
-    {
-      label: 'Thông tin cá nhân',
-      items: [
+  const navGroups = isNutritionist
+    ? [
         {
-          title: 'Thông tin cá nhân',
-          url: '/profile',
-          icon: User
-        },
-        {
-          title: 'Chế độ ăn',
-          url: '/profile/diet',
-          icon: Utensils
-        },
-        {
-          title: 'Dị ứng thực phẩm',
-          url: '/profile/food-allergies',
-          icon: CircleOff
-        },
-        {
-          title: 'Mục tiêu dinh dưỡng',
-          url: '/profile/nutrition-target',
-          icon: Target
-        },
-        {
-          title: 'Chỉ số cơ thể',
-          url: '/profile/physical-stats',
-          icon: Activity
+          label: 'Tài khoản chuyên gia',
+          items: [
+            {
+              title: 'Thông tin cá nhân',
+              url: '/profile',
+              icon: User
+            },
+            {
+              title: 'Chứng chỉ',
+              url: '/profile/certificate',
+              icon: Award
+            },
+            {
+              title: 'Chuyển đến trang quản lý',
+              url: '/nutritionist',
+              icon: User
+            }
+          ]
         }
       ]
-    },
-    {
-      label: 'Sở thích',
-      items: [
+    : [
         {
-          title: 'Danh sách Yêu thích',
-          url: '/profile/favorites',
-          icon: Heart
+          label: 'Thông tin cá nhân',
+          items: [
+            {
+              title: 'Thông tin cá nhân',
+              url: '/profile',
+              icon: User
+            },
+            {
+              title: 'Chế độ ăn',
+              url: '/profile/diet',
+              icon: Utensils
+            },
+            {
+              title: 'Dị ứng thực phẩm',
+              url: '/profile/food-allergies',
+              icon: CircleOff
+            },
+            {
+              title: 'Mục tiêu dinh dưỡng',
+              url: '/profile/nutrition-target',
+              icon: Target
+            },
+            {
+              title: 'Chỉ số cơ thể',
+              url: '/profile/physical-stats',
+              icon: Activity
+            }
+          ]
         },
         {
-          title: 'Món ăn bị chặn',
-          url: '/profile/blocks',
-          icon: CircleOff
-        }
-      ]
-    },
-    {
-      label: 'Tiến độ & Lịch trình',
-      items: [
-        {
-          title: 'Thành tựu',
-          url: '/profile/achievements',
-          icon: Trophy
+          label: 'Sở thích',
+          items: [
+            {
+              title: 'Danh sách Yêu thích',
+              url: '/profile/favorites',
+              icon: Heart
+            },
+            {
+              title: 'Món ăn bị chặn',
+              url: '/profile/blocks',
+              icon: CircleOff
+            }
+          ]
         },
         {
-          title: 'Lịch trình bữa ăn',
-          url: '/profile/schedule-settings',
-          icon: Calendar
+          label: 'Tiến độ & Lịch trình',
+          items: [
+            {
+              title: 'Thành tựu',
+              url: '/profile/achievements',
+              icon: Trophy
+            },
+            {
+              title: 'Lịch trình bữa ăn',
+              url: '/profile/schedule-settings',
+              icon: Calendar
+            }
+          ]
         }
-      ]
-    }
-  ];
-
-  // Add certificate for nutritionists
-  if (user?.role === ROLE.NUTRITIONIST) {
-    navGroups.push({
-      label: 'Chuyên môn',
-      items: [
-        {
-          title: 'Chứng chỉ',
-          url: '/profile/certificate',
-          icon: Award
-        }
-      ]
-    });
-  }
+      ];
 
   return (
     <>

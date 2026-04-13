@@ -215,11 +215,11 @@ const Profile = () => {
                           onChange={handleAvatarChange}
                         />
 
-                        {isUpdating && (
+                        {/* {isUpdating && (
                           <div className='absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-full'>
                             <Spinner className='h-8 w-8' />
                           </div>
-                        )}
+                        )} */}
 
                         <p className='mt-4 text-center text-xs text-muted-foreground'>
                           Click để thay đổi ảnh đại diện
