@@ -3,17 +3,44 @@ import { FaRegCalendarAlt, FaTag, FaUserCircle } from 'react-icons/fa';
 import { Link } from 'react-router';
 
 import { usePost } from '../api/view-post';
+import PostFilter from './post-filter';
 import PostListHeader from './post-list-header';
 import PostPagination from './post-pagination';
 
 export default function PostList() {
   const [page, setPage] = useState(1);
-  const data = usePost({ page });
+  const [filters, setFilters] = useState({
+    title: '',
+    category: ''
+  });
+
+  const data = usePost({
+    ...filters,
+    page
+  });
   const { docs: posts, totalPages, hasPrevPage, hasNextPage } = data.data;
+
+  const handleSearch = nextFilters => {
+    setPage(1);
+    setFilters(nextFilters);
+  };
+
+  const handleReset = () => {
+    setPage(1);
+    setFilters({
+      title: '',
+      category: ''
+    });
+  };
 
   return (
     <div className='mx-auto max-w-7xl space-y-10 bg-background text-foreground'>
       <PostListHeader />
+      <PostFilter
+        filters={filters}
+        onSearch={handleSearch}
+        onReset={handleReset}
+      />
 
       <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3'>
         {posts.map(post => (
@@ -80,6 +107,17 @@ export default function PostList() {
           </Link>
         ))}
       </div>
+
+      {!posts.length && (
+        <div className='rounded-3xl border border-dashed border-border bg-card/60 px-6 py-12 text-center'>
+          <p className='text-lg font-bold text-foreground'>
+            Không tìm thấy bài viết phù hợp
+          </p>
+          <p className='mt-1 text-sm text-muted-foreground'>
+            Hãy thử đổi từ khóa hoặc bỏ bộ lọc danh mục.
+          </p>
+        </div>
+      )}
 
       <PostPagination
         page={page}

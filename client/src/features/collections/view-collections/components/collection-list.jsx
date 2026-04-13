@@ -6,6 +6,7 @@ import StatBadge from '~/features/dishes/view-dishes/components/dish-stat-badge'
 
 import CollectionFavoriteButton from '../../add-collection-to-favorite/components/collection-favorite-button';
 import { useCollections } from '../api/view-collection';
+import CollectionFilter from './collection-filter';
 import CollectionsHeader from './collection-header';
 import CollectionPagination from './collection-pagination';
 
@@ -15,12 +16,30 @@ export default function CollectionsList() {
 
   const collections = (data?.docs ?? []).filter(col => col.isPublic);
 
+  const goToPrev = useCallback(() => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('page', String(Math.max(1, page - 1)));
+      return next;
+    });
+  }, [page, setSearchParams]);
+
+  const goToNext = useCallback(() => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('page', String(page + 1));
+      return next;
+    });
+  }, [page, setSearchParams]);
+
   return (
     <div className='mx-auto w-full max-w-7xl animate-in space-y-6 fade-in duration-700'>
       <CollectionsHeader
         totalDocs={collections.length}
         hasCollections={collections.length > 0}
       />
+
+      <CollectionFilter />
 
       <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3'>
         {collections.map(col => {
@@ -131,12 +150,12 @@ export default function CollectionsList() {
       </div>
 
       <CollectionPagination
-        page={data?.page}
-        totalPages={data?.totalPages}
+        page={data?.page ?? 1}
+        totalPages={data?.totalPages ?? 1}
         hasPrevPage={data?.hasPrevPage}
         hasNextPage={data?.hasNextPage}
-        onPrev={() => setPage(p => Math.max(1, p - 1))}
-        onNext={() => setPage(p => p + 1)}
+        onPrev={goToPrev}
+        onNext={goToNext}
       />
     </div>
   );

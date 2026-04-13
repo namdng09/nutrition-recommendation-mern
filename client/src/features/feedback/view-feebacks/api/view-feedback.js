@@ -4,21 +4,18 @@ import apiClient from '~/lib/api-client';
 import { buildQueryParams } from '~/lib/build-query-params';
 import { QUERY_KEYS } from '~/lib/query-keys';
 
-const fetchDishes = async params => {
-  const searchParams = buildQueryParams(params, [
-    'name',
-    'ingredients.name',
-    'tags'
-  ]);
+const fetchFeedbacks = async params => {
+  const searchParams = buildQueryParams(params, ['content']);
   const response = await apiClient.get(
-    `/api/dishes?${searchParams.toString()}`
+    `/api/feedback?${searchParams.toString()}`
   );
+
   return response.data.data;
 };
 
-export const useDishes = (params = {}) => {
+export const useFeedbacks = (params = {}) => {
   return useSuspenseQuery({
-    queryKey: [...QUERY_KEYS.DISHES, params],
-    queryFn: () => fetchDishes(params)
+    queryKey: [...QUERY_KEYS.FEEDBACKS, params],
+    queryFn: () => fetchFeedbacks(params)
   });
 };

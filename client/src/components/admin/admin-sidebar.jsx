@@ -3,9 +3,11 @@ import {
   BicepsFlexed,
   Ham,
   Home,
+  MessageSquare,
   Package,
   StickyNote,
-  Users
+  Users,
+  Wallet
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router';
 
@@ -56,6 +58,16 @@ export function AdminSidebar({ ...props }) {
       ]
     },
     {
+      title: 'Quản lý thanh toán',
+      items: [
+        {
+          title: 'Thanh toán',
+          url: '/admin/manage-payments',
+          icon: Wallet
+        }
+      ]
+    },
+    {
       title: 'Quản lý món ăn',
       items: [
         {
@@ -77,6 +89,11 @@ export function AdminSidebar({ ...props }) {
           title: 'Bài viết',
           url: '/admin/manage-posts',
           icon: StickyNote
+        },
+        {
+          title: 'Feedback',
+          url: '/admin/feedbacks',
+          icon: MessageSquare
         }
       ]
     },
@@ -125,6 +142,11 @@ export function AdminSidebar({ ...props }) {
           title: 'Bài viết',
           url: '/nutritionist/manage-posts',
           icon: StickyNote
+        },
+        {
+          title: 'Feedback',
+          url: '/nutritionist/feedbacks',
+          icon: MessageSquare
         }
       ]
     }
