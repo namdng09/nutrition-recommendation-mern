@@ -3,7 +3,7 @@ import createHttpError from 'http-errors';
 import type { PaginateResult } from 'mongoose';
 
 import { REVIEW_STATUS } from '~/shared/constants/review-status';
-import { DishModel } from '~/shared/database/models';
+import { DishModel, UserModel } from '~/shared/database/models';
 import type { Dish } from '~/shared/database/models/dish-model';
 import {
   buildPaginateOptions,
@@ -82,9 +82,9 @@ export const ReviewService = {
       throw createHttpError(400, 'Định dạng ID món ăn không hợp lệ');
     }
 
-    const dish = await DishModel.findById(dishId)
-      .select('name image isPublic user evaluation createdAt updatedAt')
-      .lean();
+    const dish = await DishModel.findById(dishId).select(
+      'name image isPublic user evaluation createdAt updatedAt'
+    );
 
     if (!dish || !dish.evaluation?.status) {
       throw createHttpError(404, 'Không tìm thấy món ăn');
@@ -99,7 +99,29 @@ export const ReviewService = {
       throw createHttpError(403, 'Bạn không có quyền xem yêu cầu đánh giá này');
     }
 
-    return dish;
+    const nutritionist = await UserModel.findById(
+      dish.evaluation.nutritionistId
+    )
+      .select('name avatar')
+      .lean();
+
+    const dishObj = dish.toObject();
+
+    if (dishObj.evaluation) {
+      delete dishObj.evaluation.nutritionistId;
+    }
+
+    return {
+      ...dishObj,
+      evaluation: {
+        ...dishObj.evaluation,
+        nutritionist: {
+          _id: nutritionist?._id,
+          name: nutritionist?.name,
+          avatar: nutritionist?.avatar
+        }
+      }
+    };
   },
 
   evaluateReview: async (
@@ -146,6 +168,26 @@ export const ReviewService = {
 
     await dish.save();
 
-    return dish.toObject();
+    const nutritionist = await UserModel.findById(nutritionistId)
+      .select('name avatar')
+      .lean();
+
+    const dishObj = dish.toObject();
+
+    if (dishObj.evaluation) {
+      delete dishObj.evaluation.nutritionistId;
+    }
+
+    return {
+      ...dishObj,
+      evaluation: {
+        ...dishObj.evaluation,
+        nutritionist: {
+          _id: nutritionist?._id,
+          name: nutritionist?.name,
+          avatar: nutritionist?.avatar
+        }
+      }
+    };
   }
 };
