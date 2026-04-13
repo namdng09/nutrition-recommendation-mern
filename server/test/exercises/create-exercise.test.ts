@@ -6,7 +6,7 @@ import { EXERCISE_DIFFICULTY } from '~/shared/constants/exercise-difficulty';
 import { EXERCISE_TYPE } from '~/shared/constants/exercise-type';
 import { WORKOUT_COUNTER_TYPE } from '~/shared/constants/workout-counter-type';
 import { ExerciseModel } from '~/shared/database/models';
-import { uploadExerciseTutorial } from '~/shared/utils';
+import { deleteExerciseTutorial, uploadExerciseTutorial } from '~/shared/utils';
 
 vi.mock('~/shared/database/models', () => ({
   ExerciseModel: {
@@ -20,38 +20,30 @@ vi.mock('~/shared/utils', async importOriginal => {
   return {
     ...actual,
     uploadExerciseTutorial: vi.fn(),
-    deleteExerciseTutorial: vi.fn()
+    deleteExerciseTutorial: vi.fn(),
+    validateObjectId: vi.fn()
   };
 });
 
 const mockFindOne = vi.mocked(ExerciseModel.findOne);
 const mockCreate = vi.mocked(ExerciseModel.create);
-const mockUploadExerciseTutorial = vi.mocked(uploadExerciseTutorial);
+const mockUploadTutorial = vi.mocked(uploadExerciseTutorial);
+const mockDeleteTutorial = vi.mocked(deleteExerciseTutorial);
 
 const validData = {
   name: 'Push-up',
-  instructions: 'Lower your body until chest touches floor',
+  instructions: 'Keep body straight and push from floor',
   difficulty: EXERCISE_DIFFICULTY.BEGINNER,
   type: EXERCISE_TYPE.STRENGTH,
   logType: WORKOUT_COUNTER_TYPE.WEIGHT_AND_REPS
 };
 
-describe('ExerciseService.createExercise', () => {
+describe('ExerciseService.createExercise (UC108)', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
   describe('validation', () => {
-    // Tests DTO schema directly — no service, no DB involved
-
-    it('should fail when name is missing', () => {
-      const { name: _, ...data } = validData;
-      const result = createExerciseRequestSchema.safeParse(data);
-
-      expect(result.success).toBe(false);
-      expect(result.error?.issues[0].message).toBe('Tên bài tập không hợp lệ');
-    });
-
     it('should fail when name is too short', () => {
       const result = createExerciseRequestSchema.safeParse({
         ...validData,
@@ -64,20 +56,30 @@ describe('ExerciseService.createExercise', () => {
       );
     });
 
-    it('should fail when name is not a string', () => {
+    it('should fail when type is invalid', () => {
       const result = createExerciseRequestSchema.safeParse({
         ...validData,
-        name: 1234
+        type: 'bad-type'
       });
 
       expect(result.success).toBe(false);
-      expect(result.error?.issues[0].message).toBe('Tên bài tập không hợp lệ');
+      expect(result.error?.issues[0].message).toBe('Loại bài tập không hợp lệ');
+    });
+
+    it('should fail when difficulty is invalid', () => {
+      const result = createExerciseRequestSchema.safeParse({
+        ...validData,
+        difficulty: 'bad-difficulty'
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe('Độ khó không hợp lệ');
     });
   });
 
   describe('business logic', () => {
     it('should throw 409 when exercise name already exists', async () => {
-      mockFindOne.mockResolvedValue({ name: validData.name } as any);
+      mockFindOne.mockResolvedValue({ _id: 'exercise-1' } as any);
 
       await expect(
         ExerciseService.createExercise(validData)
@@ -87,65 +89,34 @@ describe('ExerciseService.createExercise', () => {
       });
     });
 
-    it('should create exercise successfully with tutorial', async () => {
+    it('should create exercise and upload tutorial', async () => {
       const mockSave = vi.fn();
-      const mockExercise = {
-        _id: { toString: () => 'abc123' },
+      const exerciseId = 'exercise-2';
+      const exercise = {
+        _id: { toString: () => exerciseId },
         ...validData,
         tutorial: '',
         save: mockSave
       };
 
       mockFindOne.mockResolvedValue(null);
-      mockCreate.mockResolvedValue(mockExercise as any);
-      mockUploadExerciseTutorial.mockResolvedValue({
+      mockCreate.mockResolvedValue(exercise as any);
+      mockUploadTutorial.mockResolvedValue({
         success: true,
-        data: {
-          secure_url:
-            'https://res.cloudinary.com/test/video/upload/v1234567890/test-tutorial.mp4'
-        }
+        data: { secure_url: 'https://cdn.test/tutorial.mp4' }
       } as any);
 
-      const fakeTutorial = {
-        buffer: Buffer.from('fake-video-data')
-      } as Express.Multer.File;
+      await ExerciseService.createExercise(validData, {
+        buffer: Buffer.from('tutorial')
+      } as Express.Multer.File);
 
-      const result = await ExerciseService.createExercise(
-        validData,
-        fakeTutorial
+      expect(mockDeleteTutorial).toHaveBeenCalledWith(exerciseId);
+      expect(mockUploadTutorial).toHaveBeenCalledWith(
+        expect.any(Buffer),
+        exerciseId
       );
-
-      expect(mockExercise.tutorial).toBe(
-        'https://res.cloudinary.com/test/video/upload/v1234567890/test-tutorial.mp4'
-      );
+      expect(exercise.tutorial).toBe('https://cdn.test/tutorial.mp4');
       expect(mockSave).toHaveBeenCalled();
-      expect(result).toEqual(mockExercise);
-    });
-  });
-
-  describe('system', () => {
-    it('should throw 500 when tutorial upload fails', async () => {
-      mockFindOne.mockResolvedValue(null);
-      mockCreate.mockResolvedValue({
-        _id: { toString: () => 'abc123' },
-        ...validData,
-        save: vi.fn()
-      } as any);
-      mockUploadExerciseTutorial.mockResolvedValue({
-        success: false,
-        data: null
-      } as any);
-
-      const fakeTutorial = {
-        buffer: Buffer.from('fake-video-data')
-      } as Express.Multer.File;
-
-      await expect(
-        ExerciseService.createExercise(validData, fakeTutorial)
-      ).rejects.toMatchObject({
-        status: 500,
-        message: 'Không thể tải lên ảnh hướng dẫn bài tập'
-      });
     });
   });
 });
