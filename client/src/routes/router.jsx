@@ -338,6 +338,10 @@ const router = createBrowserRouter([
           {
             path: 'feedbacks/',
             Component: lazy(() => import('~/app/nutritionist/feedbacks/page'))
+          },
+          {
+            path: 'reviews/',
+            Component: lazy(() => import('~/app/nutritionist/reviews/page'))
           }
         ]
       },

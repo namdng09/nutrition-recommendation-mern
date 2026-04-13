@@ -1,6 +1,7 @@
 import {
   Apple,
   BicepsFlexed,
+  ClipboardCheck,
   Ham,
   Home,
   MessageSquare,
@@ -147,6 +148,11 @@ export function AdminSidebar({ ...props }) {
           title: 'Feedback',
           url: '/nutritionist/feedbacks',
           icon: MessageSquare
+        },
+        {
+          title: 'Review món riêng',
+          url: '/nutritionist/reviews',
+          icon: ClipboardCheck
         }
       ]
     }
