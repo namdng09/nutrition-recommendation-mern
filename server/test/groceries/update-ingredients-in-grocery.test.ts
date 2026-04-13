@@ -1,63 +1,70 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { updateGroceryIngredientRequestSchema } from '~/features/groceries/grocery-dto';
 import { GroceryService } from '~/features/groceries/grocery-service';
 import { GroceryModel } from '~/shared/database/models';
 import { validateObjectId } from '~/shared/utils';
 
 vi.mock('~/shared/database/models', () => ({
-  GroceryModel: { findOne: vi.fn() }
+  GroceryModel: {
+    findOne: vi.fn()
+  }
 }));
 
 vi.mock('~/shared/utils', async importOriginal => {
   const actual = await importOriginal<typeof import('~/shared/utils')>();
-  return { ...actual, validateObjectId: vi.fn() };
+  return {
+    ...actual,
+    validateObjectId: vi.fn()
+  };
 });
 
 const mockFindOne = vi.mocked(GroceryModel.findOne);
 const mockValidateObjectId = vi.mocked(validateObjectId);
 
-const USER_ID = 'user123';
-const GROCERY_ID = 'grocery123';
-const INGREDIENT_ID = 'ing1';
+const userId = 'user123';
+const groceryId = '507f1f77bcf86cd799439011';
+const ingredientId = '507f1f77bcf86cd799439012';
 
-const makeMockGrocery = (ingredients: any[]) => ({
-  _id: { toString: () => GROCERY_ID },
-  name: 'Danh sách tuần 1',
-  ingredients,
+const makeGrocery = (isPurchased = false) => ({
+  _id: groceryId,
+  ingredients: [
+    {
+      ingredientId: { toString: () => ingredientId },
+      name: 'Ca chua',
+      isPurchased
+    }
+  ],
   save: vi.fn()
 });
 
-describe('GroceryService.updateIngredientInGrocery', () => {
+describe('GroceryService.updateIngredientInGrocery (UC34)', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('business logic', () => {
-    it('should throw 400 when userId is invalid', async () => {
-      mockValidateObjectId.mockReturnValueOnce(false);
-
-      await expect(
-        GroceryService.updateIngredientInGrocery(
-          'invalid-id',
-          GROCERY_ID,
-          INGREDIENT_ID,
-          { isPurchased: true }
-        )
-      ).rejects.toMatchObject({
-        status: 400,
-        message: 'Định dạng ID người dùng không hợp lệ'
+  describe('validation', () => {
+    it('should fail when isPurchased is invalid', () => {
+      const result = updateGroceryIngredientRequestSchema.safeParse({
+        isPurchased: 'invalid'
       });
-    });
 
-    it('should throw 400 when groceryId is invalid', async () => {
-      mockValidateObjectId.mockReturnValueOnce(true).mockReturnValueOnce(false);
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe('business logic', () => {
+    it('should throw 400 when grocery id is invalid', async () => {
+      mockValidateObjectId.mockReturnValue(false);
 
       await expect(
         GroceryService.updateIngredientInGrocery(
-          USER_ID,
+          userId,
           'invalid-id',
-          INGREDIENT_ID,
-          { isPurchased: true }
+          ingredientId,
+          {
+            isPurchased: true
+          }
         )
       ).rejects.toMatchObject({
         status: 400,
@@ -65,18 +72,17 @@ describe('GroceryService.updateIngredientInGrocery', () => {
       });
     });
 
-    it('should throw 400 when ingredientId is invalid', async () => {
-      mockValidateObjectId
-        .mockReturnValueOnce(true)
-        .mockReturnValueOnce(true)
-        .mockReturnValueOnce(false);
+    it('should throw 400 when ingredient id is invalid', async () => {
+      mockValidateObjectId.mockReturnValueOnce(true).mockReturnValueOnce(false);
 
       await expect(
         GroceryService.updateIngredientInGrocery(
-          USER_ID,
-          GROCERY_ID,
+          userId,
+          groceryId,
           'invalid-ing',
-          { isPurchased: true }
+          {
+            isPurchased: true
+          }
         )
       ).rejects.toMatchObject({
         status: 400,
@@ -90,10 +96,12 @@ describe('GroceryService.updateIngredientInGrocery', () => {
 
       await expect(
         GroceryService.updateIngredientInGrocery(
-          USER_ID,
-          GROCERY_ID,
-          INGREDIENT_ID,
-          { isPurchased: true }
+          userId,
+          groceryId,
+          ingredientId,
+          {
+            isPurchased: true
+          }
         )
       ).rejects.toMatchObject({
         status: 404,
@@ -101,43 +109,39 @@ describe('GroceryService.updateIngredientInGrocery', () => {
       });
     });
 
-    it('should throw 404 when ingredient not found in grocery', async () => {
+    it('should throw 404 when ingredient does not exist in grocery', async () => {
       mockValidateObjectId.mockReturnValue(true);
-      mockFindOne.mockResolvedValue(makeMockGrocery([]) as any);
+      mockFindOne.mockResolvedValue({ ingredients: [], save: vi.fn() } as any);
 
       await expect(
         GroceryService.updateIngredientInGrocery(
-          USER_ID,
-          GROCERY_ID,
-          INGREDIENT_ID,
-          { isPurchased: true }
+          userId,
+          groceryId,
+          ingredientId,
+          {
+            isPurchased: true
+          }
         )
       ).rejects.toMatchObject({
         status: 404,
-        message: `Không tìm thấy nguyên liệu với ID: ${INGREDIENT_ID} trong danh sách mua sắm`
+        message: `Không tìm thấy nguyên liệu với ID: ${ingredientId} trong danh sách mua sắm`
       });
     });
 
-    it('should update isPurchased status successfully', async () => {
+    it('should mark ingredient as purchased successfully', async () => {
+      const grocery = makeGrocery(false);
       mockValidateObjectId.mockReturnValue(true);
-      const mockGrocery = makeMockGrocery([
-        {
-          ingredientId: { toString: () => INGREDIENT_ID },
-          name: 'Cà chua',
-          isPurchased: false
-        }
-      ]);
-      mockFindOne.mockResolvedValue(mockGrocery as any);
+      mockFindOne.mockResolvedValue(grocery as any);
 
-      await GroceryService.updateIngredientInGrocery(
-        USER_ID,
-        GROCERY_ID,
-        INGREDIENT_ID,
+      const result = await GroceryService.updateIngredientInGrocery(
+        userId,
+        groceryId,
+        ingredientId,
         { isPurchased: true }
       );
 
-      expect(mockGrocery.ingredients[0].isPurchased).toBe(true);
-      expect(mockGrocery.save).toHaveBeenCalled();
+      expect(result.ingredients[0].isPurchased).toBe(true);
+      expect(grocery.save).toHaveBeenCalled();
     });
   });
 });

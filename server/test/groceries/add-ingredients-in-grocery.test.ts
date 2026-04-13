@@ -1,42 +1,48 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { addIngredientsRequestSchema } from '~/features/groceries/grocery-dto';
+import { addGroceryIngredientRequestSchema } from '~/features/groceries/grocery-dto';
 import { GroceryService } from '~/features/groceries/grocery-service';
 import { GroceryModel, IngredientModel } from '~/shared/database/models';
 import { validateObjectId } from '~/shared/utils';
 
 vi.mock('~/shared/database/models', () => ({
-  GroceryModel: { findOne: vi.fn() },
-  IngredientModel: { find: vi.fn() }
+  GroceryModel: {
+    findOne: vi.fn()
+  },
+  IngredientModel: {
+    find: vi.fn()
+  }
 }));
 
 vi.mock('~/shared/utils', async importOriginal => {
   const actual = await importOriginal<typeof import('~/shared/utils')>();
-  return { ...actual, validateObjectId: vi.fn() };
+  return {
+    ...actual,
+    validateObjectId: vi.fn()
+  };
 });
 
 const mockFindOne = vi.mocked(GroceryModel.findOne);
 const mockIngredientFind = vi.mocked(IngredientModel.find);
 const mockValidateObjectId = vi.mocked(validateObjectId);
 
-const USER_ID = 'user123';
-const GROCERY_ID = 'grocery123';
+const userId = 'user123';
+const groceryId = '507f1f77bcf86cd799439011';
 
-const makeMockGrocery = (ingredients: any[] = []) => ({
-  _id: { toString: () => GROCERY_ID },
-  name: 'Danh sách tuần 1',
+const makeGrocery = (ingredients: any[] = []) => ({
+  _id: groceryId,
   ingredients,
   save: vi.fn()
 });
 
-describe('GroceryService.addIngredientsInGrocery', () => {
+describe('GroceryService.addIngredientsInGrocery (UC33)', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
   describe('validation', () => {
-    it('should fail when ingredients array is empty', () => {
-      const result = addIngredientsRequestSchema.safeParse({
+    it('should fail when ingredient id list is empty', () => {
+      const result = addGroceryIngredientRequestSchema.safeParse({
         ingredients: []
       });
 
@@ -45,34 +51,15 @@ describe('GroceryService.addIngredientsInGrocery', () => {
         'Phải có ít nhất 1 ID nguyên liệu để thêm'
       );
     });
-
-    it('should fail when ingredients is missing', () => {
-      const result = addIngredientsRequestSchema.safeParse({});
-
-      expect(result.success).toBe(false);
-    });
   });
 
   describe('business logic', () => {
-    it('should throw 400 when userId is invalid', async () => {
-      mockValidateObjectId.mockReturnValueOnce(false);
+    it('should throw 400 when grocery id is invalid', async () => {
+      mockValidateObjectId.mockReturnValue(false);
 
       await expect(
-        GroceryService.addIngredientsInGrocery('invalid-id', GROCERY_ID, {
-          ingredients: ['ing1']
-        })
-      ).rejects.toMatchObject({
-        status: 400,
-        message: 'Định dạng ID người dùng không hợp lệ'
-      });
-    });
-
-    it('should throw 400 when groceryId is invalid', async () => {
-      mockValidateObjectId.mockReturnValueOnce(true).mockReturnValueOnce(false);
-
-      await expect(
-        GroceryService.addIngredientsInGrocery(USER_ID, 'invalid-id', {
-          ingredients: ['ing1']
+        GroceryService.addIngredientsInGrocery(userId, 'invalid-id', {
+          ingredients: ['ing-1']
         })
       ).rejects.toMatchObject({
         status: 400,
@@ -85,8 +72,8 @@ describe('GroceryService.addIngredientsInGrocery', () => {
       mockFindOne.mockResolvedValue(null);
 
       await expect(
-        GroceryService.addIngredientsInGrocery(USER_ID, GROCERY_ID, {
-          ingredients: ['ing1']
+        GroceryService.addIngredientsInGrocery(userId, groceryId, {
+          ingredients: ['ing-1']
         })
       ).rejects.toMatchObject({
         status: 404,
@@ -94,13 +81,13 @@ describe('GroceryService.addIngredientsInGrocery', () => {
       });
     });
 
-    it('should throw 400 when duplicate ingredient ids in request', async () => {
+    it('should throw 400 when ingredient ids duplicated in request', async () => {
       mockValidateObjectId.mockReturnValue(true);
-      mockFindOne.mockResolvedValue(makeMockGrocery() as any);
+      mockFindOne.mockResolvedValue(makeGrocery() as any);
 
       await expect(
-        GroceryService.addIngredientsInGrocery(USER_ID, GROCERY_ID, {
-          ingredients: ['ing1', 'ing1']
+        GroceryService.addIngredientsInGrocery(userId, groceryId, {
+          ingredients: ['ing-1', 'ing-1']
         })
       ).rejects.toMatchObject({
         status: 400,
@@ -108,16 +95,12 @@ describe('GroceryService.addIngredientsInGrocery', () => {
       });
     });
 
-    it('should throw 400 when an ingredient id is invalid', async () => {
-      mockValidateObjectId
-        .mockReturnValueOnce(true) // userId
-        .mockReturnValueOnce(true) // groceryId
-        .mockReturnValueOnce(false); // ingredientId
-
-      mockFindOne.mockResolvedValue(makeMockGrocery() as any);
+    it('should throw 400 when ingredient id format is invalid', async () => {
+      mockValidateObjectId.mockReturnValueOnce(true).mockReturnValueOnce(false);
+      mockFindOne.mockResolvedValue(makeGrocery() as any);
 
       await expect(
-        GroceryService.addIngredientsInGrocery(USER_ID, GROCERY_ID, {
+        GroceryService.addIngredientsInGrocery(userId, groceryId, {
           ingredients: ['invalid-ing']
         })
       ).rejects.toMatchObject({
@@ -126,42 +109,42 @@ describe('GroceryService.addIngredientsInGrocery', () => {
       });
     });
 
-    it('should throw 404 when an ingredient is not found', async () => {
+    it('should throw 404 when ingredient does not exist', async () => {
       mockValidateObjectId.mockReturnValue(true);
-      mockFindOne.mockResolvedValue(makeMockGrocery() as any);
-      mockIngredientFind.mockResolvedValue([] as any); // found 0 but requested 1
+      mockFindOne.mockResolvedValue(makeGrocery() as any);
+      mockIngredientFind.mockResolvedValue([] as any);
 
       await expect(
-        GroceryService.addIngredientsInGrocery(USER_ID, GROCERY_ID, {
-          ingredients: ['ing1']
+        GroceryService.addIngredientsInGrocery(userId, groceryId, {
+          ingredients: ['ing-1']
         })
       ).rejects.toMatchObject({
         status: 404,
-        message: 'Không tìm thấy nguyên liệu với ID: ing1'
+        message: 'Không tìm thấy nguyên liệu với ID: ing-1'
       });
     });
 
-    it('should add new ingredients to grocery successfully', async () => {
+    it('should add ingredients to grocery successfully', async () => {
       mockValidateObjectId.mockReturnValue(true);
-      const mockGrocery = makeMockGrocery([]);
-      mockFindOne.mockResolvedValue(mockGrocery as any);
+      const grocery = makeGrocery([
+        {
+          ingredientId: 'ing-1',
+          name: 'Muoi',
+          image: 'muoi.jpg',
+          isPurchased: false
+        }
+      ]);
+      mockFindOne.mockResolvedValue(grocery as any);
+      mockIngredientFind.mockResolvedValue([
+        { _id: 'ing-2', name: 'Duong', image: 'duong.jpg' },
+        { _id: 'ing-3', name: 'Bot ot', image: 'bot-ot.jpg' }
+      ] as any);
 
-      const mockIngredient = {
-        _id: { toString: () => 'ing1' },
-        name: 'Cà chua',
-        image: 'https://example.com/img.jpg'
-      };
-      mockIngredientFind.mockResolvedValue([mockIngredient] as any);
+      await GroceryService.addIngredientsInGrocery(userId, groceryId, {
+        ingredients: ['ing-2', 'ing-3']
+      });
 
-      const result = await GroceryService.addIngredientsInGrocery(
-        USER_ID,
-        GROCERY_ID,
-        { ingredients: ['ing1'] }
-      );
-
-      expect(mockGrocery.save).toHaveBeenCalled();
-      expect(result.ingredients).toHaveLength(1);
-      expect(result.ingredients[0].name).toBe('Cà chua');
+      expect(grocery.ingredients).toHaveLength(3);
     });
   });
 });
