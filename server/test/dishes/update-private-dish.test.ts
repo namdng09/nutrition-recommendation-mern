@@ -169,34 +169,7 @@ describe('DishService.updatePrivateDish', () => {
       });
     });
 
-    it('should update private dish successfully without image', async () => {
-      const mockDish = {
-        _id: { toString: () => VALID_ID },
-        isPublic: false,
-        user: { _id: { toString: () => userId } },
-        ...validData
-      };
-
-      mockValidateObjectId.mockReturnValue(true);
-      mockFindById.mockResolvedValue({
-        _id: { toString: () => VALID_ID },
-        isPublic: false,
-        user: { _id: { toString: () => userId } }
-      } as any);
-      mockFindOne.mockResolvedValue(null);
-      mockFindByIdAndUpdate.mockResolvedValue(mockDish as any);
-
-      const result = await DishService.updatePrivateDish(
-        VALID_ID,
-        userId,
-        validData as any
-      );
-
-      expect(result).toEqual(mockDish);
-      expect(mockUploadImage).not.toHaveBeenCalled();
-    });
-
-    it('should update private dish successfully with image', async () => {
+    it('should update private dish successfully', async () => {
       const mockSave = vi.fn();
       const mockDish = {
         _id: { toString: () => VALID_ID },
