@@ -2,7 +2,6 @@ import createHttpError from 'http-errors';
 
 import { MEMBERSHIP_LEVEL } from '~/shared/constants/membership-level';
 import { PAYMENT_STATUS } from '~/shared/constants/payment-status';
-import { ROLE } from '~/shared/constants/role';
 import {
   CollectionModel,
   DishModel,
@@ -10,7 +9,7 @@ import {
   PostModel,
   UserModel
 } from '~/shared/database/models';
-import { toObjectId, validateObjectId } from '~/shared/utils';
+import { toObjectId } from '~/shared/utils';
 
 import type { dashboardQuery } from './dashboard-dto';
 
@@ -78,6 +77,7 @@ export const DashboardService = {
     );
   }
 };
+
 const paymentMetricsAggregation = (baseFilter: Record<string, any>) =>
   PaymentModel.aggregate<{
     _id: string;
@@ -133,16 +133,12 @@ const nutritionistEngagementAggregation = (byAuthor: Record<string, any>) =>
     { $project: { _id: 0 } }
   ]);
 
-// ====== Filter Builders ======
-
 const buildPaymentBaseFilter = (
   createdAtFilter: Record<string, any> | null
 ): Record<string, any> => ({
   targetMembership: { $exists: true },
   ...(createdAtFilter && { createdAt: createdAtFilter })
 });
-
-// ====== Data Transformers ======
 
 const buildMetricsMap = (
   statusMetrics: Array<{
@@ -234,8 +230,6 @@ const buildNutritionistDashboardResponse = (
   }
 });
 
-// ====== Date/Time Utilities ======
-
 const toStartOfDay = (date: Date) => {
   const result = new Date(date);
   result.setHours(0, 0, 0, 0);
@@ -266,8 +260,6 @@ const toStartOfYear = (date: Date) => {
   return result;
 };
 
-// ====== Date Parsing ======
-
 const parseStrictDate = (value: string, field: 'startDate' | 'endDate') => {
   const match = value.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!match)
@@ -285,8 +277,6 @@ const parseStrictDate = (value: string, field: 'startDate' | 'endDate') => {
 
   return parsed;
 };
-
-// ====== Range Calculations ======
 
 const getRangeFilter = (range: AdminDashboardRange, now = new Date()) => {
   switch (range) {
