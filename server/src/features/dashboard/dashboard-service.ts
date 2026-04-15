@@ -19,97 +19,27 @@ type AdminDashboardRange = NonNullable<AdminDashboardQuery['range']>;
 export const DashboardService = {
   viewAdminDashboard: async (query: AdminDashboardQuery) => {
     const { period, createdAtFilter } = resolveRange(query);
-
-    const baseFilter = {
-      targetMembership: { $exists: true },
-      ...(createdAtFilter && { createdAt: createdAtFilter })
-    };
+    const baseFilter = buildPaymentBaseFilter(createdAtFilter);
 
     const [statusMetrics, totalVipUsers, totalUsers] = await Promise.all([
-      PaymentModel.aggregate<{
-        _id: string;
-        revenue: number;
-        count: number;
-        upgradeCount: number;
-        completedUpgradeCount: number;
-      }>([
-        { $match: baseFilter },
-        {
-          $group: {
-            _id: '$status',
-            revenue: { $sum: '$amount' },
-            count: { $sum: 1 },
-            upgradeCount: {
-              $sum: {
-                $cond: [
-                  { $eq: ['$targetMembership', MEMBERSHIP_LEVEL.VIP] },
-                  1,
-                  0
-                ]
-              }
-            },
-            completedUpgradeCount: {
-              $sum: {
-                $cond: [
-                  {
-                    $and: [
-                      { $eq: ['$targetMembership', MEMBERSHIP_LEVEL.VIP] },
-                      { $eq: ['$status', PAYMENT_STATUS.COMPLETED] }
-                    ]
-                  },
-                  1,
-                  0
-                ]
-              }
-            }
-          }
-        }
-      ]),
+      paymentMetricsAggregation(baseFilter),
       UserModel.countDocuments({ membershipLevel: MEMBERSHIP_LEVEL.VIP }),
       UserModel.countDocuments({})
     ]);
 
-    const metricsMap = new Map(statusMetrics.map(m => [m._id, m]));
+    const metricsMap = buildMetricsMap(statusMetrics);
+    const statusBreakdown = buildStatusBreakdown(metricsMap);
 
-    const statusBreakdown = Object.values(PAYMENT_STATUS).map(status => ({
-      status,
-      revenue: metricsMap.get(status)?.revenue ?? 0,
-      count: metricsMap.get(status)?.count ?? 0,
-      upgradeCount: metricsMap.get(status)?.upgradeCount ?? 0,
-      completedUpgradeCount: metricsMap.get(status)?.completedUpgradeCount ?? 0
-    }));
-
-    const sum = (key: keyof (typeof statusBreakdown)[0]) =>
-      statusBreakdown.reduce((acc, item) => acc + (item[key] as number), 0);
-
-    return {
+    return buildAdminDashboardResponse(
       period,
-      overview: {
-        totalRevenue: sum('revenue'),
-        totalUpgrades: sum('upgradeCount'),
-        totalCompletedUpgrades: sum('completedUpgradeCount'),
-        totalVipUsers,
-        totalUsers
-      },
-      statusBreakdown: statusBreakdown.map(({ status, count, revenue }) => ({
-        status,
-        count,
-        revenue
-      }))
-    };
+      statusBreakdown,
+      totalVipUsers,
+      totalUsers
+    );
   },
 
   viewNutritionistDashboard: async (userId: string) => {
-    if (!validateObjectId(userId))
-      throw createHttpError(400, 'ID người dùng không hợp lệ');
-
-    const user = await UserModel.findById(userId, 'role');
-    if (!user) throw createHttpError(404, 'Không tìm thấy người dùng');
-    if (user.role !== ROLE.NUTRITIONIST)
-      throw createHttpError(
-        403,
-        'Chỉ chuyên gia dinh dưỡng mới có thể truy cập dashboard này'
-      );
+    await validateNutritionistAccess(userId);
 
     const authorId = toObjectId(userId);
     const byAuthor = { 'author._id': authorId };
@@ -128,40 +58,205 @@ export const DashboardService = {
       PostModel.countDocuments(byAuthor),
       PostModel.countDocuments({ ...byAuthor, isPublished: true }),
       CollectionModel.countDocuments(byUser),
-      PostModel.aggregate<{
+      nutritionistEngagementAggregation(byAuthor)
+    ]);
+
+    return buildNutritionistDashboardResponse(
+      totalDishes,
+      totalPublicDishes,
+      totalPosts,
+      totalPublishedPosts,
+      totalCollections,
+      engagement
+    );
+  }
+};
+
+// ====== Validation Utilities ======
+
+const validateNutritionistAccess = async (userId: string) => {
+  if (!validateObjectId(userId))
+    throw createHttpError(400, 'ID người dùng không hợp lệ');
+
+  const user = await UserModel.findById(userId, 'role');
+  if (!user) throw createHttpError(404, 'Không tìm thấy người dùng');
+  if (user.role !== ROLE.NUTRITIONIST)
+    throw createHttpError(
+      403,
+      'Chỉ chuyên gia dinh dưỡng mới có thể truy cập dashboard này'
+    );
+};
+
+const validateAdminAccess = async (userId: string) => {
+  if (!validateObjectId(userId))
+    throw createHttpError(400, 'ID người dùng không hợp lệ');
+
+  const user = await UserModel.findById(userId, 'role');
+  if (!user) throw createHttpError(404, 'Không tìm thấy người dùng');
+  if (user.role !== ROLE.ADMIN)
+    throw createHttpError(
+      403,
+      'Chỉ quản trị viên mới có thể truy cập dashboard này'
+    );
+};
+
+// ====== MongoDB Aggregation Queries ======
+
+const paymentMetricsAggregation = (baseFilter: Record<string, any>) =>
+  PaymentModel.aggregate<{
+    _id: string;
+    revenue: number;
+    count: number;
+    upgradeCount: number;
+    completedUpgradeCount: number;
+  }>([
+    { $match: baseFilter },
+    {
+      $group: {
+        _id: '$status',
+        revenue: { $sum: '$amount' },
+        count: { $sum: 1 },
+        upgradeCount: {
+          $sum: {
+            $cond: [{ $eq: ['$targetMembership', MEMBERSHIP_LEVEL.VIP] }, 1, 0]
+          }
+        },
+        completedUpgradeCount: {
+          $sum: {
+            $cond: [
+              {
+                $and: [
+                  { $eq: ['$targetMembership', MEMBERSHIP_LEVEL.VIP] },
+                  { $eq: ['$status', PAYMENT_STATUS.COMPLETED] }
+                ]
+              },
+              1,
+              0
+            ]
+          }
+        }
+      }
+    }
+  ]);
+
+const nutritionistEngagementAggregation = (byAuthor: Record<string, any>) =>
+  PostModel.aggregate<{
+    totalViews: number;
+    totalLikes: number;
+    totalComments: number;
+  }>([
+    { $match: byAuthor },
+    {
+      $group: {
+        _id: null,
+        totalViews: { $sum: { $ifNull: ['$views', 0] } },
+        totalLikes: { $sum: { $size: { $ifNull: ['$likes', []] } } },
+        totalComments: { $sum: { $size: { $ifNull: ['$comments', []] } } }
+      }
+    },
+    { $project: { _id: 0 } }
+  ]);
+
+// ====== Filter Builders ======
+
+const buildPaymentBaseFilter = (
+  createdAtFilter: Record<string, any> | null
+): Record<string, any> => ({
+  targetMembership: { $exists: true },
+  ...(createdAtFilter && { createdAt: createdAtFilter })
+});
+
+// ====== Data Transformers ======
+
+const buildMetricsMap = (
+  statusMetrics: Array<{
+    _id: string;
+    revenue: number;
+    count: number;
+    upgradeCount: number;
+    completedUpgradeCount: number;
+  }>
+): Map<string, (typeof statusMetrics)[0]> =>
+  new Map(statusMetrics.map(m => [m._id, m]));
+
+const buildStatusBreakdown = (
+  metricsMap: Map<
+    string,
+    {
+      _id: string;
+      revenue: number;
+      count: number;
+      upgradeCount: number;
+      completedUpgradeCount: number;
+    }
+  >
+) =>
+  Object.values(PAYMENT_STATUS).map(status => ({
+    status,
+    revenue: metricsMap.get(status)?.revenue ?? 0,
+    count: metricsMap.get(status)?.count ?? 0,
+    upgradeCount: metricsMap.get(status)?.upgradeCount ?? 0,
+    completedUpgradeCount: metricsMap.get(status)?.completedUpgradeCount ?? 0
+  }));
+
+const sumMetrics = (
+  breakdown: ReturnType<typeof buildStatusBreakdown>,
+  key: keyof (typeof breakdown)[0]
+): number => breakdown.reduce((acc, item) => acc + (item[key] as number), 0);
+
+const buildAdminDashboardResponse = (
+  period: string,
+  statusBreakdown: ReturnType<typeof buildStatusBreakdown>,
+  totalVipUsers: number,
+  totalUsers: number
+) => ({
+  period,
+  overview: {
+    totalRevenue: sumMetrics(statusBreakdown, 'revenue'),
+    totalUpgrades: sumMetrics(statusBreakdown, 'upgradeCount'),
+    totalCompletedUpgrades: sumMetrics(
+      statusBreakdown,
+      'completedUpgradeCount'
+    ),
+    totalVipUsers,
+    totalUsers
+  },
+  statusBreakdown: statusBreakdown.map(({ status, count, revenue }) => ({
+    status,
+    count,
+    revenue
+  }))
+});
+
+const buildNutritionistDashboardResponse = (
+  totalDishes: number,
+  totalPublicDishes: number,
+  totalPosts: number,
+  totalPublishedPosts: number,
+  totalCollections: number,
+  engagement:
+    | {
         totalViews: number;
         totalLikes: number;
         totalComments: number;
-      }>([
-        { $match: byAuthor },
-        {
-          $group: {
-            _id: null,
-            totalViews: { $sum: { $ifNull: ['$views', 0] } },
-            totalLikes: { $sum: { $size: { $ifNull: ['$likes', []] } } },
-            totalComments: { $sum: { $size: { $ifNull: ['$comments', []] } } }
-          }
-        },
-        { $project: { _id: 0 } }
-      ])
-    ]);
-
-    return {
-      overview: {
-        totalDishes,
-        totalPublicDishes,
-        totalPosts,
-        totalPublishedPosts,
-        totalCollections
-      },
-      engagement: engagement ?? {
-        totalViews: 0,
-        totalLikes: 0,
-        totalComments: 0
       }
-    };
+    | undefined
+) => ({
+  overview: {
+    totalDishes,
+    totalPublicDishes,
+    totalPosts,
+    totalPublishedPosts,
+    totalCollections
+  },
+  engagement: engagement ?? {
+    totalViews: 0,
+    totalLikes: 0,
+    totalComments: 0
   }
-};
+});
+
+// ====== Date/Time Utilities ======
 
 const toStartOfDay = (date: Date) => {
   const result = new Date(date);
@@ -193,6 +288,8 @@ const toStartOfYear = (date: Date) => {
   return result;
 };
 
+// ====== Date Parsing ======
+
 const parseStrictDate = (value: string, field: 'startDate' | 'endDate') => {
   const match = value.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!match)
@@ -210,6 +307,8 @@ const parseStrictDate = (value: string, field: 'startDate' | 'endDate') => {
 
   return parsed;
 };
+
+// ====== Range Calculations ======
 
 const getRangeFilter = (range: AdminDashboardRange, now = new Date()) => {
   switch (range) {
