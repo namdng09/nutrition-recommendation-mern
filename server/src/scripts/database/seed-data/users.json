@@ -1,0 +1,3947 @@
+[
+  {
+    "email": "seed.user.1@example.local",
+    "name": "Người dùng mẫu 1",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-1",
+    "gender": "Nữ",
+    "role": "Admin",
+    "dob": {
+      "$date": {
+        "$numberLong": "1305158400000"
+      }
+    },
+    "membershipLevel": "Tài khoản VIP",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1779244134838"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "12"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "165"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "189"
+    },
+    "bodyfat": "Trung Bình",
+    "diet": "Thuần chay",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "1953"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Vừa",
+        "preferredTypes": [
+          "Tráng miệng",
+          "Ăn nhẹ"
+        ],
+        "cookingPreference": "Không thể nấu",
+        "availableTime": "Nhiều thời gian (<60 phút)",
+        "complexity": "Trung bình",
+        "dishCategories": [
+          "Món chính",
+          "Nước sốt"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "79"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534838"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca9b"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "64"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734838"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca9c"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Giảm mỡ",
+      "weightGoal": {
+        "$numberInt": "55"
+      },
+      "targetWeightChange": {
+        "$numberInt": "4"
+      }
+    },
+    "allergens": [
+      "Lúa mạch"
+    ],
+    "activityLevel": "Công việc bàn giấy, vận động nhẹ",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334838"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca9d"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca9a"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134932"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134932"
+      }
+    }
+  },
+  {
+    "email": "seed.user.2@example.local",
+    "name": "Người dùng mẫu 2",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-2",
+    "gender": "Nữ",
+    "role": "Admin",
+    "dob": {
+      "$date": {
+        "$numberLong": "818553600000"
+      }
+    },
+    "membershipLevel": "Tài khoản VIP",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1793500134840"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "234"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "311"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "160"
+    },
+    "bodyfat": "Thấp",
+    "diet": "Thuần chay",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "2136"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Vừa",
+        "preferredTypes": [
+          "Bữa sáng",
+          "Bữa trưa"
+        ],
+        "cookingPreference": "Có thể nấu",
+        "availableTime": "Rất nhiều thời gian (<90 phút)",
+        "complexity": "Phức tạp",
+        "dishCategories": [
+          "Tráng miệng",
+          "Bữa sáng"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "73"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca9f"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "59"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaa0"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Giảm mỡ",
+      "weightGoal": {
+        "$numberInt": "80"
+      },
+      "targetWeightChange": {
+        "$numberInt": "1"
+      }
+    },
+    "allergens": [
+      "Sữa"
+    ],
+    "activityLevel": "Cực kỳ năng động",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaa1"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca9e"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134932"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134932"
+      }
+    }
+  },
+  {
+    "email": "seed.user.3@example.local",
+    "name": "Người dùng mẫu 3",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-3",
+    "gender": "Khác",
+    "role": "Nutritionist",
+    "dob": {
+      "$date": {
+        "$numberLong": "1303603200000"
+      }
+    },
+    "membershipLevel": "Tài khoản VIP",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1802831334840"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "305"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "321"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "174"
+    },
+    "bodyfat": "Cao",
+    "diet": "Thuần chay",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "2716"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Nhỏ",
+        "preferredTypes": [
+          "Ăn nhẹ",
+          "Bữa tối"
+        ],
+        "cookingPreference": "Phải nấu",
+        "availableTime": "Không giới hạn",
+        "complexity": "Đơn giản",
+        "dishCategories": [
+          "Đồ uống",
+          "Tráng miệng"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "51"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaa3"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "55"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaa4"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Duy trì cân nặng",
+      "weightGoal": {
+        "$numberInt": "79"
+      },
+      "targetWeightChange": {
+        "$numberInt": "0"
+      }
+    },
+    "allergens": [
+      "Tôm hùm",
+      "Hành"
+    ],
+    "activityLevel": "Hoạt động hằng ngày, tập luyện thường xuyên",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaa5"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": {
+      "fileUrl": "https://files.example.local/cert-3.pdf",
+      "publicId": "seed-cert-3",
+      "name": "Chứng chỉ dinh dưỡng 3",
+      "status": "Pending",
+      "showCertificate": true,
+      "submittedAt": {
+        "$date": {
+          "$numberLong": "1776220134849"
+        }
+      }
+    },
+    "nutritionistProfile": {
+      "workplace": "Trung tâm sức khỏe 3",
+      "graduatedUniversity": "Đại học Dinh dưỡng 3",
+      "professionalBio": "Có kinh nghiệm xây dựng thực đơn cá nhân hóa."
+    },
+    "_id": {
+      "$oid": "69def7e6327d850cae4acaa2"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134933"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134933"
+      }
+    }
+  },
+  {
+    "email": "seed.user.4@example.local",
+    "name": "Người dùng mẫu 4",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-4",
+    "gender": "Khác",
+    "role": "Nutritionist",
+    "dob": {
+      "$date": {
+        "$numberLong": "1304380800000"
+      }
+    },
+    "membershipLevel": "Tài khoản thường",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1775874534840"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "280"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "292"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "190"
+    },
+    "bodyfat": "Thấp",
+    "diet": "Ăn uống tự do",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "2289"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Vừa",
+        "preferredTypes": [
+          "Tráng miệng",
+          "Ăn nhẹ"
+        ],
+        "cookingPreference": "Có thể nấu",
+        "availableTime": "Có thời gian (<30 phút)",
+        "complexity": "Phức tạp",
+        "dishCategories": [
+          "Món chính",
+          "Tráng miệng"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "67"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaa7"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "51"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaa8"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Giảm mỡ",
+      "weightGoal": {
+        "$numberInt": "64"
+      },
+      "targetWeightChange": {
+        "$numberInt": "3"
+      }
+    },
+    "allergens": [
+      "Ngô"
+    ],
+    "activityLevel": "Cực kỳ năng động",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaa9"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": {
+      "fileUrl": "https://files.example.local/cert-4.pdf",
+      "publicId": "seed-cert-4",
+      "name": "Chứng chỉ dinh dưỡng 4",
+      "status": "Pending",
+      "showCertificate": true,
+      "submittedAt": {
+        "$date": {
+          "$numberLong": "1776220134851"
+        }
+      }
+    },
+    "nutritionistProfile": {
+      "workplace": "Trung tâm sức khỏe 4",
+      "graduatedUniversity": "Đại học Dinh dưỡng 4",
+      "professionalBio": "Có kinh nghiệm xây dựng thực đơn cá nhân hóa."
+    },
+    "_id": {
+      "$oid": "69def7e6327d850cae4acaa6"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134933"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134933"
+      }
+    }
+  },
+  {
+    "email": "seed.user.5@example.local",
+    "name": "Người dùng mẫu 5",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-5",
+    "gender": "Nữ",
+    "role": "Nutritionist",
+    "dob": {
+      "$date": {
+        "$numberLong": "1304812800000"
+      }
+    },
+    "membershipLevel": "Tài khoản thường",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1774578534840"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "153"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "211"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "154"
+    },
+    "bodyfat": "Thấp",
+    "diet": "Paleo",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "1656"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Bình thường",
+        "preferredTypes": [
+          "Ăn nhẹ",
+          "Bữa tối"
+        ],
+        "cookingPreference": "Phải nấu",
+        "availableTime": "Rất nhiều thời gian (<90 phút)",
+        "complexity": "Phức tạp",
+        "dishCategories": [
+          "Món ăn kèm",
+          "Bữa sáng"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "66"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaab"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "72"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaac"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Duy trì cân nặng",
+      "weightGoal": {
+        "$numberInt": "75"
+      },
+      "targetWeightChange": {
+        "$numberInt": "4"
+      }
+    },
+    "allergens": [
+      "Hạt cây"
+    ],
+    "activityLevel": "Hoạt động hằng ngày, tập luyện thường xuyên",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaad"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": {
+      "fileUrl": "https://files.example.local/cert-5.pdf",
+      "publicId": "seed-cert-5",
+      "name": "Chứng chỉ dinh dưỡng 5",
+      "status": "Pending",
+      "showCertificate": true,
+      "submittedAt": {
+        "$date": {
+          "$numberLong": "1776220134853"
+        }
+      }
+    },
+    "nutritionistProfile": {
+      "workplace": "Trung tâm sức khỏe 5",
+      "graduatedUniversity": "Đại học Dinh dưỡng 5",
+      "professionalBio": "Có kinh nghiệm xây dựng thực đơn cá nhân hóa."
+    },
+    "_id": {
+      "$oid": "69def7e6327d850cae4acaaa"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134933"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134933"
+      }
+    }
+  },
+  {
+    "email": "seed.user.6@example.local",
+    "name": "Người dùng mẫu 6",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-6",
+    "gender": "Nữ",
+    "role": "Nutritionist",
+    "dob": {
+      "$date": {
+        "$numberLong": "1152144000000"
+      }
+    },
+    "membershipLevel": "Tài khoản VIP",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1803522534840"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "85"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "210"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "168"
+    },
+    "bodyfat": "Cao",
+    "diet": "Thuần chay",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "1608"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Bình thường",
+        "preferredTypes": [
+          "Bữa sáng",
+          "Bữa trưa"
+        ],
+        "cookingPreference": "Phải nấu",
+        "availableTime": "Không có thời gian (<5 phút)",
+        "complexity": "Trung bình",
+        "dishCategories": [
+          "Món ăn kèm",
+          "Món chính"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "56"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaaf"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "74"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acab0"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Giảm mỡ",
+      "weightGoal": {
+        "$numberInt": "60"
+      },
+      "targetWeightChange": {
+        "$numberInt": "0"
+      }
+    },
+    "allergens": [
+      "Trứng",
+      "Sô-cô-la"
+    ],
+    "activityLevel": "Công việc bàn giấy, vận động nhẹ",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acab1"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": {
+      "fileUrl": "https://files.example.local/cert-6.pdf",
+      "publicId": "seed-cert-6",
+      "name": "Chứng chỉ dinh dưỡng 6",
+      "status": "Pending",
+      "showCertificate": true,
+      "submittedAt": {
+        "$date": {
+          "$numberLong": "1776220134855"
+        }
+      }
+    },
+    "nutritionistProfile": {
+      "workplace": "Trung tâm sức khỏe 6",
+      "graduatedUniversity": "Đại học Dinh dưỡng 6",
+      "professionalBio": "Có kinh nghiệm xây dựng thực đơn cá nhân hóa."
+    },
+    "_id": {
+      "$oid": "69def7e6327d850cae4acaae"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134933"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134933"
+      }
+    }
+  },
+  {
+    "email": "seed.user.7@example.local",
+    "name": "Người dùng mẫu 7",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-7",
+    "gender": "Nam",
+    "role": "Nutritionist",
+    "dob": {
+      "$date": {
+        "$numberLong": "1124928000000"
+      }
+    },
+    "membershipLevel": "Tài khoản thường",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1774837734840"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "271"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "287"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "164"
+    },
+    "bodyfat": "Thấp",
+    "diet": "Thuần chay",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "1819"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Lớn",
+        "preferredTypes": [
+          "Ăn nhẹ",
+          "Bữa sáng"
+        ],
+        "cookingPreference": "Phải nấu",
+        "availableTime": "Không giới hạn",
+        "complexity": "Đơn giản",
+        "dishCategories": [
+          "Món chính",
+          "Tráng miệng"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "67"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acab3"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "54"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acab4"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Duy trì cân nặng",
+      "weightGoal": {
+        "$numberInt": "53"
+      },
+      "targetWeightChange": {
+        "$numberInt": "0"
+      }
+    },
+    "allergens": [
+      "Lúa mạch"
+    ],
+    "activityLevel": "Rất năng động",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acab5"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": {
+      "fileUrl": "https://files.example.local/cert-7.pdf",
+      "publicId": "seed-cert-7",
+      "name": "Chứng chỉ dinh dưỡng 7",
+      "status": "Pending",
+      "showCertificate": true,
+      "submittedAt": {
+        "$date": {
+          "$numberLong": "1776220134857"
+        }
+      }
+    },
+    "nutritionistProfile": {
+      "workplace": "Trung tâm sức khỏe 7",
+      "graduatedUniversity": "Đại học Dinh dưỡng 7",
+      "professionalBio": "Có kinh nghiệm xây dựng thực đơn cá nhân hóa."
+    },
+    "_id": {
+      "$oid": "69def7e6327d850cae4acab2"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134933"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134933"
+      }
+    }
+  },
+  {
+    "email": "seed.user.8@example.local",
+    "name": "Người dùng mẫu 8",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-8",
+    "gender": "Nam",
+    "role": "Nutritionist",
+    "dob": {
+      "$date": {
+        "$numberLong": "1266624000000"
+      }
+    },
+    "membershipLevel": "Tài khoản thường",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1774232934840"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "216"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "329"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "180"
+    },
+    "bodyfat": "Thấp",
+    "diet": "Địa Trung Hải",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "2099"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Bình thường",
+        "preferredTypes": [
+          "Tráng miệng",
+          "Bữa tối"
+        ],
+        "cookingPreference": "Có thể nấu",
+        "availableTime": "Ít thời gian (<15 phút)",
+        "complexity": "Đơn giản",
+        "dishCategories": [
+          "Salad",
+          "Bữa sáng"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "50"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acab7"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "54"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acab8"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Tăng cơ",
+      "weightGoal": {
+        "$numberInt": "78"
+      },
+      "targetWeightChange": {
+        "$numberInt": "0"
+      }
+    },
+    "allergens": [
+      "Sô-cô-la",
+      "Đậu nành"
+    ],
+    "activityLevel": "Hoạt động hằng ngày, tập luyện thường xuyên",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acab9"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": {
+      "fileUrl": "https://files.example.local/cert-8.pdf",
+      "publicId": "seed-cert-8",
+      "name": "Chứng chỉ dinh dưỡng 8",
+      "status": "Pending",
+      "showCertificate": true,
+      "submittedAt": {
+        "$date": {
+          "$numberLong": "1776220134859"
+        }
+      }
+    },
+    "nutritionistProfile": {
+      "workplace": "Trung tâm sức khỏe 8",
+      "graduatedUniversity": "Đại học Dinh dưỡng 8",
+      "professionalBio": "Có kinh nghiệm xây dựng thực đơn cá nhân hóa."
+    },
+    "_id": {
+      "$oid": "69def7e6327d850cae4acab6"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134933"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134933"
+      }
+    }
+  },
+  {
+    "email": "seed.user.9@example.local",
+    "name": "Người dùng mẫu 9",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-9",
+    "gender": "Khác",
+    "role": "User",
+    "dob": {
+      "$date": {
+        "$numberLong": "950140800000"
+      }
+    },
+    "membershipLevel": "Tài khoản VIP",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1788920934840"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "291"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "300"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "186"
+    },
+    "bodyfat": "Trung Bình",
+    "diet": "Paleo",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "2714"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Vừa",
+        "preferredTypes": [
+          "Bữa sáng",
+          "Ăn nhẹ"
+        ],
+        "cookingPreference": "Phải nấu",
+        "availableTime": "Không có thời gian (<5 phút)",
+        "complexity": "Trung bình",
+        "dishCategories": [
+          "Ăn nhẹ",
+          "Đồ uống"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "57"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acabb"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "52"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acabc"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Duy trì cân nặng",
+      "weightGoal": {
+        "$numberInt": "59"
+      },
+      "targetWeightChange": {
+        "$numberInt": "3"
+      }
+    },
+    "allergens": [
+      "Hải sản có vỏ",
+      "Cá"
+    ],
+    "activityLevel": "Hoạt động hằng ngày, tập luyện thường xuyên",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334840"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acabd"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4acaba"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134934"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134934"
+      }
+    }
+  },
+  {
+    "email": "seed.user.10@example.local",
+    "name": "Người dùng mẫu 10",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-10",
+    "gender": "Nữ",
+    "role": "User",
+    "dob": {
+      "$date": {
+        "$numberLong": "915840000000"
+      }
+    },
+    "membershipLevel": "Tài khoản thường",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1778034534841"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "71"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "241"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "155"
+    },
+    "bodyfat": "Cao",
+    "diet": "Thuần chay",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "2744"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Rất lớn",
+        "preferredTypes": [
+          "Tráng miệng",
+          "Ăn nhẹ"
+        ],
+        "cookingPreference": "Có thể nấu",
+        "availableTime": "Rất nhiều thời gian (<90 phút)",
+        "complexity": "Phức tạp",
+        "dishCategories": [
+          "Bữa sáng",
+          "Súp"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "75"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acabf"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "53"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acac0"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Giảm mỡ",
+      "weightGoal": {
+        "$numberInt": "52"
+      },
+      "targetWeightChange": {
+        "$numberInt": "2"
+      }
+    },
+    "allergens": [
+      "Tỏi"
+    ],
+    "activityLevel": "Cực kỳ năng động",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acac1"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4acabe"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134934"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134934"
+      }
+    }
+  },
+  {
+    "email": "seed.user.11@example.local",
+    "name": "Người dùng mẫu 11",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-11",
+    "gender": "Nữ",
+    "role": "User",
+    "dob": {
+      "$date": {
+        "$numberLong": "978825600000"
+      }
+    },
+    "membershipLevel": "Tài khoản thường",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1775356134841"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "68"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "291"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "158"
+    },
+    "bodyfat": "Cao",
+    "diet": "Keto",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "2796"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Rất lớn",
+        "preferredTypes": [
+          "Bữa tối",
+          "Bữa sáng"
+        ],
+        "cookingPreference": "Phải nấu",
+        "availableTime": "Rất nhiều thời gian (<90 phút)",
+        "complexity": "Phức tạp",
+        "dishCategories": [
+          "Khai vị",
+          "Bữa sáng"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "77"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acac3"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "80"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acac4"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Giảm mỡ",
+      "weightGoal": {
+        "$numberInt": "61"
+      },
+      "targetWeightChange": {
+        "$numberInt": "2"
+      }
+    },
+    "allergens": [
+      "Kiwi"
+    ],
+    "activityLevel": "Công việc bàn giấy, vận động nhẹ",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acac5"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4acac2"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134934"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134934"
+      }
+    }
+  },
+  {
+    "email": "seed.user.12@example.local",
+    "name": "Người dùng mẫu 12",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-12",
+    "gender": "Nam",
+    "role": "User",
+    "dob": {
+      "$date": {
+        "$numberLong": "1300320000000"
+      }
+    },
+    "membershipLevel": "Tài khoản thường",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1775528934841"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "175"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "219"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "175"
+    },
+    "bodyfat": "Cao",
+    "diet": "Keto",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "2336"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Nhỏ",
+        "preferredTypes": [
+          "Tráng miệng",
+          "Bữa sáng"
+        ],
+        "cookingPreference": "Phải nấu",
+        "availableTime": "Không giới hạn",
+        "complexity": "Trung bình",
+        "dishCategories": [
+          "Nước sốt",
+          "Bữa sáng"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "52"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acac7"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "68"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acac8"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Duy trì cân nặng",
+      "weightGoal": {
+        "$numberInt": "63"
+      },
+      "targetWeightChange": {
+        "$numberInt": "1"
+      }
+    },
+    "allergens": [
+      "Đậu phộng"
+    ],
+    "activityLevel": "Cực kỳ năng động",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acac9"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4acac6"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134934"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134934"
+      }
+    }
+  },
+  {
+    "email": "seed.user.13@example.local",
+    "name": "Người dùng mẫu 13",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-13",
+    "gender": "Nam",
+    "role": "User",
+    "dob": {
+      "$date": {
+        "$numberLong": "794620800000"
+      }
+    },
+    "membershipLevel": "Tài khoản thường",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1778380134841"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "36"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "296"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "181"
+    },
+    "bodyfat": "Trung Bình",
+    "diet": "Paleo",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "2792"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Lớn",
+        "preferredTypes": [
+          "Bữa sáng",
+          "Bữa trưa"
+        ],
+        "cookingPreference": "Phải nấu",
+        "availableTime": "Rất nhiều thời gian (<90 phút)",
+        "complexity": "Trung bình",
+        "dishCategories": [
+          "Món ăn kèm",
+          "Đồ uống"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "75"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acacb"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "53"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acacc"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Tăng cơ",
+      "weightGoal": {
+        "$numberInt": "60"
+      },
+      "targetWeightChange": {
+        "$numberInt": "2"
+      }
+    },
+    "allergens": [
+      "Đào"
+    ],
+    "activityLevel": "Cực kỳ năng động",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acacd"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4acaca"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134935"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134935"
+      }
+    }
+  },
+  {
+    "email": "seed.user.14@example.local",
+    "name": "Người dùng mẫu 14",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-14",
+    "gender": "Nữ",
+    "role": "User",
+    "dob": {
+      "$date": {
+        "$numberLong": "845596800000"
+      }
+    },
+    "membershipLevel": "Tài khoản VIP",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1804559334841"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "147"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "154"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "167"
+    },
+    "bodyfat": "Thấp",
+    "diet": "Paleo",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "2460"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Lớn",
+        "preferredTypes": [
+          "Ăn nhẹ",
+          "Tráng miệng"
+        ],
+        "cookingPreference": "Không thể nấu",
+        "availableTime": "Không giới hạn",
+        "complexity": "Phức tạp",
+        "dishCategories": [
+          "Món ăn kèm",
+          "Đồ uống"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "80"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acacf"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "60"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acad0"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Giảm mỡ",
+      "weightGoal": {
+        "$numberInt": "73"
+      },
+      "targetWeightChange": {
+        "$numberInt": "3"
+      }
+    },
+    "allergens": [
+      "Hạnh nhân"
+    ],
+    "activityLevel": "Công việc bàn giấy, vận động nhẹ",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acad1"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4acace"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134935"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134935"
+      }
+    }
+  },
+  {
+    "email": "seed.user.15@example.local",
+    "name": "Người dùng mẫu 15",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-15",
+    "gender": "Khác",
+    "role": "User",
+    "dob": {
+      "$date": {
+        "$numberLong": "1190851200000"
+      }
+    },
+    "membershipLevel": "Tài khoản VIP",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1803176934841"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "182"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "252"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "190"
+    },
+    "bodyfat": "Trung Bình",
+    "diet": "Địa Trung Hải",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "2101"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Lớn",
+        "preferredTypes": [
+          "Bữa sáng",
+          "Bữa trưa"
+        ],
+        "cookingPreference": "Không thể nấu",
+        "availableTime": "Không giới hạn",
+        "complexity": "Rất đơn giản",
+        "dishCategories": [
+          "Bữa sáng",
+          "Khai vị"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "77"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acad3"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "79"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acad4"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Giảm mỡ",
+      "weightGoal": {
+        "$numberInt": "52"
+      },
+      "targetWeightChange": {
+        "$numberInt": "0"
+      }
+    },
+    "allergens": [
+      "Hạt dẻ cười",
+      "Nghêu"
+    ],
+    "activityLevel": "Hoạt động nhẹ, tập luyện 3-4 lần/tuần",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acad5"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4acad2"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134935"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134935"
+      }
+    }
+  },
+  {
+    "email": "seed.user.16@example.local",
+    "name": "Người dùng mẫu 16",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-16",
+    "gender": "Khác",
+    "role": "User",
+    "dob": {
+      "$date": {
+        "$numberLong": "908496000000"
+      }
+    },
+    "membershipLevel": "Tài khoản thường",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1774751334841"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "258"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "301"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "185"
+    },
+    "bodyfat": "Cao",
+    "diet": "Ăn uống tự do",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "2267"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Bình thường",
+        "preferredTypes": [
+          "Ăn nhẹ",
+          "Bữa trưa"
+        ],
+        "cookingPreference": "Không thể nấu",
+        "availableTime": "Không có thời gian (<5 phút)",
+        "complexity": "Đơn giản",
+        "dishCategories": [
+          "Súp",
+          "Bữa sáng"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "76"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acad7"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "61"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acad8"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Duy trì cân nặng",
+      "weightGoal": {
+        "$numberInt": "52"
+      },
+      "targetWeightChange": {
+        "$numberInt": "4"
+      }
+    },
+    "allergens": [
+      "Hải sản có vỏ"
+    ],
+    "activityLevel": "Công việc bàn giấy, vận động nhẹ",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acad9"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4acad6"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134935"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134935"
+      }
+    }
+  },
+  {
+    "email": "seed.user.17@example.local",
+    "name": "Người dùng mẫu 17",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-17",
+    "gender": "Nam",
+    "role": "User",
+    "dob": {
+      "$date": {
+        "$numberLong": "1187308800000"
+      }
+    },
+    "membershipLevel": "Tài khoản VIP",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1787279334841"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "56"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "227"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "172"
+    },
+    "bodyfat": "Cao",
+    "diet": "Paleo",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "2583"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Lớn",
+        "preferredTypes": [
+          "Tráng miệng",
+          "Ăn nhẹ"
+        ],
+        "cookingPreference": "Phải nấu",
+        "availableTime": "Rất nhiều thời gian (<90 phút)",
+        "complexity": "Rất đơn giản",
+        "dishCategories": [
+          "Khai vị",
+          "Ăn nhẹ"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "65"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acadb"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "81"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acadc"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Duy trì cân nặng",
+      "weightGoal": {
+        "$numberInt": "52"
+      },
+      "targetWeightChange": {
+        "$numberInt": "4"
+      }
+    },
+    "allergens": [
+      "Hạt dẻ cười",
+      "Cá"
+    ],
+    "activityLevel": "Cực kỳ năng động",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acadd"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4acada"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134935"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134935"
+      }
+    }
+  },
+  {
+    "email": "seed.user.18@example.local",
+    "name": "Người dùng mẫu 18",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-18",
+    "gender": "Khác",
+    "role": "User",
+    "dob": {
+      "$date": {
+        "$numberLong": "844128000000"
+      }
+    },
+    "membershipLevel": "Tài khoản thường",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1777948134841"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "85"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "240"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "162"
+    },
+    "bodyfat": "Cao",
+    "diet": "Paleo",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "1866"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Nhỏ",
+        "preferredTypes": [
+          "Bữa trưa",
+          "Bữa sáng"
+        ],
+        "cookingPreference": "Phải nấu",
+        "availableTime": "Không có thời gian (<5 phút)",
+        "complexity": "Phức tạp",
+        "dishCategories": [
+          "Bữa sáng",
+          "Món ăn kèm"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "54"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acadf"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "58"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acae0"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Duy trì cân nặng",
+      "weightGoal": {
+        "$numberInt": "81"
+      },
+      "targetWeightChange": {
+        "$numberInt": "3"
+      }
+    },
+    "allergens": [
+      "Động vật thân mềm"
+    ],
+    "activityLevel": "Hoạt động nhẹ, tập luyện 3-4 lần/tuần",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acae1"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4acade"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134935"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134935"
+      }
+    }
+  },
+  {
+    "email": "seed.user.19@example.local",
+    "name": "Người dùng mẫu 19",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-19",
+    "gender": "Nam",
+    "role": "User",
+    "dob": {
+      "$date": {
+        "$numberLong": "1283990400000"
+      }
+    },
+    "membershipLevel": "Tài khoản thường",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1778552934841"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "328"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "349"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "179"
+    },
+    "bodyfat": "Cao",
+    "diet": "Ăn chay",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "2795"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Bình thường",
+        "preferredTypes": [
+          "Bữa sáng",
+          "Bữa tối"
+        ],
+        "cookingPreference": "Phải nấu",
+        "availableTime": "Không có thời gian (<5 phút)",
+        "complexity": "Đơn giản",
+        "dishCategories": [
+          "Nước sốt",
+          "Khai vị"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "54"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acae3"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "82"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acae4"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Tăng cơ",
+      "weightGoal": {
+        "$numberInt": "58"
+      },
+      "targetWeightChange": {
+        "$numberInt": "1"
+      }
+    },
+    "allergens": [
+      "Cần tây",
+      "Chuối"
+    ],
+    "activityLevel": "Hoạt động hằng ngày, tập luyện thường xuyên",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acae5"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4acae2"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134936"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134936"
+      }
+    }
+  },
+  {
+    "email": "seed.user.20@example.local",
+    "name": "Người dùng mẫu 20",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-20",
+    "gender": "Nam",
+    "role": "User",
+    "dob": {
+      "$date": {
+        "$numberLong": "910051200000"
+      }
+    },
+    "membershipLevel": "Tài khoản thường",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1776738534841"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "297"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "310"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "150"
+    },
+    "bodyfat": "Cao",
+    "diet": "Ăn chay",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "2208"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Rất lớn",
+        "preferredTypes": [
+          "Bữa sáng",
+          "Tráng miệng"
+        ],
+        "cookingPreference": "Phải nấu",
+        "availableTime": "Nhiều thời gian (<60 phút)",
+        "complexity": "Rất đơn giản",
+        "dishCategories": [
+          "Nước sốt",
+          "Bữa sáng"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "83"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acae7"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "64"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acae8"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Duy trì cân nặng",
+      "weightGoal": {
+        "$numberInt": "65"
+      },
+      "targetWeightChange": {
+        "$numberInt": "2"
+      }
+    },
+    "allergens": [
+      "Đào",
+      "Cá"
+    ],
+    "activityLevel": "Công việc bàn giấy, vận động nhẹ",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acae9"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4acae6"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134936"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134936"
+      }
+    }
+  },
+  {
+    "email": "seed.user.21@example.local",
+    "name": "Người dùng mẫu 21",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-21",
+    "gender": "Khác",
+    "role": "User",
+    "dob": {
+      "$date": {
+        "$numberLong": "1187827200000"
+      }
+    },
+    "membershipLevel": "Tài khoản VIP",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1806805734841"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "231"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "262"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "150"
+    },
+    "bodyfat": "Cao",
+    "diet": "Địa Trung Hải",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "1746"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Lớn",
+        "preferredTypes": [
+          "Tráng miệng",
+          "Ăn nhẹ"
+        ],
+        "cookingPreference": "Phải nấu",
+        "availableTime": "Có thời gian (<30 phút)",
+        "complexity": "Đơn giản",
+        "dishCategories": [
+          "Món ăn kèm",
+          "Tráng miệng"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "60"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaeb"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "73"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaec"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Giảm mỡ",
+      "weightGoal": {
+        "$numberInt": "55"
+      },
+      "targetWeightChange": {
+        "$numberInt": "4"
+      }
+    },
+    "allergens": [
+      "Óc chó"
+    ],
+    "activityLevel": "Rất năng động",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaed"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4acaea"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134936"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134936"
+      }
+    }
+  },
+  {
+    "email": "seed.user.22@example.local",
+    "name": "Người dùng mẫu 22",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-22",
+    "gender": "Nữ",
+    "role": "User",
+    "dob": {
+      "$date": {
+        "$numberLong": "1253059200000"
+      }
+    },
+    "membershipLevel": "Tài khoản thường",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1776738534841"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "169"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "290"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "186"
+    },
+    "bodyfat": "Cao",
+    "diet": "Paleo",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "1976"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Nhỏ",
+        "preferredTypes": [
+          "Ăn nhẹ",
+          "Bữa tối"
+        ],
+        "cookingPreference": "Không thể nấu",
+        "availableTime": "Có thời gian (<30 phút)",
+        "complexity": "Phức tạp",
+        "dishCategories": [
+          "Súp",
+          "Khai vị"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "58"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaef"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "61"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaf0"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Duy trì cân nặng",
+      "weightGoal": {
+        "$numberInt": "63"
+      },
+      "targetWeightChange": {
+        "$numberInt": "1"
+      }
+    },
+    "allergens": [
+      "Lúa mạch"
+    ],
+    "activityLevel": "Hoạt động nhẹ, tập luyện 3-4 lần/tuần",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaf1"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4acaee"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134936"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134936"
+      }
+    }
+  },
+  {
+    "email": "seed.user.23@example.local",
+    "name": "Người dùng mẫu 23",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-23",
+    "gender": "Nữ",
+    "role": "User",
+    "dob": {
+      "$date": {
+        "$numberLong": "761961600000"
+      }
+    },
+    "membershipLevel": "Tài khoản thường",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1773628134841"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "11"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "306"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "169"
+    },
+    "bodyfat": "Thấp",
+    "diet": "Keto",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "1664"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Lớn",
+        "preferredTypes": [
+          "Bữa tối",
+          "Tráng miệng"
+        ],
+        "cookingPreference": "Không thể nấu",
+        "availableTime": "Có thời gian (<30 phút)",
+        "complexity": "Phức tạp",
+        "dishCategories": [
+          "Salad",
+          "Đồ uống"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "80"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaf3"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "61"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaf4"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Tăng cơ",
+      "weightGoal": {
+        "$numberInt": "65"
+      },
+      "targetWeightChange": {
+        "$numberInt": "1"
+      }
+    },
+    "allergens": [
+      "Hạt pecan"
+    ],
+    "activityLevel": "Hoạt động hằng ngày, tập luyện thường xuyên",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaf5"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4acaf2"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134937"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134937"
+      }
+    }
+  },
+  {
+    "email": "seed.user.24@example.local",
+    "name": "Người dùng mẫu 24",
+    "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-24",
+    "gender": "Khác",
+    "role": "User",
+    "dob": {
+      "$date": {
+        "$numberLong": "1315267200000"
+      }
+    },
+    "membershipLevel": "Tài khoản thường",
+    "membershipExpiresAt": {
+      "$date": {
+        "$numberLong": "1778552934841"
+      }
+    },
+    "aiTokens": {
+      "$numberInt": "61"
+    },
+    "aiDailyTokenLimit": {
+      "$numberInt": "187"
+    },
+    "aiQuotaResetAt": {
+      "$date": {
+        "$numberLong": "1776272400000"
+      }
+    },
+    "height": {
+      "$numberInt": "154"
+    },
+    "bodyfat": "Cao",
+    "diet": "Ăn chay",
+    "nutritionTarget": {
+      "caloriesTarget": {
+        "$numberInt": "2041"
+      },
+      "macros": {
+        "carbs": {
+          "min": {
+            "$numberInt": "90"
+          },
+          "max": {
+            "$numberInt": "220"
+          }
+        },
+        "protein": {
+          "min": {
+            "$numberInt": "70"
+          },
+          "max": {
+            "$numberInt": "160"
+          }
+        },
+        "fat": {
+          "min": {
+            "$numberInt": "40"
+          },
+          "max": {
+            "$numberInt": "90"
+          }
+        }
+      }
+    },
+    "mealSettings": [
+      {
+        "name": "Kế hoạch bữa ăn",
+        "mealSize": "Nhỏ",
+        "preferredTypes": [
+          "Ăn nhẹ",
+          "Bữa sáng"
+        ],
+        "cookingPreference": "Không thể nấu",
+        "availableTime": "Không có thời gian (<5 phút)",
+        "complexity": "Phức tạp",
+        "dishCategories": [
+          "Món ăn kèm",
+          "Súp"
+        ]
+      }
+    ],
+    "favoriteDishes": [],
+    "favoriteIngredients": [],
+    "favoriteCollections": [],
+    "blockDishes": [],
+    "blockIngredients": [],
+    "weightRecord": [
+      {
+        "weight": {
+          "$numberInt": "56"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1775010534841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaf7"
+        }
+      },
+      {
+        "weight": {
+          "$numberInt": "66"
+        },
+        "date": {
+          "$date": {
+            "$numberLong": "1776133734841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaf8"
+        }
+      }
+    ],
+    "goal": {
+      "target": "Duy trì cân nặng",
+      "weightGoal": {
+        "$numberInt": "80"
+      },
+      "targetWeightChange": {
+        "$numberInt": "3"
+      }
+    },
+    "allergens": [
+      "Cua",
+      "Sulfite"
+    ],
+    "activityLevel": "Hoạt động nhẹ, tập luyện 3-4 lần/tuần",
+    "medicalHistory": [
+      "Không"
+    ],
+    "achievements": [
+      {
+        "key": "onboarding_completed",
+        "unlockedAt": {
+          "$date": {
+            "$numberLong": "1775615334841"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e6327d850cae4acaf9"
+        }
+      }
+    ],
+    "hasOnboarded": true,
+    "isActive": true,
+    "certificate": null,
+    "_id": {
+      "$oid": "69def7e6327d850cae4acaf6"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134937"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134937"
+      }
+    }
+  }
+]

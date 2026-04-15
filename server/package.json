@@ -11,7 +11,7 @@
     "postbuild": "node copy-email-templates.js",
     "start": "node dist/index.js",
     "dev": "nodemon --watch src --watch .env --exec tsx src/index.ts",
-    "seed:database": "tsx src/scripts/seed-database.ts",
+    "seed:database": "tsx src/scripts/database/seed-database.ts",
     "rag:setup": "tsx src/scripts/rag/setup-rag.ts",
     "rag:ingest:dishes": "tsx src/scripts/rag/ingest-dishes.ts",
     "rag:ingest:exercises": "tsx src/scripts/rag/ingest-exercises.ts",

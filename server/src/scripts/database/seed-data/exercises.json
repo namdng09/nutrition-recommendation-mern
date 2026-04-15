@@ -1,0 +1,722 @@
+[
+  {
+    "name": "Hít đất 1",
+    "tutorial": "https://example.local/exercises/1",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Nâng cao",
+    "type": "Bùng nổ",
+    "logType": "Cân nặng và số lần tập",
+    "muscles": [
+      {
+        "name": "Shoulders",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759283437/uploads/oxcwxcw0dxeg5qi8a7ya.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca63"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "Exercise Ball",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759604191/uploads/zrmqnx9bbwb7idexy08c.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca64"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca62"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134781"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134781"
+      }
+    }
+  },
+  {
+    "name": "Squat 2",
+    "tutorial": "https://example.local/exercises/2",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Trung bình",
+    "type": "Yoga",
+    "logType": "Thời gian",
+    "muscles": [
+      {
+        "name": "Lower Legs",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759283573/uploads/rsswjowixyhwfke90axu.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca66"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "Pullup Bar",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759604523/uploads/a82izpxpfjklzivgepan.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca67"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca65"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134782"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134782"
+      }
+    }
+  },
+  {
+    "name": "Plank 3",
+    "tutorial": "https://example.local/exercises/3",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Trung bình",
+    "type": "Cường độ",
+    "logType": "Thời gian",
+    "muscles": [
+      {
+        "name": "Cardio",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759283350/uploads/gkcfjnjawlhwu2jt3b8d.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca69"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "EZ Curl Bar",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759604251/uploads/ttotzelhcsxspzfzw4bf.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca6a"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca68"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134783"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134783"
+      }
+    }
+  },
+  {
+    "name": "Lunge 4",
+    "tutorial": "https://example.local/exercises/4",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Nâng cao",
+    "type": "Kéo giãn",
+    "logType": "Thời gian",
+    "muscles": [
+      {
+        "name": "Lower Legs",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759283573/uploads/rsswjowixyhwfke90axu.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca6c"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "Pullup Bar",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759604523/uploads/a82izpxpfjklzivgepan.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca6d"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca6b"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134783"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134783"
+      }
+    }
+  },
+  {
+    "name": "Leo núi tại chỗ 5",
+    "tutorial": "https://example.local/exercises/5",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Nâng cao",
+    "type": "Kéo giãn",
+    "logType": "Quãng đường",
+    "muscles": [
+      {
+        "name": "Biceps",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759283288/uploads/q9vl4xsfinank06ffyx2.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca6f"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "Body Weight",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759603840/uploads/wzvazke52chlfxzobkff.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca70"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca6e"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134783"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134783"
+      }
+    }
+  },
+  {
+    "name": "Deadlift 6",
+    "tutorial": "https://example.local/exercises/6",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Nâng cao",
+    "type": "Olympic",
+    "logType": "Thời gian",
+    "muscles": [
+      {
+        "name": "Biceps",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759283288/uploads/q9vl4xsfinank06ffyx2.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca72"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "Cardio Machine",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759604352/uploads/knpfpskiotoa8lh46sbv.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca73"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca71"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134783"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134783"
+      }
+    }
+  },
+  {
+    "name": "Đẩy ngực ghế 7",
+    "tutorial": "https://example.local/exercises/7",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Trung bình",
+    "type": "Bùng nổ",
+    "logType": "Quãng đường",
+    "muscles": [
+      {
+        "name": "Chest",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759283368/uploads/wf3mknvjntycateorth2.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca75"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "Pullup Bar",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759604523/uploads/a82izpxpfjklzivgepan.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca76"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca74"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134783"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134783"
+      }
+    }
+  },
+  {
+    "name": "Kéo tạ 8",
+    "tutorial": "https://example.local/exercises/8",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Nâng cao",
+    "type": "Yoga",
+    "logType": "Cân nặng và số lần tập",
+    "muscles": [
+      {
+        "name": "Cardio",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759283350/uploads/gkcfjnjawlhwu2jt3b8d.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca78"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "Cardio Machine",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759604352/uploads/knpfpskiotoa8lh46sbv.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca79"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca77"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    }
+  },
+  {
+    "name": "Burpee 9",
+    "tutorial": "https://example.local/exercises/9",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Trung bình",
+    "type": "Sức mạnh",
+    "logType": "Thời gian",
+    "muscles": [
+      {
+        "name": "Biceps",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759283288/uploads/q9vl4xsfinank06ffyx2.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca7b"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "Weight Plate",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759604584/uploads/xfeevkmernxxjymjxkdp.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca7c"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca7a"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    }
+  },
+  {
+    "name": "Bật nhảy dang tay 10",
+    "tutorial": "https://example.local/exercises/10",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Nâng cao",
+    "type": "Linh hoạt",
+    "logType": "Thời gian",
+    "muscles": [
+      {
+        "name": "Triceps",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759283464/uploads/rrl7lhxivfmgnwegtv5f.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca7e"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "Exercise Ball",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759604191/uploads/zrmqnx9bbwb7idexy08c.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca7f"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca7d"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    }
+  },
+  {
+    "name": "Hít đất 11",
+    "tutorial": "https://example.local/exercises/11",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Cơ bản",
+    "type": "Yoga",
+    "logType": "Quãng đường",
+    "muscles": [
+      {
+        "name": "Biceps",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759283288/uploads/q9vl4xsfinank06ffyx2.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca81"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "Cardio Machine",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759604352/uploads/knpfpskiotoa8lh46sbv.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca82"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca80"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    }
+  },
+  {
+    "name": "Squat 12",
+    "tutorial": "https://example.local/exercises/12",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Trung bình",
+    "type": "Linh hoạt",
+    "logType": "Cân nặng và số lần tập",
+    "muscles": [
+      {
+        "name": "Cardio",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759283350/uploads/gkcfjnjawlhwu2jt3b8d.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca84"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "Cardio Machine",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759604352/uploads/knpfpskiotoa8lh46sbv.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca85"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca83"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    }
+  },
+  {
+    "name": "Plank 13",
+    "tutorial": "https://example.local/exercises/13",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Cơ bản",
+    "type": "Linh hoạt",
+    "logType": "Quãng đường",
+    "muscles": [
+      {
+        "name": "Cardio",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759283350/uploads/gkcfjnjawlhwu2jt3b8d.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca87"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "Barbell",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759604023/uploads/yogsxoclmfguw6cgzb9l.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca88"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca86"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    }
+  },
+  {
+    "name": "Lunge 14",
+    "tutorial": "https://example.local/exercises/14",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Nâng cao",
+    "type": "Động",
+    "logType": "Cân nặng và số lần tập",
+    "muscles": [
+      {
+        "name": "Upper Legs",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759283485/uploads/oqzqueb36ekrihlyyyjv.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca8a"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "Barbell",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759604023/uploads/yogsxoclmfguw6cgzb9l.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca8b"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca89"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    }
+  },
+  {
+    "name": "Leo núi tại chỗ 15",
+    "tutorial": "https://example.local/exercises/15",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Cơ bản",
+    "type": "Kéo giãn",
+    "logType": "Quãng đường",
+    "muscles": [
+      {
+        "name": "Back",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759248431/uploads/l0073zvfqpkbefo8wl4h.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca8d"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "Bands",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759603901/uploads/cdc7ustm612lynoxzx5a.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca8e"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca8c"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    }
+  },
+  {
+    "name": "Deadlift 16",
+    "tutorial": "https://example.local/exercises/16",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Cơ bản",
+    "type": "Yoga",
+    "logType": "Quãng đường",
+    "muscles": [
+      {
+        "name": "Upper Legs",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759283485/uploads/oqzqueb36ekrihlyyyjv.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca90"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "Body Weight",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759603840/uploads/wzvazke52chlfxzobkff.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca91"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca8f"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    }
+  },
+  {
+    "name": "Đẩy ngực ghế 17",
+    "tutorial": "https://example.local/exercises/17",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Cơ bản",
+    "type": "Kéo giãn",
+    "logType": "Thời gian",
+    "muscles": [
+      {
+        "name": "Biceps",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759283288/uploads/q9vl4xsfinank06ffyx2.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca93"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "Pullup Bar",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759604523/uploads/a82izpxpfjklzivgepan.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca94"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca92"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    }
+  },
+  {
+    "name": "Kéo tạ 18",
+    "tutorial": "https://example.local/exercises/18",
+    "instructions": "Khởi động kỹ, giữ động tác đúng và thở đều.",
+    "difficulty": "Trung bình",
+    "type": "Kéo giãn",
+    "logType": "Quãng đường",
+    "muscles": [
+      {
+        "name": "Shoulders",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759283437/uploads/oxcwxcw0dxeg5qi8a7ya.svg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca96"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "name": "Kettlebell",
+        "image": "https://res.cloudinary.com/djpv3n1e2/image/upload/v1759604292/uploads/nur40dzbexgbkqihkpoh.jpg",
+        "_id": {
+          "$oid": "69def7e6327d850cae4aca97"
+        }
+      }
+    ],
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca95"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134784"
+      }
+    }
+  }
+]

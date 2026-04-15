@@ -1,0 +1,482 @@
+[
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acac2"
+      },
+      "name": "Người dùng mẫu 11",
+      "role": "User"
+    },
+    "type": "Nội dung",
+    "content": "Phản hồi mẫu 1 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acfea"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaf2"
+      },
+      "name": "Người dùng mẫu 23",
+      "role": "User"
+    },
+    "type": "Nội dung",
+    "content": "Phản hồi mẫu 2 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acfeb"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acae2"
+      },
+      "name": "Người dùng mẫu 19",
+      "role": "User"
+    },
+    "type": "Hệ thống",
+    "content": "Phản hồi mẫu 3 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acfec"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaca"
+      },
+      "name": "Người dùng mẫu 13",
+      "role": "User"
+    },
+    "type": "Nội dung",
+    "content": "Phản hồi mẫu 4 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acfed"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaf2"
+      },
+      "name": "Người dùng mẫu 23",
+      "role": "User"
+    },
+    "type": "Nội dung",
+    "content": "Phản hồi mẫu 5 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acfee"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acada"
+      },
+      "name": "Người dùng mẫu 17",
+      "role": "User"
+    },
+    "type": "Nội dung",
+    "content": "Phản hồi mẫu 6 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acfef"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaae"
+      },
+      "name": "Người dùng mẫu 6",
+      "role": "Nutritionist"
+    },
+    "type": "Hệ thống",
+    "content": "Phản hồi mẫu 7 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acff0"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaae"
+      },
+      "name": "Người dùng mẫu 6",
+      "role": "Nutritionist"
+    },
+    "type": "Nội dung",
+    "content": "Phản hồi mẫu 8 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acff1"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaf2"
+      },
+      "name": "Người dùng mẫu 23",
+      "role": "User"
+    },
+    "type": "Nội dung",
+    "content": "Phản hồi mẫu 9 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acff2"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaf6"
+      },
+      "name": "Người dùng mẫu 24",
+      "role": "User"
+    },
+    "type": "Nội dung",
+    "content": "Phản hồi mẫu 10 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acff3"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acace"
+      },
+      "name": "Người dùng mẫu 14",
+      "role": "User"
+    },
+    "type": "Nội dung",
+    "content": "Phản hồi mẫu 11 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acff4"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaa6"
+      },
+      "name": "Người dùng mẫu 4",
+      "role": "Nutritionist"
+    },
+    "type": "Hệ thống",
+    "content": "Phản hồi mẫu 12 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acff5"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acace"
+      },
+      "name": "Người dùng mẫu 14",
+      "role": "User"
+    },
+    "type": "Hệ thống",
+    "content": "Phản hồi mẫu 13 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acff6"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acace"
+      },
+      "name": "Người dùng mẫu 14",
+      "role": "User"
+    },
+    "type": "Nội dung",
+    "content": "Phản hồi mẫu 14 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acff7"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4aca9e"
+      },
+      "name": "Người dùng mẫu 2",
+      "role": "Admin"
+    },
+    "type": "Nội dung",
+    "content": "Phản hồi mẫu 15 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acff8"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaf6"
+      },
+      "name": "Người dùng mẫu 24",
+      "role": "User"
+    },
+    "type": "Nội dung",
+    "content": "Phản hồi mẫu 16 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acff9"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acace"
+      },
+      "name": "Người dùng mẫu 14",
+      "role": "User"
+    },
+    "type": "Hệ thống",
+    "content": "Phản hồi mẫu 17 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acffa"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaba"
+      },
+      "name": "Người dùng mẫu 9",
+      "role": "User"
+    },
+    "type": "Nội dung",
+    "content": "Phản hồi mẫu 18 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acffb"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4aca9e"
+      },
+      "name": "Người dùng mẫu 2",
+      "role": "Admin"
+    },
+    "type": "Nội dung",
+    "content": "Phản hồi mẫu 19 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acffc"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acace"
+      },
+      "name": "Người dùng mẫu 14",
+      "role": "User"
+    },
+    "type": "Nội dung",
+    "content": "Phản hồi mẫu 20 cho demo kiểm duyệt và phân tích.",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acffd"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135507"
+      }
+    }
+  }
+]

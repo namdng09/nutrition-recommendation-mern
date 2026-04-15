@@ -1,5 +1,8 @@
+import { EJSON } from 'bson';
 import dotenv from 'dotenv';
+import { mkdir, writeFile } from 'fs/promises';
 import mongoose, { type Types } from 'mongoose';
+import path from 'path';
 
 import { connectDB } from '~/shared/config/database';
 import { ACTIVITY_LEVEL } from '~/shared/constants/activity-level';
@@ -95,65 +98,64 @@ const MEMBERSHIP_VALUES = Object.values(MEMBERSHIP_LEVEL);
 const USER_TARGET_VALUES = Object.values(USER_TARGET);
 
 const INGREDIENT_BASE_NAMES = [
-  'Chicken Breast',
-  'Broccoli',
-  'Carrot',
-  'Brown Rice',
-  'Spinach',
-  'Tofu',
-  'Salmon',
-  'Greek Yogurt',
-  'Tomato',
-  'Sweet Potato',
-  'Avocado',
-  'Egg',
-  'Lentil',
-  'Almond',
-  'Oat',
-  'Mushroom',
-  'Bell Pepper',
-  'Cucumber',
-  'Apple',
-  'Banana'
+  'Ức gà',
+  'Bông cải xanh',
+  'Cà rốt',
+  'Gạo lứt',
+  'Rau chân vịt',
+  'Đậu hũ',
+  'Cá hồi',
+  'Sữa chua Hy Lạp',
+  'Cà chua',
+  'Khoai lang',
+  'Bơ',
+  'Trứng gà',
+  'Đậu lăng',
+  'Hạnh nhân',
+  'Yến mạch',
+  'Nấm mỡ',
+  'Ớt chuông',
+  'Dưa leo',
+  'Táo',
+  'Chuối'
 ] as const;
 
 const DISH_ADJECTIVES = [
-  'Balanced',
-  'Lean',
-  'Power',
-  'Fresh',
-  'Active',
-  'Fit',
-  'Smart',
-  'Vital',
-  'Strong',
-  'Daily'
+  'Cân bằng',
+  'Nhẹ nhàng',
+  'Năng lượng',
+  'Thanh mát',
+  'Khỏe mạnh',
+  'Thông minh',
+  'Bổ dưỡng',
+  'Sung sức',
+  'Mỗi ngày'
 ] as const;
 
 const DISH_NOUNS = [
-  'Bowl',
-  'Plate',
+  'Tô',
+  'Đĩa',
   'Salad',
-  'Soup',
-  'Meal',
-  'Wrap',
-  'Stir Fry',
-  'Mix',
-  'Combo',
-  'Set'
+  'Súp',
+  'Bữa ăn',
+  'Cuốn',
+  'Xào',
+  'Trộn',
+  'Kết hợp',
+  'Phần ăn'
 ] as const;
 
 const EXERCISE_BASE_NAMES = [
-  'Push Up',
+  'Hít đất',
   'Squat',
   'Plank',
   'Lunge',
-  'Mountain Climber',
+  'Leo núi tại chỗ',
   'Deadlift',
-  'Bench Press',
-  'Row',
+  'Đẩy ngực ghế',
+  'Kéo tạ',
   'Burpee',
-  'Jumping Jack'
+  'Bật nhảy dang tay'
 ] as const;
 
 const randomInt = (min: number, max: number) =>
@@ -239,7 +241,7 @@ const createUsers = async () => {
 
     const userDoc: Record<string, unknown> = {
       email: `seed.user.${index + 1}@example.local`,
-      name: `Seed User ${index + 1}`,
+      name: `Người dùng mẫu ${index + 1}`,
       avatar: `https://api.dicebear.com/9.x/initials/svg?seed=user-${index + 1}`,
       gender: pickOne(GENDER_VALUES),
       role,
@@ -261,15 +263,11 @@ const createUsers = async () => {
           carbs: { min: 90, max: 220 },
           protein: { min: 70, max: 160 },
           fat: { min: 40, max: 90 }
-        },
-        recommendationMeta: {
-          source: 'seed-script',
-          version: 'v1'
         }
       },
       mealSettings: [
         {
-          name: 'Plan sang',
+          name: 'Kế hoạch bữa ăn',
           mealSize: pickOne(MEAL_SIZE_VALUES),
           preferredTypes: pickMany(
             MEAL_TYPE_VALUES.filter(type => type !== MEAL_TYPE.ALL),
@@ -278,10 +276,7 @@ const createUsers = async () => {
           cookingPreference: pickOne(COOKING_PREFERENCE_VALUES),
           availableTime: pickOne(AVAILABLE_TIME_VALUES),
           complexity: pickOne(MEAL_COMPLEXITY_VALUES),
-          dishCategories: pickMany(DISH_CATEGORY_VALUES, 2),
-          ruleOverrides: {
-            avoidFriedFood: Math.random() > 0.5
-          }
+          dishCategories: pickMany(DISH_CATEGORY_VALUES, 2)
         }
       ],
       favoriteDishes: [],
@@ -303,20 +298,13 @@ const createUsers = async () => {
       isActive: true,
       allergens: pickMany(ALLERGEN_VALUES, randomInt(1, 2)),
       activityLevel: pickOne(ACTIVITY_LEVEL_VALUES),
-      medicalHistory: ['none'],
+      medicalHistory: ['Không'],
       achievements: [
         {
           key: 'onboarding_completed',
           unlockedAt: datePlusDays(now, -7)
         }
       ],
-      setting: {
-        locale: 'vi-VN',
-        notifications: true
-      },
-      aiConfig: {
-        preferredStyle: 'balanced'
-      },
       goal: {
         target: pickOne(USER_TARGET_VALUES),
         weightGoal: randomInt(52, 82),
@@ -328,13 +316,13 @@ const createUsers = async () => {
       userDoc.certificate = {
         fileUrl: `https://files.example.local/cert-${index + 1}.pdf`,
         publicId: `seed-cert-${index + 1}`,
-        name: `Nutrition Certificate ${index + 1}`,
+        name: `Chứng chỉ dinh dưỡng ${index + 1}`,
         showCertificate: true
       };
       userDoc.nutritionistProfile = {
-        workplace: `Health Center ${index + 1}`,
-        graduatedUniversity: `Nutrition University ${index + 1}`,
-        professionalBio: 'Experienced in personalized meal planning.'
+        workplace: `Trung tâm sức khỏe ${index + 1}`,
+        graduatedUniversity: `Đại học Dinh dưỡng ${index + 1}`,
+        professionalBio: 'Có kinh nghiệm xây dựng thực đơn cá nhân hóa.'
       };
     }
 
@@ -367,7 +355,7 @@ const createIngredients = async () => {
     (_, index) => ({
       name: `${INGREDIENT_BASE_NAMES[index % INGREDIENT_BASE_NAMES.length]} ${index + 1}`,
       image: `https://picsum.photos/seed/ingredient-${index + 1}/400/300`,
-      description: `Seed ingredient ${index + 1} used for dish relationship modeling.`,
+      description: `Nguyên liệu mẫu ${index + 1} dùng để mô phỏng liên kết món ăn.`,
       categories: pickMany(INGREDIENT_CATEGORY_VALUES, randomInt(1, 2)),
       allergens: pickMany(ALLERGEN_VALUES, randomInt(1, 2)),
       baseUnit: {
@@ -395,7 +383,7 @@ const createExercises = async () => {
       return {
         name: `${EXERCISE_BASE_NAMES[index % EXERCISE_BASE_NAMES.length]} ${index + 1}`,
         tutorial: `https://example.local/exercises/${index + 1}`,
-        instructions: 'Warm up, control movement, and keep steady breathing.',
+        instructions: 'Khởi động kỹ, giữ động tác đúng và thở đều.',
         difficulty: pickOne(EXERCISE_DIFFICULTY_VALUES),
         type: pickOne(EXERCISE_TYPE_VALUES),
         logType: pickOne(WORKOUT_LOG_TYPE_VALUES),
@@ -442,7 +430,8 @@ const createDishes = async (
         name: owner.name
       },
       name: `${pickOne([...DISH_ADJECTIVES])} ${pickOne([...DISH_NOUNS])} ${index + 1}`,
-      description: 'Generated seed dish for Compass relationship modeling.',
+      description:
+        'Món ăn mẫu được tạo để mô phỏng quan hệ dữ liệu trên Compass.',
       categories: pickMany(DISH_CATEGORY_VALUES, randomInt(1, 2)),
       ingredients: selectedIngredients.map(ingredient => ({
         ingredientId: ingredient._id,
@@ -464,9 +453,9 @@ const createDishes = async (
         ]
       })),
       instructions: [
-        { step: 1, description: 'Prepare and wash all ingredients.' },
-        { step: 2, description: 'Cook ingredients with medium heat.' },
-        { step: 3, description: 'Serve and adjust seasoning to taste.' }
+        { step: 1, description: 'Sơ chế và rửa sạch toàn bộ nguyên liệu.' },
+        { step: 2, description: 'Chế biến nguyên liệu ở lửa vừa.' },
+        { step: 3, description: 'Bày món và nêm lại cho vừa ăn.' }
       ],
       image: `https://picsum.photos/seed/dish-${index + 1}/800/600`,
       nutrition: buildNutritionProfile(),
@@ -475,7 +464,7 @@ const createDishes = async (
       preparationTime: randomInt(10, 25),
       cookTime: randomInt(10, 35),
       servings: randomInt(1, 4),
-      tags: ['seed', 'compass', `dish-${index + 1}`],
+      tags: ['dữ-liệu-mẫu', 'compass', `món-${index + 1}`],
       nutritionFocus: pickMany(NUTRITION_FOCUS_VALUES, randomInt(1, 2))
     };
   });
@@ -502,7 +491,7 @@ const createPosts = async (
           name: commenter.name,
           avatar: commenter.avatar ?? ''
         },
-        content: `Seed comment ${commentIndex + 1} on post ${index + 1}.`,
+        content: `Bình luận mẫu ${commentIndex + 1} cho bài viết ${index + 1}.`,
         createdAt: new Date()
       })
     );
@@ -514,11 +503,10 @@ const createPosts = async (
         avatar: author.avatar ?? '',
         role: author.role
       },
-      title: `Seed Post ${index + 1}`,
-      content:
-        'This is a generated post used for relationship and indexing demos.',
+      title: `Bài viết mẫu ${index + 1}`,
+      content: 'Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.',
       images: [`https://picsum.photos/seed/post-${index + 1}/900/500`],
-      tags: ['seed', 'community', `post-${index + 1}`],
+      tags: ['dữ-liệu-mẫu', 'cộng-đồng', `bài-viết-${index + 1}`],
       likes: likeUsers.map(user => user._id),
       views: randomInt(100, 1500),
       comments,
@@ -547,8 +535,9 @@ const createCollections = async (
           _id: owner._id,
           name: owner.name
         },
-        name: `Seed Collection ${index + 1}`,
-        description: 'Generated collection for Compass schema relationships.',
+        name: `Bộ sưu tập mẫu ${index + 1}`,
+        description:
+          'Bộ sưu tập được tạo để mô phỏng quan hệ schema trên Compass.',
         image: `https://picsum.photos/seed/collection-${index + 1}/700/400`,
         isPublic: index % 2 === 0,
         dishes: items.map(item => ({
@@ -557,7 +546,7 @@ const createCollections = async (
           image: item.image,
           energy: randomInt(250, 700)
         })),
-        tags: ['seed', 'collection']
+        tags: ['dữ-liệu-mẫu', 'bộ-sưu-tập']
       };
     }
   );
@@ -629,8 +618,8 @@ const createSchedules = async (
         dayOfWeek: resolveDayOfWeek(scheduleDate),
         meals: [
           {
-            mealType: 'Breakfast',
-            notes: 'High protein first meal.',
+            mealType: 'Bữa sáng',
+            notes: 'Bữa đầu tiên ưu tiên đạm.',
             dishes: mealDishes.slice(0, 2).map(dish => ({
               dishId: dish._id,
               name: dish.name,
@@ -641,8 +630,8 @@ const createSchedules = async (
             }))
           },
           {
-            mealType: 'Dinner',
-            notes: 'Balanced carbs and protein.',
+            mealType: 'Bữa tối',
+            notes: 'Cân bằng tinh bột và đạm.',
             dishes: mealDishes.slice(-2).map(dish => ({
               dishId: dish._id,
               name: dish.name,
@@ -662,7 +651,7 @@ const createSchedules = async (
           ...buildWorkoutTarget(exercise.logType),
           isCompleted: Math.random() > 0.5
         })),
-        notes: 'Generated schedule document.'
+        notes: 'Lịch trình mẫu được tạo tự động.'
       });
     }
   });
@@ -693,7 +682,7 @@ const createGroceries = async (
           _id: owner._id,
           name: owner.name
         },
-        name: `Seed Grocery ${index + 1}`,
+        name: `Danh sách đi chợ mẫu ${index + 1}`,
         date: [new Date(), datePlusDays(new Date(), randomInt(1, 7))],
         ingredients: pickedIngredients.map(item => ({
           ingredientId: item._id,
@@ -701,7 +690,7 @@ const createGroceries = async (
           image: item.image,
           isPurchased: Math.random() > 0.5
         })),
-        notes: 'Generated grocery list for schema relationship testing.'
+        notes: 'Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.'
       };
     }
   );
@@ -727,7 +716,7 @@ const createFeedbacks = async (
           role: author.role
         },
         type: pickOne(FEEDBACK_TYPE_VALUES),
-        content: `Seed feedback ${index + 1} for moderation and analytics demos.`
+        content: `Phản hồi mẫu ${index + 1} cho demo kiểm duyệt và phân tích.`
       };
     }
   );
@@ -778,6 +767,95 @@ const resetCollections = async () => {
   await UserModel.deleteMany({});
 };
 
+const toCompassImportDocs = (
+  docs: Array<{ toObject?: (options?: object) => unknown }>
+) =>
+  docs.map(doc => {
+    const plain =
+      typeof doc.toObject === 'function'
+        ? doc.toObject({ depopulate: false, versionKey: false })
+        : doc;
+
+    // Canonical Extended JSON preserves ObjectId/Date for Compass import.
+    return EJSON.serialize(plain, { relaxed: false });
+  });
+
+const stripUserExportFields = (
+  users: Array<Record<string, unknown>>
+): Array<Record<string, unknown>> =>
+  users.map(user => {
+    const next = structuredClone(user);
+
+    delete next.aiConfig;
+    delete next.setting;
+
+    const nutritionTarget = next.nutritionTarget as
+      | Record<string, unknown>
+      | undefined;
+    if (nutritionTarget) {
+      delete nutritionTarget.recommendationMeta;
+      delete nutritionTarget.algorithm;
+    }
+
+    const mealSettings = next.mealSettings as Array<Record<string, unknown>>;
+    if (Array.isArray(mealSettings)) {
+      mealSettings.forEach(setting => {
+        delete setting.ruleOverrides;
+      });
+    }
+
+    return next;
+  });
+
+const exportForCompassImport = async (payload: {
+  users: Array<{ toObject?: (options?: object) => unknown }>;
+  auths: Array<{ toObject?: (options?: object) => unknown }>;
+  ingredients: Array<{ toObject?: (options?: object) => unknown }>;
+  exercises: Array<{ toObject?: (options?: object) => unknown }>;
+  dishes: Array<{ toObject?: (options?: object) => unknown }>;
+  posts: Array<{ toObject?: (options?: object) => unknown }>;
+  collections: Array<{ toObject?: (options?: object) => unknown }>;
+  schedules: Array<{ toObject?: (options?: object) => unknown }>;
+  groceries: Array<{ toObject?: (options?: object) => unknown }>;
+  feedbacks: Array<{ toObject?: (options?: object) => unknown }>;
+  payments: Array<{ toObject?: (options?: object) => unknown }>;
+}) => {
+  const exportDir = path.join(__dirname, 'seed-data');
+  await mkdir(exportDir, { recursive: true });
+
+  const collections: Record<
+    string,
+    Array<{ toObject?: (options?: object) => unknown }>
+  > = {
+    users: payload.users,
+    auths: payload.auths,
+    ingredients: payload.ingredients,
+    exercises: payload.exercises,
+    dishes: payload.dishes,
+    posts: payload.posts,
+    collections: payload.collections,
+    schedules: payload.schedules,
+    groceries: payload.groceries,
+    feedbacks: payload.feedbacks,
+    payments: payload.payments
+  };
+
+  for (const [collectionName, docs] of Object.entries(collections)) {
+    const filePath = path.join(exportDir, `${collectionName}.json`);
+    const importDocs = toCompassImportDocs(docs) as Array<
+      Record<string, unknown>
+    >;
+    const normalizedDocs =
+      collectionName === 'users'
+        ? stripUserExportFields(importDocs)
+        : importDocs;
+    const content = JSON.stringify(normalizedDocs, null, 2);
+    await writeFile(filePath, content, 'utf-8');
+  }
+
+  console.log(`[seed] Exported Compass-ready JSON files to: ${exportDir}`);
+};
+
 const run = async () => {
   try {
     await connectDB();
@@ -806,6 +884,20 @@ const run = async () => {
     const groceries = await createGroceries(users, ingredients);
     const feedbacks = await createFeedbacks(users);
     const payments = await createPayments(users);
+
+    await exportForCompassImport({
+      users,
+      auths,
+      ingredients,
+      exercises,
+      dishes,
+      posts,
+      collections,
+      schedules,
+      groceries,
+      feedbacks,
+      payments
+    });
 
     console.log('[seed] Completed successfully.');
     console.table({

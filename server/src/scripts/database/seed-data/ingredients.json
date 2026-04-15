@@ -1,0 +1,5858 @@
+[
+  {
+    "name": "Ức gà 1",
+    "image": "https://picsum.photos/seed/ingredient-1/400/300",
+    "description": "Nguyên liệu mẫu 1 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Rau củ"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Hạt pecan",
+      "Đậu nành"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "406"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "25"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "2"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "27"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Phytosterol",
+          "value": {
+            "$numberInt": "3"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Selen",
+          "value": {
+            "$numberInt": "228"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Mangan",
+          "value": {
+            "$numberInt": "58"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "112"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B5",
+          "value": {
+            "$numberInt": "34"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin E",
+          "value": {
+            "$numberInt": "296"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin H",
+          "value": {
+            "$numberInt": "313"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca30"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134786"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134786"
+      }
+    }
+  },
+  {
+    "name": "Bông cải xanh 2",
+    "image": "https://picsum.photos/seed/ingredient-2/400/300",
+    "description": "Nguyên liệu mẫu 2 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Ngũ cốc",
+      "Chất tạo ngọt"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Hạt macadamia",
+      "Lúa mạch đen"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "309"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "31"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "41"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất xơ",
+          "value": {
+            "$numberInt": "5"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Kali",
+          "value": {
+            "$numberInt": "99"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "76"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Magiê",
+          "value": {
+            "$numberInt": "194"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin A",
+          "value": {
+            "$numberInt": "194"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "225"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B6",
+          "value": {
+            "$numberInt": "287"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca31"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134786"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134786"
+      }
+    }
+  },
+  {
+    "name": "Cà rốt 3",
+    "image": "https://picsum.photos/seed/ingredient-3/400/300",
+    "description": "Nguyên liệu mẫu 3 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Rau củ",
+      "Thịt"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Hành"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "85"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "23"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "14"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "37"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Nước",
+          "value": {
+            "$numberInt": "12"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Mangan",
+          "value": {
+            "$numberInt": "278"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kali",
+          "value": {
+            "$numberInt": "38"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "290"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B2",
+          "value": {
+            "$numberInt": "153"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin K",
+          "value": {
+            "$numberInt": "226"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "204"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca32"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134786"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134786"
+      }
+    }
+  },
+  {
+    "name": "Gạo lứt 4",
+    "image": "https://picsum.photos/seed/ingredient-4/400/300",
+    "description": "Nguyên liệu mẫu 4 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Gia vị & nước chấm",
+      "Thịt"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Lúa mạch đen"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "109"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "27"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "15"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "21"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Cholesterol",
+          "value": {
+            "$numberInt": "5"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Magiê",
+          "value": {
+            "$numberInt": "208"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "162"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "181"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B2",
+          "value": {
+            "$numberInt": "25"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B1",
+          "value": {
+            "$numberInt": "658"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin E",
+          "value": {
+            "$numberInt": "154"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca33"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134786"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134786"
+      }
+    }
+  },
+  {
+    "name": "Rau chân vịt 5",
+    "image": "https://picsum.photos/seed/ingredient-5/400/300",
+    "description": "Nguyên liệu mẫu 5 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Thực phẩm đóng hộp",
+      "Thực phẩm bổ sung"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Tôm",
+      "Óc chó"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "86"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "4"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "6"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "21"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất xơ",
+          "value": {
+            "$numberInt": "4"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "111"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "267"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Mangan",
+          "value": {
+            "$numberInt": "118"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B6",
+          "value": {
+            "$numberInt": "534"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Folat",
+          "value": {
+            "$numberInt": "542"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B5",
+          "value": {
+            "$numberInt": "428"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca34"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134787"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134787"
+      }
+    }
+  },
+  {
+    "name": "Đậu hũ 6",
+    "image": "https://picsum.photos/seed/ingredient-6/400/300",
+    "description": "Nguyên liệu mẫu 6 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Hạt & hạt giống",
+      "Thịt"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Đậu phộng",
+      "Đậu nành"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "221"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "35"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "9"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "12"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "5"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "61"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Phospho",
+          "value": {
+            "$numberInt": "113"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Magiê",
+          "value": {
+            "$numberInt": "39"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B12",
+          "value": {
+            "$numberInt": "158"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B6",
+          "value": {
+            "$numberInt": "168"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin PP",
+          "value": {
+            "$numberInt": "528"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca35"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134787"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134787"
+      }
+    }
+  },
+  {
+    "name": "Cá hồi 7",
+    "image": "https://picsum.photos/seed/ingredient-7/400/300",
+    "description": "Nguyên liệu mẫu 7 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Mì & sợi",
+      "Bánh mì"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Hạt macadamia",
+      "Hải sản có vỏ"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "294"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "13"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "8"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "6"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Phytosterol",
+          "value": {
+            "$numberInt": "4"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Magiê",
+          "value": {
+            "$numberInt": "108"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "20"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Mangan",
+          "value": {
+            "$numberInt": "109"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B1",
+          "value": {
+            "$numberInt": "398"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B2",
+          "value": {
+            "$numberInt": "764"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin D",
+          "value": {
+            "$numberInt": "474"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca36"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134787"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134787"
+      }
+    }
+  },
+  {
+    "name": "Sữa chua Hy Lạp 8",
+    "image": "https://picsum.photos/seed/ingredient-8/400/300",
+    "description": "Nguyên liệu mẫu 8 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Hải sản",
+      "Trứng"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Hạt brazil",
+      "Cá"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "158"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "6"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "1"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "8"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất xơ",
+          "value": {
+            "$numberInt": "3"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "82"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "159"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "267"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin E",
+          "value": {
+            "$numberInt": "138"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "664"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B5",
+          "value": {
+            "$numberInt": "529"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca37"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134787"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134787"
+      }
+    }
+  },
+  {
+    "name": "Cà chua 9",
+    "image": "https://picsum.photos/seed/ingredient-9/400/300",
+    "description": "Nguyên liệu mẫu 9 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Gia cầm",
+      "Gia vị & nước chấm"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Sữa"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "279"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "24"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "14"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "31"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tro",
+          "value": {
+            "$numberInt": "9"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "242"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Magiê",
+          "value": {
+            "$numberInt": "65"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Mangan",
+          "value": {
+            "$numberInt": "9"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B9",
+          "value": {
+            "$numberInt": "295"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin D",
+          "value": {
+            "$numberInt": "245"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B1",
+          "value": {
+            "$numberInt": "445"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca38"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134787"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134787"
+      }
+    }
+  },
+  {
+    "name": "Khoai lang 10",
+    "image": "https://picsum.photos/seed/ingredient-10/400/300",
+    "description": "Nguyên liệu mẫu 10 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Dầu & chất béo"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Hạt brazil",
+      "Lúa mạch đen"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "187"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "13"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "18"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "41"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "14"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "224"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "91"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Selen",
+          "value": {
+            "$numberInt": "227"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B1",
+          "value": {
+            "$numberInt": "174"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B6",
+          "value": {
+            "$numberInt": "329"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B2",
+          "value": {
+            "$numberInt": "444"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca39"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134788"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134788"
+      }
+    }
+  },
+  {
+    "name": "Bơ 11",
+    "image": "https://picsum.photos/seed/ingredient-11/400/300",
+    "description": "Nguyên liệu mẫu 11 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Sản phẩm từ sữa",
+      "Trái cây"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Hạnh nhân",
+      "Nghêu"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "174"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "29"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "9"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "23"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Phytosterol",
+          "value": {
+            "$numberInt": "8"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Magiê",
+          "value": {
+            "$numberInt": "136"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Selen",
+          "value": {
+            "$numberInt": "15"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "251"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin A",
+          "value": {
+            "$numberInt": "643"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B9",
+          "value": {
+            "$numberInt": "233"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin D",
+          "value": {
+            "$numberInt": "115"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca3a"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134788"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134788"
+      }
+    }
+  },
+  {
+    "name": "Trứng gà 12",
+    "image": "https://picsum.photos/seed/ingredient-12/400/300",
+    "description": "Nguyên liệu mẫu 12 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Dầu & chất béo"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Hải sản có vỏ"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "237"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "28"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "32"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Đường",
+          "value": {
+            "$numberInt": "13"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "294"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "220"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Phospho",
+          "value": {
+            "$numberInt": "208"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin H",
+          "value": {
+            "$numberInt": "83"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin D",
+          "value": {
+            "$numberInt": "206"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B9",
+          "value": {
+            "$numberInt": "674"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca3b"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134788"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134788"
+      }
+    }
+  },
+  {
+    "name": "Đậu lăng 13",
+    "image": "https://picsum.photos/seed/ingredient-13/400/300",
+    "description": "Nguyên liệu mẫu 13 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Gia cầm"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Cà chua",
+      "Hạnh nhân"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "180"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "22"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "9"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "31"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "8"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "238"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Phospho",
+          "value": {
+            "$numberInt": "197"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kali",
+          "value": {
+            "$numberInt": "260"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B9",
+          "value": {
+            "$numberInt": "597"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Folat",
+          "value": {
+            "$numberInt": "514"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B12",
+          "value": {
+            "$numberInt": "626"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca3c"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134788"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134788"
+      }
+    }
+  },
+  {
+    "name": "Hạnh nhân 14",
+    "image": "https://picsum.photos/seed/ingredient-14/400/300",
+    "description": "Nguyên liệu mẫu 14 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Trái cây"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Tỏi",
+      "Xoài"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "417"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "23"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "14"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "5"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Đường",
+          "value": {
+            "$numberInt": "9"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "180"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "4"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "152"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B5",
+          "value": {
+            "$numberInt": "64"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B1",
+          "value": {
+            "$numberInt": "67"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B12",
+          "value": {
+            "$numberInt": "153"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca3d"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134788"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134788"
+      }
+    }
+  },
+  {
+    "name": "Yến mạch 15",
+    "image": "https://picsum.photos/seed/ingredient-15/400/300",
+    "description": "Nguyên liệu mẫu 15 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Rau củ",
+      "Dầu & chất béo"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Hạt brazil"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "89"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "20"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "4"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "38"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tro",
+          "value": {
+            "$numberInt": "10"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Selen",
+          "value": {
+            "$numberInt": "71"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Natri",
+          "value": {
+            "$numberInt": "15"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Phospho",
+          "value": {
+            "$numberInt": "40"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B6",
+          "value": {
+            "$numberInt": "467"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B9",
+          "value": {
+            "$numberInt": "256"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin E",
+          "value": {
+            "$numberInt": "147"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca3e"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134789"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134789"
+      }
+    }
+  },
+  {
+    "name": "Nấm mỡ 16",
+    "image": "https://picsum.photos/seed/ingredient-16/400/300",
+    "description": "Nguyên liệu mẫu 16 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Nguyên liệu làm bánh",
+      "Thực phẩm bổ sung"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Trứng",
+      "Cá"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "226"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "25"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "14"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "5"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "254"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Natri",
+          "value": {
+            "$numberInt": "225"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kali",
+          "value": {
+            "$numberInt": "103"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin PP",
+          "value": {
+            "$numberInt": "355"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "786"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin H",
+          "value": {
+            "$numberInt": "499"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca3f"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134789"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134789"
+      }
+    }
+  },
+  {
+    "name": "Ớt chuông 17",
+    "image": "https://picsum.photos/seed/ingredient-17/400/300",
+    "description": "Nguyên liệu mẫu 17 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Gia vị & nước chấm",
+      "Bánh mì"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Đậu lupin"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "366"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "22"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "13"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "12"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "14"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Đồng",
+          "value": {
+            "$numberInt": "185"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Natri",
+          "value": {
+            "$numberInt": "147"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Magiê",
+          "value": {
+            "$numberInt": "49"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin A",
+          "value": {
+            "$numberInt": "21"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B9",
+          "value": {
+            "$numberInt": "671"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Folat",
+          "value": {
+            "$numberInt": "229"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca40"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134789"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134789"
+      }
+    }
+  },
+  {
+    "name": "Dưa leo 18",
+    "image": "https://picsum.photos/seed/ingredient-18/400/300",
+    "description": "Nguyên liệu mẫu 18 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Nguyên liệu làm bánh",
+      "Ngũ cốc"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Hạt pecan",
+      "Cua"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "292"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "32"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "1"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "14"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Đường",
+          "value": {
+            "$numberInt": "6"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "117"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Natri",
+          "value": {
+            "$numberInt": "214"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "242"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B6",
+          "value": {
+            "$numberInt": "711"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B1",
+          "value": {
+            "$numberInt": "785"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Folat",
+          "value": {
+            "$numberInt": "230"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca41"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134789"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134789"
+      }
+    }
+  },
+  {
+    "name": "Táo 19",
+    "image": "https://picsum.photos/seed/ingredient-19/400/300",
+    "description": "Nguyên liệu mẫu 19 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Khác",
+      "Thịt"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Hạt điều"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "326"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "15"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "15"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "17"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "4"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Selen",
+          "value": {
+            "$numberInt": "186"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Mangan",
+          "value": {
+            "$numberInt": "96"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kali",
+          "value": {
+            "$numberInt": "223"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin K",
+          "value": {
+            "$numberInt": "301"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B2",
+          "value": {
+            "$numberInt": "787"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B6",
+          "value": {
+            "$numberInt": "800"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca42"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134789"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134789"
+      }
+    }
+  },
+  {
+    "name": "Chuối 20",
+    "image": "https://picsum.photos/seed/ingredient-20/400/300",
+    "description": "Nguyên liệu mẫu 20 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Thực phẩm đông lạnh"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Đậu nành",
+      "Mực"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "266"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "10"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "13"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "33"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Cholesterol",
+          "value": {
+            "$numberInt": "9"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "29"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "10"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "161"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "580"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B1",
+          "value": {
+            "$numberInt": "458"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin K",
+          "value": {
+            "$numberInt": "508"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca43"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134789"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134789"
+      }
+    }
+  },
+  {
+    "name": "Ức gà 21",
+    "image": "https://picsum.photos/seed/ingredient-21/400/300",
+    "description": "Nguyên liệu mẫu 21 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Dầu & chất béo",
+      "Gia cầm"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Sulfite"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "380"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "8"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "36"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "12"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Đồng",
+          "value": {
+            "$numberInt": "248"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "229"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Natri",
+          "value": {
+            "$numberInt": "169"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B2",
+          "value": {
+            "$numberInt": "775"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin PP",
+          "value": {
+            "$numberInt": "530"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B12",
+          "value": {
+            "$numberInt": "563"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca44"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134789"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134789"
+      }
+    }
+  },
+  {
+    "name": "Bông cải xanh 22",
+    "image": "https://picsum.photos/seed/ingredient-22/400/300",
+    "description": "Nguyên liệu mẫu 22 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Khác"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Cá",
+      "Kiwi"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "287"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "31"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "15"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Selen",
+          "value": {
+            "$numberInt": "201"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "104"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kali",
+          "value": {
+            "$numberInt": "28"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "635"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B1",
+          "value": {
+            "$numberInt": "21"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin H",
+          "value": {
+            "$numberInt": "557"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca45"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134790"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134790"
+      }
+    }
+  },
+  {
+    "name": "Cà rốt 23",
+    "image": "https://picsum.photos/seed/ingredient-23/400/300",
+    "description": "Nguyên liệu mẫu 23 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Đồ uống"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Mù tạt"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "413"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "13"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "20"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "37"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Đường",
+          "value": {
+            "$numberInt": "10"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Phospho",
+          "value": {
+            "$numberInt": "89"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Selen",
+          "value": {
+            "$numberInt": "215"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Natri",
+          "value": {
+            "$numberInt": "140"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B1",
+          "value": {
+            "$numberInt": "310"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin D",
+          "value": {
+            "$numberInt": "200"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Folat",
+          "value": {
+            "$numberInt": "550"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca46"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134790"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134790"
+      }
+    }
+  },
+  {
+    "name": "Gạo lứt 24",
+    "image": "https://picsum.photos/seed/ingredient-24/400/300",
+    "description": "Nguyên liệu mẫu 24 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Ngũ cốc",
+      "Thực phẩm đông lạnh"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Cá",
+      "Dâu tây"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "168"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "4"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "19"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "36"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất xơ",
+          "value": {
+            "$numberInt": "9"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Natri",
+          "value": {
+            "$numberInt": "74"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "247"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Đồng",
+          "value": {
+            "$numberInt": "145"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin E",
+          "value": {
+            "$numberInt": "269"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Folat",
+          "value": {
+            "$numberInt": "305"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "771"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca47"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134790"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134790"
+      }
+    }
+  },
+  {
+    "name": "Rau chân vịt 25",
+    "image": "https://picsum.photos/seed/ingredient-25/400/300",
+    "description": "Nguyên liệu mẫu 25 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Sản phẩm từ sữa",
+      "Hạt & hạt giống"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Mù tạt",
+      "Đậu lupin"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "311"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "23"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "15"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "6"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Nước",
+          "value": {
+            "$numberInt": "7"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Đồng",
+          "value": {
+            "$numberInt": "242"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Phospho",
+          "value": {
+            "$numberInt": "126"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Natri",
+          "value": {
+            "$numberInt": "87"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "542"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin E",
+          "value": {
+            "$numberInt": "46"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B1",
+          "value": {
+            "$numberInt": "373"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca48"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134790"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134790"
+      }
+    }
+  },
+  {
+    "name": "Đậu hũ 26",
+    "image": "https://picsum.photos/seed/ingredient-26/400/300",
+    "description": "Nguyên liệu mẫu 26 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Chất tạo ngọt",
+      "Mì & sợi"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Sữa",
+      "Trứng"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "125"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "29"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "12"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "27"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tro",
+          "value": {
+            "$numberInt": "8"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "87"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Selen",
+          "value": {
+            "$numberInt": "186"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "296"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B9",
+          "value": {
+            "$numberInt": "405"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "727"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B1",
+          "value": {
+            "$numberInt": "791"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca49"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134790"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134790"
+      }
+    }
+  },
+  {
+    "name": "Cá hồi 27",
+    "image": "https://picsum.photos/seed/ingredient-27/400/300",
+    "description": "Nguyên liệu mẫu 27 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Hạt & hạt giống",
+      "Rau củ"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Hạt phỉ"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "241"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "23"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "22"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "6"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "104"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Magiê",
+          "value": {
+            "$numberInt": "91"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Phospho",
+          "value": {
+            "$numberInt": "97"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin PP",
+          "value": {
+            "$numberInt": "273"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B1",
+          "value": {
+            "$numberInt": "525"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin H",
+          "value": {
+            "$numberInt": "439"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca4a"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134790"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134790"
+      }
+    }
+  },
+  {
+    "name": "Sữa chua Hy Lạp 28",
+    "image": "https://picsum.photos/seed/ingredient-28/400/300",
+    "description": "Nguyên liệu mẫu 28 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Thực phẩm đông lạnh",
+      "Nguyên liệu làm bánh"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Nghêu"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "244"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "18"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "12"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "42"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất xơ",
+          "value": {
+            "$numberInt": "15"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Đồng",
+          "value": {
+            "$numberInt": "222"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "165"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kali",
+          "value": {
+            "$numberInt": "252"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "798"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B1",
+          "value": {
+            "$numberInt": "432"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin D",
+          "value": {
+            "$numberInt": "208"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca4b"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134791"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134791"
+      }
+    }
+  },
+  {
+    "name": "Cà chua 29",
+    "image": "https://picsum.photos/seed/ingredient-29/400/300",
+    "description": "Nguyên liệu mẫu 29 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Trứng"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Xoài"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "311"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "7"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "19"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Phytosterol",
+          "value": {
+            "$numberInt": "7"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Mangan",
+          "value": {
+            "$numberInt": "191"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Natri",
+          "value": {
+            "$numberInt": "148"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "201"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin K",
+          "value": {
+            "$numberInt": "570"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Folat",
+          "value": {
+            "$numberInt": "234"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B12",
+          "value": {
+            "$numberInt": "364"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca4c"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134791"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134791"
+      }
+    }
+  },
+  {
+    "name": "Khoai lang 30",
+    "image": "https://picsum.photos/seed/ingredient-30/400/300",
+    "description": "Nguyên liệu mẫu 30 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Đồ uống",
+      "Hạt & hạt giống"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Đậu phộng",
+      "Hạt điều"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "327"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "17"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "6"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "39"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "4"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Mangan",
+          "value": {
+            "$numberInt": "120"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "213"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kali",
+          "value": {
+            "$numberInt": "212"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "618"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B5",
+          "value": {
+            "$numberInt": "564"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin E",
+          "value": {
+            "$numberInt": "609"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca4d"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134791"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134791"
+      }
+    }
+  },
+  {
+    "name": "Bơ 31",
+    "image": "https://picsum.photos/seed/ingredient-31/400/300",
+    "description": "Nguyên liệu mẫu 31 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Đồ ăn vặt"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Hạt brazil"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "353"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "24"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "26"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Cholesterol",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "95"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "149"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kali",
+          "value": {
+            "$numberInt": "13"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B5",
+          "value": {
+            "$numberInt": "233"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B6",
+          "value": {
+            "$numberInt": "288"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B9",
+          "value": {
+            "$numberInt": "209"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca4e"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134791"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134791"
+      }
+    }
+  },
+  {
+    "name": "Trứng gà 32",
+    "image": "https://picsum.photos/seed/ingredient-32/400/300",
+    "description": "Nguyên liệu mẫu 32 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Thịt"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Hạt phỉ"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "356"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "17"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "4"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "45"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tro",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Kali",
+          "value": {
+            "$numberInt": "174"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Đồng",
+          "value": {
+            "$numberInt": "70"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Mangan",
+          "value": {
+            "$numberInt": "272"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Folat",
+          "value": {
+            "$numberInt": "270"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B5",
+          "value": {
+            "$numberInt": "527"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin K",
+          "value": {
+            "$numberInt": "746"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca4f"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134791"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134791"
+      }
+    }
+  },
+  {
+    "name": "Đậu lăng 33",
+    "image": "https://picsum.photos/seed/ingredient-33/400/300",
+    "description": "Nguyên liệu mẫu 33 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Ngũ cốc",
+      "Trái cây"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Ngô"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "280"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "31"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "9"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "15"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tro",
+          "value": {
+            "$numberInt": "7"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Kali",
+          "value": {
+            "$numberInt": "138"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Đồng",
+          "value": {
+            "$numberInt": "69"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "42"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B2",
+          "value": {
+            "$numberInt": "43"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B1",
+          "value": {
+            "$numberInt": "195"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "604"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca50"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134791"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134791"
+      }
+    }
+  },
+  {
+    "name": "Hạnh nhân 34",
+    "image": "https://picsum.photos/seed/ingredient-34/400/300",
+    "description": "Nguyên liệu mẫu 34 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Dầu & chất béo",
+      "Chất tạo ngọt"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Ngô"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "175"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "9"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "12"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "20"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tro",
+          "value": {
+            "$numberInt": "1"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "96"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "271"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Phospho",
+          "value": {
+            "$numberInt": "56"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Folat",
+          "value": {
+            "$numberInt": "271"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin E",
+          "value": {
+            "$numberInt": "601"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B2",
+          "value": {
+            "$numberInt": "334"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca51"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134792"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134792"
+      }
+    }
+  },
+  {
+    "name": "Yến mạch 35",
+    "image": "https://picsum.photos/seed/ingredient-35/400/300",
+    "description": "Nguyên liệu mẫu 35 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Hải sản",
+      "Rau củ"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Lúa mạch",
+      "Đậu nành"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "183"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "18"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "5"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "23"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "8"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "106"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Phospho",
+          "value": {
+            "$numberInt": "138"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Magiê",
+          "value": {
+            "$numberInt": "138"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "682"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin K",
+          "value": {
+            "$numberInt": "192"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin H",
+          "value": {
+            "$numberInt": "313"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca52"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134792"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134792"
+      }
+    }
+  },
+  {
+    "name": "Nấm mỡ 36",
+    "image": "https://picsum.photos/seed/ingredient-36/400/300",
+    "description": "Nguyên liệu mẫu 36 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Ngũ cốc",
+      "Khác"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Lúa mạch",
+      "Xoài"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "280"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "24"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "2"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "38"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Nước",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Natri",
+          "value": {
+            "$numberInt": "141"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Selen",
+          "value": {
+            "$numberInt": "82"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Đồng",
+          "value": {
+            "$numberInt": "118"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B2",
+          "value": {
+            "$numberInt": "570"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin A",
+          "value": {
+            "$numberInt": "534"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin K",
+          "value": {
+            "$numberInt": "255"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca53"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134792"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134792"
+      }
+    }
+  },
+  {
+    "name": "Ớt chuông 37",
+    "image": "https://picsum.photos/seed/ingredient-37/400/300",
+    "description": "Nguyên liệu mẫu 37 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Đồ ăn vặt",
+      "Gia vị & nước chấm"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Mè"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "83"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "8"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "18"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "10"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "14"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Selen",
+          "value": {
+            "$numberInt": "288"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "144"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Đồng",
+          "value": {
+            "$numberInt": "277"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B6",
+          "value": {
+            "$numberInt": "751"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B5",
+          "value": {
+            "$numberInt": "566"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "564"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca54"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134792"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134792"
+      }
+    }
+  },
+  {
+    "name": "Dưa leo 38",
+    "image": "https://picsum.photos/seed/ingredient-38/400/300",
+    "description": "Nguyên liệu mẫu 38 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Thịt"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Bơ",
+      "Trứng"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "110"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "24"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "16"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "16"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "2"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "33"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Phospho",
+          "value": {
+            "$numberInt": "6"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Đồng",
+          "value": {
+            "$numberInt": "29"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B12",
+          "value": {
+            "$numberInt": "290"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin E",
+          "value": {
+            "$numberInt": "491"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B5",
+          "value": {
+            "$numberInt": "556"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca55"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134792"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134792"
+      }
+    }
+  },
+  {
+    "name": "Táo 39",
+    "image": "https://picsum.photos/seed/ingredient-39/400/300",
+    "description": "Nguyên liệu mẫu 39 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Đậu & họ đậu"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Lúa mạch"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "103"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "35"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "8"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "1"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Kali",
+          "value": {
+            "$numberInt": "197"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "93"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Selen",
+          "value": {
+            "$numberInt": "85"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "18"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin D",
+          "value": {
+            "$numberInt": "106"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin PP",
+          "value": {
+            "$numberInt": "754"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca56"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134792"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134792"
+      }
+    }
+  },
+  {
+    "name": "Chuối 40",
+    "image": "https://picsum.photos/seed/ingredient-40/400/300",
+    "description": "Nguyên liệu mẫu 40 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Rau củ"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Mè"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "397"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "22"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "4"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Mangan",
+          "value": {
+            "$numberInt": "290"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Magiê",
+          "value": {
+            "$numberInt": "152"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Đồng",
+          "value": {
+            "$numberInt": "102"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin E",
+          "value": {
+            "$numberInt": "495"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "635"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin PP",
+          "value": {
+            "$numberInt": "142"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca57"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134792"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134792"
+      }
+    }
+  },
+  {
+    "name": "Ức gà 41",
+    "image": "https://picsum.photos/seed/ingredient-41/400/300",
+    "description": "Nguyên liệu mẫu 41 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Rau thơm & gia vị",
+      "Mì & sợi"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Lúa mạch đen",
+      "Động vật thân mềm"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "235"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "14"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "13"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "37"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "6"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Kali",
+          "value": {
+            "$numberInt": "109"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "135"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "55"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin PP",
+          "value": {
+            "$numberInt": "529"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin E",
+          "value": {
+            "$numberInt": "14"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B2",
+          "value": {
+            "$numberInt": "753"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca58"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134793"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134793"
+      }
+    }
+  },
+  {
+    "name": "Bông cải xanh 42",
+    "image": "https://picsum.photos/seed/ingredient-42/400/300",
+    "description": "Nguyên liệu mẫu 42 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Mì & sợi",
+      "Nguyên liệu làm bánh"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Lúa mạch"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "84"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "24"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "3"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "23"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "286"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "219"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kali",
+          "value": {
+            "$numberInt": "17"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "471"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B1",
+          "value": {
+            "$numberInt": "527"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin E",
+          "value": {
+            "$numberInt": "68"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca59"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134793"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134793"
+      }
+    }
+  },
+  {
+    "name": "Cà rốt 43",
+    "image": "https://picsum.photos/seed/ingredient-43/400/300",
+    "description": "Nguyên liệu mẫu 43 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Thực phẩm đóng hộp",
+      "Mì & sợi"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Hành"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "239"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "32"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "18"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "19"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất xơ",
+          "value": {
+            "$numberInt": "5"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "121"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Phospho",
+          "value": {
+            "$numberInt": "137"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Selen",
+          "value": {
+            "$numberInt": "38"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "205"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin A",
+          "value": {
+            "$numberInt": "99"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin E",
+          "value": {
+            "$numberInt": "664"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca5a"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134793"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134793"
+      }
+    }
+  },
+  {
+    "name": "Gạo lứt 44",
+    "image": "https://picsum.photos/seed/ingredient-44/400/300",
+    "description": "Nguyên liệu mẫu 44 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Trứng",
+      "Thực phẩm đông lạnh"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Óc chó"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "146"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "28"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "18"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "7"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Phytosterol",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Natri",
+          "value": {
+            "$numberInt": "235"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "184"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Đồng",
+          "value": {
+            "$numberInt": "137"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "58"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B9",
+          "value": {
+            "$numberInt": "98"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B6",
+          "value": {
+            "$numberInt": "414"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca5b"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134793"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134793"
+      }
+    }
+  },
+  {
+    "name": "Rau chân vịt 45",
+    "image": "https://picsum.photos/seed/ingredient-45/400/300",
+    "description": "Nguyên liệu mẫu 45 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Ngũ cốc"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Sữa"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "367"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "15"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "10"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "21"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Cholesterol",
+          "value": {
+            "$numberInt": "4"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Natri",
+          "value": {
+            "$numberInt": "48"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kali",
+          "value": {
+            "$numberInt": "185"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Selen",
+          "value": {
+            "$numberInt": "283"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B1",
+          "value": {
+            "$numberInt": "698"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B6",
+          "value": {
+            "$numberInt": "288"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B5",
+          "value": {
+            "$numberInt": "185"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca5c"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134793"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134793"
+      }
+    }
+  },
+  {
+    "name": "Đậu hũ 46",
+    "image": "https://picsum.photos/seed/ingredient-46/400/300",
+    "description": "Nguyên liệu mẫu 46 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Gia cầm"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Lúa mạch"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "179"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "17"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "9"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Phytosterol",
+          "value": {
+            "$numberInt": "6"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Natri",
+          "value": {
+            "$numberInt": "102"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Magiê",
+          "value": {
+            "$numberInt": "66"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Mangan",
+          "value": {
+            "$numberInt": "202"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B12",
+          "value": {
+            "$numberInt": "321"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "728"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin K",
+          "value": {
+            "$numberInt": "762"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca5d"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134793"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134793"
+      }
+    }
+  },
+  {
+    "name": "Cá hồi 47",
+    "image": "https://picsum.photos/seed/ingredient-47/400/300",
+    "description": "Nguyên liệu mẫu 47 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Hải sản"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Cua",
+      "Cà phê"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "346"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "16"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "7"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "7"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tro",
+          "value": {
+            "$numberInt": "6"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Magiê",
+          "value": {
+            "$numberInt": "235"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "84"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Selen",
+          "value": {
+            "$numberInt": "284"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "535"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B9",
+          "value": {
+            "$numberInt": "571"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin H",
+          "value": {
+            "$numberInt": "625"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca5e"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134794"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134794"
+      }
+    }
+  },
+  {
+    "name": "Sữa chua Hy Lạp 48",
+    "image": "https://picsum.photos/seed/ingredient-48/400/300",
+    "description": "Nguyên liệu mẫu 48 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Ngũ cốc",
+      "Hải sản"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Sữa"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "326"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "18"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "25"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "7"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Phospho",
+          "value": {
+            "$numberInt": "73"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Selen",
+          "value": {
+            "$numberInt": "54"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "210"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin B9",
+          "value": {
+            "$numberInt": "666"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin A",
+          "value": {
+            "$numberInt": "324"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin D",
+          "value": {
+            "$numberInt": "163"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca5f"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134794"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134794"
+      }
+    }
+  },
+  {
+    "name": "Cà chua 49",
+    "image": "https://picsum.photos/seed/ingredient-49/400/300",
+    "description": "Nguyên liệu mẫu 49 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Hạt & hạt giống"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Cua",
+      "Sữa"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "218"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "24"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "15"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "18"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "14"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "202"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Natri",
+          "value": {
+            "$numberInt": "64"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "218"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin E",
+          "value": {
+            "$numberInt": "642"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin C",
+          "value": {
+            "$numberInt": "450"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B1",
+          "value": {
+            "$numberInt": "107"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca60"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134794"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134794"
+      }
+    }
+  },
+  {
+    "name": "Khoai lang 50",
+    "image": "https://picsum.photos/seed/ingredient-50/400/300",
+    "description": "Nguyên liệu mẫu 50 dùng để mô phỏng liên kết món ăn.",
+    "categories": [
+      "Khác",
+      "Thịt"
+    ],
+    "baseUnit": {
+      "amount": {
+        "$numberInt": "100"
+      },
+      "unit": "g"
+    },
+    "allergens": [
+      "Hạt dẻ cười"
+    ],
+    "nutrition": {
+      "nutrients": [
+        {
+          "label": "Năng lượng",
+          "value": {
+            "$numberInt": "85"
+          },
+          "unit": "kcal"
+        },
+        {
+          "label": "Protein",
+          "value": {
+            "$numberInt": "15"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Chất béo",
+          "value": {
+            "$numberInt": "3"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Tinh bột",
+          "value": {
+            "$numberInt": "11"
+          },
+          "unit": "g"
+        },
+        {
+          "label": "Nước",
+          "value": {
+            "$numberInt": "8"
+          },
+          "unit": "g"
+        }
+      ],
+      "minerals": [
+        {
+          "label": "Kẽm",
+          "value": {
+            "$numberInt": "111"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Calci",
+          "value": {
+            "$numberInt": "35"
+          },
+          "unit": "mg"
+        },
+        {
+          "label": "Sắt",
+          "value": {
+            "$numberInt": "299"
+          },
+          "unit": "mg"
+        }
+      ],
+      "vitamins": [
+        {
+          "label": "Vitamin D",
+          "value": {
+            "$numberInt": "534"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin PP",
+          "value": {
+            "$numberInt": "636"
+          },
+          "unit": "μg"
+        },
+        {
+          "label": "Vitamin B2",
+          "value": {
+            "$numberInt": "759"
+          },
+          "unit": "μg"
+        }
+      ]
+    },
+    "isActive": true,
+    "_id": {
+      "$oid": "69def7e6327d850cae4aca61"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220134794"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220134794"
+      }
+    }
+  }
+]

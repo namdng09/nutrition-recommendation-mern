@@ -1,0 +1,2849 @@
+[
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaf6"
+      },
+      "name": "Người dùng mẫu 24",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-24",
+      "role": "User"
+    },
+    "title": "Bài viết mẫu 1",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-1/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-1"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acac6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acad6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaf6"
+      }
+    ],
+    "views": {
+      "$numberInt": "655"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acada"
+          },
+          "name": "Người dùng mẫu 17",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-17"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 1.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd62"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acabe"
+          },
+          "name": "Người dùng mẫu 10",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-10"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 1.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd63"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1773282535303"
+      }
+    },
+    "category": "Mẹo",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acd61"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135323"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135323"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaee"
+      },
+      "name": "Người dùng mẫu 22",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-22",
+      "role": "User"
+    },
+    "title": "Bài viết mẫu 2",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-2/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-2"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acaa6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaa2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acae6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaf2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acad2"
+      }
+    ],
+    "views": {
+      "$numberInt": "412"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acad6"
+          },
+          "name": "Người dùng mẫu 16",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-16"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 2.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd65"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaa6"
+          },
+          "name": "Người dùng mẫu 4",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-4"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 2.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd66"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1771381735303"
+      }
+    },
+    "category": "Dinh dưỡng",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acd64"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135323"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135323"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaae"
+      },
+      "name": "Người dùng mẫu 6",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-6",
+      "role": "Nutritionist"
+    },
+    "title": "Bài viết mẫu 3",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-3/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-3"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acac6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaee"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acace"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaba"
+      }
+    ],
+    "views": {
+      "$numberInt": "429"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acac6"
+          },
+          "name": "Người dùng mẫu 12",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-12"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 3.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd68"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acac2"
+          },
+          "name": "Người dùng mẫu 11",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-11"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 3.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd69"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaae"
+          },
+          "name": "Người dùng mẫu 6",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-6"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 3.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd6a"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1775615335303"
+      }
+    },
+    "category": "Công thức",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acd67"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135323"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135323"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acac2"
+      },
+      "name": "Người dùng mẫu 11",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-11",
+      "role": "User"
+    },
+    "title": "Bài viết mẫu 4",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-4/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-4"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acaa2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaf2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acabe"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaee"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaea"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acab6"
+      }
+    ],
+    "views": {
+      "$numberInt": "376"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaae"
+          },
+          "name": "Người dùng mẫu 6",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-6"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 4.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd6c"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acab2"
+          },
+          "name": "Người dùng mẫu 7",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-7"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 4.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd6d"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaa2"
+          },
+          "name": "Người dùng mẫu 3",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-3"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 4.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd6e"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acad6"
+          },
+          "name": "Người dùng mẫu 16",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-16"
+        },
+        "content": "Bình luận mẫu 4 cho bài viết 4.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd6f"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1774924135303"
+      }
+    },
+    "category": "Mẹo",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acd6b"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135323"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135323"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaae"
+      },
+      "name": "Người dùng mẫu 6",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-6",
+      "role": "Nutritionist"
+    },
+    "title": "Bài viết mẫu 5",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-5/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-5"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acaa6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaa2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaee"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaaa"
+      },
+      {
+        "$oid": "69def7e6327d850cae4aca9e"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acac2"
+      }
+    ],
+    "views": {
+      "$numberInt": "938"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acade"
+          },
+          "name": "Người dùng mẫu 18",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-18"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 5.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd71"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acac2"
+          },
+          "name": "Người dùng mẫu 11",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-11"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 5.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd72"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acab2"
+          },
+          "name": "Người dùng mẫu 7",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-7"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 5.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd73"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1775701735303"
+      }
+    },
+    "category": "Mẹo",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acd70"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4aca9a"
+      },
+      "name": "Người dùng mẫu 1",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-1",
+      "role": "Admin"
+    },
+    "title": "Bài viết mẫu 6",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-6/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-6"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acaa6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acabe"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acada"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaa2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acac2"
+      }
+    ],
+    "views": {
+      "$numberInt": "592"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acac2"
+          },
+          "name": "Người dùng mẫu 11",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-11"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 6.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd75"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4aca9a"
+          },
+          "name": "Người dùng mẫu 1",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-1"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 6.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd76"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acae6"
+          },
+          "name": "Người dùng mẫu 20",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-20"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 6.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd77"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acabe"
+          },
+          "name": "Người dùng mẫu 10",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-10"
+        },
+        "content": "Bình luận mẫu 4 cho bài viết 6.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd78"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1772677735303"
+      }
+    },
+    "category": "Mẹo",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acd74"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaea"
+      },
+      "name": "Người dùng mẫu 21",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-21",
+      "role": "User"
+    },
+    "title": "Bài viết mẫu 7",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-7/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-7"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acaf6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaa6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acada"
+      },
+      {
+        "$oid": "69def7e6327d850cae4aca9a"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acade"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acace"
+      }
+    ],
+    "views": {
+      "$numberInt": "870"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acab2"
+          },
+          "name": "Người dùng mẫu 7",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-7"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 7.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd7a"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaa6"
+          },
+          "name": "Người dùng mẫu 4",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-4"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 7.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd7b"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acae6"
+          },
+          "name": "Người dùng mẫu 20",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-20"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 7.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd7c"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1775269735303"
+      }
+    },
+    "category": "Công thức",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acd79"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4aca9e"
+      },
+      "name": "Người dùng mẫu 2",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-2",
+      "role": "Admin"
+    },
+    "title": "Bài viết mẫu 8",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-8/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-8"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acab2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4aca9e"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acae2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acad6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaa6"
+      }
+    ],
+    "views": {
+      "$numberInt": "619"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaa6"
+          },
+          "name": "Người dùng mẫu 4",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-4"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 8.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd7e"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaf2"
+          },
+          "name": "Người dùng mẫu 23",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-23"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 8.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd7f"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaaa"
+          },
+          "name": "Người dùng mẫu 5",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-5"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 8.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd80"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1772850535303"
+      }
+    },
+    "category": "Lối sống",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acd7d"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acae6"
+      },
+      "name": "Người dùng mẫu 20",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-20",
+      "role": "User"
+    },
+    "title": "Bài viết mẫu 9",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-9/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-9"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acad6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acade"
+      },
+      {
+        "$oid": "69def7e6327d850cae4aca9e"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaca"
+      }
+    ],
+    "views": {
+      "$numberInt": "1188"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acae2"
+          },
+          "name": "Người dùng mẫu 19",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-19"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 9.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd82"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4aca9a"
+          },
+          "name": "Người dùng mẫu 1",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-1"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 9.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd83"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaf6"
+          },
+          "name": "Người dùng mẫu 24",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-24"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 9.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd84"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1771036135303"
+      }
+    },
+    "category": "Lối sống",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acd81"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acab6"
+      },
+      "name": "Người dùng mẫu 8",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-8",
+      "role": "Nutritionist"
+    },
+    "title": "Bài viết mẫu 10",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-10/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-10"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acab2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acac6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaee"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaa6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4aca9a"
+      }
+    ],
+    "views": {
+      "$numberInt": "1116"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4aca9e"
+          },
+          "name": "Người dùng mẫu 2",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-2"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 10.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd86"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4aca9a"
+          },
+          "name": "Người dùng mẫu 1",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-1"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 10.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd87"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acae2"
+          },
+          "name": "Người dùng mẫu 19",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-19"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 10.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd88"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1774232935303"
+      }
+    },
+    "category": "Mẹo",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acd85"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaca"
+      },
+      "name": "Người dùng mẫu 13",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-13",
+      "role": "User"
+    },
+    "title": "Bài viết mẫu 11",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-11/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-11"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acab6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaa2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaca"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acade"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acada"
+      }
+    ],
+    "views": {
+      "$numberInt": "866"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acac2"
+          },
+          "name": "Người dùng mẫu 11",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-11"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 11.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd8a"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acace"
+          },
+          "name": "Người dùng mẫu 14",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-14"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 11.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd8b"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaaa"
+          },
+          "name": "Người dùng mẫu 5",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-5"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 11.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd8c"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1775442535303"
+      }
+    },
+    "category": "Lối sống",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acd89"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acac2"
+      },
+      "name": "Người dùng mẫu 11",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-11",
+      "role": "User"
+    },
+    "title": "Bài viết mẫu 12",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-12/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-12"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acad2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4aca9e"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acae2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acab2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acada"
+      }
+    ],
+    "views": {
+      "$numberInt": "1160"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acad2"
+          },
+          "name": "Người dùng mẫu 15",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-15"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 12.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd8e"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaa6"
+          },
+          "name": "Người dùng mẫu 4",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-4"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 12.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd8f"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaa2"
+          },
+          "name": "Người dùng mẫu 3",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-3"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 12.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd90"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acab6"
+          },
+          "name": "Người dùng mẫu 8",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-8"
+        },
+        "content": "Bình luận mẫu 4 cho bài viết 12.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd91"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1775874535303"
+      }
+    },
+    "category": "Lối sống",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acd8d"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaca"
+      },
+      "name": "Người dùng mẫu 13",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-13",
+      "role": "User"
+    },
+    "title": "Bài viết mẫu 13",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-13/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-13"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acaea"
+      },
+      {
+        "$oid": "69def7e6327d850cae4aca9a"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaf6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acad6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4aca9e"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acae6"
+      }
+    ],
+    "views": {
+      "$numberInt": "1185"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaf6"
+          },
+          "name": "Người dùng mẫu 24",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-24"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 13.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd93"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaae"
+          },
+          "name": "Người dùng mẫu 6",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-6"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 13.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd94"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acad2"
+          },
+          "name": "Người dùng mẫu 15",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-15"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 13.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd95"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaf2"
+          },
+          "name": "Người dùng mẫu 23",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-23"
+        },
+        "content": "Bình luận mẫu 4 cho bài viết 13.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd96"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1773973735303"
+      }
+    },
+    "category": "Dinh dưỡng",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acd92"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaf6"
+      },
+      "name": "Người dùng mẫu 24",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-24",
+      "role": "User"
+    },
+    "title": "Bài viết mẫu 14",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-14/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-14"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acaf6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaae"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acab2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acabe"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acab6"
+      }
+    ],
+    "views": {
+      "$numberInt": "1413"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaca"
+          },
+          "name": "Người dùng mẫu 13",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-13"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 14.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd98"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acabe"
+          },
+          "name": "Người dùng mẫu 10",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-10"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 14.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd99"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acae2"
+          },
+          "name": "Người dùng mẫu 19",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-19"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 14.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd9a"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acade"
+          },
+          "name": "Người dùng mẫu 18",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-18"
+        },
+        "content": "Bình luận mẫu 4 cho bài viết 14.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd9b"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1772936935303"
+      }
+    },
+    "category": "Công thức",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acd97"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acad6"
+      },
+      "name": "Người dùng mẫu 16",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-16",
+      "role": "User"
+    },
+    "title": "Bài viết mẫu 15",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-15/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-15"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4aca9e"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaca"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acada"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaae"
+      }
+    ],
+    "views": {
+      "$numberInt": "442"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaca"
+          },
+          "name": "Người dùng mẫu 13",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-13"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 15.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd9d"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acab6"
+          },
+          "name": "Người dùng mẫu 8",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-8"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 15.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd9e"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acade"
+          },
+          "name": "Người dùng mẫu 18",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-18"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 15.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acd9f"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1775010535303"
+      }
+    },
+    "category": "Mẹo",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acd9c"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acabe"
+      },
+      "name": "Người dùng mẫu 10",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-10",
+      "role": "User"
+    },
+    "title": "Bài viết mẫu 16",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-16/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-16"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acaae"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acac6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acade"
+      }
+    ],
+    "views": {
+      "$numberInt": "653"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaba"
+          },
+          "name": "Người dùng mẫu 9",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-9"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 16.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acda1"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acab6"
+          },
+          "name": "Người dùng mẫu 8",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-8"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 16.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acda2"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaf2"
+          },
+          "name": "Người dùng mẫu 23",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-23"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 16.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acda3"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaca"
+          },
+          "name": "Người dùng mẫu 13",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-13"
+        },
+        "content": "Bình luận mẫu 4 cho bài viết 16.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acda4"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1772936935303"
+      }
+    },
+    "category": "Công thức",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acda0"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaea"
+      },
+      "name": "Người dùng mẫu 21",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-21",
+      "role": "User"
+    },
+    "title": "Bài viết mẫu 17",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-17/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-17"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acaa2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4aca9e"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaa6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaca"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acace"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaf2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acab2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acada"
+      }
+    ],
+    "views": {
+      "$numberInt": "770"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaa2"
+          },
+          "name": "Người dùng mẫu 3",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-3"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 17.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acda6"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acad6"
+          },
+          "name": "Người dùng mẫu 16",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-16"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 17.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acda7"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acae2"
+          },
+          "name": "Người dùng mẫu 19",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-19"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 17.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acda8"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1776047335303"
+      }
+    },
+    "category": "Mẹo",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acda5"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acab6"
+      },
+      "name": "Người dùng mẫu 8",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-8",
+      "role": "Nutritionist"
+    },
+    "title": "Bài viết mẫu 18",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-18/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-18"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4aca9a"
+      },
+      {
+        "$oid": "69def7e6327d850cae4aca9e"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acad6"
+      }
+    ],
+    "views": {
+      "$numberInt": "1404"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaca"
+          },
+          "name": "Người dùng mẫu 13",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-13"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 18.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdaa"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acabe"
+          },
+          "name": "Người dùng mẫu 10",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-10"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 18.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdab"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acac6"
+          },
+          "name": "Người dùng mẫu 12",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-12"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 18.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdac"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acade"
+          },
+          "name": "Người dùng mẫu 18",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-18"
+        },
+        "content": "Bình luận mẫu 4 cho bài viết 18.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdad"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1772332135303"
+      }
+    },
+    "category": "Dinh dưỡng",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acda9"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acae6"
+      },
+      "name": "Người dùng mẫu 20",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-20",
+      "role": "User"
+    },
+    "title": "Bài viết mẫu 19",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-19/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-19"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acab2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acad6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acab6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaca"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaf6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acade"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acae6"
+      }
+    ],
+    "views": {
+      "$numberInt": "1003"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaca"
+          },
+          "name": "Người dùng mẫu 13",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-13"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 19.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdaf"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaf2"
+          },
+          "name": "Người dùng mẫu 23",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-23"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 19.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdb0"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acace"
+          },
+          "name": "Người dùng mẫu 14",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-14"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 19.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdb1"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1774664935303"
+      }
+    },
+    "category": "Lối sống",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acdae"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acaf2"
+      },
+      "name": "Người dùng mẫu 23",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-23",
+      "role": "User"
+    },
+    "title": "Bài viết mẫu 20",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-20/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-20"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acad2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaae"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaaa"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaba"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaf6"
+      }
+    ],
+    "views": {
+      "$numberInt": "1169"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaee"
+          },
+          "name": "Người dùng mẫu 22",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-22"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 20.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdb3"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acae6"
+          },
+          "name": "Người dùng mẫu 20",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-20"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 20.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdb4"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaf2"
+          },
+          "name": "Người dùng mẫu 23",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-23"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 20.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdb5"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1774924135303"
+      }
+    },
+    "category": "Dinh dưỡng",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acdb2"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acae2"
+      },
+      "name": "Người dùng mẫu 19",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-19",
+      "role": "User"
+    },
+    "title": "Bài viết mẫu 21",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-21/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-21"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4aca9a"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaa6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acae6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaee"
+      },
+      {
+        "$oid": "69def7e6327d850cae4aca9e"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaaa"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acae2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acac2"
+      }
+    ],
+    "views": {
+      "$numberInt": "1251"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaca"
+          },
+          "name": "Người dùng mẫu 13",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-13"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 21.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdb7"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acad6"
+          },
+          "name": "Người dùng mẫu 16",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-16"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 21.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdb8"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acada"
+          },
+          "name": "Người dùng mẫu 17",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-17"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 21.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdb9"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1774405735303"
+      }
+    },
+    "category": "Mẹo",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acdb6"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acade"
+      },
+      "name": "Người dùng mẫu 18",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-18",
+      "role": "User"
+    },
+    "title": "Bài viết mẫu 22",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-22/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-22"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acab2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acad2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaa6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acac2"
+      }
+    ],
+    "views": {
+      "$numberInt": "718"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acade"
+          },
+          "name": "Người dùng mẫu 18",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-18"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 22.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdbb"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acad6"
+          },
+          "name": "Người dùng mẫu 16",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-16"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 22.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdbc"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaf2"
+          },
+          "name": "Người dùng mẫu 23",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-23"
+        },
+        "content": "Bình luận mẫu 3 cho bài viết 22.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdbd"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1775960935303"
+      }
+    },
+    "category": "Công thức",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acdba"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4aca9e"
+      },
+      "name": "Người dùng mẫu 2",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-2",
+      "role": "Admin"
+    },
+    "title": "Bài viết mẫu 23",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-23/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-23"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4aca9e"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acad6"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaee"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acade"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaa2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaca"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaf2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaaa"
+      }
+    ],
+    "views": {
+      "$numberInt": "1140"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acae2"
+          },
+          "name": "Người dùng mẫu 19",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-19"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 23.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135303"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdbf"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4aca9a"
+          },
+          "name": "Người dùng mẫu 1",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-1"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 23.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135304"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdc0"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1771813735304"
+      }
+    },
+    "category": "Lối sống",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acdbe"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135324"
+      }
+    }
+  },
+  {
+    "author": {
+      "_id": {
+        "$oid": "69def7e6327d850cae4acac6"
+      },
+      "name": "Người dùng mẫu 12",
+      "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-12",
+      "role": "User"
+    },
+    "title": "Bài viết mẫu 24",
+    "content": "Đây là bài viết được tạo để demo quan hệ dữ liệu và chỉ mục.",
+    "images": [
+      "https://picsum.photos/seed/post-24/900/500"
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "cộng-đồng",
+      "bài-viết-24"
+    ],
+    "likes": [
+      {
+        "$oid": "69def7e6327d850cae4acaf2"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acaae"
+      },
+      {
+        "$oid": "69def7e6327d850cae4acae6"
+      }
+    ],
+    "views": {
+      "$numberInt": "512"
+    },
+    "comments": [
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acaaa"
+          },
+          "name": "Người dùng mẫu 5",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-5"
+        },
+        "content": "Bình luận mẫu 1 cho bài viết 24.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135304"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdc2"
+        }
+      },
+      {
+        "author": {
+          "_id": {
+            "$oid": "69def7e6327d850cae4acad6"
+          },
+          "name": "Người dùng mẫu 16",
+          "avatar": "https://api.dicebear.com/9.x/initials/svg?seed=user-16"
+        },
+        "content": "Bình luận mẫu 2 cho bài viết 24.",
+        "createdAt": {
+          "$date": {
+            "$numberLong": "1776220135304"
+          }
+        },
+        "_id": {
+          "$oid": "69def7e7327d850cae4acdc3"
+        }
+      }
+    ],
+    "isPublished": true,
+    "publishedAt": {
+      "$date": {
+        "$numberLong": "1775269735304"
+      }
+    },
+    "category": "Lối sống",
+    "_id": {
+      "$oid": "69def7e7327d850cae4acdc1"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776220135325"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776220135325"
+      }
+    }
+  }
+]
