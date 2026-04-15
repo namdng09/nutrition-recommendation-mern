@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ScheduleService } from '~/features/schedules/schedule-service';
-import { MEAL_TYPE } from '~/shared/constants/meal-type';
 import { ScheduleModel } from '~/shared/database/models';
 
 vi.mock('~/shared/database/models', () => ({
@@ -14,51 +13,47 @@ const mockFindScheduleById = vi.mocked(ScheduleModel.findById);
 
 const VALID_SCHEDULE_ID = '507f1f77bcf86cd799439013';
 const VALID_USER_ID = '507f1f77bcf86cd799439011';
-const VALID_DISH_ID = '507f1f77bcf86cd799439014';
+const VALID_EXERCISE_ID = '507f1f77bcf86cd799439022';
 
-describe('ScheduleService.removeScheduleDish', () => {
+describe('ScheduleService.removeScheduleWorkoutExercise', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should remove dish from meal successfully', async () => {
+  it('should remove workout exercise successfully', async () => {
     const scheduleDoc = {
       user: { _id: { toString: () => VALID_USER_ID } },
-      meals: [
+      workout: [
         {
-          mealType: MEAL_TYPE.BREAKFAST,
-          dishes: [
-            { dishId: { toString: () => VALID_DISH_ID }, name: 'Dish 1' },
-            {
-              dishId: { toString: () => '507f1f77bcf86cd799439015' },
-              name: 'Dish 2'
-            }
-          ]
+          exerciseId: { toString: () => VALID_EXERCISE_ID },
+          exerciseName: 'Running'
+        },
+        {
+          exerciseId: { toString: () => '507f1f77bcf86cd799439099' },
+          exerciseName: 'Push up'
         }
       ],
       save: vi.fn()
     };
     mockFindScheduleById.mockResolvedValue(scheduleDoc as any);
 
-    const updated = await ScheduleService.removeScheduleDish(
+    const updated = await ScheduleService.removeScheduleWorkoutExercise(
       VALID_SCHEDULE_ID,
       VALID_USER_ID,
-      MEAL_TYPE.BREAKFAST,
-      VALID_DISH_ID
+      VALID_EXERCISE_ID
     );
 
-    expect(updated.meals[0].dishes.length).toBe(1);
-    expect(updated.meals[0].dishes[0].name).toBe('Dish 2');
+    expect(updated.workout.length).toBe(1);
+    expect(updated.workout[0]?.exerciseName).toBe('Push up');
     expect(scheduleDoc.save).toHaveBeenCalledOnce();
   });
 
   it('should throw error when schedule ID is invalid', async () => {
     await expect(
-      ScheduleService.removeScheduleDish(
+      ScheduleService.removeScheduleWorkoutExercise(
         'invalid-id',
         VALID_USER_ID,
-        MEAL_TYPE.BREAKFAST,
-        VALID_DISH_ID
+        VALID_EXERCISE_ID
       )
     ).rejects.toMatchObject({
       status: 400,
@@ -66,17 +61,16 @@ describe('ScheduleService.removeScheduleDish', () => {
     });
   });
 
-  it('should throw error when dish ID is invalid', async () => {
+  it('should throw error when exercise ID is invalid', async () => {
     await expect(
-      ScheduleService.removeScheduleDish(
+      ScheduleService.removeScheduleWorkoutExercise(
         VALID_SCHEDULE_ID,
         VALID_USER_ID,
-        MEAL_TYPE.BREAKFAST,
         'invalid-id'
       )
     ).rejects.toMatchObject({
       status: 400,
-      message: 'Định dạng ID món ăn không hợp lệ'
+      message: 'Định dạng ID bài tập không hợp lệ'
     });
   });
 
@@ -84,11 +78,10 @@ describe('ScheduleService.removeScheduleDish', () => {
     mockFindScheduleById.mockResolvedValue(null);
 
     await expect(
-      ScheduleService.removeScheduleDish(
+      ScheduleService.removeScheduleWorkoutExercise(
         VALID_SCHEDULE_ID,
         VALID_USER_ID,
-        MEAL_TYPE.BREAKFAST,
-        VALID_DISH_ID
+        VALID_EXERCISE_ID
       )
     ).rejects.toMatchObject({
       status: 404,
@@ -96,18 +89,17 @@ describe('ScheduleService.removeScheduleDish', () => {
     });
   });
 
-  it('should throw error when user removes from another user schedule', async () => {
+  it('should throw error when user updates another user schedule', async () => {
     mockFindScheduleById.mockResolvedValue({
       user: { _id: { toString: () => '507f1f77bcf86cd799439099' } },
-      meals: []
+      workout: []
     } as any);
 
     await expect(
-      ScheduleService.removeScheduleDish(
+      ScheduleService.removeScheduleWorkoutExercise(
         VALID_SCHEDULE_ID,
         VALID_USER_ID,
-        MEAL_TYPE.BREAKFAST,
-        VALID_DISH_ID
+        VALID_EXERCISE_ID
       )
     ).rejects.toMatchObject({
       status: 403,
@@ -115,41 +107,21 @@ describe('ScheduleService.removeScheduleDish', () => {
     });
   });
 
-  it('should throw error when meal does not exist', async () => {
+  it('should throw error when exercise not in workout', async () => {
     mockFindScheduleById.mockResolvedValue({
       user: { _id: { toString: () => VALID_USER_ID } },
-      meals: []
+      workout: []
     } as any);
 
     await expect(
-      ScheduleService.removeScheduleDish(
+      ScheduleService.removeScheduleWorkoutExercise(
         VALID_SCHEDULE_ID,
         VALID_USER_ID,
-        MEAL_TYPE.BREAKFAST,
-        VALID_DISH_ID
+        VALID_EXERCISE_ID
       )
     ).rejects.toMatchObject({
       status: 404,
-      message: 'Không tìm thấy bữa ăn'
-    });
-  });
-
-  it('should throw error when dish does not exist in meal', async () => {
-    mockFindScheduleById.mockResolvedValue({
-      user: { _id: { toString: () => VALID_USER_ID } },
-      meals: [{ mealType: MEAL_TYPE.BREAKFAST, dishes: [] }]
-    } as any);
-
-    await expect(
-      ScheduleService.removeScheduleDish(
-        VALID_SCHEDULE_ID,
-        VALID_USER_ID,
-        MEAL_TYPE.BREAKFAST,
-        VALID_DISH_ID
-      )
-    ).rejects.toMatchObject({
-      status: 404,
-      message: 'Không tìm thấy món ăn trong bữa'
+      message: 'Không tìm thấy bài tập trong workout'
     });
   });
 });
