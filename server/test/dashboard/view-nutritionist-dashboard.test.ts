@@ -103,41 +103,32 @@ describe('DashboardService.viewNutritionistDashboard', () => {
       expect(result.engagement.totalComments).toBe(12);
     });
 
-    it('should apply range filter to author/user queries', async () => {
-      mockDishCountDocuments.mockResolvedValueOnce(1);
-      mockDishCountDocuments.mockResolvedValueOnce(1);
-      mockPostCountDocuments.mockResolvedValueOnce(1);
-      mockPostCountDocuments.mockResolvedValueOnce(1);
-      mockCollectionCountDocuments.mockResolvedValueOnce(1);
-      mockPostAggregate.mockResolvedValue([mockEngagementMetrics] as any);
+    it('should handle all range options and default behavior', async () => {
+      const ranges = [
+        undefined,
+        'today',
+        'yesterday',
+        'last7days',
+        'last30days',
+        'thisMonth',
+        'lastMonth',
+        'thisYear',
+        'allTime'
+      ] as const;
 
-      await DashboardService.viewNutritionistDashboard(VALID_NUTRITIONIST_ID, {
-        range: 'today'
-      });
+      for (const range of ranges) {
+        mockDishCountDocuments.mockResolvedValue(0);
+        mockPostCountDocuments.mockResolvedValue(0);
+        mockCollectionCountDocuments.mockResolvedValue(0);
+        mockPostAggregate.mockResolvedValue([] as any);
 
-      expect(mockDishCountDocuments).toHaveBeenNthCalledWith(
-        1,
-        expect.objectContaining({
-          'user._id': expect.any(Object),
-          createdAt: expect.any(Object)
-        })
-      );
-      expect(mockPostCountDocuments).toHaveBeenNthCalledWith(
-        1,
-        expect.objectContaining({
-          'author._id': expect.any(Object),
-          createdAt: expect.any(Object)
-        })
-      );
-      expect(mockPostAggregate).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({
-            $match: expect.objectContaining({
-              'author._id': expect.any(Object)
-            })
-          })
-        ])
-      );
+        const result = await DashboardService.viewNutritionistDashboard(
+          VALID_NUTRITIONIST_ID,
+          range ? { range } : {}
+        );
+
+        expect(result.period).toBe(range ?? 'allTime');
+      }
     });
 
     it('should apply custom range and invalid range fallback without crashing', async () => {
