@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
   FaChevronRight,
   FaFireAlt,
@@ -32,21 +32,21 @@ export default function CollectionsList() {
   const { data } = useCollections(params);
   const collections = data?.docs ?? [];
 
-  const goToPrev = useCallback(() => {
+  const goToPrev = () => {
     setSearchParams(prev => {
       const next = new URLSearchParams(prev);
       next.set('page', String(Math.max(1, page - 1)));
       return next;
     });
-  }, [page, setSearchParams]);
+  };
 
-  const goToNext = useCallback(() => {
+  const goToNext = () => {
     setSearchParams(prev => {
       const next = new URLSearchParams(prev);
       next.set('page', String(page + 1));
       return next;
     });
-  }, [page, setSearchParams]);
+  };
 
   return (
     <div className='mx-auto w-full max-w-7xl animate-in space-y-6 fade-in duration-700'>
