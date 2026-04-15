@@ -59,6 +59,13 @@ type UpdateProfileRequest =
   | UpdateAllergens
   | UpdateScheduleSettings;
 
+type UserArrayField =
+  | 'favoriteDishes'
+  | 'favoriteIngredients'
+  | 'favoriteCollections'
+  | 'blockDishes'
+  | 'blockIngredients';
+
 const ACTIVITY_MULTIPLIERS: Record<
   (typeof ACTIVITY_LEVEL)[keyof typeof ACTIVITY_LEVEL],
   number
@@ -182,6 +189,191 @@ const toNonNegativeInt = (value: unknown): number => {
   return Math.max(0, Math.round(numeric));
 };
 
+const buildProfileViewQuery = (id: string) =>
+  UserModel.findById(id)
+    .populate({
+      path: 'favoriteDishes',
+      select:
+        'name description image tags preparationTime cookTime servings nutrition user',
+      populate: {
+        path: 'user',
+        select: 'name'
+      }
+    })
+    .populate({
+      path: 'favoriteIngredients',
+      select: 'name description category image baseUnit nutrition isActive'
+    })
+    .populate({
+      path: 'favoriteCollections',
+      select: 'name description image isPublic tags user dishes',
+      populate: [
+        {
+          path: 'user',
+          select: 'name'
+        },
+        {
+          path: 'dishes',
+          select: 'name image nutrition',
+          options: { limit: 1 }
+        }
+      ]
+    })
+    .populate({
+      path: 'blockDishes',
+      select:
+        'name description image tags preparationTime cookTime servings nutrition user',
+      populate: {
+        path: 'user',
+        select: 'name'
+      }
+    })
+    .populate({
+      path: 'blockIngredients',
+      select: 'name description category image baseUnit nutrition isActive'
+    })
+    .select('-password');
+
+const buildProfileUpdateOperation = (data: UpdateProfileRequest) => {
+  const { weight, ...rest } = data as UpdatePhysicalStats;
+
+  return weight
+    ? { $set: rest, $push: { weightRecord: { weight, date: new Date() } } }
+    : rest;
+};
+
+const saveNutritionistProfile = async (
+  user: HydratedDocument<User>,
+  data: UpdateNutritionistProfile
+) => {
+  user.nutritionistProfile = data;
+  await user.save();
+
+  return user;
+};
+
+const addToUserArrayField = async (
+  userId: string,
+  field: UserArrayField,
+  value: string
+) => {
+  const updatedField = {
+    [field]: value
+  } as Partial<Record<UserArrayField, string>>;
+
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    userId,
+    { $addToSet: updatedField },
+    { new: true }
+  );
+
+  if (!updatedUser) {
+    throw createHttpError(404, 'Không tìm thấy người dùng');
+  }
+
+  return updatedUser;
+};
+
+const removeFromUserArrayField = async (
+  userId: string,
+  field: UserArrayField,
+  value: string
+) => {
+  const updatedField = {
+    [field]: value
+  } as Partial<Record<UserArrayField, string>>;
+
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    userId,
+    { $pull: updatedField },
+    { new: true }
+  );
+
+  if (!updatedUser) {
+    throw createHttpError(404, 'Không tìm thấy người dùng');
+  }
+
+  return updatedUser;
+};
+
+const sendCertificateNotification = (params: {
+  to: string;
+  subject: string;
+  template: string;
+  templateData: Record<string, string | number | boolean>;
+  errorMessage: string;
+}) => {
+  sendMail({
+    to: params.to,
+    subject: params.subject,
+    template: params.template,
+    templateData: params.templateData as any
+  }).catch(err => {
+    console.error(params.errorMessage, err);
+  });
+};
+
+const uploadAndSaveCertificate = async (
+  user: HydratedDocument<User>,
+  certificateName: string,
+  file: Express.Multer.File
+) => {
+  const userId = user._id.toString();
+
+  if (
+    user.certificate &&
+    user.certificate.status === CERTIFICATE_STATUS.REJECTED
+  ) {
+    await deleteCertificate(userId);
+  }
+
+  const uploadResult = await uploadCertificate(file.buffer, userId);
+
+  if (!uploadResult.success || !uploadResult.data) {
+    throw createHttpError(500, 'Không thể tải lên chứng chỉ');
+  }
+
+  user.certificate = {
+    name: certificateName,
+    fileUrl: uploadResult.data.secure_url,
+    publicId: uploadResult.data.public_id,
+    status: CERTIFICATE_STATUS.PENDING,
+    rejectionReason: undefined
+  } as any;
+
+  await user.save();
+
+  return user;
+};
+
+const saveCertificateReviewDecision = async (
+  user: HydratedDocument<User>,
+  status: (typeof CERTIFICATE_STATUS)[keyof typeof CERTIFICATE_STATUS],
+  rejectionReason?: string
+) => {
+  if (!user.certificate) {
+    return user;
+  }
+
+  user.certificate.status = status;
+  user.certificate.rejectionReason = rejectionReason as any;
+  await user.save();
+
+  return user;
+};
+
+const setCertificateVisibility = async (
+  user: HydratedDocument<User>,
+  showCertificate: boolean
+) => {
+  if (user.certificate) {
+    user.certificate.showCertificate = showCertificate;
+    await user.save();
+  }
+
+  return user;
+};
+
 const refreshAiQuotaOnProfileRead = async (user: HydratedDocument<User>) => {
   const now = new Date();
   let changed = false;
@@ -236,143 +428,51 @@ const refreshAiQuotaOnProfileRead = async (user: HydratedDocument<User>) => {
 
 export const UserService = {
   addFavoriteDish: async (userId: string, dishId: string) => {
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      userId,
-      { $addToSet: { favoriteDishes: dishId } },
-      { new: true }
-    );
-
-    if (!updatedUser) {
-      throw createHttpError(404, 'Không tìm thấy người dùng');
-    }
-
-    return updatedUser;
+    return addToUserArrayField(userId, 'favoriteDishes', dishId);
   },
 
   removeFavoriteDish: async (userId: string, dishId: string) => {
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      userId,
-      { $pull: { favoriteDishes: dishId } },
-      { new: true }
-    );
-
-    if (!updatedUser) {
-      throw createHttpError(404, 'Không tìm thấy người dùng');
-    }
-
-    return updatedUser;
+    return removeFromUserArrayField(userId, 'favoriteDishes', dishId);
   },
 
   addFavoriteIngredient: async (userId: string, ingredientId: string) => {
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      userId,
-      { $addToSet: { favoriteIngredients: ingredientId } },
-      { new: true }
-    );
-
-    if (!updatedUser) {
-      throw createHttpError(404, 'Không tìm thấy người dùng');
-    }
-
-    return updatedUser;
+    return addToUserArrayField(userId, 'favoriteIngredients', ingredientId);
   },
 
   removeFavoriteIngredient: async (userId: string, ingredientId: string) => {
-    const updatedUser = await UserModel.findByIdAndUpdate(
+    return removeFromUserArrayField(
       userId,
-      { $pull: { favoriteIngredients: ingredientId } },
-      { new: true }
+      'favoriteIngredients',
+      ingredientId
     );
-
-    if (!updatedUser) {
-      throw createHttpError(404, 'Không tìm thấy người dùng');
-    }
-
-    return updatedUser;
   },
 
   addFavoriteCollection: async (userId: string, collectionId: string) => {
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      userId,
-      { $addToSet: { favoriteCollections: collectionId } },
-      { new: true }
-    );
-
-    if (!updatedUser) {
-      throw createHttpError(404, 'Không tìm thấy người dùng');
-    }
-
-    return updatedUser;
+    return addToUserArrayField(userId, 'favoriteCollections', collectionId);
   },
 
   removeFavoriteCollection: async (userId: string, collectionId: string) => {
-    const updatedUser = await UserModel.findByIdAndUpdate(
+    return removeFromUserArrayField(
       userId,
-      { $pull: { favoriteCollections: collectionId } },
-      { new: true }
+      'favoriteCollections',
+      collectionId
     );
-
-    if (!updatedUser) {
-      throw createHttpError(404, 'Không tìm thấy người dùng');
-    }
-
-    return updatedUser;
   },
 
   addBlockDish: async (userId: string, dishId: string) => {
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      userId,
-      { $addToSet: { blockDishes: dishId } },
-      { new: true }
-    );
-
-    if (!updatedUser) {
-      throw createHttpError(404, 'Không tìm thấy người dùng');
-    }
-
-    return updatedUser;
+    return addToUserArrayField(userId, 'blockDishes', dishId);
   },
 
   removeBlockDish: async (userId: string, dishId: string) => {
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      userId,
-      { $pull: { blockDishes: dishId } },
-      { new: true }
-    );
-
-    if (!updatedUser) {
-      throw createHttpError(404, 'Không tìm thấy người dùng');
-    }
-
-    return updatedUser;
+    return removeFromUserArrayField(userId, 'blockDishes', dishId);
   },
 
   addBlockIngredient: async (userId: string, ingredientId: string) => {
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      userId,
-      { $addToSet: { blockIngredients: ingredientId } },
-      { new: true }
-    );
-
-    if (!updatedUser) {
-      throw createHttpError(404, 'Không tìm thấy người dùng');
-    }
-
-    return updatedUser;
+    return addToUserArrayField(userId, 'blockIngredients', ingredientId);
   },
 
   removeBlockIngredient: async (userId: string, ingredientId: string) => {
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      userId,
-      { $pull: { blockIngredients: ingredientId } },
-      { new: true }
-    );
-
-    if (!updatedUser) {
-      throw createHttpError(404, 'Không tìm thấy người dùng');
-    }
-
-    return updatedUser;
+    return removeFromUserArrayField(userId, 'blockIngredients', ingredientId);
   },
   createUser: async (data: CreateUserRequest) => {
     const newUser = await UserModel.create(data);
@@ -465,49 +565,7 @@ export const UserService = {
       throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
     }
 
-    const user = await UserModel.findById(id)
-      .populate({
-        path: 'favoriteDishes',
-        select:
-          'name description image tags preparationTime cookTime servings nutrition user',
-        populate: {
-          path: 'user',
-          select: 'name'
-        }
-      })
-      .populate({
-        path: 'favoriteIngredients',
-        select: 'name description category image baseUnit nutrition isActive'
-      })
-      .populate({
-        path: 'favoriteCollections',
-        select: 'name description image isPublic tags user dishes',
-        populate: [
-          {
-            path: 'user',
-            select: 'name'
-          },
-          {
-            path: 'dishes',
-            select: 'name image nutrition',
-            options: { limit: 1 }
-          }
-        ]
-      })
-      .populate({
-        path: 'blockDishes',
-        select:
-          'name description image tags preparationTime cookTime servings nutrition user',
-        populate: {
-          path: 'user',
-          select: 'name'
-        }
-      })
-      .populate({
-        path: 'blockIngredients',
-        select: 'name description category image baseUnit nutrition isActive'
-      })
-      .select('-password');
+    const user = await buildProfileViewQuery(id);
 
     if (!user) {
       throw createHttpError(404, 'Không tìm thấy người dùng');
@@ -606,11 +664,7 @@ export const UserService = {
       throw createHttpError(400, 'Định dạng ID người dùng không hợp lệ');
     }
 
-    const { weight, ...rest } = data as UpdatePhysicalStats;
-
-    const updateOp = weight
-      ? { $set: rest, $push: { weightRecord: { weight, date: new Date() } } }
-      : rest;
+    const updateOp = buildProfileUpdateOperation(data);
 
     const updatedUser = await UserModel.findByIdAndUpdate(id, updateOp, {
       new: true
@@ -757,40 +811,17 @@ export const UserService = {
       );
     }
 
-    // Delete old rejected certificate from Cloudinary before re-uploading
-    if (
-      user.certificate &&
-      user.certificate.status === CERTIFICATE_STATUS.REJECTED
-    ) {
-      await deleteCertificate(userId);
-    }
+    await uploadAndSaveCertificate(user, data.certificateName, file);
 
-    const uploadResult = await uploadCertificate(file.buffer, userId);
-
-    if (!uploadResult.success || !uploadResult.data) {
-      throw createHttpError(500, 'Không thể tải lên chứng chỉ');
-    }
-
-    user.certificate = {
-      name: data.certificateName,
-      fileUrl: uploadResult.data.secure_url,
-      publicId: uploadResult.data.public_id,
-      status: CERTIFICATE_STATUS.PENDING,
-      rejectionReason: undefined
-    } as any;
-
-    await user.save();
-
-    sendMail({
+    sendCertificateNotification({
       to: user.email,
       subject: 'Chứng chỉ của bạn đang chờ duyệt',
       template: 'certificate-pending',
       templateData: {
         name: user.name,
         certificateName: data.certificateName
-      }
-    }).catch(err => {
-      console.error('Không thể gửi email thông báo chờ duyệt chứng chỉ:', err);
+      },
+      errorMessage: 'Không thể gửi email thông báo chờ duyệt chứng chỉ:'
     });
 
     return user;
@@ -817,10 +848,7 @@ export const UserService = {
       );
     }
 
-    user.nutritionistProfile = data;
-    await user.save();
-
-    return user;
+    return saveNutritionistProfile(user, data);
   },
 
   updateUserNutritionistProfile: async (
@@ -840,10 +868,7 @@ export const UserService = {
       );
     }
 
-    user.nutritionistProfile = data;
-    await user.save();
-
-    return user;
+    return saveNutritionistProfile(user, data);
   },
 
   approveCertificate: async (userId: string) => {
@@ -861,20 +886,17 @@ export const UserService = {
       throw createHttpError(400, 'Chứng chỉ đã được phê duyệt trước đó');
     }
 
-    user.certificate.status = CERTIFICATE_STATUS.APPROVED;
-    user.certificate.rejectionReason = undefined as any;
-    await user.save();
+    await saveCertificateReviewDecision(user, CERTIFICATE_STATUS.APPROVED);
 
-    sendMail({
+    sendCertificateNotification({
       to: user.email,
       subject: 'Chứng chỉ của bạn đã được phê duyệt',
       template: 'certificate-approved',
       templateData: {
         name: user.name,
         certificateName: user.certificate.name
-      }
-    }).catch(err => {
-      console.error('Không thể gửi email phê duyệt chứng chỉ:', err);
+      },
+      errorMessage: 'Không thể gửi email phê duyệt chứng chỉ:'
     });
 
     return user;
@@ -895,11 +917,13 @@ export const UserService = {
       throw createHttpError(400, 'Chứng chỉ đã bị từ chối trước đó');
     }
 
-    user.certificate.status = CERTIFICATE_STATUS.REJECTED;
-    user.certificate.rejectionReason = data.rejectionReason;
-    await user.save();
+    await saveCertificateReviewDecision(
+      user,
+      CERTIFICATE_STATUS.REJECTED,
+      data.rejectionReason
+    );
 
-    sendMail({
+    sendCertificateNotification({
       to: user.email,
       subject: 'Chứng chỉ của bạn bị từ chối',
       template: 'certificate-rejected',
@@ -907,9 +931,8 @@ export const UserService = {
         name: user.name,
         certificateName: user.certificate.name,
         rejectionReason: data.rejectionReason
-      }
-    }).catch(err => {
-      console.error('Không thể gửi email từ chối chứng chỉ:', err);
+      },
+      errorMessage: 'Không thể gửi email từ chối chứng chỉ:'
     });
 
     return user;
@@ -936,10 +959,7 @@ export const UserService = {
       throw createHttpError(404, 'Người dùng chưa có chứng chỉ');
     }
 
-    user.certificate.showCertificate = showCertificate;
-    await user.save();
-
-    return user;
+    return setCertificateVisibility(user, showCertificate);
   }
 };
 
