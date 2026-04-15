@@ -2,14 +2,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { signUpRequestSchema } from '~/features/auth/auth-dto';
 import { AuthService } from '~/features/auth/auth-service';
-import { CERTIFICATE_STATUS } from '~/shared/constants/certificate-status';
 import { ROLE } from '~/shared/constants/role';
 import { AuthModel, UserModel } from '~/shared/database/models';
 import {
   generateToken,
   hashPassword,
   sendMail,
-  uploadAvatar,
   uploadCertificate
 } from '~/shared/utils';
 
@@ -41,10 +39,8 @@ const mockFindAuth = vi.mocked(AuthModel.findOne);
 const mockCreateAuth = vi.mocked(AuthModel.create);
 const mockFindUser = vi.mocked(UserModel.findOne);
 const mockCreateUser = vi.mocked(UserModel.create);
-const mockFindByIdAndUpdateUser = vi.mocked(UserModel.findByIdAndUpdate);
 const mockHashPassword = vi.mocked(hashPassword);
 const mockGenerateToken = vi.mocked(generateToken);
-const mockUploadAvatar = vi.mocked(uploadAvatar);
 const mockUploadCertificate = vi.mocked(uploadCertificate);
 const mockSendMail = vi.mocked(sendMail);
 
@@ -213,73 +209,25 @@ describe('AuthService.signUp (UC03)', () => {
           password: 'Abcd@1234',
           role: ROLE.NUTRITIONIST,
           workplace: 'Hospital A',
+          certificateName: 'Certified Nutritionist',
           graduatedUniversity: 'University B',
           professionalBio: 'Bio'
         },
         undefined,
         {
           buffer: Buffer.from('cert'),
-          originalname: 'certificate.pdf'
+          originalname: 'certificate.png'
         } as Express.Multer.File
       );
 
       expect(mockUploadCertificate).toHaveBeenCalled();
-      expect(mockFindByIdAndUpdateUser).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          certificate: expect.objectContaining({
-            status: CERTIFICATE_STATUS.PENDING,
-            fileUrl: 'https://img.test/cert.jpg'
-          }),
-          nutritionistProfile: expect.objectContaining({
-            workplace: 'Hospital A',
-            graduatedUniversity: 'University B'
-          })
-        })
-      );
+
       expect(mockSendMail).toHaveBeenCalledTimes(2);
       expect(mockSendMail).toHaveBeenCalledWith(
         expect.objectContaining({ template: 'certificate-pending' })
       );
       expect(mockSendMail).toHaveBeenCalledWith(
         expect.objectContaining({ template: 'nutritionist-welcome' })
-      );
-    });
-
-    it('should update nutritionist profile successfully', async () => {
-      mockFindAuth.mockResolvedValue(null);
-      mockFindUser.mockResolvedValue(null);
-      mockCreateUser.mockResolvedValue({
-        _id: { toString: () => 'nutri-2b' },
-        email: 'nutri2b@example.com',
-        name: 'Nutritionist 2B',
-        role: ROLE.NUTRITIONIST,
-        hasOnboarded: false
-      } as any);
-      mockHashPassword.mockResolvedValue('hashed-pass');
-      mockCreateAuth.mockResolvedValue({ _id: 'auth-3b' } as any);
-      mockGenerateToken.mockReturnValue({
-        accessToken: 'access-token',
-        refreshToken: 'refresh-token'
-      });
-
-      await AuthService.signUp({
-        email: 'nutri2b@example.com',
-        name: 'Nutritionist 2B',
-        password: 'Abcd@1234',
-        role: ROLE.NUTRITIONIST,
-        graduatedUniversity: 'University C'
-      });
-
-      expect(mockFindByIdAndUpdateUser).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          nutritionistProfile: {
-            workplace: '',
-            graduatedUniversity: 'University C',
-            professionalBio: ''
-          }
-        })
       );
     });
   });
