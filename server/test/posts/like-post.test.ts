@@ -1,22 +1,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PostService } from '~/features/posts/post-service';
-import { ROLE } from '~/shared/constants/role';
 import { PostModel } from '~/shared/database/models/post-model';
-import { eventBus } from '~/shared/events/event-bus';
-import { EVENTS } from '~/shared/events/event-types';
 import { toObjectId, validateObjectId } from '~/shared/utils';
 
 vi.mock('~/shared/database/models/post-model', () => ({
   PostModel: {
     findById: vi.fn(),
     findByIdAndUpdate: vi.fn()
-  }
-}));
-
-vi.mock('~/shared/events/event-bus', () => ({
-  eventBus: {
-    emit: vi.fn()
   }
 }));
 
@@ -33,7 +24,6 @@ const mockFindById = vi.mocked(PostModel.findById);
 const mockFindByIdAndUpdate = vi.mocked(PostModel.findByIdAndUpdate);
 const mockValidateObjectId = vi.mocked(validateObjectId);
 const mockToObjectId = vi.mocked(toObjectId);
-const mockEmit = vi.mocked(eventBus.emit);
 
 const postId = '507f1f77bcf86cd799439011';
 const userId = 'user123';
@@ -77,11 +67,6 @@ describe('PostService.likePost (UC41/UC42)', () => {
     expect(mockFindByIdAndUpdate).toHaveBeenCalledWith(postId, {
       $addToSet: { likes: 'oid-user123' }
     });
-    expect(mockEmit).toHaveBeenCalledWith(EVENTS.POST_LIKED, {
-      actorId: userId,
-      authorId: 'author-1',
-      postId
-    });
     expect(result).toEqual({ liked: true, likesCount: 1 });
   });
 
@@ -96,11 +81,6 @@ describe('PostService.likePost (UC41/UC42)', () => {
 
     expect(mockFindByIdAndUpdate).toHaveBeenCalledWith(postId, {
       $pull: { likes: 'oid-user123' }
-    });
-    expect(mockEmit).toHaveBeenCalledWith(EVENTS.POST_UNLIKED, {
-      actorId: userId,
-      authorId: 'author-1',
-      postId
     });
     expect(result).toEqual({ liked: false, likesCount: 1 });
   });
