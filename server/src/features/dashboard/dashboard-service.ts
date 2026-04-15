@@ -12,12 +12,12 @@ import {
 } from '~/shared/database/models';
 import { toObjectId, validateObjectId } from '~/shared/utils';
 
-import type { AdminDashboardQuery } from './dashboard-dto';
+import type { dashboardQuery } from './dashboard-dto';
 
-type AdminDashboardRange = NonNullable<AdminDashboardQuery['range']>;
+type AdminDashboardRange = NonNullable<dashboardQuery['range']>;
 
 export const DashboardService = {
-  viewAdminDashboard: async (query: AdminDashboardQuery) => {
+  viewAdminDashboard: async (query: dashboardQuery) => {
     const { period, createdAtFilter } = resolveRange(query);
     const baseFilter = buildPaymentBaseFilter(createdAtFilter);
 
@@ -38,12 +38,19 @@ export const DashboardService = {
     );
   },
 
-  viewNutritionistDashboard: async (userId: string) => {
+  viewNutritionistDashboard: async (userId: string, query: dashboardQuery) => {
     await validateNutritionistAccess(userId);
+    const { period, createdAtFilter } = resolveRange(query);
 
     const authorId = toObjectId(userId);
-    const byAuthor = { 'author._id': authorId };
-    const byUser = { 'user._id': authorId };
+    const byAuthor = {
+      'author._id': authorId,
+      ...(createdAtFilter && { createdAt: createdAtFilter })
+    };
+    const byUser = {
+      'user._id': authorId,
+      ...(createdAtFilter && { createdAt: createdAtFilter })
+    };
 
     const [
       totalDishes,
@@ -62,6 +69,7 @@ export const DashboardService = {
     ]);
 
     return buildNutritionistDashboardResponse(
+      period,
       totalDishes,
       totalPublicDishes,
       totalPosts,
@@ -229,6 +237,7 @@ const buildAdminDashboardResponse = (
 });
 
 const buildNutritionistDashboardResponse = (
+  period: string,
   totalDishes: number,
   totalPublicDishes: number,
   totalPosts: number,
@@ -242,6 +251,7 @@ const buildNutritionistDashboardResponse = (
       }
     | undefined
 ) => ({
+  period,
   overview: {
     totalDishes,
     totalPublicDishes,
@@ -344,7 +354,7 @@ const getRangeFilter = (range: AdminDashboardRange, now = new Date()) => {
   }
 };
 
-const resolveRange = (query: AdminDashboardQuery) => {
+const resolveRange = (query: dashboardQuery) => {
   const range: AdminDashboardRange = query.range ?? 'allTime';
 
   if (range === 'custom') {
