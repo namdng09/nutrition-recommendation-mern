@@ -102,7 +102,10 @@ describe('ExerciseService.updateExercise (UC111)', () => {
       mockFindByIdAndUpdate.mockResolvedValue(exercise as any);
       mockUploadTutorial.mockResolvedValue({
         success: true,
-        data: { secure_url: 'https://cdn.test/new-tutorial.mp4' }
+        data: {
+          secure_url:
+            'https://res.cloudinary.com/test/image/upload/v1234567890/updated-tutorial.jpg'
+        }
       } as any);
 
       const result = await ExerciseService.updateExercise(
@@ -116,7 +119,9 @@ describe('ExerciseService.updateExercise (UC111)', () => {
         expect.any(Buffer),
         exerciseId
       );
-      expect(result.tutorial).toBe('https://cdn.test/new-tutorial.mp4');
+      expect(result.tutorial).toBe(
+        'https://res.cloudinary.com/test/image/upload/v1234567890/updated-tutorial.jpg'
+      );
       expect(mockSave).toHaveBeenCalled();
     });
   });
