@@ -39,7 +39,6 @@ export const DashboardService = {
   },
 
   viewNutritionistDashboard: async (userId: string, query: dashboardQuery) => {
-    await validateNutritionistAccess(userId);
     const { period, createdAtFilter } = resolveRange(query);
 
     const authorId = toObjectId(userId);
@@ -79,37 +78,6 @@ export const DashboardService = {
     );
   }
 };
-
-// ====== Validation Utilities ======
-
-const validateNutritionistAccess = async (userId: string) => {
-  if (!validateObjectId(userId))
-    throw createHttpError(400, 'ID người dùng không hợp lệ');
-
-  const user = await UserModel.findById(userId, 'role');
-  if (!user) throw createHttpError(404, 'Không tìm thấy người dùng');
-  if (user.role !== ROLE.NUTRITIONIST)
-    throw createHttpError(
-      403,
-      'Chỉ chuyên gia dinh dưỡng mới có thể truy cập dashboard này'
-    );
-};
-
-const validateAdminAccess = async (userId: string) => {
-  if (!validateObjectId(userId))
-    throw createHttpError(400, 'ID người dùng không hợp lệ');
-
-  const user = await UserModel.findById(userId, 'role');
-  if (!user) throw createHttpError(404, 'Không tìm thấy người dùng');
-  if (user.role !== ROLE.ADMIN)
-    throw createHttpError(
-      403,
-      'Chỉ quản trị viên mới có thể truy cập dashboard này'
-    );
-};
-
-// ====== MongoDB Aggregation Queries ======
-
 const paymentMetricsAggregation = (baseFilter: Record<string, any>) =>
   PaymentModel.aggregate<{
     _id: string;
