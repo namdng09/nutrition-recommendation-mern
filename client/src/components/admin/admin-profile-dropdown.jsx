@@ -47,14 +47,14 @@ export const AdminProfileDropdown = () => {
             className='flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-accent'
           >
             <User className='h-4 w-4' />
-            View Profile
+            Xem trang cá nhân
           </Link>
           <button
             onClick={handleLogout}
             className='flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-destructive hover:bg-accent'
           >
             <LogOut className='h-4 w-4' />
-            Logout
+            Đăng xuất
           </button>
         </div>
       </PopoverContent>

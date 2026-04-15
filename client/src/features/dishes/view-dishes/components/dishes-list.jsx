@@ -11,7 +11,7 @@ import {
   FaUser,
   FaUtensils
 } from 'react-icons/fa';
-import { Link, useSearchParams } from 'react-router';
+import { Link } from 'react-router';
 
 import { useDeletePrivateDish } from '~/features/private-dish/delete-private-dish/api/delete-private-dish';
 import { usePrivateDishes } from '~/features/private-dish/view-private-dish/api/view-private-dish';
@@ -182,22 +182,6 @@ export default function DishesList() {
       </div>,
       document.body
     );
-
-  const goToPrev = useCallback(() => {
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev);
-      next.set('page', String(Math.max(1, page - 1)));
-      return next;
-    });
-  }, [page, setSearchParams]);
-
-  const goToNext = useCallback(() => {
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev);
-      next.set('page', String(page + 1));
-      return next;
-    });
-  }, [page, setSearchParams]);
 
   return (
     <>

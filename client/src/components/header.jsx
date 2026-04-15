@@ -12,6 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '~/components/ui/popover';
+import { ROLE } from '~/constants/role';
 import { useProfile } from '~/features/users/view-profile/api/view-profile';
 import { useIsMobile } from '~/hooks/use-mobile';
 import { useLogout } from '~/hooks/useLogout';
@@ -134,6 +135,19 @@ const Header = () => {
                     </div>
                     Hồ Sơ Người Dùng
                   </Link>
+
+                  {user?.role === ROLE.NUTRITIONIST && (
+                    <Link
+                      to='/nutritionist'
+                      className='group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-primary/5 hover:text-primary'
+                    >
+                      <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-secondary group-hover:bg-primary/10'>
+                        <Sparkles className='h-4 w-4' />
+                      </div>
+                      Đến Trang Quản Lý
+                    </Link>
+                  )}
+
                   <div className='my-1 border-t border-border/50' />
 
                   <button

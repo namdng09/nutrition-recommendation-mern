@@ -1,6 +1,12 @@
-import React, { useState } from 'react';
-import { FaChevronRight, FaFireAlt, FaLockOpen, FaUser } from 'react-icons/fa';
-import { Link } from 'react-router';
+import React, { useMemo } from 'react';
+import {
+  FaChevronRight,
+  FaFireAlt,
+  FaLock,
+  FaLockOpen,
+  FaUser
+} from 'react-icons/fa';
+import { Link, useSearchParams } from 'react-router';
 
 import StatBadge from '~/features/dishes/view-dishes/components/dish-stat-badge';
 
@@ -11,26 +17,36 @@ import CollectionsHeader from './collection-header';
 import CollectionPagination from './collection-pagination';
 
 export default function CollectionsList() {
-  const [page, setPage] = useState(1);
-  const { data } = useCollections();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const name = searchParams.get('name') ?? '';
+  const page = Number(searchParams.get('page') ?? 1);
 
-  const collections = (data?.docs ?? []).filter(col => col.isPublic);
+  const params = useMemo(() => {
+    const nextParams = { page, limit: 9 };
 
-  const goToPrev = useCallback(() => {
+    if (name) nextParams.name = name;
+
+    return nextParams;
+  }, [name, page]);
+
+  const { data } = useCollections(params);
+  const collections = data?.docs ?? [];
+
+  const goToPrev = () => {
     setSearchParams(prev => {
       const next = new URLSearchParams(prev);
       next.set('page', String(Math.max(1, page - 1)));
       return next;
     });
-  }, [page, setSearchParams]);
+  };
 
-  const goToNext = useCallback(() => {
+  const goToNext = () => {
     setSearchParams(prev => {
       const next = new URLSearchParams(prev);
       next.set('page', String(page + 1));
       return next;
     });
-  }, [page, setSearchParams]);
+  };
 
   return (
     <div className='mx-auto w-full max-w-7xl animate-in space-y-6 fade-in duration-700'>
