@@ -5,6 +5,7 @@ import {
   HiChevronUp
 } from 'react-icons/hi2';
 import { IoClose } from 'react-icons/io5';
+import { useSelector } from 'react-redux';
 
 import { useUpdateScheduleMeals } from '~/features/schedule/update-schedule/api/update-schedule';
 
@@ -19,6 +20,8 @@ export default function DishModal({
   scheduleId,
   scheduleMeals
 }) {
+  const user = useSelector(state => state.auth.user);
+
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const [appliedFilters, setAppliedFilters] = useState({
@@ -50,7 +53,21 @@ export default function DishModal({
   );
 
   const { data } = useDishes(dishQuery);
-  const dishes = data?.docs || [];
+
+  const dishes = useMemo(() => {
+    const docs = data?.docs || [];
+    const currentUserId = user?.id;
+
+    return docs.filter(dish => {
+      if (dish.isPublic === true) return true;
+
+      return (
+        dish.isPublic === false &&
+        currentUserId &&
+        String(dish.user?._id) === String(currentUserId)
+      );
+    });
+  }, [data?.docs, user?.id]);
 
   const updateMealsMutation = useUpdateScheduleMeals();
 

@@ -76,7 +76,7 @@ export default function ExerciseList() {
             >
               <div className='relative aspect-video overflow-hidden bg-muted'>
                 <img
-                  src={preview}
+                  src={preview || '/logo2.png'}
                   alt={ex.name}
                   loading='lazy'
                   decoding='async'
@@ -133,7 +133,7 @@ export default function ExerciseList() {
                       className='inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1.5 text-[12px] font-medium text-foreground/80 ring-1 ring-border/60'
                     >
                       <img
-                        src={muscle.image}
+                        src={muscle.image || '/logo2.png'}
                         alt={muscle.name}
                         className='h-4 w-4 object-contain'
                       />

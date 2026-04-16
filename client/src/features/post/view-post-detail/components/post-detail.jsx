@@ -42,7 +42,7 @@ export default function PostDetail() {
           {data.images?.[0] && (
             <div className='group relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-card shadow-[0_20px_60px_rgba(0,0,0,0.10)] sm:rounded-[2.5rem] lg:aspect-[4/4.8]'>
               <img
-                src={data.images[0]}
+                src={data.images[0] || '/logo2.png'}
                 alt={data.title}
                 className='h-full w-full object-cover transition-transform'
               />

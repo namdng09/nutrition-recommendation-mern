@@ -175,20 +175,11 @@ export default function ScheduleTodayCard({
                       className='flex flex-1 items-center gap-4 rounded-2xl border border-border/50 bg-background/50 p-3 transition-all duration-200 hover:border-primary/30 hover:bg-card hover:shadow-sm'
                     >
                       <div className='h-14 w-14 shrink-0 overflow-hidden rounded-[16px] border border-border bg-muted'>
-                        {dish.image ? (
-                          <img
-                            src={dish.image}
-                            alt={dish.name}
-                            className='h-full w-full object-cover transition-transform group-hover:scale-105'
-                          />
-                        ) : (
-                          <div className='flex h-full w-full items-center justify-center'>
-                            <HiOutlinePhotograph
-                              className='text-muted-foreground/30'
-                              size={20}
-                            />
-                          </div>
-                        )}
+                        <img
+                          src={dish.image || '/logo2.png'}
+                          alt={dish.name}
+                          className='h-full w-full object-cover transition-transform group-hover:scale-105'
+                        />
                       </div>
 
                       <div className='min-w-0 flex-1'>
