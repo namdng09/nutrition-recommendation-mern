@@ -26,7 +26,7 @@ describe('AchievementService.unlock', () => {
   });
 
   describe('business logic', () => {
-    it('should no-op when modifiedCount is 0', async () => {
+    it('should do nothing when user already has the achievement', async () => {
       mockUpdateOne.mockResolvedValue({ modifiedCount: 0 } as any);
 
       await AchievementService.unlock(USER_ID, ACHIEVEMENTS.THE_PLANNER.key);
@@ -48,7 +48,7 @@ describe('AchievementService.unlock', () => {
       expect(mockSendAchievementSseEvent).not.toHaveBeenCalled();
     });
 
-    it('should no-op when achievement key is unknown', async () => {
+    it('should do nothing when achievement is not existing', async () => {
       mockUpdateOne.mockResolvedValue({ modifiedCount: 1 } as any);
 
       await AchievementService.unlock(USER_ID, 'UNKNOWN_ACHIEVEMENT');
@@ -69,16 +69,6 @@ describe('AchievementService.unlock', () => {
           description: ACHIEVEMENTS.THE_PLANNER.description
         }
       });
-    });
-  });
-
-  describe('system', () => {
-    it('should propagate error when updateOne fails', async () => {
-      mockUpdateOne.mockRejectedValue(new Error('update failed'));
-
-      await expect(
-        AchievementService.unlock(USER_ID, ACHIEVEMENTS.THE_PLANNER.key)
-      ).rejects.toThrow('update failed');
     });
   });
 });

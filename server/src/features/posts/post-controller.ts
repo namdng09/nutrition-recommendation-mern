@@ -48,16 +48,6 @@ export const PostController = {
       .json(ApiResponse.success('Lấy thông tin bài viết thành công', result));
   },
 
-  viewPostBySlug: async (req: Request, res: Response) => {
-    const slug = req.params.slug;
-
-    const result = await PostService.viewPostBySlug(slug);
-
-    res
-      .status(200)
-      .json(ApiResponse.success('Lấy thông tin bài viết thành công', result));
-  },
-
   updatePost: async (req: Request, res: Response) => {
     const id = req.params.id;
     const data = req.body;

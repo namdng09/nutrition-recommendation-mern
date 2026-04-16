@@ -1,118 +1,113 @@
-import mongoose from 'mongoose';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it
-} from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { CollectionService } from '~/features/collections/collection-service';
-import { DISH_CATEGORY } from '~/shared/constants/dish-category';
-import { CollectionModel, DishModel } from '~/shared/database/models';
+import {
+  CollectionModel,
+  DishModel,
+  UserModel
+} from '~/shared/database/models';
+import { validateObjectId } from '~/shared/utils';
+
+vi.mock('~/shared/database/models', () => ({
+  CollectionModel: {
+    findById: vi.fn()
+  },
+  DishModel: {
+    find: vi.fn()
+  },
+  UserModel: {
+    findById: vi.fn()
+  }
+}));
+
+vi.mock('~/shared/utils', async importOriginal => {
+  const actual = await importOriginal<typeof import('~/shared/utils')>();
+  return {
+    ...actual,
+    validateObjectId: vi.fn()
+  };
+});
+
+const mockFindById = vi.mocked(CollectionModel.findById);
+const mockFindDishes = vi.mocked(DishModel.find);
+const mockFindByIdUser = vi.mocked(UserModel.findById);
+const mockValidateObjectId = vi.mocked(validateObjectId);
+
+const VALID_ID = 'collection1';
+const mockCollection = {
+  _id: { toString: () => VALID_ID },
+  name: 'Bo suu tap A',
+  dishes: [
+    { dishId: 'dish1', name: 'Pho bo' },
+    { dishId: 'dish2', name: 'Bun cha' }
+  ],
+  toObject: function () {
+    return this;
+  }
+};
 
 describe('CollectionService.viewCollectionDetail', () => {
-  let collectionId: string;
-  let userId: string;
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
 
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
+  describe('business logic', () => {
+    it('should throw 400 when id format is invalid', async () => {
+      mockValidateObjectId.mockReturnValue(false);
+
+      await expect(
+        CollectionService.viewCollectionDetail('invalid-id')
+      ).rejects.toMatchObject({
+        status: 400,
+        message: 'Định dạng ID bộ sưu tập không hợp lệ'
+      });
+    });
+
+    it('should throw 404 when collection does not exist', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindById.mockResolvedValue(null);
+
+      await expect(
+        CollectionService.viewCollectionDetail(VALID_ID)
+      ).rejects.toMatchObject({
+        status: 404,
+        message: 'Không tìm thấy bộ sưu tập'
+      });
+    });
+
+    it('should return collection detail successfully without userId', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindById.mockResolvedValue(mockCollection as any);
+      mockFindDishes.mockReturnValue({
+        lean: vi.fn().mockResolvedValue([{ _id: 'dish1' }])
+      } as any);
+
+      const result = await CollectionService.viewCollectionDetail(VALID_ID);
+
+      expect(result).toBeDefined();
+      expect(result._id.toString()).toBe(VALID_ID);
+      expect(result.name).toBe('Bo suu tap A');
+      expect(result.isFavorited).toBe(false);
+      expect((result.dishes[0] as any).isDeleted).toBe(false);
+      expect((result.dishes[1] as any).isDeleted).toBe(true);
+    });
+
+    it('should return collection detail with favorite status when userId provided', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindById.mockResolvedValue(mockCollection as any);
+      mockFindDishes.mockReturnValue({
+        lean: vi.fn().mockResolvedValue([{ _id: 'dish1' }, { _id: 'dish2' }])
+      } as any);
+      mockFindByIdUser.mockReturnValue({
+        lean: vi.fn().mockResolvedValue({ favoriteCollections: [VALID_ID] })
+      } as any);
+
+      const result = await CollectionService.viewCollectionDetail(
+        VALID_ID,
+        'user-id'
       );
-    }
-    userId = new mongoose.Types.ObjectId().toString();
-  });
 
-  beforeEach(async () => {
-    // Clean up database before each test
-    await CollectionModel.deleteMany({});
-    await DishModel.deleteMany({});
-
-    // Create test dish
-    const dish = await DishModel.create({
-      user: { _id: userId, name: 'Test User' },
-      name: 'Phở bò',
-      categories: [DISH_CATEGORY.MAIN_COURSE],
-      ingredients: [],
-      instructions: [{ step: 1, description: 'Luộc xương' }],
-      isActive: true
+      expect(result.isFavorited).toBe(true);
     });
-
-    // Create test collection
-    const collection = await CollectionModel.create({
-      user: { _id: userId, name: 'Test User' },
-      name: 'Món ăn giảm cân',
-      description: 'Bộ sưu tập các món ăn giúp giảm cân hiệu quả',
-      isPublic: true,
-      image: 'collection-image.jpg',
-      dishes: [
-        {
-          dishId: dish._id,
-          name: dish.name,
-          energy: 250,
-          image: 'dish-image.jpg',
-          addedAt: new Date()
-        }
-      ],
-      followers: 10,
-      tags: ['giảm cân', 'healthy']
-    });
-    collectionId = collection._id.toString();
-  });
-
-  afterEach(async () => {
-    // Clean up after each test
-    await CollectionModel.deleteMany({});
-    await DishModel.deleteMany({});
-  });
-
-  afterAll(async () => {
-    // Close connection
-    await mongoose.connection.close();
-  });
-
-  // Branch - Happy case: get collection detail successfully
-  it('should get collection detail successfully', async () => {
-    const collection =
-      await CollectionService.viewCollectionDetail(collectionId);
-
-    expect(collection).toBeDefined();
-    expect(collection._id.toString()).toBe(collectionId);
-    expect(collection.name).toBe('Món ăn giảm cân');
-    expect(collection.description).toBe(
-      'Bộ sưu tập các món ăn giúp giảm cân hiệu quả'
-    );
-    expect(collection.isPublic).toBe(true);
-    expect(collection.image).toBe('collection-image.jpg');
-    expect(collection.user?._id.toString()).toBe(userId);
-    expect(collection.user?.name).toBe('Test User');
-    expect(collection.dishes).toBeDefined();
-    expect(Array.isArray(collection.dishes)).toBe(true);
-    expect(collection.dishes.length).toBe(1);
-    expect(collection.dishes[0].name).toBe('Phở bò');
-    expect(collection.tags).toBeDefined();
-    expect(Array.isArray(collection.tags)).toBe(true);
-    expect(collection.tags).toContain('giảm cân');
-    expect(collection.tags).toContain('healthy');
-  });
-
-  // Branch - Invalid ID format
-  it('should throw error when id format is invalid', async () => {
-    await expect(
-      CollectionService.viewCollectionDetail('invalid-id')
-    ).rejects.toThrow('Định dạng ID bộ sưu tập không hợp lệ');
-  });
-
-  // Branch - Collection not found
-  it('should throw error when collection does not exist', async () => {
-    const nonExistentId = new mongoose.Types.ObjectId().toString();
-
-    await expect(
-      CollectionService.viewCollectionDetail(nonExistentId)
-    ).rejects.toThrow('Không tìm thấy bộ sưu tập');
   });
 });

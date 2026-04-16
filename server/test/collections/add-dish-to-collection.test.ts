@@ -1,194 +1,192 @@
-import mongoose from 'mongoose';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it
-} from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { addDishToCollectionRequestSchema } from '~/features/collections/collection-dto';
 import { CollectionService } from '~/features/collections/collection-service';
-import { DISH_CATEGORY } from '~/shared/constants/dish-category';
-import { UNIT } from '~/shared/constants/unit';
 import { CollectionModel, DishModel } from '~/shared/database/models';
+import { validateObjectId } from '~/shared/utils';
+
+vi.mock('~/shared/database/models', () => ({
+  CollectionModel: {
+    findById: vi.fn()
+  },
+  DishModel: {
+    find: vi.fn()
+  }
+}));
+
+vi.mock('~/shared/utils', async importOriginal => {
+  const actual = await importOriginal<typeof import('~/shared/utils')>();
+  return {
+    ...actual,
+    validateObjectId: vi.fn()
+  };
+});
+
+const mockFindById = vi.mocked(CollectionModel.findById);
+const mockFindDishes = vi.mocked(DishModel.find);
+const mockValidateObjectId = vi.mocked(validateObjectId);
+
+const VALID_ID = 'collection1';
+const userId = 'user123';
+const otherUserId = 'other-user-456';
+const dishId1 = 'dish1';
+const dishId2 = 'dish2';
 
 describe('CollectionService.addDishToCollection', () => {
-  const userId = new mongoose.Types.ObjectId().toString();
-  const otherUserId = new mongoose.Types.ObjectId().toString();
-  let collectionId: string;
-  let dishId1: string;
-  let dishId2: string;
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
 
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
+  describe('validation', () => {
+    it('should fail when dishIds is empty', () => {
+      const result = addDishToCollectionRequestSchema.safeParse({
+        dishIds: []
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe('Cần ít nhất một món ăn');
+    });
+
+    it('should fail when dishIds contains empty string', () => {
+      const result = addDishToCollectionRequestSchema.safeParse({
+        dishIds: ['']
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe('ID món ăn là bắt buộc');
+    });
+  });
+
+  describe('business logic', () => {
+    it('should throw 400 when collection id format is invalid', async () => {
+      mockValidateObjectId.mockReturnValue(false);
+
+      await expect(
+        CollectionService.addDishToCollection(VALID_ID, userId, {
+          dishIds: [dishId1]
+        })
+      ).rejects.toMatchObject({
+        status: 400,
+        message: 'Định dạng ID bộ sưu tập không hợp lệ'
+      });
+    });
+
+    it('should throw 404 when collection does not exist', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindById.mockResolvedValue(null);
+
+      await expect(
+        CollectionService.addDishToCollection(VALID_ID, userId, {
+          dishIds: [dishId1]
+        })
+      ).rejects.toMatchObject({
+        status: 404,
+        message: 'Không tìm thấy bộ sưu tập'
+      });
+    });
+
+    it('should throw 403 when user is not owner', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindById.mockResolvedValue({
+        user: { _id: { toString: () => otherUserId } },
+        dishes: []
+      } as any);
+
+      await expect(
+        CollectionService.addDishToCollection(VALID_ID, userId, {
+          dishIds: [dishId1]
+        })
+      ).rejects.toMatchObject({
+        status: 403,
+        message: 'Bạn không có quyền sửa bộ sưu tập này'
+      });
+    });
+
+    it('should throw 400 when dish already exists in collection', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindById.mockResolvedValue({
+        user: { _id: { toString: () => userId } },
+        dishes: [{ dishId: { toString: () => dishId1 } }]
+      } as any);
+
+      await expect(
+        CollectionService.addDishToCollection(VALID_ID, userId, {
+          dishIds: [dishId1]
+        })
+      ).rejects.toMatchObject({
+        status: 400,
+        message: `Các món ăn sau đã tồn tại trong bộ sưu tập: ${dishId1}`
+      });
+    });
+
+    it('should throw 400 when dish id format is invalid', async () => {
+      mockValidateObjectId.mockImplementation((id: string) => id === VALID_ID);
+      mockFindById.mockResolvedValue({
+        user: { _id: { toString: () => userId } },
+        dishes: []
+      } as any);
+
+      await expect(
+        CollectionService.addDishToCollection(VALID_ID, userId, {
+          dishIds: [dishId1]
+        })
+      ).rejects.toMatchObject({
+        status: 400,
+        message: `Định dạng ID món ăn không hợp lệ: ${dishId1}`
+      });
+    });
+
+    it('should throw 404 when dish does not exist', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindById.mockResolvedValue({
+        user: { _id: { toString: () => userId } },
+        dishes: []
+      } as any);
+      mockFindDishes.mockResolvedValue([] as any);
+
+      await expect(
+        CollectionService.addDishToCollection(VALID_ID, userId, {
+          dishIds: [dishId1]
+        })
+      ).rejects.toMatchObject({
+        status: 404,
+        message: 'Một hoặc nhiều món ăn không tồn tại'
+      });
+    });
+
+    it('should add dishes to collection successfully', async () => {
+      const mockSave = vi.fn();
+      const mockCollection = {
+        user: { _id: { toString: () => userId } },
+        dishes: [] as any[],
+        save: mockSave
+      };
+
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindById.mockResolvedValue(mockCollection as any);
+      mockFindDishes.mockResolvedValue([
+        {
+          _id: dishId1,
+          name: 'Pho bo',
+          nutrition: { nutrients: [{ value: 250 }] },
+          image: 'pho.jpg'
+        },
+        {
+          _id: dishId2,
+          name: 'Bun cha',
+          nutrition: { nutrients: [{ value: 300 }] },
+          image: 'bun.jpg'
+        }
+      ] as any);
+
+      const result = await CollectionService.addDishToCollection(
+        VALID_ID,
+        userId,
+        { dishIds: [dishId1, dishId2] }
       );
-    }
-  });
 
-  beforeEach(async () => {
-    // Clean up database before each test
-    await CollectionModel.deleteMany({});
-    await DishModel.deleteMany({});
-
-    // Create test dishes
-    const dish1 = await DishModel.create({
-      user: { _id: userId, name: 'Test User' },
-      name: 'Phở bò',
-      description: 'Phở bò truyền thống',
-      categories: [DISH_CATEGORY.MAIN_COURSE],
-      ingredients: [
-        {
-          ingredientId: new mongoose.Types.ObjectId(),
-          name: 'Thịt bò',
-          nutrients: {
-            calories: { value: 250, unit: UNIT.KILOCALORIE },
-            carbs: { value: 0, unit: UNIT.GRAM },
-            fat: { value: 15, unit: UNIT.GRAM },
-            protein: { value: 26, unit: UNIT.GRAM },
-            fiber: { value: 0, unit: UNIT.GRAM },
-            sodium: { value: 72, unit: UNIT.MILLIGRAM },
-            cholesterol: { value: 90, unit: UNIT.MILLIGRAM }
-          },
-          baseUnit: { amount: 100, unit: UNIT.GRAM },
-          units: [{ value: 200, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ],
-      instructions: [{ step: 1, description: 'Luộc xương' }],
-      isActive: true,
-      image: 'pho-bo.jpg'
+      expect(result.dishes).toHaveLength(2);
+      expect(mockSave).toHaveBeenCalled();
     });
-    dishId1 = dish1._id.toString();
-
-    const dish2 = await DishModel.create({
-      user: { _id: userId, name: 'Test User' },
-      name: 'Bún chả',
-      description: 'Bún chả Hà Nội',
-      categories: [DISH_CATEGORY.MAIN_COURSE],
-      ingredients: [
-        {
-          ingredientId: new mongoose.Types.ObjectId(),
-          name: 'Thịt lợn',
-          nutrients: {
-            calories: { value: 300, unit: UNIT.KILOCALORIE },
-            carbs: { value: 0, unit: UNIT.GRAM },
-            fat: { value: 20, unit: UNIT.GRAM },
-            protein: { value: 24, unit: UNIT.GRAM },
-            fiber: { value: 0, unit: UNIT.GRAM },
-            sodium: { value: 60, unit: UNIT.MILLIGRAM },
-            cholesterol: { value: 80, unit: UNIT.MILLIGRAM }
-          },
-          baseUnit: { amount: 100, unit: UNIT.GRAM },
-          units: [{ value: 150, quantity: 1, unit: UNIT.GRAM, isDefault: true }]
-        }
-      ],
-      instructions: [{ step: 1, description: 'Ướp thịt' }],
-      isActive: true,
-      image: 'bun-cha.jpg'
-    });
-    dishId2 = dish2._id.toString();
-
-    // Create test collection
-    const collection = await CollectionModel.create({
-      user: { _id: userId, name: 'Test User' },
-      name: 'Món ăn giảm cân',
-      description: 'Bộ sưu tập các món ăn giảm cân',
-      isPublic: false,
-      dishes: []
-    });
-    collectionId = collection._id.toString();
-  });
-
-  afterEach(async () => {
-    // Clean up after each test
-    await CollectionModel.deleteMany({});
-    await DishModel.deleteMany({});
-  });
-
-  afterAll(async () => {
-    // Close connection
-    await mongoose.connection.close();
-  });
-
-  // Branch - Happy case: add dishes to collection successfully
-  it('should add dishes to collection successfully', async () => {
-    const updatedCollection = await CollectionService.addDishToCollection(
-      collectionId,
-      userId,
-      { dishIds: [dishId1, dishId2] }
-    );
-
-    expect(updatedCollection).toBeDefined();
-    expect(updatedCollection.dishes).toHaveLength(2);
-    expect(updatedCollection.dishes[0].dishId?.toString()).toBe(dishId1);
-    expect(updatedCollection.dishes[1].dishId?.toString()).toBe(dishId2);
-  });
-
-  // Branch - Unauthorized user
-  it('should throw error when adding to collection of another user', async () => {
-    await expect(
-      CollectionService.addDishToCollection(collectionId, otherUserId, {
-        dishIds: [dishId1]
-      })
-    ).rejects.toThrow('Bạn không có quyền sửa bộ sưu tập này');
-  });
-
-  // Branch - Invalid collection ID format
-  it('should throw error when collection id format is invalid', async () => {
-    await expect(
-      CollectionService.addDishToCollection('invalid-id', userId, {
-        dishIds: [dishId1]
-      })
-    ).rejects.toThrow('Định dạng ID bộ sưu tập không hợp lệ');
-  });
-
-  // Branch - Invalid dish ID format
-  it('should throw error when dish id format is invalid', async () => {
-    await expect(
-      CollectionService.addDishToCollection(collectionId, userId, {
-        dishIds: ['invalid-id']
-      })
-    ).rejects.toThrow('Định dạng ID món ăn không hợp lệ');
-  });
-
-  // Branch - Duplicate dish
-  it('should throw error when trying to add duplicate dish', async () => {
-    // Add dish to collection
-    await CollectionService.addDishToCollection(collectionId, userId, {
-      dishIds: [dishId1]
-    });
-
-    // Add same dish again
-    await expect(
-      CollectionService.addDishToCollection(collectionId, userId, {
-        dishIds: [dishId1]
-      })
-    ).rejects.toThrow(`Các món ăn sau đã tồn tại trong bộ sưu tập: ${dishId1}`);
-  });
-
-  // Branch - Collection not found
-  it('should throw error when collection does not exist', async () => {
-    const nonExistentId = new mongoose.Types.ObjectId().toString();
-
-    await expect(
-      CollectionService.addDishToCollection(nonExistentId, userId, {
-        dishIds: [dishId1]
-      })
-    ).rejects.toThrow('Không tìm thấy bộ sưu tập');
-  });
-
-  // Branch - Dish not found
-  it('should throw error when dish does not exist', async () => {
-    const nonExistentDishId = new mongoose.Types.ObjectId().toString();
-
-    await expect(
-      CollectionService.addDishToCollection(collectionId, userId, {
-        dishIds: [nonExistentDishId]
-      })
-    ).rejects.toThrow('Một hoặc nhiều món ăn không tồn tại');
   });
 });

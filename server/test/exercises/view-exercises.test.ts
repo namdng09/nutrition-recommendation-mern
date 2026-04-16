@@ -21,38 +21,22 @@ vi.mock('~/shared/utils', async importOriginal => {
 const mockPaginate = vi.mocked(ExerciseModel.paginate);
 const mockBuildPaginateOptions = vi.mocked(buildPaginateOptions);
 
-describe('ExerciseService.viewExercises', () => {
+const parsed = { filter: {}, limit: 10 } as any;
+const options = { page: 1, limit: 10 };
+
+describe('ExerciseService.viewExercises (UC109)', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('business logic', () => {
-    it('should return paginated exercises successfully', async () => {
-      const fakeOptions = { limit: 10, page: 1 };
-      const fakeResult = {
-        docs: [
-          { name: 'Push-up' },
-          { name: 'Pull-up' },
-          { name: 'Squat' },
-          { name: 'Plank' }
-        ],
-        totalDocs: 4,
-        limit: 10,
-        page: 1
-      };
+  it('should return exercises list successfully', async () => {
+    mockBuildPaginateOptions.mockReturnValue(options);
+    mockPaginate.mockResolvedValue({ docs: ['exercise1', 'exercise2'] } as any);
 
-      mockBuildPaginateOptions.mockReturnValue(fakeOptions as any);
-      mockPaginate.mockResolvedValue(fakeResult as any);
+    const result = await ExerciseService.viewExercises(parsed);
 
-      const result = await ExerciseService.viewExercises({
-        filter: {},
-        limit: 10
-      } as any);
-
-      expect(result).toBeDefined();
-      expect(result.docs).toBeDefined();
-      expect(Array.isArray(result.docs)).toBe(true);
-      expect(result.docs.length).toBe(4);
-    });
+    expect(mockBuildPaginateOptions).toHaveBeenCalledWith(parsed);
+    expect(mockPaginate).toHaveBeenCalledWith({}, options);
+    expect(result).toEqual({ docs: ['exercise1', 'exercise2'] });
   });
 });

@@ -1,91 +1,137 @@
-import mongoose from 'mongoose';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it
-} from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PostService } from '~/features/posts/post-service';
 import { ROLE } from '~/shared/constants/role';
-import { PostModel } from '~/shared/database/models';
+import { PostModel } from '~/shared/database/models/post-model';
+import { validateObjectId } from '~/shared/utils';
 
-describe('PostService.deleteComment', () => {
-  let userId: string;
-  let otherUserId: string;
-  let postAuthorId: string;
-  let adminId: string;
-  let postId: string;
-  let commentId: string;
+vi.mock('~/shared/database/models/post-model', () => ({
+  PostModel: {
+    findById: vi.fn()
+  }
+}));
 
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
-      );
+vi.mock('~/shared/utils', async importOriginal => {
+  const actual = await importOriginal<typeof import('~/shared/utils')>();
+  return {
+    ...actual,
+    validateObjectId: vi.fn()
+  };
+});
+
+const mockFindById = vi.mocked(PostModel.findById);
+const mockValidateObjectId = vi.mocked(validateObjectId);
+
+const postId = '507f1f77bcf86cd799439011';
+const commentId = '507f1f77bcf86cd799439012';
+const commentAuthorId = 'comment-author';
+const postAuthorId = 'post-author';
+const otherUserId = 'other-user';
+
+const makePost = () => {
+  const comments = [
+    {
+      _id: { toString: () => commentId },
+      author: { _id: { toString: () => commentAuthorId } },
+      content: 'comment 1'
     }
+  ] as any[];
+
+  return {
+    _id: { toString: () => postId },
+    author: { _id: { toString: () => postAuthorId } },
+    comments,
+    save: vi.fn()
+  };
+};
+
+describe('PostService.deleteComment (UC44)', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
-  beforeEach(async () => {
-    // Clean up database before each test
-    await PostModel.deleteMany({});
+  it('should throw 400 when post id format is invalid', async () => {
+    mockValidateObjectId.mockReturnValueOnce(false);
 
-    userId = new mongoose.Types.ObjectId().toString();
-    otherUserId = new mongoose.Types.ObjectId().toString();
-    postAuthorId = new mongoose.Types.ObjectId().toString();
-    adminId = new mongoose.Types.ObjectId().toString();
-
-    // Create test post with comment
-    const post = await PostModel.create({
-      author: {
-        _id: postAuthorId,
-        name: 'Test Nutritionist',
-        role: ROLE.NUTRITIONIST
-      },
-      title: 'Bài viết test',
-      content: 'Nội dung bài viết test...',
-      slug: 'bai-viet-test',
-      isPublished: true,
-      comments: [
-        {
-          author: {
-            _id: userId,
-            name: 'Test User',
-            avatar: ''
-          },
-          content: 'Bình luận test',
-          createdAt: new Date()
-        }
-      ]
+    await expect(
+      PostService.deleteComment(
+        'invalid-id',
+        commentId,
+        commentAuthorId,
+        ROLE.USER
+      )
+    ).rejects.toMatchObject({
+      status: 400,
+      message: 'ID bài viết không hợp lệ'
     });
-    postId = post._id.toString();
-    commentId = (post.comments[0] as any)._id.toString();
   });
 
-  afterEach(async () => {
-    // Clean up after each test
-    await PostModel.deleteMany({});
+  it('should throw 400 when comment id format is invalid', async () => {
+    mockValidateObjectId.mockReturnValueOnce(true).mockReturnValueOnce(false);
+
+    await expect(
+      PostService.deleteComment(
+        postId,
+        'invalid-comment-id',
+        commentAuthorId,
+        ROLE.USER
+      )
+    ).rejects.toMatchObject({
+      status: 400,
+      message: 'ID bình luận không hợp lệ'
+    });
   });
 
-  afterAll(async () => {
-    // Close connection
-    await mongoose.connection.close();
+  it('should throw 404 when post does not exist', async () => {
+    mockValidateObjectId.mockReturnValue(true);
+    mockFindById.mockResolvedValue(null);
+
+    await expect(
+      PostService.deleteComment(postId, commentId, commentAuthorId, ROLE.USER)
+    ).rejects.toMatchObject({
+      status: 404,
+      message: 'Không tìm thấy bài viết'
+    });
   });
 
-  // Branch - Happy case: comment author deletes
-  it('should delete comment as comment author successfully', async () => {
-    await PostService.deleteComment(postId, commentId, userId, ROLE.USER);
+  it('should throw 404 when comment does not exist', async () => {
+    const post = makePost();
+    post.comments = [];
 
-    // Verify comment is deleted
-    const updatedPost = await PostModel.findById(postId);
-    expect(updatedPost?.comments.length).toBe(0);
+    mockValidateObjectId.mockReturnValue(true);
+    mockFindById.mockResolvedValue(post as any);
+
+    await expect(
+      PostService.deleteComment(postId, commentId, commentAuthorId, ROLE.USER)
+    ).rejects.toMatchObject({
+      status: 404,
+      message: 'Không tìm thấy bình luận'
+    });
   });
 
-  it('should delete comment as post author successfully', async () => {
+  it('should delete comment when actor is comment author', async () => {
+    const post = makePost();
+
+    mockValidateObjectId.mockReturnValue(true);
+    mockFindById.mockResolvedValue(post as any);
+
+    await PostService.deleteComment(
+      postId,
+      commentId,
+      commentAuthorId,
+      ROLE.USER
+    );
+
+    expect(post.comments).toHaveLength(0);
+    expect(post.save).toHaveBeenCalled();
+  });
+
+  it('should delete comment when actor is post author', async () => {
+    const post = makePost();
+
+    mockValidateObjectId.mockReturnValue(true);
+    mockFindById.mockResolvedValue(post as any);
+
     await PostService.deleteComment(
       postId,
       commentId,
@@ -93,55 +139,33 @@ describe('PostService.deleteComment', () => {
       ROLE.NUTRITIONIST
     );
 
-    // Verify comment is deleted
-    const updatedPost = await PostModel.findById(postId);
-    expect(updatedPost?.comments.length).toBe(0);
+    expect(post.comments).toHaveLength(0);
+    expect(post.save).toHaveBeenCalled();
   });
 
-  it('should delete comment as admin successfully', async () => {
-    await PostService.deleteComment(postId, commentId, adminId, ROLE.ADMIN);
+  it('should delete comment when actor is admin', async () => {
+    const post = makePost();
 
-    // Verify comment is deleted
-    const updatedPost = await PostModel.findById(postId);
-    expect(updatedPost?.comments.length).toBe(0);
+    mockValidateObjectId.mockReturnValue(true);
+    mockFindById.mockResolvedValue(post as any);
+
+    await PostService.deleteComment(postId, commentId, otherUserId, ROLE.ADMIN);
+
+    expect(post.comments).toHaveLength(0);
+    expect(post.save).toHaveBeenCalled();
   });
 
-  // Branch - Unauthorized user
-  it('should throw error when deleting comment of another user', async () => {
+  it('should throw 403 when actor has no permission', async () => {
+    const post = makePost();
+
+    mockValidateObjectId.mockReturnValue(true);
+    mockFindById.mockResolvedValue(post as any);
+
     await expect(
       PostService.deleteComment(postId, commentId, otherUserId, ROLE.USER)
-    ).rejects.toThrow('Bạn không có quyền xóa bình luận này');
-  });
-
-  // Branch - Invalid post ID
-  it('should throw error when post id format is invalid', async () => {
-    await expect(
-      PostService.deleteComment('invalid-id', commentId, userId, ROLE.USER)
-    ).rejects.toThrow('ID bài viết không hợp lệ');
-  });
-
-  // Branch - Invalid comment ID
-  it('should throw error when comment id format is invalid', async () => {
-    await expect(
-      PostService.deleteComment(postId, 'invalid-comment-id', userId, ROLE.USER)
-    ).rejects.toThrow('ID bình luận không hợp lệ');
-  });
-
-  // Branch - Post not found
-  it('should throw error when post does not exist', async () => {
-    const nonExistentId = new mongoose.Types.ObjectId().toString();
-
-    await expect(
-      PostService.deleteComment(nonExistentId, commentId, userId, ROLE.USER)
-    ).rejects.toThrow('Không tìm thấy bài viết');
-  });
-
-  // Branch - Comment not found
-  it('should throw error when comment does not exist', async () => {
-    const nonExistentCommentId = new mongoose.Types.ObjectId().toString();
-
-    await expect(
-      PostService.deleteComment(postId, nonExistentCommentId, userId, ROLE.USER)
-    ).rejects.toThrow('Không tìm thấy bình luận');
+    ).rejects.toMatchObject({
+      status: 403,
+      message: 'Bạn không có quyền xóa bình luận này'
+    });
   });
 });

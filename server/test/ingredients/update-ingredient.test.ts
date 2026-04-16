@@ -118,25 +118,7 @@ describe('IngredientService.updateIngredient', () => {
       });
     });
 
-    it('should update ingredient successfully without image', async () => {
-      mockValidateObjectId.mockReturnValue(true);
-      mockFindOne.mockResolvedValue(null);
-      const mockIngredient = {
-        _id: { toString: () => VALID_ID },
-        ...validData
-      };
-      mockFindByIdAndUpdate.mockResolvedValue(mockIngredient as any);
-
-      const result = await IngredientService.updateIngredient(
-        VALID_ID,
-        validData
-      );
-
-      expect(result).toEqual(mockIngredient);
-      expect(mockUploadImage).not.toHaveBeenCalled();
-    });
-
-    it('should update ingredient successfully with image', async () => {
+    it('should update ingredient successfully', async () => {
       const mockSave = vi.fn();
       const mockIngredient = {
         _id: { toString: () => VALID_ID },

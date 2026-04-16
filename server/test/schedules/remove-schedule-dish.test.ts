@@ -1,196 +1,155 @@
-import mongoose from 'mongoose';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it
-} from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ScheduleService } from '~/features/schedules/schedule-service';
-import { AVAILABLE_TIME } from '~/shared/constants/available-time';
-import { COOKING_PREFERENCE } from '~/shared/constants/cooking-preference';
-import { DAY_OF_WEEK } from '~/shared/constants/day-of-week';
-import { MEAL_COMPLEXITY } from '~/shared/constants/meal-complexity';
-import { MEAL_SIZE } from '~/shared/constants/meal-size';
 import { MEAL_TYPE } from '~/shared/constants/meal-type';
-import { ROLE } from '~/shared/constants/role';
-import { ScheduleModel, UserModel } from '~/shared/database/models';
+import { ScheduleModel } from '~/shared/database/models';
+
+vi.mock('~/shared/database/models', () => ({
+  ScheduleModel: {
+    findById: vi.fn()
+  }
+}));
+
+const mockFindScheduleById = vi.mocked(ScheduleModel.findById);
+
+const VALID_SCHEDULE_ID = '507f1f77bcf86cd799439013';
+const VALID_USER_ID = '507f1f77bcf86cd799439011';
+const VALID_DISH_ID = '507f1f77bcf86cd799439014';
 
 describe('ScheduleService.removeScheduleDish', () => {
-  let userId: string;
-  let scheduleId: string;
-  let dishId: string;
-  const userName = 'Test User';
-
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
-      );
-    }
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
-  beforeEach(async () => {
-    // Clean up database before each test
-    await ScheduleModel.deleteMany({});
-    await UserModel.deleteMany({});
-
-    // Create test user
-    const user = await UserModel.create({
-      email: 'testuser@example.com',
-      name: userName,
-      password: 'hashedPassword',
-      role: ROLE.USER,
-      mealSettings: [
-        {
-          name: MEAL_TYPE.BREAKFAST,
-          mealSize: MEAL_SIZE.NORMAL,
-          availableTime: AVAILABLE_TIME.SOME_TIME,
-          cookingPreference: COOKING_PREFERENCE.CAN_COOK,
-          complexity: MEAL_COMPLEXITY.SIMPLE
-        }
-      ]
-    });
-    userId = user._id.toString();
-
-    // Create test schedule with dish
-    dishId = new mongoose.Types.ObjectId().toString();
-    const schedule = await ScheduleModel.create({
-      user: { _id: userId, name: userName },
-      date: new Date('2026-02-15'),
-      dayOfWeek: DAY_OF_WEEK.MONDAY,
+  it('should remove dish from meal successfully', async () => {
+    const scheduleDoc = {
+      user: { _id: { toString: () => VALID_USER_ID } },
       meals: [
         {
           mealType: MEAL_TYPE.BREAKFAST,
           dishes: [
+            { dishId: { toString: () => VALID_DISH_ID }, name: 'Dish 1' },
             {
-              dishId,
-              name: 'Bò nướng',
-              image: 'image.jpg',
-              calories: 375,
-              servings: 1,
-              isEaten: false
-            },
-            {
-              dishId: new mongoose.Types.ObjectId(),
-              name: 'Cơm',
-              image: 'rice.jpg',
-              calories: 200,
-              servings: 1,
-              isEaten: false
+              dishId: { toString: () => '507f1f77bcf86cd799439015' },
+              name: 'Dish 2'
             }
           ]
         }
-      ]
-    });
-    scheduleId = schedule._id.toString();
-  });
+      ],
+      save: vi.fn()
+    };
+    mockFindScheduleById.mockResolvedValue(scheduleDoc as any);
 
-  afterEach(async () => {
-    // Clean up after each test
-    await ScheduleModel.deleteMany({});
-    await UserModel.deleteMany({});
-  });
-
-  afterAll(async () => {
-    // Close connection
-    await mongoose.connection.close();
-  });
-
-  // Branch - Happy case - remove dish from meal
-  it('should remove dish from meal successfully', async () => {
     const updated = await ScheduleService.removeScheduleDish(
-      scheduleId,
-      userId,
+      VALID_SCHEDULE_ID,
+      VALID_USER_ID,
       MEAL_TYPE.BREAKFAST,
-      dishId
+      VALID_DISH_ID
     );
 
-    expect(updated).toBeDefined();
-    expect(updated.meals[0].dishes).toBeDefined();
     expect(updated.meals[0].dishes.length).toBe(1);
-    expect(updated.meals[0].dishes[0].dishId?.toString()).not.toBe(dishId);
+    expect(updated.meals[0].dishes[0].name).toBe('Dish 2');
+    expect(scheduleDoc.save).toHaveBeenCalledOnce();
   });
 
-  // Branch - Invalid schedule ID
   it('should throw error when schedule ID is invalid', async () => {
     await expect(
       ScheduleService.removeScheduleDish(
         'invalid-id',
-        userId,
+        VALID_USER_ID,
         MEAL_TYPE.BREAKFAST,
-        dishId
+        VALID_DISH_ID
       )
-    ).rejects.toThrow('Định dạng ID lịch ăn không hợp lệ');
+    ).rejects.toMatchObject({
+      status: 400,
+      message: 'Định dạng ID lịch ăn không hợp lệ'
+    });
   });
 
-  // Branch - Invalid dish ID
   it('should throw error when dish ID is invalid', async () => {
     await expect(
       ScheduleService.removeScheduleDish(
-        scheduleId,
-        userId,
+        VALID_SCHEDULE_ID,
+        VALID_USER_ID,
         MEAL_TYPE.BREAKFAST,
         'invalid-id'
       )
-    ).rejects.toThrow('Định dạng ID món ăn không hợp lệ');
+    ).rejects.toMatchObject({
+      status: 400,
+      message: 'Định dạng ID món ăn không hợp lệ'
+    });
   });
 
-  // Branch - Non-existent schedule
   it('should throw error when schedule does not exist', async () => {
-    const nonExistentScheduleId = new mongoose.Types.ObjectId().toString();
+    mockFindScheduleById.mockResolvedValue(null);
 
     await expect(
       ScheduleService.removeScheduleDish(
-        nonExistentScheduleId,
-        userId,
+        VALID_SCHEDULE_ID,
+        VALID_USER_ID,
         MEAL_TYPE.BREAKFAST,
-        dishId
+        VALID_DISH_ID
       )
-    ).rejects.toThrow('Không tìm thấy lịch ăn');
+    ).rejects.toMatchObject({
+      status: 404,
+      message: 'Không tìm thấy lịch ăn'
+    });
   });
 
-  // Branch - User can't update other user's schedule
-  it('should throw error when user tries to remove from other user schedule', async () => {
-    const otherUserId = new mongoose.Types.ObjectId().toString();
+  it('should throw error when user removes from another user schedule', async () => {
+    mockFindScheduleById.mockResolvedValue({
+      user: { _id: { toString: () => '507f1f77bcf86cd799439099' } },
+      meals: []
+    } as any);
 
     await expect(
       ScheduleService.removeScheduleDish(
-        scheduleId,
-        otherUserId,
+        VALID_SCHEDULE_ID,
+        VALID_USER_ID,
         MEAL_TYPE.BREAKFAST,
-        dishId
+        VALID_DISH_ID
       )
-    ).rejects.toThrow('Bạn không có quyền cập nhật lịch ăn này');
+    ).rejects.toMatchObject({
+      status: 403,
+      message: 'Bạn không có quyền cập nhật lịch ăn này'
+    });
   });
 
-  // Branch - Meal not found
-  it('should throw error when meal does not exist in schedule', async () => {
+  it('should throw error when meal does not exist', async () => {
+    mockFindScheduleById.mockResolvedValue({
+      user: { _id: { toString: () => VALID_USER_ID } },
+      meals: []
+    } as any);
+
     await expect(
       ScheduleService.removeScheduleDish(
-        scheduleId,
-        userId,
-        MEAL_TYPE.LUNCH,
-        dishId
+        VALID_SCHEDULE_ID,
+        VALID_USER_ID,
+        MEAL_TYPE.BREAKFAST,
+        VALID_DISH_ID
       )
-    ).rejects.toThrow('Không tìm thấy bữa ăn');
+    ).rejects.toMatchObject({
+      status: 404,
+      message: 'Không tìm thấy bữa ăn'
+    });
   });
 
-  // Branch - Dish not found in meal
   it('should throw error when dish does not exist in meal', async () => {
-    const nonExistentDishId = new mongoose.Types.ObjectId().toString();
+    mockFindScheduleById.mockResolvedValue({
+      user: { _id: { toString: () => VALID_USER_ID } },
+      meals: [{ mealType: MEAL_TYPE.BREAKFAST, dishes: [] }]
+    } as any);
 
     await expect(
       ScheduleService.removeScheduleDish(
-        scheduleId,
-        userId,
+        VALID_SCHEDULE_ID,
+        VALID_USER_ID,
         MEAL_TYPE.BREAKFAST,
-        nonExistentDishId
+        VALID_DISH_ID
       )
-    ).rejects.toThrow('Không tìm thấy món ăn trong bữa');
+    ).rejects.toMatchObject({
+      status: 404,
+      message: 'Không tìm thấy món ăn trong bữa'
+    });
   });
 });

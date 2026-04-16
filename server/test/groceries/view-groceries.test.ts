@@ -1,68 +1,71 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { GroceryService } from '~/features/groceries/grocery-service';
-import { GroceryModel } from '~/shared/database/models';
-import { buildPaginateOptions, validateObjectId } from '~/shared/utils';
+import { GroceryModel, IngredientModel } from '~/shared/database/models';
+import { buildPaginateOptions } from '~/shared/utils';
 
 vi.mock('~/shared/database/models', () => ({
-  GroceryModel: { paginate: vi.fn() }
+  GroceryModel: {
+    paginate: vi.fn()
+  },
+  IngredientModel: {
+    find: vi.fn()
+  }
 }));
 
 vi.mock('~/shared/utils', async importOriginal => {
   const actual = await importOriginal<typeof import('~/shared/utils')>();
   return {
     ...actual,
-    validateObjectId: vi.fn(),
     buildPaginateOptions: vi.fn()
   };
 });
 
 const mockPaginate = vi.mocked(GroceryModel.paginate);
-const mockValidateObjectId = vi.mocked(validateObjectId);
+const mockIngredientFind = vi.mocked(IngredientModel.find);
 const mockBuildPaginateOptions = vi.mocked(buildPaginateOptions);
 
-const USER_ID = 'user123';
+const userId = 'user123';
+const parsedQuery = { filter: {}, limit: 10 } as any;
+const fakeOptions = { limit: 10, page: 1 };
 
-describe('GroceryService.viewGroceries', () => {
+const makeDoc = (data: any) => ({
+  ...data,
+  toObject: () => ({ ...data })
+});
+
+describe('GroceryService.viewGroceries (UC29)', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('business logic', () => {
-    it('should throw 400 when userId is invalid', async () => {
-      mockValidateObjectId.mockReturnValue(false);
+  it('should return user groceries successfully', async () => {
+    mockBuildPaginateOptions.mockReturnValue(fakeOptions as any);
+    mockPaginate.mockResolvedValue({
+      docs: [
+        makeDoc({
+          _id: 'g1',
+          name: 'Danh sach 1',
+          ingredients: [
+            { ingredientId: 'ing-1', name: 'Ca chua', isPurchased: false }
+          ]
+        })
+      ],
+      totalDocs: 1,
+      page: 1,
+      limit: 10
+    } as any);
+    mockIngredientFind.mockReturnValue({
+      lean: vi.fn().mockResolvedValue([{ _id: { toString: () => 'ing-1' } }])
+    } as any);
 
-      await expect(
-        GroceryService.viewGroceries('invalid-id', { filter: {} } as any)
-      ).rejects.toMatchObject({
-        status: 400,
-        message: 'Định dạng ID người dùng không hợp lệ'
-      });
-    });
+    const result = await GroceryService.viewGroceries(userId, parsedQuery);
 
-    it('should return paginated groceries for the user', async () => {
-      mockValidateObjectId.mockReturnValue(true);
-      mockBuildPaginateOptions.mockReturnValue({ limit: 10, page: 1 } as any);
-
-      const fakeResult = {
-        docs: [{ name: 'Danh sách tuần 1' }, { name: 'Danh sách tuần 2' }],
-        totalDocs: 2,
-        limit: 10,
-        page: 1
-      };
-      mockPaginate.mockResolvedValue(fakeResult as any);
-
-      const result = await GroceryService.viewGroceries(USER_ID, {
-        filter: {},
-        limit: 10
-      } as any);
-
-      expect(result).toBeDefined();
-      expect(result.docs).toHaveLength(2);
-      expect(mockPaginate).toHaveBeenCalledWith(
-        expect.objectContaining({ 'user._id': USER_ID }),
-        expect.any(Object)
-      );
-    });
+    expect(mockPaginate).toHaveBeenCalledWith(
+      { 'user._id': userId },
+      fakeOptions
+    );
+    expect(result.docs).toHaveLength(1);
+    expect((result.docs[0] as any).ingredients[0].isDeleted).toBe(false);
   });
 });

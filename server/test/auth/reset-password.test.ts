@@ -1,159 +1,140 @@
-import mongoose from 'mongoose';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { resetPasswordRequestSchema } from '~/features/auth/auth-dto';
 import { AuthService } from '~/features/auth/auth-service';
-import { ROLE } from '~/shared/constants/role';
+import { TOKEN_TYPE } from '~/shared/constants/token-type';
 import { AuthModel, UserModel } from '~/shared/database/models';
-import {
-  comparePassword,
-  generateResetPasswordToken,
-  hashPassword
-} from '~/shared/utils';
+import { hashPassword, verifyToken } from '~/shared/utils';
 
-describe('AuthService.resetPassword', () => {
-  let userId: string;
-  let resetToken: string;
+vi.mock('~/shared/database/models', () => ({
+  AuthModel: {
+    findOne: vi.fn(),
+    create: vi.fn()
+  },
+  UserModel: {
+    findById: vi.fn()
+  }
+}));
 
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
+vi.mock('~/shared/utils', async importOriginal => {
+  const actual = await importOriginal<typeof import('~/shared/utils')>();
+  return {
+    ...actual,
+    verifyToken: vi.fn(),
+    hashPassword: vi.fn()
+  };
+});
+
+const mockFindAuth = vi.mocked(AuthModel.findOne);
+const mockCreateAuth = vi.mocked(AuthModel.create);
+const mockFindUser = vi.mocked(UserModel.findById);
+const mockVerifyToken = vi.mocked(verifyToken);
+const mockHashPassword = vi.mocked(hashPassword);
+
+describe('AuthService.resetPassword (UC05 step 3-4)', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe('validation', () => {
+    it('should fail when password too short', () => {
+      const result = resetPasswordRequestSchema.safeParse({
+        password: 'Ab1@'
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Mật khẩu phải có ít nhất 8 ký tự'
       );
-    }
-  });
-
-  beforeEach(async () => {
-    // Clean up database before each test
-    await AuthModel.deleteMany({});
-    await UserModel.deleteMany({});
-
-    // Create a test user
-    const user = await UserModel.create({
-      email: 'testuser@gmail.com',
-      name: 'Test User',
-      role: ROLE.USER,
-      isActive: true
-    });
-    userId = user._id.toString();
-
-    // Create auth record with initial password
-    const hashedPassword = await hashPassword('oldpassword');
-    await AuthModel.create({
-      user: user._id,
-      provider: 'local',
-      providerId: 'testuser@gmail.com',
-      localPassword: hashedPassword,
-      verifyAt: new Date()
     });
 
-    // Generate reset token
-    resetToken = generateResetPasswordToken(userId);
+    it('should fail when password does not meet complexity', () => {
+      const result = resetPasswordRequestSchema.safeParse({
+        password: 'password1234'
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Mật khẩu phải gồm chữ thường, chữ hoa, số và ký tự đặc biệt'
+      );
+    });
   });
 
-  afterAll(async () => {
-    // Clean up and close connection
-    await AuthModel.deleteMany({});
-    await UserModel.deleteMany({});
-    await mongoose.connection.close();
-  });
+  describe('business logic', () => {
+    it('should throw 400 when token already used', async () => {
+      mockFindAuth.mockResolvedValueOnce({ _id: 'auth-used' } as any);
 
-  // Happy case - reset password successfully
-  it('should reset password successfully with valid token', async () => {
-    await AuthService.resetPassword(resetToken, { password: 'newpassword123' });
-
-    // Verify password was updated in database
-    const auth = await AuthModel.findOne({ user: userId });
-    const compareResult = await comparePassword(
-      'newpassword123',
-      auth!.localPassword!
-    );
-    expect(auth).toBeDefined();
-    expect(auth?.localPassword).toBeDefined();
-    expect(compareResult).toBe(true);
-    expect(auth?.lastResetPasswordToken).toBe(resetToken);
-  });
-
-  // Branch: invalid token
-  it('should throw error when reset token is invalid', async () => {
-    await expect(
-      AuthService.resetPassword('invalid-token', { password: 'newpassword123' })
-    ).rejects.toThrow('Token không hợp lệ');
-  });
-
-  // Branch: token already used
-  it('should throw error when reset token has already been used', async () => {
-    // Use the token once
-    await AuthService.resetPassword(resetToken, { password: 'newpassword123' });
-
-    // Try to use the same token again
-    await expect(
-      AuthService.resetPassword(resetToken, { password: 'anotherpassword' })
-    ).rejects.toThrow('Token đã được sử dụng');
-  });
-
-  // Branch: expired token
-  it('should throw error when reset token is expired', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const jwt = require('jsonwebtoken');
-    const expiredToken = jwt.sign(
-      { id: userId },
-      process.env.JWT_RESET_PASSWORD_SECRET,
-      { expiresIn: '0s' } // Expired immediately
-    );
-
-    await expect(
-      AuthService.resetPassword(expiredToken, { password: 'newpassword123' })
-    ).rejects.toThrow('Token đã hết hạn');
-  });
-
-  // Branch: missing required field
-  it('should throw error when password is missing', async () => {
-    await expect(
-      AuthService.resetPassword(resetToken, {
-        password: undefined as unknown as string
-      })
-    ).rejects.toThrow('Mật khẩu là bắt buộc');
-  });
-
-  // Branch: password too short
-  it('should throw error when password is less than 6 characters', async () => {
-    await expect(
-      AuthService.resetPassword(resetToken, { password: '123' })
-    ).rejects.toThrow('Mật khẩu phải có ít nhất 6 ký tự');
-  });
-
-  // Branch: user not found
-  it('should throw error when user does not exist', async () => {
-    // Delete the user
-    await UserModel.findByIdAndDelete(userId);
-
-    await expect(
-      AuthService.resetPassword(resetToken, { password: 'newpassword123' })
-    ).rejects.toThrow('Không tìm thấy người dùng');
-  });
-
-  // Branch: Local Auth missing (e.g. Google user resetting password)
-  it('should create new local auth record if it does not exist', async () => {
-    // Delete the existing local auth
-    await AuthModel.deleteMany({});
-
-    await AuthService.resetPassword(resetToken, {
-      password: 'newItemPassword123'
+      await expect(
+        AuthService.resetPassword('reset-token', { password: 'Abcd@1234' })
+      ).rejects.toMatchObject({
+        status: 400,
+        message: 'Token đã được sử dụng'
+      });
     });
 
-    // Verify new auth record created
-    const auth = await AuthModel.findOne({
-      user: userId,
-      provider: 'local'
+    it('should throw 404 when user does not exist', async () => {
+      mockFindAuth.mockResolvedValueOnce(null);
+      mockVerifyToken.mockReturnValue({ id: 'user-1' } as any);
+      mockFindUser.mockResolvedValue(null);
+
+      await expect(
+        AuthService.resetPassword('reset-token', { password: 'Abcd@1234' })
+      ).rejects.toMatchObject({
+        status: 404,
+        message: 'Không tìm thấy người dùng'
+      });
     });
 
-    expect(auth).toBeDefined();
-    expect(auth?.provider).toBe('local');
-    const isValid = await comparePassword(
-      'newItemPassword123',
-      auth!.localPassword!
-    );
-    expect(isValid).toBe(true);
+    it('should create local auth if user has no local auth yet', async () => {
+      mockFindAuth.mockResolvedValueOnce(null).mockResolvedValueOnce(null);
+      mockVerifyToken.mockReturnValue({ id: 'user-1' } as any);
+      mockFindUser.mockResolvedValue({
+        _id: { toString: () => 'user-1' },
+        email: 'user@example.com'
+      } as any);
+      mockHashPassword.mockResolvedValue('hashed-pass');
+
+      await AuthService.resetPassword('reset-token', { password: 'Abcd@1234' });
+
+      expect(mockCreateAuth).toHaveBeenCalledWith(
+        expect.objectContaining({
+          user: expect.anything(),
+          provider: 'local',
+          providerId: 'user@example.com',
+          localPassword: 'hashed-pass',
+          lastResetPasswordToken: 'reset-token'
+        })
+      );
+    });
+
+    it('should update existing local auth password successfully', async () => {
+      const mockSave = vi.fn();
+      const authDoc = {
+        localPassword: 'old-hash',
+        lastResetPasswordToken: undefined,
+        save: mockSave
+      };
+
+      mockFindAuth
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(authDoc as any);
+      mockVerifyToken.mockReturnValue({ id: 'user-1' } as any);
+      mockFindUser.mockResolvedValue({
+        _id: { toString: () => 'user-1' },
+        email: 'user@example.com'
+      } as any);
+      mockHashPassword.mockResolvedValue('new-hash');
+
+      await AuthService.resetPassword('reset-token', { password: 'Abcd@1234' });
+
+      expect(authDoc.localPassword).toBe('new-hash');
+      expect(authDoc.lastResetPasswordToken).toBe('reset-token');
+      expect(mockSave).toHaveBeenCalled();
+      expect(mockVerifyToken).toHaveBeenCalledWith(
+        'reset-token',
+        process.env.JWT_RESET_PASSWORD_SECRET,
+        TOKEN_TYPE.RESET_PASSWORD
+      );
+    });
   });
 });

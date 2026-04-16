@@ -31,9 +31,6 @@ router.get('/', asyncHandler(PostController.viewPosts));
 
 router.get('/:id', asyncHandler(PostController.viewPostDetail));
 
-// Not used
-router.get('/slug/:slug', asyncHandler(PostController.viewPostBySlug));
-
 router.put(
   '/:id',
   authenticate(),
