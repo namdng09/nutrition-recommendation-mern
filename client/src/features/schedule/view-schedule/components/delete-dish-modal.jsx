@@ -1,5 +1,15 @@
+import { useState } from 'react';
 import { HiOutlineTrash } from 'react-icons/hi';
 
+import { Button } from '~/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '~/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +25,15 @@ export default function DeleteDishModal({
   mealType,
   dishId
 }) {
-  const { mutate: deleteDish } = useDeleteDishSchedule();
+  const [openDeleteDishDialog, setOpenDeleteDishDialog] = useState(false);
+
+  const { mutate: deleteDish, isPending: isDeletingDish } =
+    useDeleteDishSchedule({
+      onSuccess: () => {
+        setOpenDeleteDishDialog(false);
+      }
+    });
+
   const handleDeleteDish = () => {
     deleteDish({ scheduleId, mealType, dishId });
   };
@@ -28,17 +46,50 @@ export default function DeleteDishModal({
         <DropdownMenuContent
           align='end'
           sideOffset={8}
-          className='w-56 rounded-xl bg-popover border border-border shadow-2xl'
+          className='w-56 rounded-xl border border-border bg-popover shadow-2xl'
         >
           <DropdownMenuItem
             className='gap-3 text-destructive'
-            onClick={handleDeleteDish}
+            onClick={() => setOpenDeleteDishDialog(true)}
           >
             <HiOutlineTrash size={18} />
             Xoá món này
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <Dialog
+        open={openDeleteDishDialog}
+        onOpenChange={setOpenDeleteDishDialog}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Xoá món ăn</DialogTitle>
+            <DialogDescription>
+              Bạn có chắc chắn muốn xoá món ăn này khỏi bữa ăn không? Hành động
+              này không thể hoàn tác.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <Button
+              variant='outline'
+              onClick={() => setOpenDeleteDishDialog(false)}
+              disabled={isDeletingDish}
+            >
+              Huỷ
+            </Button>
+
+            <Button
+              variant='destructive'
+              onClick={handleDeleteDish}
+              disabled={isDeletingDish}
+            >
+              {isDeletingDish ? 'Đang xoá...' : 'Xoá món này'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

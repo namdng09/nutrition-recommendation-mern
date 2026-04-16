@@ -52,7 +52,7 @@ export default function DishDetail() {
         <div className='group relative mx-auto w-full max-w-[430px]'>
           <div className='relative aspect-[3/4] overflow-hidden rounded-[2rem] bg-card shadow-[0_20px_60px_rgba(0,0,0,0.10)] ring-1 ring-border/50'>
             <img
-              src={dish.image || '/placeholder.png'}
+              src={dish.image || '/logo2.png'}
               alt={dish.name}
               className='h-full w-full object-cover transition-transform'
             />
@@ -158,7 +158,7 @@ export default function DishDetail() {
                   className='group flex items-center gap-4 rounded-[1.5rem] bg-card p-4 shadow-sm ring-1 ring-border/50 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:ring-orange-200 dark:hover:ring-orange-500/20'
                 >
                   <img
-                    src={item.image || '/placeholder.png'}
+                    src={item.image || '/logo2.png'}
                     alt={item.name}
                     className='h-14 w-14 rounded-xl object-cover transition-transform duration-300 group-hover:scale-105'
                   />

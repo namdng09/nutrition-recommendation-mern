@@ -24,7 +24,7 @@ export default function IngredientMainInfo({
       <div className='flex flex-col gap-6 lg:flex-row'>
         <div className='h-52 w-full overflow-hidden rounded-[1.5rem] bg-muted shadow-sm ring-1 ring-border/50 md:h-64 md:w-64 lg:shrink-0'>
           <img
-            src={item?.image || '/placeholder.png'}
+            src={item?.image || '/logo2.png'}
             alt={item?.name}
             className='h-full w-full object-cover'
           />

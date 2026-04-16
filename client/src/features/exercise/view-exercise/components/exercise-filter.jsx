@@ -158,7 +158,7 @@ export default function ExerciseFilter({
                   >
                     <div className='h-[62px] w-[92px] overflow-hidden rounded-xl bg-background shadow-sm ring-1 ring-border/50'>
                       <img
-                        src={option.image}
+                        src={option.image || '/logo2.png'}
                         alt={option.label}
                         loading='lazy'
                         className='h-full w-full object-cover'
@@ -203,7 +203,7 @@ export default function ExerciseFilter({
                   >
                     <div className='h-[62px] w-[62px] overflow-hidden rounded-full bg-background shadow-sm ring-1 ring-border/50'>
                       <img
-                        src={option.image}
+                        src={option.image || '/logo2.png'}
                         alt={option.label}
                         loading='lazy'
                         className='h-full w-full object-cover'

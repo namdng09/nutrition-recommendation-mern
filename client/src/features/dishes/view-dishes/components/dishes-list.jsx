@@ -13,6 +13,15 @@ import {
 } from 'react-icons/fa';
 import { Link } from 'react-router';
 
+import { Button } from '~/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '~/components/ui/dialog';
 import { useDeletePrivateDish } from '~/features/private-dish/delete-private-dish/api/delete-private-dish';
 import { usePrivateDishes } from '~/features/private-dish/view-private-dish/api/view-private-dish';
 import { getNutritionValue } from '~/lib/utils';
@@ -40,9 +49,16 @@ export default function DishesList() {
   const [showMyDishes, setShowMyDishes] = useState(false);
   const [draftFilters, setDraftFilters] = useState(DEFAULT_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
+  const [openDeleteDishDialog, setOpenDeleteDishDialog] = useState(false);
+  const [selectedDishToDelete, setSelectedDishToDelete] = useState(null);
 
   const { mutate: deletePrivateDish, isPending: isDeletingDish } =
-    useDeletePrivateDish();
+    useDeletePrivateDish({
+      onSuccess: () => {
+        setOpenDeleteDishDialog(false);
+        setSelectedDishToDelete(null);
+      }
+    });
 
   const { data } = useDishes({
     page: 1,
@@ -124,13 +140,19 @@ export default function DishesList() {
     setShowMyDishes(prev => !prev);
   };
 
-  const handleDeleteDish = (e, dish) => {
+  const handleOpenDeleteDishDialog = (e, dish) => {
     e.preventDefault();
     e.stopPropagation();
 
     if (dish.isPublic !== false) return;
 
-    deletePrivateDish({ id: dish._id });
+    setSelectedDishToDelete(dish);
+    setOpenDeleteDishDialog(true);
+  };
+
+  const handleConfirmDeleteDish = () => {
+    if (!selectedDishToDelete?._id) return;
+    deletePrivateDish({ id: selectedDishToDelete._id });
   };
 
   const activeFilterCount =
@@ -289,7 +311,7 @@ export default function DishesList() {
 
                           <button
                             type='button'
-                            onClick={e => handleDeleteDish(e, dish)}
+                            onClick={e => handleOpenDeleteDishDialog(e, dish)}
                             disabled={isDeletingDish}
                             className='inline-flex items-center gap-2 rounded-full bg-red-500 px-3 py-2 text-xs font-bold text-white shadow-md transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60'
                           >
@@ -357,6 +379,42 @@ export default function DishesList() {
       </div>
 
       {filterModal}
+
+      <Dialog
+        open={openDeleteDishDialog}
+        onOpenChange={setOpenDeleteDishDialog}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Xoá món ăn</DialogTitle>
+            <DialogDescription>
+              Bạn có chắc chắn muốn xoá món ăn này không? Hành động này không
+              thể hoàn tác.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <Button
+              variant='outline'
+              onClick={() => {
+                setOpenDeleteDishDialog(false);
+                setSelectedDishToDelete(null);
+              }}
+              disabled={isDeletingDish}
+            >
+              Huỷ
+            </Button>
+
+            <Button
+              variant='destructive'
+              onClick={handleConfirmDeleteDish}
+              disabled={isDeletingDish}
+            >
+              {isDeletingDish ? 'Đang xoá...' : 'Xoá món ăn'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

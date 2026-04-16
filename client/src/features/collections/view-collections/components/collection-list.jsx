@@ -59,10 +59,7 @@ export default function CollectionsList() {
 
       <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3'>
         {collections.map(col => {
-          const cover =
-            col.image ||
-            col.dishes?.[0]?.image ||
-            '/placeholder-collection.jpg';
+          const cover = col.image || col.dishes?.[0]?.image || '/logo2.png';
 
           return (
             <div
@@ -119,7 +116,7 @@ export default function CollectionsList() {
                   {col.dishes?.[0] ? (
                     <div className='mt-5 flex items-center gap-4 rounded-[20px] bg-muted/40 p-3.5 transition-all group-hover:bg-muted/60'>
                       <img
-                        src={col.dishes[0].image}
+                        src={col.dishes[0].image || '/logo2.png'}
                         alt={col.dishes[0].name}
                         className='h-14 w-14 rounded-xl object-cover shadow-sm'
                       />

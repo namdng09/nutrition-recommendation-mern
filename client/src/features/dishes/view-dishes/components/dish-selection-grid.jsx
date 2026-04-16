@@ -27,7 +27,7 @@ export default function DishSelectionGrid({
             >
               <div className='h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-border'>
                 <img
-                  src={dish.image}
+                  src={dish.image || '/logo2.png'}
                   alt={dish.name}
                   className='h-full w-full object-cover transition-transform duration-500 group-hover:scale-110'
                 />
