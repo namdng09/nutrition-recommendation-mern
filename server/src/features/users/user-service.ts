@@ -475,6 +475,11 @@ export const UserService = {
     return removeFromUserArrayField(userId, 'blockIngredients', ingredientId);
   },
   createUser: async (data: CreateUserRequest) => {
+    const existingUser = await UserModel.findOne({ email: data.email });
+    if (existingUser) {
+      throw createHttpError(400, 'Email đã được sử dụng');
+    }
+
     const newUser = await UserModel.create(data);
     if (!newUser) {
       throw createHttpError(500, 'Không thể tạo người dùng');
