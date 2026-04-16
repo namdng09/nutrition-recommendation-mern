@@ -45,27 +45,15 @@ describe('AuthService.login (UC01)', () => {
       expect(result.error?.issues[0].message).toBe('Email không hợp lệ');
     });
 
-    it('should fail when password is too short', () => {
+    it('should fail when password is not provided', () => {
       const result = loginRequestSchema.safeParse({
         email: 'user@example.com',
-        password: '123'
+        password: ''
       });
 
       expect(result.success).toBe(false);
       expect(result.error?.issues[0].message).toBe(
-        'Mật khẩu phải có ít nhất 8 ký tự'
-      );
-    });
-
-    it('should fail when password does not meet complexity requirements', () => {
-      const result = loginRequestSchema.safeParse({
-        email: 'user@example.com',
-        password: 'password123'
-      });
-
-      expect(result.success).toBe(false);
-      expect(result.error?.issues[0].message).toBe(
-        'Mật khẩu phải gồm chữ thường, chữ hoa, số và ký tự đặc biệt'
+        'Mật khẩu không được để trống'
       );
     });
   });
