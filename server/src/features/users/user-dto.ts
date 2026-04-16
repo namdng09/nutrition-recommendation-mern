@@ -79,10 +79,10 @@ export const nutritionTargetRequestSchema = z.object({
     .array(z.enum(Object.values(ALLERGEN), 'Dị ứng không hợp lệ'))
     .optional(),
   gender: z.enum(Object.values(GENDER), 'Giới tính không hợp lệ'),
-  height: z.number().positive(),
-  weight: z.number().positive(),
+  height: z.number().positive('Chiều cao phải là số dương'),
+  weight: z.number().positive('Cân nặng phải là số dương'),
   dob: z.string().optional(),
-  age: z.number().positive().optional(),
+  age: z.number().positive('Tuổi phải là số dương').optional(),
   bodyfat: z.enum(Object.values(BODYFAT), 'Mức độ mỡ cơ thể không hợp lệ'),
   activityLevel: z.enum(
     Object.values(ACTIVITY_LEVEL),
@@ -128,8 +128,8 @@ export type UpdateUserRequest = z.infer<typeof updateUserRequestSchema>;
 export const onboardingRequestSchema = z.object({
   gender: z.enum(Object.values(GENDER), 'Giới tính không hợp lệ'),
   dob: z.string(),
-  height: z.number().positive(),
-  weight: z.number().positive(),
+  height: z.number().positive('Chiều cao phải là số dương'),
+  weight: z.number().positive('Cân nặng phải là số dương'),
   bodyfat: z.enum(Object.values(BODYFAT), 'Mức độ mỡ cơ thể không hợp lệ'),
   diet: z.enum(Object.values(DIET), 'Chế độ ăn không hợp lệ'),
   allergens: z
@@ -148,8 +148,14 @@ export const onboardingRequestSchema = z.object({
   goal: z
     .object({
       target: z.enum(Object.values(USER_TARGET), 'Mục tiêu không hợp lệ'),
-      weightGoal: z.number().optional(),
-      targetWeightChange: z.number().optional()
+      weightGoal: z
+        .number()
+        .positive('Mục tiêu cân nặng phải là số dương')
+        .optional(),
+      targetWeightChange: z
+        .number()
+        .positive('Thay đổi mục tiêu cân nặng phải là số dương')
+        .optional()
     })
     .optional()
 });
@@ -178,8 +184,8 @@ export const updatePhysicalStatsSchema = z.object({
       v => !isNaN(new Date(v).getTime()),
       'Định dạng ngày sinh không hợp lệ'
     ),
-  height: z.number().positive(),
-  weight: z.number().positive(),
+  height: z.number().positive('Chiều cao phải là số dương'),
+  weight: z.number().positive('Cân nặng phải là số dương'),
   bodyfat: z.enum(Object.values(BODYFAT), 'Mức độ mỡ cơ thể không hợp lệ'),
   activityLevel: z.enum(
     Object.values(ACTIVITY_LEVEL),
@@ -193,25 +199,52 @@ export type UpdatePhysicalStats = z.infer<typeof updatePhysicalStatsSchema>;
 export const updateNutritionTargetSchema = z.object({
   goal: z.object({
     target: z.enum(Object.values(USER_TARGET), 'Mục tiêu không hợp lệ'),
-    weightGoal: z.number().positive().optional(),
-    targetWeightChange: z.number().optional()
+    weightGoal: z
+      .number()
+      .positive('Mục tiêu cân nặng phải là số dương')
+      .optional(),
+    targetWeightChange: z
+      .number()
+      .positive('Thay đổi mục tiêu cân nặng phải là số dương')
+      .optional()
   }),
   nutritionTarget: z
     .object({
-      caloriesTarget: z.number().min(0).optional(),
+      caloriesTarget: z
+        .number()
+        .min(0, 'Giá trị tối thiểu cho calories phải là số dương')
+        .optional(),
       macros: z
         .object({
           carbs: z.object({
-            min: z.number().min(0).optional(),
-            max: z.number().min(0).optional()
+            min: z
+              .number()
+              .min(0, 'Giá trị tối thiểu cho carbs phải là số dương')
+              .optional(),
+            max: z
+              .number()
+              .min(0, 'Giá trị tối đa cho carbs phải là số dương')
+              .optional()
           }),
           protein: z.object({
-            min: z.number().min(0).optional(),
-            max: z.number().min(0).optional()
+            min: z
+              .number()
+              .min(0, 'Giá trị tối thiểu cho protein phải là số dương')
+              .optional(),
+            max: z
+              .number()
+              .min(0, 'Giá trị tối đa cho protein phải là số dương')
+              .optional()
           }),
           fat: z.object({
-            min: z.number().min(0).optional(),
-            max: z.number().min(0).optional()
+            min: z
+              .number()
+              .min(0, 'Giá trị tối thiểu cho fat phải là số dương')
+              .optional(),
+            max: z
+              .number()
+              .min(0, 'Giá trị tối đa cho fat phải là số dương')
+              .optional()
           })
         })
         .optional()
