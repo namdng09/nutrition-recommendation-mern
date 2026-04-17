@@ -108,7 +108,9 @@ describe('PaymentService.createPayment (UC98)', () => {
       mockFindUser.mockResolvedValue({
         membershipLevel: MEMBERSHIP_LEVEL.NORMAL
       } as any);
-      mockFindPayment.mockResolvedValue({ _id: 'existing' } as any);
+      mockFindPayment
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({ _id: 'existing' } as any);
 
       await expect(
         PaymentService.createPayment(validData, userId)
@@ -118,11 +120,26 @@ describe('PaymentService.createPayment (UC98)', () => {
       });
     });
 
+    it('should throw 409 when user already has pending payment', async () => {
+      mockFindUser.mockResolvedValue({
+        membershipLevel: MEMBERSHIP_LEVEL.NORMAL
+      } as any);
+      mockFindPayment.mockResolvedValueOnce({ _id: 'pending-payment' } as any);
+
+      await expect(
+        PaymentService.createPayment(validData, userId)
+      ).rejects.toMatchObject({
+        status: 409,
+        message:
+          'Bạn đang có giao dịch chờ thanh toán. Vui lòng hoàn tất hoặc hủy giao dịch hiện tại trước khi tạo giao dịch mới.'
+      });
+    });
+
     it('should create pending payment and return checkout url successfully', async () => {
       mockFindUser.mockResolvedValue({
         membershipLevel: MEMBERSHIP_LEVEL.NORMAL
       } as any);
-      mockFindPayment.mockResolvedValue(null);
+      mockFindPayment.mockResolvedValueOnce(null).mockResolvedValueOnce(null);
       mockCreatePayLink.mockResolvedValue({
         orderCode: 900000001,
         checkoutUrl: 'https://pay.test/checkout',

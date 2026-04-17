@@ -1,3 +1,5 @@
+import { toast } from 'sonner';
+
 import { useCreatePayment } from '../api/create-payment';
 import PackageCard from './package-card';
 
@@ -51,9 +53,17 @@ const PackagesGrid = () => {
       const checkoutUrl =
         typeof result === 'string' ? result : result?.checkoutUrl;
 
+      if (!checkoutUrl) {
+        toast.error('Không lấy được đường dẫn thanh toán');
+        return;
+      }
+
       window.location.href = checkoutUrl;
     } catch (err) {
-      throw new Error(err?.response?.data?.message || 'CreatePayment failed');
+      toast.error(
+        err?.response?.data?.message ||
+          'Tạo thanh toán thất bại, vui lòng thử lại'
+      );
     }
   };
 

@@ -97,6 +97,18 @@ export const PaymentService = {
       }
     }
 
+    const existingPendingPayment = await PaymentModel.findOne({
+      user: userId,
+      status: PAYMENT_STATUS.PENDING,
+      targetMembership: { $exists: true }
+    });
+    if (existingPendingPayment) {
+      throw createHttpError(
+        409,
+        'Bạn đang có giao dịch chờ thanh toán. Vui lòng hoàn tất hoặc hủy giao dịch hiện tại trước khi tạo giao dịch mới.'
+      );
+    }
+
     const orderCode = generateOrderCode();
 
     const existingPayment = await PaymentModel.findOne({ orderCode });
@@ -116,7 +128,8 @@ export const PaymentService = {
         }
       ],
       returnUrl: data.returnUrl,
-      cancelUrl: data.cancelUrl
+      cancelUrl: data.cancelUrl,
+      expiredAt: Math.floor((Date.now() + 15 * 60 * 1000) / 1000)
     };
 
     const paymentLinkResponse: CreatePaymentLinkResponse =
