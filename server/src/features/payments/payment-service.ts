@@ -16,11 +16,7 @@ import { PAYMENT_STATUS } from '~/shared/constants/payment-status';
 import { UserModel } from '~/shared/database/models';
 import type { Payment } from '~/shared/database/models/payment-model';
 import { PaymentModel } from '~/shared/database/models/payment-model';
-import {
-  buildPaginateOptions,
-  toObjectId,
-  validateObjectId
-} from '~/shared/utils';
+import { buildPaginateOptions } from '~/shared/utils';
 import { sendMail } from '~/shared/utils/email/mailer';
 import { payOS } from '~/shared/utils/payos';
 
@@ -192,48 +188,6 @@ export const PaymentService = {
       select: 'name email membershipLevel'
     });
     return payment;
-  },
-
-  getPaymentByOrderCode: async (orderCode: number) => {
-    if (!Number.isFinite(orderCode) || orderCode <= 0) {
-      throw createHttpError(400, 'orderCode must be a positive number');
-    }
-
-    const payment = await PaymentModel.findOne({
-      orderCode,
-      targetMembership: { $exists: true }
-    }).populate({
-      path: 'user',
-      select: 'name email membershipLevel'
-    });
-
-    if (!payment) {
-      throw createHttpError(404, 'Payment not found');
-    }
-
-    return payment;
-  },
-
-  listPaymentsByUser: async (
-    userId: string,
-    parsed: QueryOptions
-  ): Promise<PaginateResult<Payment>> => {
-    if (!userId || !validateObjectId(userId)) {
-      throw createHttpError(400, 'Invalid userId');
-    }
-
-    const options = buildPaginateOptions(parsed);
-    const filter = {
-      ...parsed.filter,
-      user: toObjectId(userId)
-    };
-
-    const result = await PaymentModel.paginate(filter, {
-      ...options,
-      populate: { path: 'user', select: 'name email membershipLevel' }
-    });
-
-    return result;
   },
 
   listPayments: async (

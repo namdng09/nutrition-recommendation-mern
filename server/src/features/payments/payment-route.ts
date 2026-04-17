@@ -33,32 +33,11 @@ router.get(
   asyncHandler(PaymentController.listPayments)
 );
 
-router.get(
-  '/user',
-  authenticate(),
-  authorize([ROLE.USER]),
-  asyncHandler(PaymentController.listPaymentsByUser)
-);
-
-router.get(
-  '/user/:userId',
-  authenticate(),
-  authorize([ROLE.ADMIN]),
-  asyncHandler(PaymentController.listPaymentsByUser)
-);
-
 router.post(
   '/confirm',
   authenticate(),
   authorize([ROLE.USER]),
   asyncHandler(PaymentController.confirmPayment)
-);
-
-router.get(
-  '/:orderCode',
-  authenticate(),
-  authorize([ROLE.ADMIN]),
-  asyncHandler(PaymentController.getPaymentByOrderCode)
 );
 
 router.put(
