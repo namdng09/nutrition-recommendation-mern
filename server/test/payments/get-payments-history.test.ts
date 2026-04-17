@@ -23,25 +23,26 @@ vi.mock('~/shared/utils', async importOriginal => {
 const mockPaginate = vi.mocked(PaymentModel.paginate);
 const mockBuildPaginateOptions = vi.mocked(buildPaginateOptions);
 
+const userId = '507f1f77bcf86cd799439011';
 const parsed = { filter: {}, limit: 10 } as any;
 const options = { page: 1, limit: 10 };
 
-describe('PaymentService.listPayments (UC100)', () => {
+describe('PaymentService.listPayments (UC99)', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should list payments successfully', async () => {
+  it('should get payments history successfully', async () => {
     mockBuildPaginateOptions.mockReturnValue(options as any);
     mockPaginate.mockResolvedValue({
       docs: [{ _id: 'p1' }],
       totalDocs: 1
     } as any);
 
-    const result = await PaymentService.listPayments(parsed);
+    const result = await PaymentService.getPaymentsHistory(userId, parsed);
 
     expect(mockPaginate).toHaveBeenCalledWith(
-      { targetMembership: { $exists: true } },
+      { user: userId },
       {
         ...options,
         populate: { path: 'user', select: 'name email membershipLevel' }

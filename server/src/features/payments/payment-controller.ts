@@ -35,10 +35,21 @@ export const PaymentController = {
       );
   },
 
-  listPayments: async (req: Request, res: Response) => {
+  getPaymentsHistory: async (req: Request, res: Response) => {
+    const userId = req.user!._id.toString();
     const parsed = parseQuery(req.query);
 
-    const result = await PaymentService.listPayments(parsed);
+    const result = await PaymentService.getPaymentsHistory(userId, parsed);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Lấy lịch sử thanh toán thành công', result));
+  },
+
+  viewPayments: async (req: Request, res: Response) => {
+    const parsed = parseQuery(req.query);
+
+    const result = await PaymentService.viewPayments(parsed);
 
     res
       .status(200)

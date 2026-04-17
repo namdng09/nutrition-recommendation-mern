@@ -203,7 +203,22 @@ export const PaymentService = {
     return payment;
   },
 
-  listPayments: async (
+  getPaymentsHistory: async (userId: string, parsed: QueryOptions) => {
+    const options = buildPaginateOptions(parsed);
+    const filter = {
+      ...parsed.filter,
+      user: userId
+    };
+
+    const result = await PaymentModel.paginate(filter, {
+      ...options,
+      populate: { path: 'user', select: 'name email membershipLevel' }
+    });
+
+    return result;
+  },
+
+  viewPayments: async (
     parsed: QueryOptions
   ): Promise<PaginateResult<Payment>> => {
     const options = buildPaginateOptions(parsed);
