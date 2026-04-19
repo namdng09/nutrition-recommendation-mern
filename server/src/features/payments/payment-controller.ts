@@ -1,6 +1,8 @@
 import type { Request, Response } from 'express';
+import createHttpError from 'http-errors';
 
 import { ApiResponse } from '~/shared/utils';
+import { payOS } from '~/shared/utils/payos';
 import { parseQuery } from '~/shared/utils/query-parser';
 
 import { PaymentService } from './payment-service';
@@ -70,5 +72,21 @@ export const PaymentController = {
     res
       .status(200)
       .json(ApiResponse.success('Xác nhận thanh toán thành công', result));
+  },
+
+  handleWebhook: async (req: Request, res: Response) => {
+    const payload = req.body;
+
+    try {
+      await payOS.webhooks.verify(payload);
+    } catch {
+      throw createHttpError(400, 'Webhook payOS không hợp lệ');
+    }
+
+    const result = await PaymentService.handleExpiredWebhook(payload);
+
+    res
+      .status(200)
+      .json(ApiResponse.success('Nhận webhook payOS thành công', result));
   }
 };

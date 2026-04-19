@@ -22,6 +22,7 @@ import { payOS } from '~/shared/utils/payos';
 
 import {
   CreatePaymentRequest,
+  PayOSWebhookRequest,
   UpdatePaymentStatusRequest
 } from './payment-dto';
 
@@ -69,6 +70,53 @@ const applyMembershipUpgrade = async (
 };
 
 export const PaymentService = {
+  handleExpiredWebhook: async (payload: PayOSWebhookRequest) => {
+    const orderCode = payload.data.orderCode;
+
+    const payment = await PaymentModel.findOne({ orderCode });
+
+    if (!payment) {
+      return {
+        orderCode,
+        processed: false,
+        reason: 'PAYMENT_NOT_FOUND'
+      };
+    }
+
+    if (payment.status !== PAYMENT_STATUS.PENDING) {
+      return {
+        orderCode,
+        processed: false,
+        reason: 'ALREADY_FINALIZED',
+        status: payment.status
+      };
+    }
+
+    const paymentLink = await payOS.paymentRequests.get(orderCode);
+
+    if (paymentLink.status !== 'EXPIRED') {
+      return {
+        orderCode,
+        processed: false,
+        reason: 'NOT_EXPIRED',
+        payOSStatus: paymentLink.status
+      };
+    }
+
+    payment.status = PAYMENT_STATUS.CANCELLED;
+    payment.cancellationReason = 'Link thanh toán đã hết hạn';
+    payment.completedAt = undefined;
+
+    await payment.save();
+
+    return {
+      orderCode,
+      processed: true,
+      status: payment.status,
+      payOSStatus: paymentLink.status
+    };
+  },
+
   createPayment: async (data: CreatePaymentRequest, userId: string) => {
     // Validate targetMembership if provided
     if (data.targetMembership) {
@@ -129,7 +177,7 @@ export const PaymentService = {
       ],
       returnUrl: data.returnUrl,
       cancelUrl: data.cancelUrl,
-      expiredAt: Math.floor((Date.now() + 15 * 60 * 1000) / 1000)
+      expiredAt: Math.floor((Date.now() + 1 * 60 * 1000) / 1000)
     };
 
     const paymentLinkResponse: CreatePaymentLinkResponse =
@@ -263,10 +311,14 @@ export const PaymentService = {
       }
     } else if (
       paymentLink.status === 'CANCELLED' ||
-      paymentLink.status === 'FAILED'
+      paymentLink.status === 'FAILED' ||
+      paymentLink.status === 'EXPIRED'
     ) {
       payment.status = PAYMENT_STATUS.CANCELLED;
-      payment.cancellationReason = 'Thanh toán đã bị hủy hoặc thất bại';
+      payment.cancellationReason =
+        paymentLink.status === 'EXPIRED'
+          ? 'Link thanh toán đã hết hạn'
+          : 'Thanh toán đã bị hủy hoặc thất bại';
       payment.completedAt = undefined;
     } else {
       throw createHttpError(400, 'Thanh toán chưa hoàn tất');
