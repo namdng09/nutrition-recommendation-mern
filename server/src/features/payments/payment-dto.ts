@@ -37,19 +37,3 @@ export const updatePaymentStatusRequestSchema = z.object({
 export type UpdatePaymentStatusRequest = z.infer<
   typeof updatePaymentStatusRequestSchema
 > & { orderCode: number };
-
-const payOSWebhookDataSchema = z
-  .object({
-    orderCode: z.number('orderCode không hợp lệ')
-  })
-  .passthrough();
-
-export const payOSWebhookRequestSchema = z.object({
-  code: z.string('Mã phản hồi webhook không hợp lệ'),
-  desc: z.string('Mô tả phản hồi webhook không hợp lệ'),
-  success: z.boolean('Trạng thái webhook không hợp lệ'),
-  data: payOSWebhookDataSchema,
-  signature: z.string('Chữ ký webhook không hợp lệ')
-});
-
-export type PayOSWebhookRequest = z.infer<typeof payOSWebhookRequestSchema>;

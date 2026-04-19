@@ -12,17 +12,10 @@ import { asyncHandler } from '~/shared/utils';
 import { PaymentController } from './payment-controller';
 import {
   createPaymentRequestSchema,
-  payOSWebhookRequestSchema,
   updatePaymentStatusRequestSchema
 } from './payment-dto';
 
 const router = Router();
-
-router.post(
-  '/webhook',
-  validate(payOSWebhookRequestSchema.shape),
-  asyncHandler(PaymentController.handleWebhook)
-);
 
 router.post(
   '/',
