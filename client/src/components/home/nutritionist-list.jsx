@@ -88,10 +88,7 @@ const NutritionistCard = ({ nutritionist }) => {
 
 const NutritionistList = () => {
   const { data } = useNutritionists({ page: 1, limit: 4 });
-  const rawDocs = data?.docs;
-  const docs = Array.isArray(rawDocs)
-    ? rawDocs.filter(item => item && typeof item === 'object')
-    : [];
+  const docs = data.docs;
 
   if (docs.length === 0) {
     return null;
