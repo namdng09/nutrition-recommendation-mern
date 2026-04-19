@@ -5,7 +5,7 @@ export default function IngredientHeader({ item }) {
     <div className='mb-6 flex items-center gap-4 rounded-[1.75rem] bg-card p-4 shadow-sm ring-1 ring-border/60 sm:gap-5 sm:p-5'>
       <div className='relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-muted shadow-sm ring-1 ring-border/50'>
         <img
-          src={item.image || '/placeholder.png'}
+          src={item.image || '/logo2.png'}
           alt={item.name}
           className='h-full w-full object-cover'
         />

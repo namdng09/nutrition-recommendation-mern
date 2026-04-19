@@ -60,7 +60,7 @@ export default function CollectionDetail() {
             >
               <div className='relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-muted'>
                 <img
-                  src={dish.image}
+                  src={dish.image || '/logo2.png'}
                   alt={dish.name}
                   className='h-full w-full object-cover transition-transform duration-700'
                 />

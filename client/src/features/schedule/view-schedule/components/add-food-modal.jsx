@@ -35,8 +35,12 @@ export default function AddFoodModal({
 }) {
   const [openDishModal, setOpenDishModal] = useState(false);
   const [openNoteModal, setOpenNoteModal] = useState(false);
+  const [openClearMealDialog, setOpenClearMealDialog] = useState(false);
   const [openDeleteMealDialog, setOpenDeleteMealDialog] = useState(false);
-  const { mutate: clearMealDishes } = useClearMealDishes();
+
+  const { mutate: clearMealDishes, isPending: isClearingMeal } =
+    useClearMealDishes();
+
   const { mutate: deleteScheduleMeal, isPending: isDeletingMeal } =
     useDeleteScheduleMeal({
       onSuccess: () => {
@@ -46,6 +50,7 @@ export default function AddFoodModal({
 
   const handleClearMeal = () => {
     clearMealDishes({ scheduleId, mealType });
+    setOpenClearMealDialog(false);
   };
 
   const handleDeleteMeal = () => {
@@ -60,7 +65,7 @@ export default function AddFoodModal({
         <DropdownMenuContent
           align='end'
           sideOffset={8}
-          className='w-56 rounded-xl bg-popover border border-border shadow-2xl'
+          className='w-56 rounded-xl border border-border bg-popover shadow-2xl'
         >
           <DropdownMenuItem
             className='gap-3'
@@ -82,7 +87,7 @@ export default function AddFoodModal({
 
           <DropdownMenuItem
             className='gap-3 text-destructive'
-            onClick={handleClearMeal}
+            onClick={() => setOpenClearMealDialog(true)}
           >
             <HiOutlineTrash size={18} />
             Xoá toàn bộ món của bữa
@@ -113,6 +118,34 @@ export default function AddFoodModal({
         scheduleId={scheduleId}
         scheduleMeals={scheduleMeals}
       />
+
+      <Dialog open={openClearMealDialog} onOpenChange={setOpenClearMealDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Xoá toàn bộ món của bữa</DialogTitle>
+            <DialogDescription>
+              Bạn có chắc chắn muốn xoá toàn bộ món ăn trong bữa này không? Hành
+              động này không thể hoàn tác.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant='outline'
+              onClick={() => setOpenClearMealDialog(false)}
+              disabled={isClearingMeal}
+            >
+              Huỷ
+            </Button>
+            <Button
+              variant='destructive'
+              onClick={handleClearMeal}
+              disabled={isClearingMeal}
+            >
+              {isClearingMeal ? 'Đang xoá...' : 'Xoá toàn bộ món'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog
         open={openDeleteMealDialog}

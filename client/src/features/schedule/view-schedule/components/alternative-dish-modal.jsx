@@ -297,17 +297,11 @@ export default function AlternativeDishModal({
                   className='group flex w-full items-center gap-4 rounded-2xl border border-border/60 bg-background/40 p-3 text-left transition-all hover:border-primary/40 hover:bg-card hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60'
                 >
                   <div className='h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-border bg-muted'>
-                    {dish.image ? (
-                      <img
-                        src={dish.image}
-                        alt={dish.name}
-                        className='h-full w-full object-cover transition-transform duration-500 group-hover:scale-110'
-                      />
-                    ) : (
-                      <div className='flex h-full w-full items-center justify-center text-primary/60'>
-                        <HiSparkles size={20} />
-                      </div>
-                    )}
+                    <img
+                      src={dish.image || '/logo2.png'}
+                      alt={dish.name}
+                      className='h-full w-full object-cover transition-transform duration-500 group-hover:scale-110'
+                    />
                   </div>
 
                   <div className='min-w-0 flex-1'>
