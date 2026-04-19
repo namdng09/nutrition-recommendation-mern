@@ -109,14 +109,28 @@ export const ReviewService = {
       .select('name avatar')
       .lean();
 
+    const submitterProfile = await UserModel.findById(dish.user?._id)
+      .select(
+        'gender dob height weightRecord diet activityLevel goal allergens medicalHistory nutritionTarget'
+      )
+      .lean();
+
     const dishObj = dish.toObject();
 
     if (dishObj.evaluation) {
       delete dishObj.evaluation.nutritionistId;
     }
 
+    const user = dishObj.user
+      ? {
+          ...dishObj.user,
+          profile: submitterProfile
+        }
+      : dishObj.user;
+
     return {
       ...dishObj,
+      user,
       evaluation: {
         ...dishObj.evaluation,
         nutritionist: {
