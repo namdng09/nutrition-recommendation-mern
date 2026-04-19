@@ -11,7 +11,8 @@ import {
   FaUser,
   FaUtensils
 } from 'react-icons/fa';
-import { Link } from 'react-router';
+import { useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router';
 
 import { Button } from '~/components/ui/button';
 import {
@@ -44,6 +45,9 @@ const DEFAULT_FILTERS = {
 const PAGE_SIZE = 6;
 
 export default function DishesList() {
+  const navigate = useNavigate();
+  const user = useSelector(state => state.auth.user);
+
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [showMyDishes, setShowMyDishes] = useState(false);
@@ -60,38 +64,54 @@ export default function DishesList() {
       }
     });
 
-  const { data } = useDishes({
-    page: 1,
-    limit: 1000,
-    ...(appliedFilters.name?.trim()
-      ? { name: appliedFilters.name.trim() }
-      : {}),
-    ...(appliedFilters.categories.length
-      ? { categories: appliedFilters.categories }
-      : {}),
-    ...(appliedFilters.nutritionFocus.length
-      ? { nutritionFocus: appliedFilters.nutritionFocus }
-      : {}),
-    ...(appliedFilters.isFavorited ? { isFavorited: true } : {})
-  });
+  const publicDishQuery = useMemo(
+    () => ({
+      page: 1,
+      limit: 1000,
+      ...(appliedFilters.name?.trim()
+        ? { name: appliedFilters.name.trim() }
+        : {}),
+      ...(appliedFilters.categories.length
+        ? { categories: appliedFilters.categories }
+        : {}),
+      ...(appliedFilters.nutritionFocus.length
+        ? { nutritionFocus: appliedFilters.nutritionFocus }
+        : {}),
+      ...(appliedFilters.isFavorited ? { isFavorited: true } : {})
+    }),
+    [appliedFilters]
+  );
 
-  const { data: privateData } = usePrivateDishes({
-    page: 1,
-    limit: 1000,
-    ...(appliedFilters.name?.trim()
-      ? { name: appliedFilters.name.trim() }
-      : {}),
-    ...(appliedFilters.categories.length
-      ? { categories: appliedFilters.categories }
-      : {}),
-    ...(appliedFilters.nutritionFocus.length
-      ? { nutritionFocus: appliedFilters.nutritionFocus }
-      : {}),
-    ...(appliedFilters.isFavorited ? { isFavorited: true } : {})
+  const privateDishQuery = useMemo(
+    () => ({
+      page: 1,
+      limit: 1000,
+      ...(appliedFilters.name?.trim()
+        ? { name: appliedFilters.name.trim() }
+        : {}),
+      ...(appliedFilters.categories.length
+        ? { categories: appliedFilters.categories }
+        : {}),
+      ...(appliedFilters.nutritionFocus.length
+        ? { nutritionFocus: appliedFilters.nutritionFocus }
+        : {}),
+      ...(appliedFilters.isFavorited ? { isFavorited: true } : {})
+    }),
+    [appliedFilters]
+  );
+
+  const { data } = useDishes(publicDishQuery);
+
+  const shouldFetchPrivateDishes = !!user && showMyDishes;
+
+  const { data: privateData } = usePrivateDishes(privateDishQuery, {
+    enabled: shouldFetchPrivateDishes
   });
 
   const allDishes = data?.docs || [];
-  const myPrivateDishes = privateData?.docs || [];
+  const myPrivateDishes = shouldFetchPrivateDishes
+    ? privateData?.docs || []
+    : [];
 
   const filteredDishes = useMemo(() => {
     if (showMyDishes) {
@@ -104,6 +124,7 @@ export default function DishesList() {
   const totalFilteredDocs = filteredDishes.length;
   const totalPages = Math.max(1, Math.ceil(totalFilteredDocs / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
+
   const paginatedDishes = useMemo(() => {
     const start = (safePage - 1) * PAGE_SIZE;
     const end = start + PAGE_SIZE;
@@ -137,6 +158,12 @@ export default function DishesList() {
 
   const handleToggleMyDishes = () => {
     setPage(1);
+
+    if (!user) {
+      navigate('/auth/login');
+      return;
+    }
+
     setShowMyDishes(prev => !prev);
   };
 
