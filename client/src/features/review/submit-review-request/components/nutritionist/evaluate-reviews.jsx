@@ -52,10 +52,18 @@ const EvaluateReviews = ({ dishId, dishName, onSuccess, disabled = false }) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
-        <p className='text-sm text-muted-foreground'>
-          Gửi đánh giá cho món ăn: <strong>{dishName || '-'}</strong>
-        </p>
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className='space-y-5 rounded-lg border bg-card p-4 md:p-5'
+      >
+        <div className='space-y-1'>
+          <h3 className='text-base font-semibold text-foreground'>
+            Đánh giá yêu cầu món ăn
+          </h3>
+          <p className='text-sm text-slate-600'>
+            Món ăn: <strong>{dishName || '-'}</strong>
+          </p>
+        </div>
 
         <FormField
           control={form.control}
@@ -74,7 +82,7 @@ const EvaluateReviews = ({ dishId, dishName, onSuccess, disabled = false }) => {
             <FormItem>
               <FormLabel>Điểm đánh giá</FormLabel>
               <div
-                className='flex items-center gap-1'
+                className='flex flex-wrap items-center gap-2'
                 onMouseLeave={() => setHoverRating(0)}
               >
                 {[1, 2, 3, 4, 5].map(value => (
@@ -84,18 +92,26 @@ const EvaluateReviews = ({ dishId, dishName, onSuccess, disabled = false }) => {
                     onClick={() => field.onChange(String(value))}
                     onMouseEnter={() => setHoverRating(value)}
                     aria-label={`Chọn ${value} sao`}
-                    className='rounded-sm p-0.5 transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+                    className={`rounded-md border p-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                      value <= activeRating
+                        ? 'border-amber-300 bg-amber-50'
+                        : 'border-border bg-background'
+                    }`}
                     disabled={isPending || disabled}
                   >
                     <Star
                       className={`h-6 w-6 transition-colors ${
                         value <= activeRating
                           ? 'fill-amber-400 text-amber-400'
-                          : 'text-muted-foreground/40'
+                          : 'text-slate-600/40'
                       }`}
                     />
                   </button>
                 ))}
+
+                <span className='ml-1 text-sm font-medium text-slate-600'>
+                  {chosenRating}/5
+                </span>
               </div>
 
               <FormMessage />
@@ -119,6 +135,7 @@ const EvaluateReviews = ({ dishId, dishName, onSuccess, disabled = false }) => {
                 <Textarea
                   rows={5}
                   placeholder='Nhập nhận xét của bạn về món ăn này...'
+                  className='resize-y'
                   {...field}
                 />
               </FormControl>
@@ -127,7 +144,7 @@ const EvaluateReviews = ({ dishId, dishName, onSuccess, disabled = false }) => {
           )}
         />
 
-        <div className='flex items-center justify-end gap-2'>
+        <div className='flex items-center justify-end gap-2 border-t pt-4'>
           <Button
             type='button'
             variant='outline'

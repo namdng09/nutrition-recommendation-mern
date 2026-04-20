@@ -142,33 +142,6 @@ export function UpdateNutritionTarget() {
     }
   };
 
-  // Auto save goal when in exact mode and both fields are filled
-  useEffect(() => {
-    if (mode === 'exact') {
-      const weightGoal = form.watch('goal.weightGoal');
-      const targetWeightChange = form.watch('goal.targetWeightChange');
-      const target = form.watch('goal.target');
-
-      if (weightGoal && targetWeightChange && target) {
-        // All required fields are filled, auto save
-        const goalData = {
-          goal: {
-            target,
-            weightGoal: parseFloat(weightGoal),
-            targetWeightChange: parseFloat(targetWeightChange)
-          }
-        };
-
-        updateNutritionTarget(goalData);
-      }
-    }
-  }, [
-    mode,
-    form.watch('goal.weightGoal'),
-    form.watch('goal.targetWeightChange'),
-    form.watch('goal.target')
-  ]);
-
   const handleCalculate = () => {
     const formData = form.getValues();
 
@@ -295,14 +268,6 @@ export function UpdateNutritionTarget() {
                                       type='button'
                                       onClick={() => {
                                         field.onChange(option.value);
-                                        // Auto save when selecting generic target
-                                        setTimeout(() => {
-                                          updateNutritionTarget({
-                                            goal: {
-                                              target: option.value
-                                            }
-                                          });
-                                        }, 100);
                                       }}
                                       className={cn(
                                         'px-5 py-3 rounded-lg border-2 text-sm font-medium transition-all duration-200 text-left',

@@ -230,7 +230,7 @@ const GetReviews = () => {
                 <FormItem className='w-full sm:w-80'>
                   <FormControl>
                     <div className='relative'>
-                      <Search className='absolute left-2 top-2.5 h-4 w-4 text-muted-foreground' />
+                      <Search className='absolute left-2 top-2.5 h-4 w-4 text-slate-600' />
                       <Input
                         placeholder='Tìm theo tên món ăn...'
                         className='pl-8'
