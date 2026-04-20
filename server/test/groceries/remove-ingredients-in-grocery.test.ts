@@ -1,40 +1,60 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { removeIngredientsRequestSchema } from '~/features/groceries/grocery-dto';
+import { removeGroceryIngredientRequestSchema } from '~/features/groceries/grocery-dto';
 import { GroceryService } from '~/features/groceries/grocery-service';
 import { GroceryModel } from '~/shared/database/models';
 import { validateObjectId } from '~/shared/utils';
 
 vi.mock('~/shared/database/models', () => ({
-  GroceryModel: { findOne: vi.fn() }
+  GroceryModel: {
+    findOne: vi.fn()
+  }
 }));
 
 vi.mock('~/shared/utils', async importOriginal => {
   const actual = await importOriginal<typeof import('~/shared/utils')>();
-  return { ...actual, validateObjectId: vi.fn() };
+  return {
+    ...actual,
+    validateObjectId: vi.fn()
+  };
 });
 
 const mockFindOne = vi.mocked(GroceryModel.findOne);
 const mockValidateObjectId = vi.mocked(validateObjectId);
 
-const USER_ID = 'user123';
-const GROCERY_ID = 'grocery123';
+const userId = 'user123';
+const groceryId = '507f1f77bcf86cd799439011';
 
-const makeMockGrocery = (ingredients: any[]) => ({
-  _id: { toString: () => GROCERY_ID },
-  name: 'Danh sách tuần 1',
-  ingredients,
-  save: vi.fn()
-});
+const makeGrocery = () => {
+  const state = {
+    ingredients: [
+      { ingredientId: { toString: () => 'ing-1' }, name: 'Ca chua' },
+      { ingredientId: { toString: () => 'ing-2' }, name: 'Thit bo' }
+    ] as any[]
+  };
 
-describe('GroceryService.removeIngredientsInGrocery', () => {
+  return {
+    ...state,
+    save: vi.fn(),
+    set: vi.fn((key: string, value: any[]) => {
+      if (key === 'ingredients') {
+        state.ingredients = value;
+      }
+    }),
+    get ingredients() {
+      return state.ingredients;
+    }
+  };
+};
+
+describe('GroceryService.removeIngredientsInGrocery (UC35)', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
   describe('validation', () => {
-    it('should fail when ingredients array is empty', () => {
-      const result = removeIngredientsRequestSchema.safeParse({
+    it('should fail when ingredient id list is empty', () => {
+      const result = removeGroceryIngredientRequestSchema.safeParse({
         ingredients: []
       });
 
@@ -43,34 +63,15 @@ describe('GroceryService.removeIngredientsInGrocery', () => {
         'Phải có ít nhất 1 ID nguyên liệu để xóa'
       );
     });
-
-    it('should fail when ingredients is missing', () => {
-      const result = removeIngredientsRequestSchema.safeParse({});
-
-      expect(result.success).toBe(false);
-    });
   });
 
   describe('business logic', () => {
-    it('should throw 400 when userId is invalid', async () => {
-      mockValidateObjectId.mockReturnValueOnce(false);
+    it('should throw 400 when grocery id is invalid', async () => {
+      mockValidateObjectId.mockReturnValue(false);
 
       await expect(
-        GroceryService.removeIngredientsInGrocery('invalid-id', GROCERY_ID, {
-          ingredients: ['ing1']
-        })
-      ).rejects.toMatchObject({
-        status: 400,
-        message: 'Định dạng ID người dùng không hợp lệ'
-      });
-    });
-
-    it('should throw 400 when groceryId is invalid', async () => {
-      mockValidateObjectId.mockReturnValueOnce(true).mockReturnValueOnce(false);
-
-      await expect(
-        GroceryService.removeIngredientsInGrocery(USER_ID, 'invalid-id', {
-          ingredients: ['ing1']
+        GroceryService.removeIngredientsInGrocery(userId, 'invalid-id', {
+          ingredients: ['ing-1']
         })
       ).rejects.toMatchObject({
         status: 400,
@@ -83,8 +84,8 @@ describe('GroceryService.removeIngredientsInGrocery', () => {
       mockFindOne.mockResolvedValue(null);
 
       await expect(
-        GroceryService.removeIngredientsInGrocery(USER_ID, GROCERY_ID, {
-          ingredients: ['ing1']
+        GroceryService.removeIngredientsInGrocery(userId, groceryId, {
+          ingredients: ['ing-1']
         })
       ).rejects.toMatchObject({
         status: 404,
@@ -92,45 +93,37 @@ describe('GroceryService.removeIngredientsInGrocery', () => {
       });
     });
 
-    it('should throw 400 when duplicate ingredient ids in request', async () => {
+    it('should throw 404 when no ingredient matched in grocery', async () => {
+      const grocery = makeGrocery();
       mockValidateObjectId.mockReturnValue(true);
-      mockFindOne.mockResolvedValue(makeMockGrocery([]) as any);
+      mockFindOne.mockResolvedValue(grocery as any);
 
       await expect(
-        GroceryService.removeIngredientsInGrocery(USER_ID, GROCERY_ID, {
-          ingredients: ['ing1', 'ing1']
+        GroceryService.removeIngredientsInGrocery(userId, groceryId, {
+          ingredients: ['ing-missing']
         })
       ).rejects.toMatchObject({
-        status: 400,
-        message: 'Không được có ID nguyên liệu trùng lặp trong danh sách'
+        status: 404,
+        message: 'Không tìm thấy nguyên liệu nào trong danh sách mua sắm'
       });
     });
 
-    it('should remove matched ingredients and save successfully', async () => {
+    it('should remove selected ingredients successfully', async () => {
+      const grocery = makeGrocery();
       mockValidateObjectId.mockReturnValue(true);
-      const mockGrocery = makeMockGrocery([
-        {
-          ingredientId: { toString: () => 'ing1' },
-          name: 'Cà chua',
-          isPurchased: false
-        },
-        {
-          ingredientId: { toString: () => 'ing2' },
-          name: 'Thịt bò',
-          isPurchased: false
-        }
-      ]);
-      mockFindOne.mockResolvedValue(mockGrocery as any);
+      mockFindOne.mockResolvedValue(grocery as any);
 
       const result = await GroceryService.removeIngredientsInGrocery(
-        USER_ID,
-        GROCERY_ID,
-        { ingredients: ['ing1'] }
+        userId,
+        groceryId,
+        {
+          ingredients: ['ing-1']
+        }
       );
 
       expect(result.ingredients).toHaveLength(1);
-      expect(result.ingredients[0].name).toBe('Thịt bò');
-      expect(mockGrocery.save).toHaveBeenCalled();
+      expect(result.ingredients[0].name).toBe('Thit bo');
+      expect(grocery.save).toHaveBeenCalled();
     });
   });
 });

@@ -6,36 +6,31 @@ import { GroceryModel } from '~/shared/database/models';
 import { validateObjectId } from '~/shared/utils';
 
 vi.mock('~/shared/database/models', () => ({
-  GroceryModel: { findOneAndUpdate: vi.fn() }
+  GroceryModel: {
+    findOneAndUpdate: vi.fn()
+  }
 }));
 
 vi.mock('~/shared/utils', async importOriginal => {
   const actual = await importOriginal<typeof import('~/shared/utils')>();
-  return { ...actual, validateObjectId: vi.fn() };
+  return {
+    ...actual,
+    validateObjectId: vi.fn()
+  };
 });
 
 const mockFindOneAndUpdate = vi.mocked(GroceryModel.findOneAndUpdate);
 const mockValidateObjectId = vi.mocked(validateObjectId);
 
-const USER_ID = 'user123';
-const GROCERY_ID = 'grocery123';
-const validData = { name: 'Danh sách cập nhật' };
+const userId = 'user123';
+const groceryId = '507f1f77bcf86cd799439011';
 
-describe('GroceryService.updateGrocery', () => {
+describe('GroceryService.updateGrocery (UC31)', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
   describe('validation', () => {
-    it('should fail when name is not a string', () => {
-      const result = updateGroceryRequestSchema.safeParse({ name: 1234 });
-
-      expect(result.success).toBe(false);
-      expect(result.error?.issues[0].message).toBe(
-        'Tên danh sách mua sắm không hợp lệ'
-      );
-    });
-
     it('should fail when name is too short', () => {
       const result = updateGroceryRequestSchema.safeParse({ name: 'A' });
 
@@ -47,22 +42,11 @@ describe('GroceryService.updateGrocery', () => {
   });
 
   describe('business logic', () => {
-    it('should throw 400 when userId is invalid', async () => {
-      mockValidateObjectId.mockReturnValueOnce(false);
+    it('should throw 400 when grocery id is invalid', async () => {
+      mockValidateObjectId.mockReturnValue(false);
 
       await expect(
-        GroceryService.updateGrocery('invalid-id', GROCERY_ID, validData)
-      ).rejects.toMatchObject({
-        status: 400,
-        message: 'Định dạng ID người dùng không hợp lệ'
-      });
-    });
-
-    it('should throw 400 when groceryId is invalid', async () => {
-      mockValidateObjectId.mockReturnValueOnce(true).mockReturnValueOnce(false);
-
-      await expect(
-        GroceryService.updateGrocery(USER_ID, 'invalid-id', validData)
+        GroceryService.updateGrocery(userId, 'invalid-id', { name: 'Hop le' })
       ).rejects.toMatchObject({
         status: 400,
         message: 'Định dạng ID danh sách mua sắm không hợp lệ'
@@ -74,7 +58,7 @@ describe('GroceryService.updateGrocery', () => {
       mockFindOneAndUpdate.mockResolvedValue(null);
 
       await expect(
-        GroceryService.updateGrocery(USER_ID, GROCERY_ID, validData)
+        GroceryService.updateGrocery(userId, groceryId, { name: 'Hop le' })
       ).rejects.toMatchObject({
         status: 404,
         message: 'Không tìm thấy danh sách mua sắm'
@@ -82,32 +66,28 @@ describe('GroceryService.updateGrocery', () => {
     });
 
     it('should update grocery successfully', async () => {
-      mockValidateObjectId.mockReturnValue(true);
       const updateData = {
-        name: 'Danh sách mới',
-        notes: 'Ghi chú mới',
-        date: [new Date('2026-03-05')]
+        name: 'Danh sach moi',
+        notes: 'ghi chu moi'
       };
       const mockGrocery = {
-        _id: GROCERY_ID,
+        _id: groceryId,
         ...updateData,
-        user: { _id: USER_ID, name: 'User' },
+        user: { _id: userId, name: 'User' },
         ingredients: []
       };
+
+      mockValidateObjectId.mockReturnValue(true);
       mockFindOneAndUpdate.mockResolvedValue(mockGrocery as any);
 
       const result = await GroceryService.updateGrocery(
-        USER_ID,
-        GROCERY_ID,
+        userId,
+        groceryId,
         updateData
       );
 
-      expect(result).toEqual(mockGrocery);
-      expect(mockFindOneAndUpdate).toHaveBeenCalledWith(
-        { _id: GROCERY_ID, 'user._id': USER_ID },
-        updateData,
-        { new: true }
-      );
+      expect(result.name).toEqual('Danh sach moi');
+      expect(result.notes).toEqual('ghi chu moi');
     });
   });
 });

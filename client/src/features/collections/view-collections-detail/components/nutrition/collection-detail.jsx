@@ -521,7 +521,7 @@ const CollectionDetail = ({ id }) => {
                         <div className='flex items-start gap-3'>
                           {dish.image && (
                             <img
-                              src={dish.image}
+                              src={dish.image || '/logo2.png'}
                               alt={dish.name}
                               className='h-16 w-16 rounded object-cover border'
                             />

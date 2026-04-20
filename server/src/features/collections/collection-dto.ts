@@ -11,12 +11,10 @@ export const createCollectionRequestSchema = z.object({
   image: z.file().optional(),
   isPublic: booleanSchema.optional(),
   tags: z.preprocess(parseJSON, z.array(z.string().trim())).optional(),
-  dishes: z
-    .preprocess(
-      parseJSON,
-      z.array(z.string().trim()).min(1, 'Phải có ít nhất một món ăn')
-    )
-    .optional()
+  dishes: z.preprocess(
+    parseJSON,
+    z.array(z.string().trim()).min(1, 'Phải có ít nhất một món ăn')
+  )
 });
 
 export type CreateCollectionRequest = z.infer<

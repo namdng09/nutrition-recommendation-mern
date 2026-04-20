@@ -7,8 +7,7 @@ export const createFeedbackRequestSchema = z.object({
   content: z
     .string('Nội dung feedback không hợp lệ')
     .trim()
-    .min(5, 'Nội dung feedback phải có ít nhất 5 ký tự')
-    .max(2000, 'Nội dung feedback tối đa 2000 ký tự')
+    .min(2, 'Nội dung feedback phải có ít nhất 2 ký tự')
 });
 
 export type CreateFeedbackRequest = z.infer<typeof createFeedbackRequestSchema>;

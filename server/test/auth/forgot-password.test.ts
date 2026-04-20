@@ -1,88 +1,78 @@
-import mongoose from 'mongoose';
-import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi
-} from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { forgotPasswordRequestSchema } from '~/features/auth/auth-dto';
 import { AuthService } from '~/features/auth/auth-service';
-import { ROLE } from '~/shared/constants/role';
 import { UserModel } from '~/shared/database/models';
-import * as sharedUtils from '~/shared/utils';
+import { generateResetPasswordToken, sendMail } from '~/shared/utils';
 
-// Mock the sendMail function to strictly test AuthService logic only
-vi.mock('~/shared/utils', async () => {
-  const actual = await vi.importActual('~/shared/utils');
+vi.mock('~/shared/database/models', () => ({
+  UserModel: {
+    findOne: vi.fn()
+  },
+  AuthModel: {}
+}));
+
+vi.mock('~/shared/utils', async importOriginal => {
+  const actual = await importOriginal<typeof import('~/shared/utils')>();
   return {
     ...actual,
+    generateResetPasswordToken: vi.fn(),
     sendMail: vi.fn().mockResolvedValue(true)
   };
 });
 
-describe('AuthService.forgotPassword', () => {
-  let userId: string;
+const mockFindUser = vi.mocked(UserModel.findOne);
+const mockGenerateResetToken = vi.mocked(generateResetPasswordToken);
+const mockSendMail = vi.mocked(sendMail);
 
-  beforeAll(async () => {
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
-      );
-    }
-  });
-
-  beforeEach(async () => {
-    await UserModel.deleteMany({});
+describe('AuthService.forgotPassword (UC05 step 1-2)', () => {
+  afterEach(() => {
     vi.clearAllMocks();
+  });
 
-    const user = await UserModel.create({
-      email: 'test@example.com',
-      name: 'Test User',
-      role: ROLE.USER,
-      isActive: true
+  describe('validation', () => {
+    it('should fail when email format is invalid', () => {
+      const result = forgotPasswordRequestSchema.safeParse({
+        email: 'invalid-email'
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe('Email không hợp lệ');
     });
-    userId = user._id.toString();
   });
 
-  afterAll(async () => {
-    await UserModel.deleteMany({});
-    await mongoose.connection.close();
-  });
+  describe('business logic', () => {
+    it('should throw 404 when user does not exist', async () => {
+      mockFindUser.mockResolvedValue(null);
 
-  it('should send email when user exists', async () => {
-    await AuthService.forgotPassword('test@example.com');
+      await expect(
+        AuthService.forgotPassword({ email: 'missing@example.com' })
+      ).rejects.toMatchObject({
+        status: 404,
+        message: 'Không tìm thấy người dùng'
+      });
+    });
 
-    expect(sharedUtils.sendMail).toHaveBeenCalledTimes(1);
-    expect(sharedUtils.sendMail).toHaveBeenCalledWith(
-      expect.objectContaining({
-        to: 'test@example.com',
-        subject: 'Đặt lại mật khẩu',
-        template: 'password-reset'
-      })
-    );
-  });
+    it('should generate reset token and send reset email', async () => {
+      mockFindUser.mockResolvedValue({
+        _id: { toString: () => 'user-1' },
+        email: 'user@example.com',
+        name: 'User 1'
+      } as any);
+      mockGenerateResetToken.mockReturnValue('reset-token-123');
 
-  it('should throw 404 when user does not exist', async () => {
-    await expect(
-      AuthService.forgotPassword('nonexistent@example.com')
-    ).rejects.toThrow('Không tìm thấy người dùng');
+      await AuthService.forgotPassword({ email: 'user@example.com' });
 
-    expect(sharedUtils.sendMail).not.toHaveBeenCalled();
-  });
-
-  it('should not throw if sendMail fails (graceful degradation)', async () => {
-    // Mock sendMail to fail
-    vi.mocked(sharedUtils.sendMail).mockRejectedValueOnce(
-      new Error('Mail error')
-    );
-
-    await expect(
-      AuthService.forgotPassword('test@example.com')
-    ).resolves.not.toThrow();
-
-    expect(sharedUtils.sendMail).toHaveBeenCalledTimes(1);
+      expect(mockGenerateResetToken).toHaveBeenCalledWith('user-1');
+      expect(mockSendMail).toHaveBeenCalledWith(
+        expect.objectContaining({
+          to: 'user@example.com',
+          template: 'password-reset',
+          templateData: expect.objectContaining({
+            resetUrl: expect.stringContaining('reset-token-123')
+          })
+        })
+      );
+    });
   });
 });

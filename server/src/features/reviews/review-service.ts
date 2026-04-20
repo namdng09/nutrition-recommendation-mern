@@ -86,8 +86,12 @@ export const ReviewService = {
       'name image isPublic user evaluation createdAt updatedAt'
     );
 
-    if (!dish || !dish.evaluation?.status) {
+    if (!dish) {
       throw createHttpError(404, 'Không tìm thấy món ăn');
+    }
+
+    if (!dish.evaluation?.status) {
+      throw createHttpError(404, 'Không tìm thấy yêu cầu đánh giá');
     }
 
     const isOpenForNutritionist =

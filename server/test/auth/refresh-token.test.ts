@@ -1,96 +1,92 @@
-import mongoose from 'mongoose';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AuthService } from '~/features/auth/auth-service';
 import { ROLE } from '~/shared/constants/role';
+import { TOKEN_TYPE } from '~/shared/constants/token-type';
 import { UserModel } from '~/shared/database/models';
-import { generateToken } from '~/shared/utils';
+import { generateToken, verifyToken } from '~/shared/utils';
+
+vi.mock('~/shared/database/models', () => ({
+  UserModel: {
+    findById: vi.fn()
+  },
+  AuthModel: {}
+}));
+
+vi.mock('~/shared/utils', async importOriginal => {
+  const actual = await importOriginal<typeof import('~/shared/utils')>();
+  return {
+    ...actual,
+    verifyToken: vi.fn(),
+    generateToken: vi.fn()
+  };
+});
+
+const mockFindUser = vi.mocked(UserModel.findById);
+const mockVerifyToken = vi.mocked(verifyToken);
+const mockGenerateToken = vi.mocked(generateToken);
 
 describe('AuthService.refreshAccessToken', () => {
-  let userId: string;
-  let validRefreshToken: string;
-
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
-      );
-    }
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
-  beforeEach(async () => {
-    // Clean up database before each test
-    await UserModel.deleteMany({});
+  it('should throw 401 when refresh token is missing', async () => {
+    await expect(AuthService.refreshAccessToken('')).rejects.toMatchObject({
+      status: 401,
+      message: 'Token không được cung cấp'
+    });
+  });
 
-    // Create a test user
-    const user = await UserModel.create({
-      email: 'testuser@gmail.com',
-      name: 'Test User',
+  it('should propagate invalid refresh token error', async () => {
+    mockVerifyToken.mockImplementation(() => {
+      throw Object.assign(new Error('Invalid token'), {
+        status: 401,
+        message: 'Invalid token'
+      });
+    });
+
+    await expect(
+      AuthService.refreshAccessToken('bad-token')
+    ).rejects.toMatchObject({
+      status: 401,
+      message: 'Invalid token'
+    });
+  });
+
+  it('should throw 404 when user does not exist', async () => {
+    mockVerifyToken.mockReturnValue({ id: 'user-1' } as any);
+    mockFindUser.mockResolvedValue(null);
+
+    await expect(
+      AuthService.refreshAccessToken('refresh-token')
+    ).rejects.toMatchObject({
+      status: 404,
+      message: 'Không tìm thấy người dùng'
+    });
+  });
+
+  it('should return new access token when refresh token is valid', async () => {
+    mockVerifyToken.mockReturnValue({
+      id: 'user-1'
+    } as any);
+    mockFindUser.mockResolvedValue({
+      _id: { toString: () => 'user-1' },
       role: ROLE.USER,
-      isActive: true
+      hasOnboarded: true
+    } as any);
+    mockGenerateToken.mockReturnValue({
+      accessToken: 'new-access-token',
+      refreshToken: 'new-refresh-token'
     });
-    userId = user._id.toString();
 
-    // Generate valid tokens
-    const tokens = generateToken({
-      id: userId,
-      role: ROLE.USER
-    });
-    validRefreshToken = tokens.refreshToken;
-  });
+    const result = await AuthService.refreshAccessToken('valid-refresh-token');
 
-  afterAll(async () => {
-    // Clean up and close connection
-    await UserModel.deleteMany({});
-    await mongoose.connection.close();
-  });
-
-  // Happy case
-  it('should refresh access token successfully', async () => {
-    const newAccessToken =
-      await AuthService.refreshAccessToken(validRefreshToken);
-
-    expect(typeof newAccessToken).toBe('string');
-    expect(newAccessToken).not.toBe(validRefreshToken);
-  });
-
-  // Branch: no refresh token provided
-  it('should throw 401 error when refresh token is missing', async () => {
-    await expect(AuthService.refreshAccessToken('')).rejects.toThrow(
-      'Token không được cung cấp'
+    expect(mockVerifyToken).toHaveBeenCalledWith(
+      'valid-refresh-token',
+      process.env.JWT_REFRESH_SECRET,
+      TOKEN_TYPE.REFRESH
     );
-  });
-
-  // Branch: invalid refresh token (malformed)
-  it('should throw error when refresh token is invalid', async () => {
-    await expect(
-      AuthService.refreshAccessToken('invalid-token')
-    ).rejects.toThrow('Token không hợp lệ');
-  });
-
-  // Branch: expired refresh token
-  it('should throw error when refresh token is expired', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const jwt = require('jsonwebtoken');
-    const expiredToken = jwt.sign(
-      { id: userId, role: ROLE.USER },
-      process.env.JWT_REFRESH_SECRET || 'your_jwt_secret',
-      { expiresIn: '0s' } // Expired immediately
-    );
-
-    await expect(AuthService.refreshAccessToken(expiredToken)).rejects.toThrow(
-      'Token đã hết hạn'
-    );
-  });
-
-  // Branch: user not found
-  it('should throw 404 error when user does not exist', async () => {
-    // Delete the user
-    await UserModel.findByIdAndDelete(userId);
-
-    await expect(
-      AuthService.refreshAccessToken(validRefreshToken)
-    ).rejects.toThrow('Không tìm thấy người dùng');
+    expect(result).toBe('new-access-token');
   });
 });

@@ -61,6 +61,7 @@ const UserSignUpForm = ({ onSubmit, onBack, isLoading }) => {
 
         <br />
         <Button
+          type='button'
           variant='outline'
           className='w-full rounded-xl border border-border bg-background/60 hover:bg-accent text-primary shadow-sm'
           onClick={() => navigateToProvider('google')}

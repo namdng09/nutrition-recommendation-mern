@@ -1025,6 +1025,36 @@ export const ScheduleService = {
     return schedule;
   },
 
+  removeScheduleMeal: async (id: string, userId: string, mealType: string) => {
+    if (!validateObjectId(id)) {
+      throw createHttpError(400, 'Định dạng ID lịch ăn không hợp lệ');
+    }
+
+    const schedule = await ScheduleModel.findById(id);
+
+    if (!schedule) {
+      throw createHttpError(404, 'Không tìm thấy lịch ăn');
+    }
+
+    if (schedule.user?._id.toString() !== userId) {
+      throw createHttpError(403, 'Bạn không có quyền cập nhật lịch ăn này');
+    }
+
+    const mealIndex = schedule.meals.findIndex(
+      item => item.mealType === mealType
+    );
+
+    if (mealIndex === -1) {
+      throw createHttpError(404, 'Không tìm thấy bữa ăn');
+    }
+
+    schedule.meals.splice(mealIndex, 1);
+
+    await schedule.save();
+
+    return schedule;
+  },
+
   clearScheduleMealDishes: async (
     id: string,
     userId: string,

@@ -11,8 +11,18 @@ import {
   FaUser,
   FaUtensils
 } from 'react-icons/fa';
-import { Link } from 'react-router';
+import { useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router';
 
+import { Button } from '~/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '~/components/ui/dialog';
 import { useDeletePrivateDish } from '~/features/private-dish/delete-private-dish/api/delete-private-dish';
 import { usePrivateDishes } from '~/features/private-dish/view-private-dish/api/view-private-dish';
 import { getNutritionValue } from '~/lib/utils';
@@ -35,47 +45,73 @@ const DEFAULT_FILTERS = {
 const PAGE_SIZE = 6;
 
 export default function DishesList() {
+  const navigate = useNavigate();
+  const user = useSelector(state => state.auth.user);
+
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [showMyDishes, setShowMyDishes] = useState(false);
   const [draftFilters, setDraftFilters] = useState(DEFAULT_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
+  const [openDeleteDishDialog, setOpenDeleteDishDialog] = useState(false);
+  const [selectedDishToDelete, setSelectedDishToDelete] = useState(null);
 
   const { mutate: deletePrivateDish, isPending: isDeletingDish } =
-    useDeletePrivateDish();
+    useDeletePrivateDish({
+      onSuccess: () => {
+        setOpenDeleteDishDialog(false);
+        setSelectedDishToDelete(null);
+      }
+    });
 
-  const { data } = useDishes({
-    page: 1,
-    limit: 1000,
-    ...(appliedFilters.name?.trim()
-      ? { name: appliedFilters.name.trim() }
-      : {}),
-    ...(appliedFilters.categories.length
-      ? { categories: appliedFilters.categories }
-      : {}),
-    ...(appliedFilters.nutritionFocus.length
-      ? { nutritionFocus: appliedFilters.nutritionFocus }
-      : {}),
-    ...(appliedFilters.isFavorited ? { isFavorited: true } : {})
-  });
+  const publicDishQuery = useMemo(
+    () => ({
+      page: 1,
+      limit: 1000,
+      ...(appliedFilters.name?.trim()
+        ? { name: appliedFilters.name.trim() }
+        : {}),
+      ...(appliedFilters.categories.length
+        ? { categories: appliedFilters.categories }
+        : {}),
+      ...(appliedFilters.nutritionFocus.length
+        ? { nutritionFocus: appliedFilters.nutritionFocus }
+        : {}),
+      ...(appliedFilters.isFavorited ? { isFavorited: true } : {})
+    }),
+    [appliedFilters]
+  );
 
-  const { data: privateData } = usePrivateDishes({
-    page: 1,
-    limit: 1000,
-    ...(appliedFilters.name?.trim()
-      ? { name: appliedFilters.name.trim() }
-      : {}),
-    ...(appliedFilters.categories.length
-      ? { categories: appliedFilters.categories }
-      : {}),
-    ...(appliedFilters.nutritionFocus.length
-      ? { nutritionFocus: appliedFilters.nutritionFocus }
-      : {}),
-    ...(appliedFilters.isFavorited ? { isFavorited: true } : {})
+  const privateDishQuery = useMemo(
+    () => ({
+      page: 1,
+      limit: 1000,
+      ...(appliedFilters.name?.trim()
+        ? { name: appliedFilters.name.trim() }
+        : {}),
+      ...(appliedFilters.categories.length
+        ? { categories: appliedFilters.categories }
+        : {}),
+      ...(appliedFilters.nutritionFocus.length
+        ? { nutritionFocus: appliedFilters.nutritionFocus }
+        : {}),
+      ...(appliedFilters.isFavorited ? { isFavorited: true } : {})
+    }),
+    [appliedFilters]
+  );
+
+  const { data } = useDishes(publicDishQuery);
+
+  const shouldFetchPrivateDishes = !!user && showMyDishes;
+
+  const { data: privateData } = usePrivateDishes(privateDishQuery, {
+    enabled: shouldFetchPrivateDishes
   });
 
   const allDishes = data?.docs || [];
-  const myPrivateDishes = privateData?.docs || [];
+  const myPrivateDishes = shouldFetchPrivateDishes
+    ? privateData?.docs || []
+    : [];
 
   const filteredDishes = useMemo(() => {
     if (showMyDishes) {
@@ -88,6 +124,7 @@ export default function DishesList() {
   const totalFilteredDocs = filteredDishes.length;
   const totalPages = Math.max(1, Math.ceil(totalFilteredDocs / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
+
   const paginatedDishes = useMemo(() => {
     const start = (safePage - 1) * PAGE_SIZE;
     const end = start + PAGE_SIZE;
@@ -121,16 +158,28 @@ export default function DishesList() {
 
   const handleToggleMyDishes = () => {
     setPage(1);
+
+    if (!user) {
+      navigate('/auth/login');
+      return;
+    }
+
     setShowMyDishes(prev => !prev);
   };
 
-  const handleDeleteDish = (e, dish) => {
+  const handleOpenDeleteDishDialog = (e, dish) => {
     e.preventDefault();
     e.stopPropagation();
 
     if (dish.isPublic !== false) return;
 
-    deletePrivateDish({ id: dish._id });
+    setSelectedDishToDelete(dish);
+    setOpenDeleteDishDialog(true);
+  };
+
+  const handleConfirmDeleteDish = () => {
+    if (!selectedDishToDelete?._id) return;
+    deletePrivateDish({ id: selectedDishToDelete._id });
   };
 
   const activeFilterCount =
@@ -289,7 +338,7 @@ export default function DishesList() {
 
                           <button
                             type='button'
-                            onClick={e => handleDeleteDish(e, dish)}
+                            onClick={e => handleOpenDeleteDishDialog(e, dish)}
                             disabled={isDeletingDish}
                             className='inline-flex items-center gap-2 rounded-full bg-red-500 px-3 py-2 text-xs font-bold text-white shadow-md transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60'
                           >
@@ -357,6 +406,42 @@ export default function DishesList() {
       </div>
 
       {filterModal}
+
+      <Dialog
+        open={openDeleteDishDialog}
+        onOpenChange={setOpenDeleteDishDialog}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Xoá món ăn</DialogTitle>
+            <DialogDescription>
+              Bạn có chắc chắn muốn xoá món ăn này không? Hành động này không
+              thể hoàn tác.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <Button
+              variant='outline'
+              onClick={() => {
+                setOpenDeleteDishDialog(false);
+                setSelectedDishToDelete(null);
+              }}
+              disabled={isDeletingDish}
+            >
+              Huỷ
+            </Button>
+
+            <Button
+              variant='destructive'
+              onClick={handleConfirmDeleteDish}
+              disabled={isDeletingDish}
+            >
+              {isDeletingDish ? 'Đang xoá...' : 'Xoá món ăn'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

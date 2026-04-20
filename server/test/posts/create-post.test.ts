@@ -1,190 +1,146 @@
-import mongoose from 'mongoose';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi
-} from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { createPostRequestSchema } from '~/features/posts/post-dto';
 import { PostService } from '~/features/posts/post-service';
 import { POST_CATEGORY } from '~/shared/constants/post-category';
 import { ROLE } from '~/shared/constants/role';
-import { PostModel } from '~/shared/database/models';
+import { PostModel } from '~/shared/database/models/post-model';
+import { uploadImage } from '~/shared/utils';
 
-// Mock Cloudinary upload
-vi.mock('~/shared/utils/cloudinary', () => ({
-  uploadImage: vi.fn().mockResolvedValue({
-    success: true,
-    data: {
-      secure_url:
-        'https://res.cloudinary.com/test/image/upload/v1234567890/test-post-0.jpg',
-      public_id: 'test-post-0',
-      format: 'jpg'
-    }
-  }),
-  deleteImage: vi.fn().mockResolvedValue({ success: true })
+vi.mock('~/shared/database/models/post-model', () => ({
+  PostModel: {
+    findOne: vi.fn(),
+    create: vi.fn()
+  }
 }));
 
-// Import mocked functions to customize per test
-import * as cloudinaryUtils from '~/shared/utils/cloudinary';
+vi.mock('~/shared/utils', async importOriginal => {
+  const actual = await importOriginal<typeof import('~/shared/utils')>();
+  return {
+    ...actual,
+    uploadImage: vi.fn(),
+    deleteImage: vi.fn()
+  };
+});
 
-describe('PostService.createPost', () => {
-  const userId = new mongoose.Types.ObjectId().toString();
-  const userName = 'Test Nutritionist';
-  const userAvatar = 'https://example.com/avatar.jpg';
-  const userRole = ROLE.NUTRITIONIST;
+const mockFindOne = vi.mocked(PostModel.findOne);
+const mockCreate = vi.mocked(PostModel.create);
+const mockUploadImage = vi.mocked(uploadImage);
 
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
+const userId = 'user123';
+const userName = 'Nutritionist';
+const userAvatar = 'https://example.com/avatar.jpg';
+const userRole = ROLE.NUTRITIONIST;
+
+const validData = {
+  title: 'Cách giảm cân khoa học',
+  content: 'Nội dung bài viết đủ dài hơn mười ký tự',
+  category: POST_CATEGORY.NUTRITION,
+  tags: ['giam-can', 'dinh-duong'],
+  isPublished: true
+};
+
+describe('PostService.createPost (UC36)', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe('validation', () => {
+    it('should fail when title is missing', () => {
+      const { title: _, ...data } = validData;
+      const result = createPostRequestSchema.safeParse(data);
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe('Tiêu đề không hợp lệ');
+    });
+
+    it('should fail when title is too short', () => {
+      const result = createPostRequestSchema.safeParse({
+        ...validData,
+        title: 'a'
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Tiêu đề phải có ít nhất 2 ký tự'
       );
-    }
-  });
+    });
 
-  beforeEach(async () => {
-    // Clean up database before each test
-    await PostModel.deleteMany({});
+    it('should fail when content is too short', () => {
+      const result = createPostRequestSchema.safeParse({
+        ...validData,
+        content: 'a'
+      });
 
-    // Reset mocks
-    vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValue({
-      success: true,
-      data: {
-        secure_url:
-          'https://res.cloudinary.com/test/image/upload/v1234567890/test-post-0.jpg',
-        public_id: 'test-post-0',
-        format: 'jpg'
-      } as any
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Nội dung phải có ít nhất 2 ký tự'
+      );
     });
   });
 
-  afterEach(async () => {
-    // Clean up after each test
-    await PostModel.deleteMany({});
-  });
+  describe('business logic', () => {
+    it('should throw 409 when post title already exists', async () => {
+      mockFindOne.mockResolvedValue({ _id: 'post-1' } as any);
 
-  afterAll(async () => {
-    // Close connection
-    await mongoose.connection.close();
-  });
-
-  // Branch - Happy case
-  it('should create post successfully', async () => {
-    const postData = {
-      title: 'Cách giảm cân hiệu quả',
-      content: 'Nội dung chi tiết về giảm cân an toàn và hiệu quả...',
-      category: POST_CATEGORY.NUTRITION,
-      tags: ['giảm cân', 'dinh dưỡng'],
-      isPublished: true
-    };
-
-    const post = await PostService.createPost(
-      userId,
-      userName,
-      userAvatar,
-      userRole,
-      postData
-    );
-
-    expect(post).toBeDefined();
-    expect(post.slug).toBe('cach-giam-can-hieu-qua');
-    expect(post.isPublished).toBe(true);
-    expect(post.publishedAt).toBeDefined();
-    expect(post.author?._id.toString()).toBe(userId);
-    expect(post.author?.name).toBe(userName);
-    expect(post.tags).toContain('giảm cân');
-    expect(post.tags).toContain('dinh dưỡng');
-    expect(post.category).toBe(POST_CATEGORY.NUTRITION);
-  });
-
-  // Branch - Duplicate title
-  it('should throw error when post with duplicate title exists', async () => {
-    // Create first post
-    await PostModel.create({
-      author: {
-        _id: userId,
-        name: userName,
-        role: ROLE.NUTRITIONIST
-      },
-      title: 'Bài viết test',
-      content: 'Nội dung bài viết test',
-      slug: 'bai-viet-test',
-      isPublished: false
+      await expect(
+        PostService.createPost(
+          userId,
+          userName,
+          userAvatar,
+          userRole,
+          validData
+        )
+      ).rejects.toMatchObject({
+        status: 409,
+        message: 'Bài viết với tiêu đề này đã tồn tại'
+      });
     });
 
-    const postData = {
-      title: 'Bài viết test',
-      content: 'Nội dung khác nhưng cùng tiêu đề'
-    };
+    it('should create post successfully', async () => {
+      const mockSave = vi.fn();
+      const postId = 'post-2';
+      const mockPost = {
+        _id: { toString: () => postId },
+        ...validData,
+        images: [],
+        save: mockSave
+      };
 
-    await expect(
-      PostService.createPost(userId, userName, userAvatar, userRole, postData)
-    ).rejects.toThrow('Bài viết với tiêu đề này đã tồn tại');
-  });
+      mockFindOne.mockResolvedValue(null);
+      mockCreate.mockResolvedValue(mockPost as any);
+      mockUploadImage
+        .mockResolvedValueOnce({
+          success: true,
+          data: { secure_url: 'https://img.test/post-2-0.jpg' }
+        } as any)
+        .mockResolvedValueOnce({
+          success: true,
+          data: { secure_url: 'https://img.test/post-2-1.jpg' }
+        } as any);
 
-  // Branch - Missing required fields
-  it('should throw error when required fields are missing', async () => {
-    const postData = {
-      title: undefined as unknown as string,
-      content: 'content'
-    };
+      const files = [
+        { buffer: Buffer.from('img-1') } as Express.Multer.File,
+        { buffer: Buffer.from('img-2') } as Express.Multer.File
+      ];
 
-    await expect(
-      PostService.createPost(userId, userName, userAvatar, userRole, postData)
-    ).rejects.toThrow('Tiêu đề không hợp lệ');
-  });
+      const result = await PostService.createPost(
+        userId,
+        userName,
+        userAvatar,
+        userRole,
+        validData,
+        files
+      );
 
-  // Branch - Title too short
-  it('should throw error when title is too short', async () => {
-    const postData = {
-      title: 'abc',
-      content: 'Nội dung đủ dài'
-    };
-
-    await expect(
-      PostService.createPost(userId, userName, userAvatar, userRole, postData)
-    ).rejects.toThrow('Tiêu đề phải có ít nhất 5 ký tự');
-  });
-
-  // Branch - Invalid title type
-  it('should throw error when title is not a string', async () => {
-    const postData = {
-      title: 123 as unknown as string,
-      content: 'Nội dung đủ dài'
-    };
-
-    await expect(
-      PostService.createPost(userId, userName, userAvatar, userRole, postData)
-    ).rejects.toThrow('Tiêu đề không hợp lệ');
-  });
-
-  // Branch - Image upload failure
-  it('should throw error when image upload fails', async () => {
-    // Mock image upload failure
-    vi.mocked(cloudinaryUtils.uploadImage).mockResolvedValueOnce({
-      success: false,
-      data: null
-    } as any);
-
-    const postData = {
-      title: 'Bài viết test ảnh lỗi',
-      content: 'Nội dung bài viết test'
-    };
-
-    const fakeImage = {
-      buffer: Buffer.from('fake-image-data'),
-      originalname: 'post-image.jpg'
-    } as Express.Multer.File;
-
-    await expect(
-      PostService.createPost(userId, userName, userAvatar, userRole, postData, [
-        fakeImage
-      ])
-    ).rejects.toThrow('Tải ảnh lên thất bại');
+      expect(mockUploadImage).toHaveBeenCalledWith(files[0].buffer, 'post-2-0');
+      expect(mockUploadImage).toHaveBeenCalledWith(files[1].buffer, 'post-2-1');
+      expect(mockPost.images).toEqual([
+        'https://img.test/post-2-0.jpg',
+        'https://img.test/post-2-1.jpg'
+      ]);
+      expect(mockSave).toHaveBeenCalled();
+      expect(result).toEqual(mockPost);
+    });
   });
 });

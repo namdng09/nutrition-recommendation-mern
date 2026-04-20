@@ -1,143 +1,117 @@
-import mongoose from 'mongoose';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it
-} from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { createCommentRequestSchema } from '~/features/posts/post-dto';
 import { PostService } from '~/features/posts/post-service';
-import { ROLE } from '~/shared/constants/role';
-import { PostModel } from '~/shared/database/models';
+import { PostModel } from '~/shared/database/models/post-model';
+import { toObjectId, validateObjectId } from '~/shared/utils';
 
-describe('PostService.addComment', () => {
-  let userId: string;
-  let userName: string;
-  let userAvatar: string;
-  let postId: string;
+vi.mock('~/shared/database/models/post-model', () => ({
+  PostModel: {
+    findById: vi.fn()
+  }
+}));
 
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
+vi.mock('~/shared/utils', async importOriginal => {
+  const actual = await importOriginal<typeof import('~/shared/utils')>();
+  return {
+    ...actual,
+    validateObjectId: vi.fn(),
+    toObjectId: vi.fn((id: string) => `oid-${id}`)
+  };
+});
+
+const mockFindById = vi.mocked(PostModel.findById);
+const mockValidateObjectId = vi.mocked(validateObjectId);
+const mockToObjectId = vi.mocked(toObjectId);
+
+const postId = '507f1f77bcf86cd799439011';
+const userId = 'user123';
+const userName = 'User Test';
+const userAvatar = 'https://example.com/avatar.jpg';
+
+const validComment = {
+  content: 'Bai viet rat huu ich'
+};
+
+describe('PostService.addComment (UC43)', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe('validation', () => {
+    it('should fail when comment content is empty', () => {
+      const result = createCommentRequestSchema.safeParse({ content: 'a' });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Nội dung bình luận phải có ít nhất 2 ký tự'
       );
-    }
-  });
-
-  beforeEach(async () => {
-    // Clean up database before each test
-    await PostModel.deleteMany({});
-
-    userId = new mongoose.Types.ObjectId().toString();
-    userName = 'Test User';
-    userAvatar = 'https://example.com/avatar.jpg';
-
-    // Create test post
-    const nutritionistId = new mongoose.Types.ObjectId().toString();
-    const post = await PostModel.create({
-      author: {
-        _id: nutritionistId,
-        name: 'Test Nutritionist',
-        role: ROLE.NUTRITIONIST
-      },
-      title: 'Bài viết test',
-      content: 'Nội dung bài viết test...',
-      slug: 'bai-viet-test',
-      isPublished: true,
-      comments: []
     });
-    postId = post._id.toString();
   });
 
-  afterEach(async () => {
-    // Clean up after each test
-    await PostModel.deleteMany({});
-  });
+  describe('business logic', () => {
+    it('should throw 400 when post id format is invalid', async () => {
+      mockValidateObjectId.mockReturnValue(false);
 
-  afterAll(async () => {
-    // Close connection
-    await mongoose.connection.close();
-  });
+      await expect(
+        PostService.addComment(
+          'invalid-id',
+          userId,
+          userName,
+          userAvatar,
+          validComment
+        )
+      ).rejects.toMatchObject({
+        status: 400,
+        message: 'ID bài viết không hợp lệ'
+      });
+    });
 
-  // Branch - Happy case
-  it('should add comment successfully', async () => {
-    const commentData = {
-      content: 'Bài viết rất hay và bổ ích!'
-    };
+    it('should throw 404 when post does not exist', async () => {
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindById.mockResolvedValue(null);
 
-    const comment = await PostService.addComment(
-      postId,
-      userId,
-      userName,
-      userAvatar,
-      commentData
-    );
+      await expect(
+        PostService.addComment(
+          postId,
+          userId,
+          userName,
+          userAvatar,
+          validComment
+        )
+      ).rejects.toMatchObject({
+        status: 404,
+        message: 'Không tìm thấy bài viết'
+      });
+    });
 
-    expect(comment).toBeDefined();
-    expect(comment.content).toBe('Bài viết rất hay và bổ ích!');
-    expect(comment.author._id.toString()).toBe(userId);
-    expect(comment.author.name).toBe(userName);
-    expect(comment.createdAt).toBeDefined();
-  });
+    it('should append comment to post discussion thread', async () => {
+      const comments: any[] = [];
+      const mockSave = vi.fn();
+      const mockPost = {
+        author: { _id: { toString: () => 'author-1' } },
+        comments,
+        save: mockSave
+      };
 
-  // Branch - Invalid ID
-  it('should throw error when id format is invalid', async () => {
-    const commentData = {
-      content: 'Bình luận test'
-    };
+      const pushSpy = vi.spyOn(comments, 'push');
 
-    await expect(
-      PostService.addComment(
-        'invalid-id',
+      mockValidateObjectId.mockReturnValue(true);
+      mockFindById.mockResolvedValue(mockPost as any);
+
+      const result = await PostService.addComment(
+        postId,
         userId,
         userName,
         userAvatar,
-        commentData
-      )
-    ).rejects.toThrow('ID bài viết không hợp lệ');
-  });
+        validComment
+      );
 
-  // Branch - Post not found
-  it('should throw error when post does not exist', async () => {
-    const nonExistentId = new mongoose.Types.ObjectId().toString();
-    const commentData = {
-      content: 'Bình luận test'
-    };
-
-    await expect(
-      PostService.addComment(
-        nonExistentId,
-        userId,
-        userName,
-        userAvatar,
-        commentData
-      )
-    ).rejects.toThrow('Không tìm thấy bài viết');
-  });
-
-  // Branch - Invalid comment type
-  it('should throw error when comment content is not a string', async () => {
-    const commentData = {
-      content: 123 as unknown as string
-    };
-
-    await expect(
-      PostService.addComment(postId, userId, userName, userAvatar, commentData)
-    ).rejects.toThrow('Nội dung bình luận không hợp lệ');
-  });
-
-  // Branch - Empty comment content
-  it('should throw error when comment is empty', async () => {
-    const commentData = {
-      content: ''
-    };
-
-    await expect(
-      PostService.addComment(postId, userId, userName, userAvatar, commentData)
-    ).rejects.toThrow('Nội dung bình luận phải có ít nhất 1 ký tự');
+      expect(mockToObjectId).toHaveBeenCalledWith(userId);
+      expect(pushSpy).toHaveBeenCalledTimes(1);
+      expect(result.content).toBe(validComment.content);
+      expect(result.author?.name).toBe(userName);
+      expect(mockSave).toHaveBeenCalled();
+    });
   });
 });

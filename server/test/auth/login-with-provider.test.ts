@@ -1,103 +1,109 @@
-import mongoose from 'mongoose';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AuthService } from '~/features/auth/auth-service';
 import { ROLE } from '~/shared/constants/role';
-import { AuthModel, UserModel } from '~/shared/database/models';
+import { AuthModel } from '~/shared/database/models';
+import { generateToken } from '~/shared/utils';
 
-describe('AuthService.loginWithProvider', () => {
-  let userId: string;
+vi.mock('~/shared/database/models', () => ({
+  AuthModel: {
+    findOne: vi.fn(),
+    create: vi.fn()
+  },
+  UserModel: {}
+}));
 
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
-      );
-    }
+vi.mock('~/shared/utils', async importOriginal => {
+  const actual = await importOriginal<typeof import('~/shared/utils')>();
+  return {
+    ...actual,
+    generateToken: vi.fn()
+  };
+});
+
+const mockFindAuth = vi.mocked(AuthModel.findOne);
+const mockCreateAuth = vi.mocked(AuthModel.create);
+const mockGenerateToken = vi.mocked(generateToken);
+
+describe('AuthService.loginWithProvider (UC02)', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
-  beforeEach(async () => {
-    // Clean up database before each test
-    await AuthModel.deleteMany({});
-    await UserModel.deleteMany({});
-
-    // Create a test user for happy case
-    const user = await UserModel.create({
-      email: 'testuser@gmail.com',
-      name: 'Test User',
-      role: ROLE.USER,
-      isActive: true
-    });
-    userId = user._id.toString();
-  });
-
-  afterAll(async () => {
-    // Clean up and close connection
-    await AuthModel.deleteMany({});
-    await UserModel.deleteMany({});
-    await mongoose.connection.close();
-  });
-
-  // Branch: user is null or undefined
-  it('should throw 400 error when user is not provided', async () => {
+  it('should throw 400 when user is missing', async () => {
     await expect(
-      AuthService.loginWithProvider('google', 'google-user-123', null as any)
-    ).rejects.toThrow('Không tìm thấy người dùng');
+      AuthService.loginWithProvider('google', 'google-1', null as any)
+    ).rejects.toMatchObject({
+      status: 400,
+      message: 'Không tìm thấy người dùng'
+    });
   });
 
-  // Branch: auth does not exist - create new auth
-  it('should create new auth record when auth does not exist', async () => {
-    const user = await UserModel.findById(userId);
+  it('should create provider auth when auth does not exist', async () => {
+    const mockSaveUser = vi.fn();
+    const user = {
+      _id: { toString: () => 'user-1' },
+      role: ROLE.USER,
+      hasOnboarded: false,
+      save: mockSaveUser
+    };
+
+    mockFindAuth.mockResolvedValue(null);
+    mockCreateAuth.mockResolvedValue({ _id: 'auth-1' } as any);
+    mockGenerateToken.mockReturnValue({
+      accessToken: 'access-token',
+      refreshToken: 'refresh-token'
+    });
 
     const result = await AuthService.loginWithProvider(
       'google',
-      'google-user-123',
-      user!
+      'google-1',
+      user as any
     );
 
-    expect(result).toHaveProperty('accessToken');
-    expect(result).toHaveProperty('refreshToken');
-    expect(result).toHaveProperty('hasOnboarded', false);
-
-    // Verify auth was created
-    const auth = await AuthModel.findOne({
-      provider: 'google',
-      providerId: 'google-user-123'
+    expect(mockCreateAuth).toHaveBeenCalledWith(
+      expect.objectContaining({
+        user: user._id,
+        provider: 'google',
+        providerId: 'google-1'
+      })
+    );
+    expect(mockSaveUser).toHaveBeenCalled();
+    expect(result).toEqual({
+      accessToken: 'access-token',
+      refreshToken: 'refresh-token',
+      hasOnboarded: false
     });
-    expect(auth).toBeDefined();
-    expect(auth?.user.toString()).toBe(userId);
   });
 
-  // Branch: auth exists - update verifyAt
-  it('should update existing auth record when auth exists', async () => {
-    // Create existing auth
-    const existingAuth = await AuthModel.create({
-      user: userId,
-      provider: 'google',
-      providerId: 'google-user-123',
-      verifyAt: new Date('2020-01-01')
+  it('should update verifyAt when provider auth already exists', async () => {
+    const mockSaveAuth = vi.fn();
+    const mockSaveUser = vi.fn();
+    const existingAuth = {
+      verifyAt: new Date('2020-01-01'),
+      save: mockSaveAuth
+    };
+    const user = {
+      _id: { toString: () => 'user-1' },
+      role: ROLE.USER,
+      hasOnboarded: true,
+      save: mockSaveUser
+    };
+
+    mockFindAuth.mockResolvedValue(existingAuth as any);
+    mockGenerateToken.mockReturnValue({
+      accessToken: 'access-token-2',
+      refreshToken: 'refresh-token-2'
     });
-
-    const oldVerifyAt = existingAuth.verifyAt;
-
-    const user = await UserModel.findById(userId);
 
     const result = await AuthService.loginWithProvider(
       'google',
-      'google-user-123',
-      user!
+      'google-1',
+      user as any
     );
 
-    expect(result).toHaveProperty('accessToken');
-    expect(result).toHaveProperty('refreshToken');
-    expect(result).toHaveProperty('hasOnboarded', false);
-
-    // Verify auth was updated
-    const updatedAuth = await AuthModel.findById(existingAuth._id);
-    expect(updatedAuth?.verifyAt).not.toEqual(oldVerifyAt);
-    expect(updatedAuth?.verifyAt.getTime()).toBeGreaterThan(
-      oldVerifyAt.getTime()
-    );
+    expect(mockSaveAuth).toHaveBeenCalled();
+    expect(mockSaveUser).toHaveBeenCalled();
+    expect(result.hasOnboarded).toBe(true);
   });
 });

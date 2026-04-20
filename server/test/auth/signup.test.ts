@@ -1,198 +1,234 @@
-import mongoose from 'mongoose';
-import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi
-} from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { signUpRequestSchema } from '~/features/auth/auth-dto';
 import { AuthService } from '~/features/auth/auth-service';
 import { ROLE } from '~/shared/constants/role';
 import { AuthModel, UserModel } from '~/shared/database/models';
-import * as authUtils from '~/shared/utils';
+import {
+  generateToken,
+  hashPassword,
+  sendMail,
+  uploadCertificate
+} from '~/shared/utils';
 
-vi.mock('~/shared/utils', async () => {
-  const actual = await vi.importActual('~/shared/utils');
+vi.mock('~/shared/database/models', () => ({
+  AuthModel: {
+    findOne: vi.fn(),
+    create: vi.fn()
+  },
+  UserModel: {
+    findOne: vi.fn(),
+    create: vi.fn(),
+    findByIdAndUpdate: vi.fn()
+  }
+}));
+
+vi.mock('~/shared/utils', async importOriginal => {
+  const actual = await importOriginal<typeof import('~/shared/utils')>();
   return {
     ...actual,
-    uploadAvatar: vi.fn()
+    hashPassword: vi.fn(),
+    generateToken: vi.fn(),
+    uploadAvatar: vi.fn(),
+    uploadCertificate: vi.fn(),
+    sendMail: vi.fn().mockResolvedValue(true)
   };
 });
 
-describe('AuthService.signUp', () => {
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
-      );
-    }
+const mockFindAuth = vi.mocked(AuthModel.findOne);
+const mockCreateAuth = vi.mocked(AuthModel.create);
+const mockFindUser = vi.mocked(UserModel.findOne);
+const mockCreateUser = vi.mocked(UserModel.create);
+const mockHashPassword = vi.mocked(hashPassword);
+const mockGenerateToken = vi.mocked(generateToken);
+const mockUploadCertificate = vi.mocked(uploadCertificate);
+const mockSendMail = vi.mocked(sendMail);
 
-    // Mock uploadAvatar to return success
-    vi.mocked(authUtils.uploadAvatar).mockResolvedValue({
-      success: true,
-      data: {
-        secure_url: 'https://example.com/avatar/test.jpg'
-      }
-    } as any);
+describe('AuthService.signUp (UC03)', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
-  beforeEach(async () => {
-    // Clean up database before each test
-    await AuthModel.deleteMany({});
-    await UserModel.deleteMany({});
-  });
-
-  afterAll(async () => {
-    // Clean up and close connection
-    await AuthModel.deleteMany({});
-    await UserModel.deleteMany({});
-    await mongoose.connection.close();
-  });
-
-  // Happy case - sign up
-  it('should sign up successfully with valid credentials', async () => {
-    const mockFile = new File([Buffer.from('fake image data')], 'avatar.jpg', {
-      type: 'image/jpeg'
-    }) as any as Express.Multer.File;
-
-    const result = await AuthService.signUp(
-      {
-        email: 'newuser@gmail.com',
-        name: 'New User',
-        password: '123456'
-      },
-      mockFile
-    );
-
-    expect(result).toHaveProperty('accessToken');
-    expect(result).toHaveProperty('refreshToken');
-    expect(result).toHaveProperty('hasOnboarded', false);
-    expect(typeof result.accessToken).toBe('string');
-    expect(typeof result.refreshToken).toBe('string');
-
-    // Verify user was created
-    const user = await UserModel.findOne({ email: 'newuser@gmail.com' });
-    expect(user).toBeDefined();
-    expect(user?.name).toBe('New User');
-    expect(user?.isActive).toBe(true);
-    expect(user?.role).toBe(ROLE.USER);
-    expect(user?.avatar).toBe('https://example.com/avatar/test.jpg');
-
-    // Verify auth was created
-    const auth = await AuthModel.findOne({ user: user?._id });
-    expect(auth).toBeDefined();
-    expect(auth?.provider).toBe('local');
-    expect(auth?.providerId).toBe('newuser@gmail.com');
-    expect(auth?.localPassword).toBeDefined();
-    expect(auth?.verifyAt).toBeDefined();
-  });
-
-  // Branch: invalid email format
-  it('should throw 400 error when email is invalid', async () => {
-    await expect(
-      AuthService.signUp({
+  describe('validation', () => {
+    it('should fail when email format is invalid', () => {
+      const result = signUpRequestSchema.safeParse({
         email: 'invalid-email',
         name: 'New User',
-        password: '123456'
-      })
-    ).rejects.toThrow('Email không hợp lệ');
-  });
+        password: 'Abcd@1234',
+        role: ROLE.USER
+      });
 
-  // Branch: missing email field
-  it('should throw 400 error when field email is missing', async () => {
-    await expect(
-      AuthService.signUp({
-        email: undefined as unknown as string,
-        name: 'New User',
-        password: '123456'
-      })
-    ).rejects.toThrow('Email không hợp lệ');
-  });
-
-  // Branch: password is shorter than 6 characters
-  it('should throw 400 error when password is too short', async () => {
-    await expect(
-      AuthService.signUp({
-        email: 'newuser@gmail.com',
-        name: 'New User',
-        password: '123'
-      })
-    ).rejects.toThrow('Mật khẩu phải có ít nhất 6 ký tự');
-  });
-
-  // Branch: duplicate email (User exists)
-  it('should throw 400 error when email already exists (User exists)', async () => {
-    // Create existing user
-    await UserModel.create({
-      email: 'existing@gmail.com',
-      name: 'Existing User',
-      role: ROLE.USER,
-      isActive: true
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe('Email không hợp lệ');
     });
 
-    // Attempt to sign up with existing email
-    await expect(
-      AuthService.signUp({
-        email: 'existing@gmail.com',
+    it('should fail when password is too short', () => {
+      const result = signUpRequestSchema.safeParse({
+        email: 'user@example.com',
         name: 'New User',
-        password: '123456'
-      })
-    ).rejects.toThrow('Tài khoản với email này đã tồn tại');
-  });
+        password: 'Abcd123',
+        role: ROLE.USER
+      });
 
-  // Branch: Dangling Auth record (User doesn't exist, but Auth does)
-  it('should throw 400 error when Auth record already exists (Dangling Auth)', async () => {
-    // Create an Auth record without a corresponding User
-    const fakeUserId = new mongoose.Types.ObjectId();
-    await AuthModel.create({
-      user: fakeUserId,
-      provider: 'local',
-      providerId: 'dangling@gmail.com',
-      localPassword: 'hashedpassword',
-      verifyAt: new Date()
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Mật khẩu phải có ít nhất 8 ký tự'
+      );
     });
 
-    const mockFile = new File([Buffer.from('data')], 'avatar.jpg', {
-      type: 'image/jpeg'
-    }) as any as Express.Multer.File;
+    it('should fail when password does not meet complexity requirements', () => {
+      const result = signUpRequestSchema.safeParse({
+        email: 'user@example.com',
+        name: 'New User',
+        password: 'password123',
+        role: ROLE.USER
+      });
 
-    await expect(
-      AuthService.signUp(
-        {
-          email: 'dangling@gmail.com',
-          name: 'New User',
-          password: '123456'
-        },
-        mockFile
-      )
-    ).rejects.toThrow('Tài khoản với email này đã tồn tại');
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Mật khẩu phải gồm chữ thường, chữ hoa, số và ký tự đặc biệt'
+      );
+    });
+
+    it('should fail when name is too short', () => {
+      const result = signUpRequestSchema.safeParse({
+        email: 'user@example.com',
+        name: 'A',
+        password: 'Abcd@1234',
+        role: ROLE.USER
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Tên phải có ít nhất 2 ký tự'
+      );
+    });
   });
 
-  // Branch: Avatar upload fails
-  it('should throw 500 error when avatar upload fails', async () => {
-    // Override mock to simulate upload failure
-    vi.mocked(authUtils.uploadAvatar).mockResolvedValueOnce({
-      success: false,
-      error: 'Upload failed'
-    } as any);
+  describe('business logic', () => {
+    it('should throw 400 when auth account already exists', async () => {
+      mockFindAuth.mockResolvedValue({ _id: 'auth-1' } as any);
 
-    const mockFile = new File([Buffer.from('data')], 'avatar.jpg', {
-      type: 'image/jpeg'
-    }) as any as Express.Multer.File;
+      await expect(
+        AuthService.signUp({
+          email: 'exists@example.com',
+          name: 'Exists',
+          password: 'Abcd@1234',
+          role: ROLE.USER
+        })
+      ).rejects.toMatchObject({
+        status: 400,
+        message: 'Tài khoản với email này đã tồn tại'
+      });
+    });
 
-    await expect(
-      AuthService.signUp(
+    it('should throw 400 when user already exists', async () => {
+      mockFindAuth.mockResolvedValue(null);
+      mockFindUser.mockResolvedValue({ _id: 'user-exists' } as any);
+
+      await expect(
+        AuthService.signUp({
+          email: 'existing-user@example.com',
+          name: 'Existing User',
+          password: 'Abcd@1234',
+          role: ROLE.USER
+        })
+      ).rejects.toMatchObject({
+        status: 400,
+        message: 'Tài khoản với email này đã tồn tại'
+      });
+    });
+
+    it('should sign up normal user successfully', async () => {
+      mockFindAuth.mockResolvedValue(null);
+      mockFindUser.mockResolvedValue(null);
+      mockCreateUser.mockResolvedValue({
+        _id: { toString: () => 'user-1' },
+        email: 'new@example.com',
+        role: ROLE.USER,
+        hasOnboarded: false
+      } as any);
+      mockHashPassword.mockResolvedValue('hashed-pass');
+      mockCreateAuth.mockResolvedValue({ _id: 'auth-1' } as any);
+      mockGenerateToken.mockReturnValue({
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token'
+      });
+
+      const result = await AuthService.signUp({
+        email: 'new@example.com',
+        name: 'New User',
+        password: 'Abcd@1234',
+        role: ROLE.USER
+      });
+
+      expect(mockCreateAuth).toHaveBeenCalledWith(
+        expect.objectContaining({
+          provider: 'local',
+          providerId: 'new@example.com',
+          localPassword: 'hashed-pass'
+        })
+      );
+      expect(result).toEqual({
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+        hasOnboarded: false
+      });
+      expect(mockUploadCertificate).not.toHaveBeenCalled();
+      expect(mockSendMail).not.toHaveBeenCalled();
+    });
+
+    it('should sign up nutritionist successfully', async () => {
+      mockFindAuth.mockResolvedValue(null);
+      mockFindUser.mockResolvedValue(null);
+      mockCreateUser.mockResolvedValue({
+        _id: { toString: () => 'nutri-1' },
+        email: 'nutri@example.com',
+        name: 'Nutritionist',
+        role: ROLE.NUTRITIONIST,
+        hasOnboarded: false
+      } as any);
+      mockHashPassword.mockResolvedValue('hashed-pass');
+      mockCreateAuth.mockResolvedValue({ _id: 'auth-2' } as any);
+      mockUploadCertificate.mockResolvedValue({
+        success: true,
+        data: {
+          secure_url: 'https://img.test/cert.jpg',
+          public_id: 'cert-1'
+        }
+      } as any);
+      mockGenerateToken.mockReturnValue({
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token'
+      });
+
+      await AuthService.signUp(
         {
-          email: 'uploadfail@gmail.com',
-          name: 'New User',
-          password: '123456'
+          email: 'nutri@example.com',
+          name: 'Nutritionist',
+          password: 'Abcd@1234',
+          role: ROLE.NUTRITIONIST,
+          workplace: 'Hospital A',
+          certificateName: 'Certified Nutritionist',
+          graduatedUniversity: 'University B',
+          professionalBio: 'Bio'
         },
-        mockFile
-      )
-    ).rejects.toThrow('Không thể tải lên ảnh đại diện');
+        undefined,
+        {
+          buffer: Buffer.from('cert'),
+          originalname: 'certificate.png'
+        } as Express.Multer.File
+      );
+
+      expect(mockUploadCertificate).toHaveBeenCalled();
+
+      expect(mockSendMail).toHaveBeenCalledTimes(2);
+      expect(mockSendMail).toHaveBeenCalledWith(
+        expect.objectContaining({ template: 'certificate-pending' })
+      );
+      expect(mockSendMail).toHaveBeenCalledWith(
+        expect.objectContaining({ template: 'nutritionist-welcome' })
+      );
+    });
   });
 });

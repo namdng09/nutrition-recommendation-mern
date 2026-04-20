@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const adminDashboardRangeValues = [
+export const dashboardRangeValues = [
   'today',
   'yesterday',
   'last7days',
@@ -12,12 +12,12 @@ export const adminDashboardRangeValues = [
   'custom'
 ] as const;
 
-export const adminDashboardQuerySchema = z.object({
+export const dashboardQuerySchema = z.object({
   range: z
-    .enum(adminDashboardRangeValues, 'Khoảng thời gian không hợp lệ')
+    .enum(dashboardRangeValues, 'Khoảng thời gian không hợp lệ')
     .optional(),
   startDate: z.string().trim().optional(),
   endDate: z.string().trim().optional()
 });
 
-export type AdminDashboardQuery = z.infer<typeof adminDashboardQuerySchema>;
+export type dashboardQuery = z.infer<typeof dashboardQuerySchema>;

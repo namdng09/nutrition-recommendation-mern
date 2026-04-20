@@ -96,9 +96,9 @@ export const AuthController = {
   },
 
   forgotPassword: async (req: Request, res: Response) => {
-    const { email } = req.body;
+    const forgotData = req.body;
 
-    await AuthService.forgotPassword(email);
+    await AuthService.forgotPassword(forgotData);
 
     res
       .status(200)
@@ -111,9 +111,9 @@ export const AuthController = {
 
   resetPassword: async (req: Request, res: Response) => {
     const { token } = req.query;
-    const { password } = req.body;
+    const resetData = req.body;
 
-    await AuthService.resetPassword(token as string, password);
+    await AuthService.resetPassword(token as string, resetData);
 
     res
       .status(200)
