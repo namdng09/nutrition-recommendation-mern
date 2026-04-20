@@ -111,7 +111,7 @@ export const ReviewService = {
 
     const submitterProfile = await UserModel.findById(dish.user?._id)
       .select(
-        'gender dob height weightRecord diet activityLevel goal allergens medicalHistory nutritionTarget'
+        'gender dob height bodyfat weightRecord diet activityLevel goal allergens medicalHistory nutritionTarget'
       )
       .lean();
 
