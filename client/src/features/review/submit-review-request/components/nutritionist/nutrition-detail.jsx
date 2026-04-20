@@ -161,7 +161,7 @@ const NutritionDetail = ({ nutrition }) => {
             />
           </div>
 
-          <div className='grid gap-4 xl:grid-cols-2'>
+          <div className='grid items-start gap-4 xl:grid-cols-2'>
             <NutritionCollapsible
               title='Vitamin'
               badge={`${nutrition?.vitamins?.length || 0} mục`}
