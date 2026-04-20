@@ -116,6 +116,12 @@ const mealRecommendationPrompt = (
 ${retrievalSummary}
 `
     : '';
+  const caloriesConstraint =
+    typeof input.caloriesTarget === 'number' && input.caloriesTarget > 0
+      ? `- Keep estimated total daily calories from selected dishes within 90%-110% of target (${Math.round(
+          input.caloriesTarget * 0.9
+        )}-${Math.round(input.caloriesTarget * 1.1)} kcal). Prioritize not exceeding the upper bound.`
+      : '- If calories target is unavailable, keep daily calories moderate and avoid extreme excess.';
 
   return `You are an experienced nutrition coach creating a daily meal recommendation from an existing dish catalog.
      
@@ -163,6 +169,7 @@ ${dishCatalogBlock}
      } and ${MEAL_RECOMMENDATION_PROMPT_CONFIG.maxServings}.
      - Do not repeat the same dishId across different meals in the same day unless there are not enough unique dishes.
      - Use retrieval notes to reduce repeating dishes from recent days when alternatives exist.
+     ${caloriesConstraint}
      - Respect allergens, meal constraints, user goal, and nutrition balance.
      - Do NOT invent new fields.
      
