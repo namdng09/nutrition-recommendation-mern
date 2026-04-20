@@ -30,21 +30,14 @@ router.get(
   '/',
   authenticate(),
   authorize([ROLE.ADMIN]),
-  asyncHandler(PaymentController.listPayments)
+  asyncHandler(PaymentController.viewPayments)
 );
 
 router.get(
-  '/user',
+  '/me',
   authenticate(),
   authorize([ROLE.USER]),
-  asyncHandler(PaymentController.listPaymentsByUser)
-);
-
-router.get(
-  '/user/:userId',
-  authenticate(),
-  authorize([ROLE.ADMIN]),
-  asyncHandler(PaymentController.listPaymentsByUser)
+  asyncHandler(PaymentController.getPaymentsHistory)
 );
 
 router.post(
@@ -52,13 +45,6 @@ router.post(
   authenticate(),
   authorize([ROLE.USER]),
   asyncHandler(PaymentController.confirmPayment)
-);
-
-router.get(
-  '/:orderCode',
-  authenticate(),
-  authorize([ROLE.ADMIN]),
-  asyncHandler(PaymentController.getPaymentByOrderCode)
 );
 
 router.put(
