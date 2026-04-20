@@ -35,31 +35,21 @@ export const PaymentController = {
       );
   },
 
-  getPaymentByOrderCode: async (req: Request, res: Response) => {
-    const orderCode = Number(req.params.orderCode);
+  getPaymentsHistory: async (req: Request, res: Response) => {
+    const userId = req.user!._id.toString();
+    const parsed = parseQuery(req.query);
 
-    const result = await PaymentService.getPaymentByOrderCode(orderCode);
+    const result = await PaymentService.getPaymentsHistory(userId, parsed);
 
     res
       .status(200)
-      .json(ApiResponse.success('Lấy thông tin thanh toán thành công', result));
+      .json(ApiResponse.success('Lấy lịch sử thanh toán thành công', result));
   },
 
-  listPaymentsByUser: async (req: Request, res: Response) => {
-    const userId = req.params.userId ?? req.user!._id.toString();
+  viewPayments: async (req: Request, res: Response) => {
     const parsed = parseQuery(req.query);
 
-    const result = await PaymentService.listPaymentsByUser(userId, parsed);
-
-    res
-      .status(200)
-      .json(ApiResponse.success('Lấy danh sách thanh toán thành công', result));
-  },
-
-  listPayments: async (req: Request, res: Response) => {
-    const parsed = parseQuery(req.query);
-
-    const result = await PaymentService.listPayments(parsed);
+    const result = await PaymentService.viewPayments(parsed);
 
     res
       .status(200)

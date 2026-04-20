@@ -9,6 +9,7 @@ import { payOS } from '~/shared/utils/payos';
 
 vi.mock('~/shared/database/models/payment-model', () => ({
   PaymentModel: {
+    find: vi.fn(),
     findOne: vi.fn(),
     create: vi.fn(),
     paginate: vi.fn()
@@ -31,10 +32,12 @@ vi.mock('~/shared/utils/payos', () => ({
   }
 }));
 
+const mockFindPayments = vi.mocked(PaymentModel.find);
 const mockFindPayment = vi.mocked(PaymentModel.findOne);
 const mockCreatePayment = vi.mocked(PaymentModel.create);
 const mockFindUser = vi.mocked(UserModel.findById);
 const mockCreatePayLink = vi.mocked(payOS.paymentRequests.create);
+const mockGetPayLink = vi.mocked(payOS.paymentRequests.get);
 
 const userId = 'user-1';
 
@@ -108,7 +111,8 @@ describe('PaymentService.createPayment (UC98)', () => {
       mockFindUser.mockResolvedValue({
         membershipLevel: MEMBERSHIP_LEVEL.NORMAL
       } as any);
-      mockFindPayment.mockResolvedValue({ _id: 'existing' } as any);
+      mockFindPayments.mockResolvedValue([] as any);
+      mockFindPayment.mockResolvedValueOnce({ _id: 'existing' } as any);
 
       await expect(
         PaymentService.createPayment(validData, userId)
@@ -118,11 +122,65 @@ describe('PaymentService.createPayment (UC98)', () => {
       });
     });
 
+    it('should throw 409 when user has active pending payment', async () => {
+      mockFindUser.mockResolvedValue({
+        membershipLevel: MEMBERSHIP_LEVEL.NORMAL
+      } as any);
+      mockFindPayments.mockResolvedValue([
+        {
+          _id: 'pending-payment',
+          orderCode: 900000123,
+          save: vi.fn()
+        }
+      ] as any);
+      mockGetPayLink.mockResolvedValue({ status: 'PENDING' } as any);
+
+      await expect(
+        PaymentService.createPayment(validData, userId)
+      ).rejects.toMatchObject({
+        status: 409,
+        message:
+          'Bạn đang có giao dịch chờ thanh toán. Vui lòng hoàn tất hoặc hủy giao dịch hiện tại trước khi tạo giao dịch mới.'
+      });
+    });
+
+    it('should cancel expired pending payment and continue creating new payment', async () => {
+      const saveExpired = vi.fn().mockResolvedValue(undefined);
+
+      mockFindUser.mockResolvedValue({
+        membershipLevel: MEMBERSHIP_LEVEL.NORMAL
+      } as any);
+      mockFindPayments.mockResolvedValue([
+        {
+          _id: 'expired-payment',
+          orderCode: 900000111,
+          save: saveExpired
+        }
+      ] as any);
+      mockGetPayLink.mockResolvedValue({ status: 'EXPIRED' } as any);
+      mockFindPayment.mockResolvedValueOnce(null);
+      mockCreatePayLink.mockResolvedValue({
+        orderCode: 900000001,
+        checkoutUrl: 'https://pay.test/checkout',
+        paymentLinkId: 'plink-1'
+      } as any);
+      mockCreatePayment.mockResolvedValue({
+        checkoutUrl: 'https://pay.test/checkout'
+      } as any);
+
+      const result = await PaymentService.createPayment(validData, userId);
+
+      expect(mockGetPayLink).toHaveBeenCalledWith(900000111);
+      expect(saveExpired).toHaveBeenCalled();
+      expect(result).toBe('https://pay.test/checkout');
+    });
+
     it('should create pending payment and return checkout url successfully', async () => {
       mockFindUser.mockResolvedValue({
         membershipLevel: MEMBERSHIP_LEVEL.NORMAL
       } as any);
-      mockFindPayment.mockResolvedValue(null);
+      mockFindPayments.mockResolvedValue([] as any);
+      mockFindPayment.mockResolvedValueOnce(null);
       mockCreatePayLink.mockResolvedValue({
         orderCode: 900000001,
         checkoutUrl: 'https://pay.test/checkout',
