@@ -31,6 +31,13 @@ export const CollectionService = {
     data: CreateCollectionRequest,
     image?: Express.Multer.File
   ) => {
+    const existingCollection = await CollectionModel.findOne({
+      name: data.name
+    });
+    if (existingCollection) {
+      throw createHttpError(400, 'Tên bộ sưu tập đã tồn tại');
+    }
+
     const dishesData =
       data.dishes && data.dishes.length > 0
         ? await resolveDishSnapshots(data.dishes)
@@ -146,6 +153,17 @@ export const CollectionService = {
 
     if (collection.user?._id.toString() !== userId) {
       throw createHttpError(403, 'Bạn không có quyền cập nhật bộ sưu tập này');
+    }
+
+    if (data.name && data.name !== collection.name) {
+      const existingCollection = await CollectionModel.findOne({
+        name: data.name,
+        _id: { $ne: id }
+      });
+
+      if (existingCollection) {
+        throw createHttpError(409, 'Tên bộ sưu tập đã tồn tại');
+      }
     }
 
     const { dishes, ...rest } = data;

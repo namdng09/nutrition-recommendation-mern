@@ -34,7 +34,7 @@ export const PostService = {
 
     const existingPost = await PostModel.findOne({ slug });
     if (existingPost)
-      throw createHttpError(400, 'Bài viết với tiêu đề này đã tồn tại');
+      throw createHttpError(409, 'Bài viết với tiêu đề này đã tồn tại');
 
     const newPost = await PostModel.create({
       author: {
@@ -80,14 +80,6 @@ export const PostService = {
     return post;
   },
 
-  viewPostBySlug: async (slug: string) => {
-    const post = await PostModel.findOne({ slug, isPublished: true });
-    if (!post) throw createHttpError(404, 'Không tìm thấy bài viết');
-
-    await incrementViews(post);
-    return post;
-  },
-
   updatePost: async (
     id: string,
     userId: string,
@@ -110,7 +102,7 @@ export const PostService = {
         _id: { $ne: id }
       });
       if (existingPost)
-        throw createHttpError(400, 'Bài viết với tiêu đề này đã tồn tại');
+        throw createHttpError(409, 'Bài viết với tiêu đề này đã tồn tại');
       post.slug = newSlug;
     }
 

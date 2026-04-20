@@ -42,7 +42,7 @@ export default function ExerciseDetail() {
         <div className='space-y-10 lg:col-span-7'>
           <div className='relative overflow-hidden rounded-3xl border border-border shadow-md'>
             <img
-              src={preview}
+              src={preview || '/logo2.png'}
               alt={exercise.name}
               loading='lazy'
               decoding='async'
@@ -142,7 +142,7 @@ export default function ExerciseDetail() {
                       <div className='flex items-center gap-4'>
                         <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-muted p-2'>
                           <img
-                            src={muscle.image}
+                            src={muscle.image || '/logo2.png'}
                             alt={muscle.name}
                             className='h-full w-full object-contain'
                           />

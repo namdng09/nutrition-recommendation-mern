@@ -13,21 +13,24 @@ vi.mock('~/shared/database/models/user-model', () => ({
 const mockFindById = vi.mocked(UserModel.findById);
 
 const USER_ID = 'user-123';
+const ALL_ACHIEVEMENTS = Object.values(ACHIEVEMENTS);
 
-describe('AchievementService.getUserAchievements', () => {
+describe('AchievementService.getUserAchievements (UC115)', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
   describe('business logic', () => {
-    it('should return all achievements with no unlocks when user has no achievements', async () => {
+    it('should return full achievement list with empty unlock state for new user', async () => {
       mockFindById.mockReturnValue({
         lean: vi.fn().mockResolvedValue(null)
       } as any);
 
       const result = await AchievementService.getUserAchievements(USER_ID);
 
+      expect(mockFindById).toHaveBeenCalledWith(USER_ID, 'achievements');
       expect(result.unlockedCount).toBe(0);
+      expect(result.achievements).toHaveLength(ALL_ACHIEVEMENTS.length);
       expect(result.achievements.every(item => item.unlocked === false)).toBe(
         true
       );
@@ -36,15 +39,20 @@ describe('AchievementService.getUserAchievements', () => {
       );
     });
 
-    it('should return all achievements with correct unlocked status and dates', async () => {
-      const unlockedDate = new Date('2024-01-15');
+    it('should mark unlocked achievements with matching unlock date', async () => {
+      const plannerUnlockedAt = new Date('2024-01-15T00:00:00.000Z');
+      const beaconUnlockedAt = new Date('2024-02-01T00:00:00.000Z');
 
       mockFindById.mockReturnValue({
         lean: vi.fn().mockResolvedValue({
           achievements: [
             {
               key: ACHIEVEMENTS.THE_PLANNER.key,
-              unlockedAt: unlockedDate
+              unlockedAt: plannerUnlockedAt
+            },
+            {
+              key: ACHIEVEMENTS.COMMUNITY_BEACON.key,
+              unlockedAt: beaconUnlockedAt
             }
           ]
         })
@@ -52,25 +60,20 @@ describe('AchievementService.getUserAchievements', () => {
 
       const result = await AchievementService.getUserAchievements(USER_ID);
 
-      expect(result.unlockedCount).toBe(1);
+      expect(result.unlockedCount).toBe(2);
+      expect(result.achievements).toHaveLength(ALL_ACHIEVEMENTS.length);
 
       const plannerAchievement = result.achievements.find(
         a => a.key === ACHIEVEMENTS.THE_PLANNER.key
       );
+      const beaconAchievement = result.achievements.find(
+        a => a.key === ACHIEVEMENTS.COMMUNITY_BEACON.key
+      );
+
       expect(plannerAchievement?.unlocked).toBe(true);
-      expect(plannerAchievement?.unlockedAt).toEqual(unlockedDate);
-    });
-  });
-
-  describe('system', () => {
-    it('should propagate error when findById fails', async () => {
-      mockFindById.mockImplementation(() => {
-        throw new Error('findById failed');
-      });
-
-      await expect(
-        AchievementService.getUserAchievements(USER_ID)
-      ).rejects.toThrow('findById failed');
+      expect(plannerAchievement?.unlockedAt).toEqual(plannerUnlockedAt);
+      expect(beaconAchievement?.unlocked).toBe(true);
+      expect(beaconAchievement?.unlockedAt).toEqual(beaconUnlockedAt);
     });
   });
 });

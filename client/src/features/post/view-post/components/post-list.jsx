@@ -51,7 +51,7 @@ export default function PostList() {
           >
             <div className='relative h-60 w-full overflow-hidden sm:h-64'>
               <img
-                src={post.images?.[0]}
+                src={post.images?.[0] || '/logo2.png'}
                 alt={post.title}
                 className='h-full w-full object-cover transition-transform'
               />

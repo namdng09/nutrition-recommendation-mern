@@ -1,150 +1,104 @@
-import mongoose from 'mongoose';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi
-} from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PostService } from '~/features/posts/post-service';
 import { ROLE } from '~/shared/constants/role';
-import { PostModel } from '~/shared/database/models';
+import { PostModel } from '~/shared/database/models/post-model';
+import { deleteImage, validateObjectId } from '~/shared/utils';
 
-// Mock Cloudinary
-vi.mock('~/shared/utils/cloudinary', () => ({
-  uploadImage: vi.fn().mockResolvedValue({
-    success: true,
-    data: {
-      secure_url:
-        'https://res.cloudinary.com/test/image/upload/v1234567890/test-post.jpg',
-      public_id: 'test-post',
-      format: 'jpg'
-    }
-  }),
-  deleteImage: vi.fn().mockResolvedValue({ success: true })
+vi.mock('~/shared/database/models/post-model', () => ({
+  PostModel: {
+    findById: vi.fn(),
+    findByIdAndDelete: vi.fn()
+  }
 }));
 
-// Import mocked functions
-import * as cloudinaryUtils from '~/shared/utils/cloudinary';
+vi.mock('~/shared/utils', async importOriginal => {
+  const actual = await importOriginal<typeof import('~/shared/utils')>();
+  return {
+    ...actual,
+    validateObjectId: vi.fn(),
+    deleteImage: vi.fn()
+  };
+});
 
-describe('PostService.deletePost', () => {
-  const nutritionistId = new mongoose.Types.ObjectId().toString();
-  const otherNutritionistId = new mongoose.Types.ObjectId().toString();
-  const adminId = new mongoose.Types.ObjectId().toString();
-  let postId: string;
-  let postWithImagesId: string;
+const mockFindById = vi.mocked(PostModel.findById);
+const mockFindByIdAndDelete = vi.mocked(PostModel.findByIdAndDelete);
+const mockValidateObjectId = vi.mocked(validateObjectId);
+const mockDeleteImage = vi.mocked(deleteImage);
 
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
-      );
-    }
+const postId = '507f1f77bcf86cd799439011';
+const userId = 'user123';
+const adminId = 'admin123';
+
+describe('PostService.deletePost (UC40)', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
-  beforeEach(async () => {
-    // Clean up database before each test
-    await PostModel.deleteMany({});
+  it('should throw 400 when id format is invalid', async () => {
+    mockValidateObjectId.mockReturnValue(false);
 
-    // Reset mocks
-    vi.mocked(cloudinaryUtils.deleteImage).mockResolvedValue({ success: true });
-
-    // Create test posts
-    const post = await PostModel.create({
-      author: {
-        _id: nutritionistId,
-        name: 'Test Nutritionist',
-        role: ROLE.NUTRITIONIST
-      },
-      title: 'Bài viết test',
-      content: 'Nội dung bài viết test...',
-      slug: 'bai-viet-test',
-      isPublished: false
+    await expect(
+      PostService.deletePost('invalid-id', userId, ROLE.NUTRITIONIST)
+    ).rejects.toMatchObject({
+      status: 400,
+      message: 'ID bài viết không hợp lệ'
     });
-    postId = post._id.toString();
+  });
 
-    const postWithImages = await PostModel.create({
-      author: {
-        _id: nutritionistId,
-        name: 'Test Nutritionist',
-        role: ROLE.NUTRITIONIST
-      },
-      title: 'Bài viết có ảnh',
-      content: 'Nội dung bài viết có ảnh...',
-      slug: 'bai-viet-co-anh',
-      images: [
-        'https://res.cloudinary.com/test/image/upload/v1234567890/post-0.jpg',
-        'https://res.cloudinary.com/test/image/upload/v1234567890/post-1.jpg'
-      ],
-      isPublished: false
+  it('should throw 404 when post does not exist', async () => {
+    mockValidateObjectId.mockReturnValue(true);
+    mockFindById.mockResolvedValue(null);
+
+    await expect(
+      PostService.deletePost(postId, userId, ROLE.NUTRITIONIST)
+    ).rejects.toMatchObject({
+      status: 404,
+      message: 'Không tìm thấy bài viết'
     });
-    postWithImagesId = postWithImages._id.toString();
   });
 
-  afterEach(async () => {
-    // Clean up after each test
-    await PostModel.deleteMany({});
+  it('should throw 403 when user is not post author', async () => {
+    mockValidateObjectId.mockReturnValue(true);
+    mockFindById.mockResolvedValue({
+      _id: { toString: () => postId },
+      author: { _id: { toString: () => 'other-user' } },
+      images: []
+    } as any);
+
+    await expect(
+      PostService.deletePost(postId, userId, ROLE.NUTRITIONIST)
+    ).rejects.toMatchObject({
+      status: 403,
+      message: 'Bạn không có quyền xóa bài viết này'
+    });
   });
 
-  afterAll(async () => {
-    // Close connection
-    await mongoose.connection.close();
+  it('should delete post and all post images as author', async () => {
+    mockValidateObjectId.mockReturnValue(true);
+    mockFindById.mockResolvedValue({
+      _id: { toString: () => postId },
+      author: { _id: { toString: () => userId } },
+      images: ['img-1.jpg', 'img-2.jpg']
+    } as any);
+
+    await PostService.deletePost(postId, userId, ROLE.NUTRITIONIST);
+
+    expect(mockDeleteImage).toHaveBeenCalledWith(`${postId}-0`);
+    expect(mockDeleteImage).toHaveBeenCalledWith(`${postId}-1`);
+    expect(mockFindByIdAndDelete).toHaveBeenCalledWith(postId);
   });
 
-  // Branch - Happy case
-  it('should delete post successfully', async () => {
-    await PostService.deletePost(
-      postWithImagesId,
-      nutritionistId,
-      ROLE.NUTRITIONIST
-    );
+  it('should allow admin to delete any post', async () => {
+    mockValidateObjectId.mockReturnValue(true);
+    mockFindById.mockResolvedValue({
+      _id: { toString: () => postId },
+      author: { _id: { toString: () => userId } },
+      images: []
+    } as any);
 
-    // Verify deleteImage was called for each image
-    expect(cloudinaryUtils.deleteImage).toHaveBeenCalledWith(
-      `${postWithImagesId}-0`
-    );
-    expect(cloudinaryUtils.deleteImage).toHaveBeenCalledWith(
-      `${postWithImagesId}-1`
-    );
-
-    // Verify post is deleted
-    const deletedPost = await PostModel.findById(postWithImagesId);
-    expect(deletedPost).toBeNull();
-  });
-
-  it('should allow admin to delete post', async () => {
     await PostService.deletePost(postId, adminId, ROLE.ADMIN);
 
-    // Verify post is deleted
-    const deletedPost = await PostModel.findById(postId);
-    expect(deletedPost).toBeNull();
-  });
-
-  // Branch - Unauthorized user
-  it('should throw error when deleting post of another user', async () => {
-    await expect(
-      PostService.deletePost(postId, otherNutritionistId, ROLE.NUTRITIONIST)
-    ).rejects.toThrow('Bạn không có quyền xóa bài viết này');
-  });
-
-  // Branch - Invalid ID
-  it('should throw error when id format is invalid', async () => {
-    await expect(
-      PostService.deletePost('invalid-id', nutritionistId, ROLE.NUTRITIONIST)
-    ).rejects.toThrow('ID bài viết không hợp lệ');
-  });
-
-  // Branch - Post not found
-  it('should throw error when post does not exist', async () => {
-    const nonExistentId = new mongoose.Types.ObjectId().toString();
-
-    await expect(
-      PostService.deletePost(nonExistentId, nutritionistId, ROLE.NUTRITIONIST)
-    ).rejects.toThrow('Không tìm thấy bài viết');
+    expect(mockFindByIdAndDelete).toHaveBeenCalledWith(postId);
   });
 });

@@ -98,6 +98,13 @@ router.delete(
 );
 
 router.delete(
+  '/:id/meals/:mealType',
+  authenticate(),
+  authorize([ROLE.USER]),
+  asyncHandler(ScheduleController.removeScheduleMeal)
+);
+
+router.delete(
   '/:id/meals/:mealType/dishes/:dishId',
   authenticate(),
   authorize([ROLE.USER]),

@@ -7,11 +7,15 @@ import { Card, CardContent } from '~/components/ui/card';
 import { useNutritionists } from '~/features/users/view-nutritionist/api/view-nutritionist';
 
 const NutritionistCard = ({ nutritionist }) => {
+  if (!nutritionist) {
+    return null;
+  }
+
   const profile = nutritionist.nutritionistProfile;
 
   return (
     <Card className='group relative flex h-full flex-col overflow-hidden rounded-[28px] border border-border/70 bg-background/90 shadow-[0_8px_24px_rgba(15,23,42,0.05)] transition-all duration-200 hover:shadow-[0_12px_28px_rgba(15,23,42,0.08)]'>
-      <div className='absolute inset-x-0 top-0 h-28 bg-gradient-to-br from-primary/12 via-primary/6 to-transparent' />
+      <div className='absolute inset-x-0 top-0 h-28 bg-linear-to-br from-primary/12 via-primary/6 to-transparent' />
 
       <div className='relative px-6 pt-8'>
         <Avatar className='mx-auto mb-4 h-28 w-28 ring-4 ring-background shadow-[0_10px_30px_rgba(15,23,42,0.12)]'>
@@ -84,7 +88,7 @@ const NutritionistCard = ({ nutritionist }) => {
 
 const NutritionistList = () => {
   const { data } = useNutritionists({ page: 1, limit: 4 });
-  const docs = data?.docs ?? [];
+  const docs = data.docs;
 
   if (docs.length === 0) {
     return null;
@@ -110,7 +114,7 @@ const NutritionistList = () => {
       <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4'>
         {docs.map(nutritionist => (
           <NutritionistCard
-            key={nutritionist._id}
+            key={nutritionist._id ?? nutritionist.name}
             nutritionist={nutritionist}
           />
         ))}

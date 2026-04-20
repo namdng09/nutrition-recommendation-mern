@@ -151,6 +151,20 @@ export const ScheduleController = {
       .json(ApiResponse.success('Xóa món ăn khỏi bữa thành công', result));
   },
 
+  removeScheduleMeal: async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const mealType = req.params.mealType;
+    const userId = req.user!._id.toString();
+
+    const result = await ScheduleService.removeScheduleMeal(
+      id,
+      userId,
+      mealType
+    );
+
+    res.status(200).json(ApiResponse.success('Xóa bữa ăn thành công', result));
+  },
+
   clearScheduleMealDishes: async (req: Request, res: Response) => {
     const id = req.params.id;
     const mealType = req.params.mealType;

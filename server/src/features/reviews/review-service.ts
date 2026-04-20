@@ -86,8 +86,12 @@ export const ReviewService = {
       'name image isPublic user evaluation createdAt updatedAt'
     );
 
-    if (!dish || !dish.evaluation?.status) {
+    if (!dish) {
       throw createHttpError(404, 'Không tìm thấy món ăn');
+    }
+
+    if (!dish.evaluation?.status) {
+      throw createHttpError(404, 'Không tìm thấy yêu cầu đánh giá');
     }
 
     const isOpenForNutritionist =
@@ -105,14 +109,28 @@ export const ReviewService = {
       .select('name avatar')
       .lean();
 
+    const submitterProfile = await UserModel.findById(dish.user?._id)
+      .select(
+        'gender dob height weightRecord diet activityLevel goal allergens medicalHistory nutritionTarget'
+      )
+      .lean();
+
     const dishObj = dish.toObject();
 
     if (dishObj.evaluation) {
       delete dishObj.evaluation.nutritionistId;
     }
 
+    const user = dishObj.user
+      ? {
+          ...dishObj.user,
+          profile: submitterProfile
+        }
+      : dishObj.user;
+
     return {
       ...dishObj,
+      user,
       evaluation: {
         ...dishObj.evaluation,
         nutritionist: {

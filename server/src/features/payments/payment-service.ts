@@ -16,11 +16,7 @@ import { PAYMENT_STATUS } from '~/shared/constants/payment-status';
 import { UserModel } from '~/shared/database/models';
 import type { Payment } from '~/shared/database/models/payment-model';
 import { PaymentModel } from '~/shared/database/models/payment-model';
-import {
-  buildPaginateOptions,
-  toObjectId,
-  validateObjectId
-} from '~/shared/utils';
+import { buildPaginateOptions } from '~/shared/utils';
 import { sendMail } from '~/shared/utils/email/mailer';
 import { payOS } from '~/shared/utils/payos';
 
@@ -101,6 +97,43 @@ export const PaymentService = {
       }
     }
 
+    const pendingPayments = await PaymentModel.find({
+      user: userId,
+      status: PAYMENT_STATUS.PENDING,
+      targetMembership: { $exists: true }
+    });
+
+    const expiredPendingPayments: InstanceType<typeof PaymentModel>[] = [];
+    let hasActivePendingPayment = false;
+
+    for (const pendingPayment of pendingPayments) {
+      const paymentLink = await payOS.paymentRequests.get(
+        pendingPayment.orderCode
+      );
+
+      if (paymentLink.status === 'EXPIRED') {
+        expiredPendingPayments.push(pendingPayment);
+      } else {
+        hasActivePendingPayment = true;
+      }
+    }
+
+    if (expiredPendingPayments.length > 0) {
+      for (const expiredPayment of expiredPendingPayments) {
+        expiredPayment.status = PAYMENT_STATUS.CANCELLED;
+        expiredPayment.cancellationReason = 'Link thanh toán đã hết hạn';
+        expiredPayment.completedAt = undefined;
+        await expiredPayment.save();
+      }
+    }
+
+    if (hasActivePendingPayment) {
+      throw createHttpError(
+        409,
+        'Bạn đang có giao dịch chờ thanh toán. Vui lòng hoàn tất hoặc hủy giao dịch hiện tại trước khi tạo giao dịch mới.'
+      );
+    }
+
     const orderCode = generateOrderCode();
 
     const existingPayment = await PaymentModel.findOne({ orderCode });
@@ -120,7 +153,8 @@ export const PaymentService = {
         }
       ],
       returnUrl: data.returnUrl,
-      cancelUrl: data.cancelUrl
+      cancelUrl: data.cancelUrl,
+      expiredAt: Math.floor((Date.now() + 15 * 60 * 1000) / 1000)
     };
 
     const paymentLinkResponse: CreatePaymentLinkResponse =
@@ -187,6 +221,7 @@ export const PaymentService = {
     }
 
     await payment.save();
+
     await payment.populate({
       path: 'user',
       select: 'name email membershipLevel'
@@ -194,38 +229,11 @@ export const PaymentService = {
     return payment;
   },
 
-  getPaymentByOrderCode: async (orderCode: number) => {
-    if (!Number.isFinite(orderCode) || orderCode <= 0) {
-      throw createHttpError(400, 'orderCode must be a positive number');
-    }
-
-    const payment = await PaymentModel.findOne({
-      orderCode,
-      targetMembership: { $exists: true }
-    }).populate({
-      path: 'user',
-      select: 'name email membershipLevel'
-    });
-
-    if (!payment) {
-      throw createHttpError(404, 'Payment not found');
-    }
-
-    return payment;
-  },
-
-  listPaymentsByUser: async (
-    userId: string,
-    parsed: QueryOptions
-  ): Promise<PaginateResult<Payment>> => {
-    if (!userId || !validateObjectId(userId)) {
-      throw createHttpError(400, 'Invalid userId');
-    }
-
+  getPaymentsHistory: async (userId: string, parsed: QueryOptions) => {
     const options = buildPaginateOptions(parsed);
     const filter = {
       ...parsed.filter,
-      user: toObjectId(userId)
+      user: userId
     };
 
     const result = await PaymentModel.paginate(filter, {
@@ -236,7 +244,7 @@ export const PaymentService = {
     return result;
   },
 
-  listPayments: async (
+  viewPayments: async (
     parsed: QueryOptions
   ): Promise<PaginateResult<Payment>> => {
     const options = buildPaginateOptions(parsed);
@@ -281,16 +289,21 @@ export const PaymentService = {
       }
     } else if (
       paymentLink.status === 'CANCELLED' ||
-      paymentLink.status === 'FAILED'
+      paymentLink.status === 'FAILED' ||
+      paymentLink.status === 'EXPIRED'
     ) {
       payment.status = PAYMENT_STATUS.CANCELLED;
-      payment.cancellationReason = 'Thanh toán đã bị hủy hoặc thất bại';
+      payment.cancellationReason =
+        paymentLink.status === 'EXPIRED'
+          ? 'Link thanh toán đã hết hạn'
+          : 'Thanh toán đã bị hủy hoặc thất bại';
       payment.completedAt = undefined;
     } else {
       throw createHttpError(400, 'Thanh toán chưa hoàn tất');
     }
 
     await payment.save();
+
     return payment;
   }
 };

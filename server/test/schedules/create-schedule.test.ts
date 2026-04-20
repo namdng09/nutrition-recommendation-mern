@@ -1,162 +1,306 @@
-import mongoose from 'mongoose';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it
-} from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { createScheduleRequestSchema } from '~/features/schedules/schedule-dto';
 import { ScheduleService } from '~/features/schedules/schedule-service';
-import { AVAILABLE_TIME } from '~/shared/constants/available-time';
-import { COOKING_PREFERENCE } from '~/shared/constants/cooking-preference';
 import { DAY_OF_WEEK } from '~/shared/constants/day-of-week';
-import { MEAL_COMPLEXITY } from '~/shared/constants/meal-complexity';
-import { MEAL_SIZE } from '~/shared/constants/meal-size';
-import { ROLE } from '~/shared/constants/role';
-import { ScheduleModel, UserModel } from '~/shared/database/models';
+import { WORKOUT_COUNTER_TYPE } from '~/shared/constants/workout-counter-type';
+import {
+  ExerciseModel,
+  ScheduleModel,
+  UserModel
+} from '~/shared/database/models';
+
+vi.mock('~/shared/database/models', () => ({
+  UserModel: {
+    findById: vi.fn()
+  },
+  ScheduleModel: {
+    create: vi.fn()
+  },
+  ExerciseModel: {
+    findById: vi.fn()
+  }
+}));
+
+const mockFindById = vi.mocked(UserModel.findById);
+const mockCreate = vi.mocked(ScheduleModel.create);
+const mockFindExerciseById = vi.mocked(ExerciseModel.findById);
+
+const VALID_USER_ID = '507f1f77bcf86cd799439011';
+const VALID_EXERCISE_ID = '507f1f77bcf86cd799439022';
+const USER_NAME = 'Test User';
+
+const validData = {
+  date: new Date('2026-02-15'),
+  dayOfWeek: DAY_OF_WEEK.MONDAY
+};
+
+const mockUser = {
+  _id: VALID_USER_ID,
+  mealSettings: [{ name: 'Breakfast' }, { name: 'Lunch' }, { name: 'Dinner' }]
+};
 
 describe('ScheduleService.createSchedule', () => {
-  let userId: string;
-  const userName = 'Test User';
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
 
-  beforeAll(async () => {
-    // Connect to test database if not already connected
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
+  describe('validation', () => {
+    it('should fail when date format is invalid', () => {
+      const result = createScheduleRequestSchema.safeParse({
+        ...validData,
+        date: 'invalid-date'
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Định dạng ngày không hợp lệ'
       );
-    }
-  });
-
-  beforeEach(async () => {
-    // Clean up database before each test
-    await ScheduleModel.deleteMany({});
-    await UserModel.deleteMany({});
-
-    // Create test user
-    const user = await UserModel.create({
-      email: 'testuser@example.com',
-      name: userName,
-      password: 'hashedPassword',
-      role: ROLE.USER,
-      mealSettings: [
-        {
-          name: 'Breakfast',
-          mealSize: MEAL_SIZE.NORMAL,
-          availableTime: AVAILABLE_TIME.SOME_TIME,
-          cookingPreference: COOKING_PREFERENCE.CAN_COOK,
-          complexity: MEAL_COMPLEXITY.SIMPLE
-        },
-        {
-          name: 'Lunch',
-          mealSize: MEAL_SIZE.NORMAL,
-          availableTime: AVAILABLE_TIME.SOME_TIME,
-          cookingPreference: COOKING_PREFERENCE.CAN_COOK,
-          complexity: MEAL_COMPLEXITY.SIMPLE
-        },
-        {
-          name: 'Dinner',
-          mealSize: MEAL_SIZE.NORMAL,
-          availableTime: AVAILABLE_TIME.MORE_TIME,
-          cookingPreference: COOKING_PREFERENCE.CAN_COOK,
-          complexity: MEAL_COMPLEXITY.MODERATE
-        }
-      ]
     });
-    userId = user._id.toString();
+
+    it('should fail when dayOfWeek is invalid', () => {
+      const result = createScheduleRequestSchema.safeParse({
+        ...validData,
+        dayOfWeek: 'invalid-day'
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0].message).toBe(
+        'Ngày trong tuần không hợp lệ'
+      );
+    });
   });
 
-  afterEach(async () => {
-    // Clean up after each test
-    await ScheduleModel.deleteMany({});
-    await UserModel.deleteMany({});
-  });
+  describe('business logic', () => {
+    it('should throw 404 when user does not exist', async () => {
+      mockFindById.mockResolvedValue(null);
 
-  afterAll(async () => {
-    // Close connection
-    await mongoose.connection.close();
-  });
+      await expect(
+        ScheduleService.createSchedule(
+          VALID_USER_ID,
+          USER_NAME,
+          validData as any
+        )
+      ).rejects.toMatchObject({
+        status: 404,
+        message: 'Không tìm thấy người dùng'
+      });
+    });
 
-  // Branch - Happy case
-  it('should create schedule successfully', async () => {
-    const scheduleData = {
-      date: new Date('2026-02-15'),
-      dayOfWeek: DAY_OF_WEEK.MONDAY
-    };
+    it('should throw 400 when workout has duplicated exercise ids', async () => {
+      mockFindById.mockResolvedValue(mockUser as any);
 
-    const schedule = await ScheduleService.createSchedule(
-      userId,
-      userName,
-      scheduleData as any
-    );
+      await expect(
+        ScheduleService.createSchedule(VALID_USER_ID, USER_NAME, {
+          ...validData,
+          workout: [
+            {
+              exerciseId: VALID_EXERCISE_ID,
+              durationTarget: { seconds: 600 }
+            },
+            {
+              exerciseId: VALID_EXERCISE_ID,
+              durationTarget: { seconds: 900 }
+            }
+          ]
+        } as any)
+      ).rejects.toMatchObject({
+        status: 409,
+        message: `Bài tập ${VALID_EXERCISE_ID} đã tồn tại trong workout`
+      });
+    });
 
-    expect(schedule).toBeDefined();
-    expect(schedule._id).toBeDefined();
-    expect(schedule.user?._id.toString()).toBe(userId);
-    expect(schedule.user?.name).toBe(userName);
-    expect(schedule.date).toEqual(new Date('2026-02-15'));
-    expect(schedule.dayOfWeek).toBe(DAY_OF_WEEK.MONDAY);
-    expect(schedule.meals).toBeDefined();
-    expect(schedule.meals.length).toBe(3);
-  });
+    it('should throw 400 when workout exercise id format is invalid', async () => {
+      mockFindById.mockResolvedValue(mockUser as any);
 
-  // Branch - Invalid date
-  it('should throw error when date is invalid', async () => {
-    const scheduleData = {
-      date: 'invalid-date',
-      dayOfWeek: DAY_OF_WEEK.MONDAY
-    };
+      await expect(
+        ScheduleService.createSchedule(VALID_USER_ID, USER_NAME, {
+          ...validData,
+          workout: [
+            {
+              exerciseId: 'invalid-id',
+              durationTarget: { seconds: 600 }
+            }
+          ]
+        } as any)
+      ).rejects.toMatchObject({
+        status: 400,
+        message: 'Định dạng ID bài tập không hợp lệ: invalid-id'
+      });
+    });
 
-    await expect(
-      ScheduleService.createSchedule(userId, userName, scheduleData as any)
-    ).rejects.toThrow('Định dạng ngày không hợp lệ');
-  });
+    it('should throw 404 when workout exercise does not exist', async () => {
+      mockFindById.mockResolvedValue(mockUser as any);
+      mockFindExerciseById.mockResolvedValue(null);
 
-  // Branch - Missing required field
-  it('should throw error when date is missing', async () => {
-    const scheduleData = {
-      dayOfWeek: DAY_OF_WEEK.MONDAY
-    };
+      await expect(
+        ScheduleService.createSchedule(VALID_USER_ID, USER_NAME, {
+          ...validData,
+          workout: [
+            {
+              exerciseId: VALID_EXERCISE_ID,
+              durationTarget: { seconds: 600 }
+            }
+          ]
+        } as any)
+      ).rejects.toMatchObject({
+        status: 404,
+        message: `Không tìm thấy bài tập với ID: ${VALID_EXERCISE_ID}`
+      });
+    });
 
-    await expect(
-      ScheduleService.createSchedule(userId, userName, scheduleData as any)
-    ).rejects.toThrow('Định dạng ngày không hợp lệ');
-  });
+    it('should throw 400 when exercise has no default logType', async () => {
+      mockFindById.mockResolvedValue(mockUser as any);
+      mockFindExerciseById.mockResolvedValue({
+        _id: VALID_EXERCISE_ID,
+        name: 'Running',
+        type: 'Cardio',
+        tutorial: 'Run 10 minutes'
+      } as any);
 
-  // Branch - Invalid user ID
-  it('should throw error when userId is invalid', async () => {
-    const scheduleData = {
-      date: new Date('2026-02-15'),
-      dayOfWeek: DAY_OF_WEEK.MONDAY
-    };
+      await expect(
+        ScheduleService.createSchedule(VALID_USER_ID, USER_NAME, {
+          ...validData,
+          workout: [
+            {
+              exerciseId: VALID_EXERCISE_ID,
+              durationTarget: { seconds: 600 }
+            }
+          ]
+        } as any)
+      ).rejects.toMatchObject({
+        status: 400,
+        message: 'Bài tập Running chưa có logType mặc định'
+      });
+    });
 
-    await expect(
-      ScheduleService.createSchedule(
-        'invalid-id',
-        userName,
-        scheduleData as any
-      )
-    ).rejects.toThrow('Định dạng ID người dùng không hợp lệ');
-  });
+    it('should throw 400 when provided logType mismatches exercise logType', async () => {
+      mockFindById.mockResolvedValue(mockUser as any);
+      mockFindExerciseById.mockResolvedValue({
+        _id: VALID_EXERCISE_ID,
+        name: 'Running',
+        type: 'Cardio',
+        tutorial: 'Run 10 minutes',
+        logType: WORKOUT_COUNTER_TYPE.DURATION
+      } as any);
 
-  // Branch - User not found
-  it('should throw error when user does not exist', async () => {
-    const scheduleData = {
-      date: new Date('2026-02-15'),
-      dayOfWeek: DAY_OF_WEEK.MONDAY
-    };
+      await expect(
+        ScheduleService.createSchedule(VALID_USER_ID, USER_NAME, {
+          ...validData,
+          workout: [
+            {
+              exerciseId: VALID_EXERCISE_ID,
+              logType: WORKOUT_COUNTER_TYPE.DISTANCE,
+              distanceTarget: { meters: 1000 }
+            }
+          ]
+        } as any)
+      ).rejects.toMatchObject({
+        status: 400,
+        message: `logType của bài tập Running phải là ${WORKOUT_COUNTER_TYPE.DURATION}`
+      });
+    });
 
-    const nonExistentUserId = new mongoose.Types.ObjectId().toString();
+    it('should throw 400 when distance logType missing distanceTarget', async () => {
+      mockFindById.mockResolvedValue(mockUser as any);
+      mockFindExerciseById.mockResolvedValue({
+        _id: VALID_EXERCISE_ID,
+        name: 'Running',
+        type: 'Cardio',
+        tutorial: 'Run 10 minutes',
+        logType: WORKOUT_COUNTER_TYPE.DISTANCE
+      } as any);
 
-    await expect(
-      ScheduleService.createSchedule(
-        nonExistentUserId,
-        userName,
-        scheduleData as any
-      )
-    ).rejects.toThrow('Không tìm thấy người dùng');
+      await expect(
+        ScheduleService.createSchedule(VALID_USER_ID, USER_NAME, {
+          ...validData,
+          workout: [
+            {
+              exerciseId: VALID_EXERCISE_ID
+            }
+          ]
+        } as any)
+      ).rejects.toMatchObject({
+        status: 400,
+        message: 'Bài tập Distance cần distanceTarget'
+      });
+    });
+
+    it('should throw 400 when distance logType includes invalid targets', async () => {
+      mockFindById.mockResolvedValue(mockUser as any);
+      mockFindExerciseById.mockResolvedValue({
+        _id: VALID_EXERCISE_ID,
+        name: 'Running',
+        type: 'Cardio',
+        tutorial: 'Run 10 minutes',
+        logType: WORKOUT_COUNTER_TYPE.DISTANCE
+      } as any);
+
+      await expect(
+        ScheduleService.createSchedule(VALID_USER_ID, USER_NAME, {
+          ...validData,
+          workout: [
+            {
+              exerciseId: VALID_EXERCISE_ID,
+              distanceTarget: { meters: 1000 },
+              durationTarget: { seconds: 600 }
+            }
+          ]
+        } as any)
+      ).rejects.toMatchObject({
+        status: 400,
+        message: 'Bài tập Distance chỉ được dùng distanceTarget'
+      });
+    });
+
+    it('should create schedule successfully', async () => {
+      const mockSchedule = {
+        _id: { toString: () => 'schedule456' },
+        workout: [
+          {
+            exerciseId: VALID_EXERCISE_ID,
+            exerciseName: 'Running'
+          }
+        ]
+      };
+
+      mockFindById.mockResolvedValue(mockUser as any);
+      mockFindExerciseById.mockResolvedValue({
+        _id: VALID_EXERCISE_ID,
+        name: 'Running',
+        type: 'Cardio',
+        tutorial: 'Run 10 minutes',
+        logType: WORKOUT_COUNTER_TYPE.DURATION
+      } as any);
+      mockCreate.mockResolvedValue(mockSchedule as any);
+
+      const result = await ScheduleService.createSchedule(
+        VALID_USER_ID,
+        USER_NAME,
+        {
+          ...validData,
+          workout: [
+            {
+              exerciseId: VALID_EXERCISE_ID,
+              durationTarget: { seconds: 600 }
+            }
+          ]
+        } as any
+      );
+
+      expect(mockCreate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          workout: [
+            expect.objectContaining({
+              exerciseId: VALID_EXERCISE_ID,
+              exerciseName: 'Running',
+              logType: WORKOUT_COUNTER_TYPE.DURATION,
+              durationTarget: { seconds: 600 }
+            })
+          ]
+        })
+      );
+      expect(result).toEqual(mockSchedule);
+    });
   });
 });

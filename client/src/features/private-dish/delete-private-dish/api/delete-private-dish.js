@@ -22,6 +22,10 @@ export const useDeletePrivateDish = ({ onSuccess } = {}) => {
         queryKey: QUERY_KEYS.DISHES
       });
 
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.PRIVATE_DISHES
+      });
+
       toast.success(res.message || 'Xoá món ăn của riêng bạn thành công');
       onSuccess?.(res.data);
     },

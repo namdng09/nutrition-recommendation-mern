@@ -18,7 +18,10 @@ export const DashboardController = {
   viewNutritionistDashboard: async (req: Request, res: Response) => {
     const userId = req.user?._id.toString();
 
-    const result = await DashboardService.viewNutritionistDashboard(userId);
+    const result = await DashboardService.viewNutritionistDashboard(
+      userId,
+      req.query
+    );
 
     res
       .status(200)

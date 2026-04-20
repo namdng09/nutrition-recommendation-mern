@@ -54,7 +54,7 @@ export default function SchedulePlan({ schedule, getSmallMealIcon }) {
                   >
                     <div className='relative h-36 w-full overflow-hidden bg-muted'>
                       <img
-                        src={dish.image}
+                        src={dish.image || '/logo2.png'}
                         alt={dish.name}
                         className='h-full w-full object-cover transition-transform duration-700 group-hover/dish:scale-110'
                       />
