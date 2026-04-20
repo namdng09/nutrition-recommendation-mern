@@ -18,7 +18,6 @@ import { MEAL_SIZE } from '~/shared/constants/meal-size';
 import { MEAL_TYPE } from '~/shared/constants/meal-type';
 import { MEMBERSHIP_LEVEL } from '~/shared/constants/membership-level';
 import { NUTRITION_FOCUS } from '~/shared/constants/nutrition-focus';
-import { NUTRIENTS } from '~/shared/constants/nutrition-nutrients';
 import { USER_TARGET } from '~/shared/constants/user-target';
 import {
   WORKOUT_COUNTER_TYPE,
@@ -155,19 +154,6 @@ type MealContextSummary = {
     dishes: string[];
     calories?: number;
   }>;
-};
-
-type MaterializedMealDish = {
-  dishId: string;
-  name: string;
-  servings: number;
-  image?: string;
-  nutrition: DishNutrition;
-};
-
-type MaterializedMeal = {
-  mealType: string;
-  dishes: MaterializedMealDish[];
 };
 
 type DishRetrievalMode = 'direct_mongodb' | 'rag_vector_search';
@@ -365,7 +351,6 @@ const RECOVERY_TYPES = new Set<string>([
 ]);
 
 const MEAL_HISTORY_LOOKBACK_DAYS = 7;
-const MEAL_CALORIES_TARGET_UPPER_RATIO = 1.1;
 
 const dayOfWeekByIndex: Record<number, string> = {
   0: DAY_OF_WEEK.SUNDAY,
@@ -492,13 +477,7 @@ export const AiService = {
         dishesById,
         candidatesByMealType
       });
-      const rebalancedMeals = enforceMealsCaloriesUpperBound({
-        meals,
-        dishesById,
-        candidatesByMealType,
-        caloriesTarget: user.nutritionTarget?.caloriesTarget
-      });
-      const scheduleMeals = toScheduleMealPayloads(rebalancedMeals, dishesById);
+      const scheduleMeals = toScheduleMealPayloads(meals, dishesById);
       const schedule = await upsertScheduleMeals({
         user,
         date: targetDate,
@@ -1763,53 +1742,11 @@ const buildRetrievalSummary = (
   ].join('\n');
 };
 
-const resolveDishBaseServings = (dish: DishCandidate | null | undefined) => {
-  const value = dish?.servings;
-  if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
-    return 1;
-  }
-  return value;
-};
-
-const resolveDishEnergyValue = (dish: DishCandidate | null | undefined) => {
-  const nutrients = dish?.nutrition?.nutrients ?? [];
-  if (!nutrients.length) return 0;
-
-  const energyNutrient = nutrients.find(
-    nutrient =>
-      nutrient?.label === NUTRIENTS.NANG_LUONG &&
-      typeof nutrient.value === 'number'
-  );
-  if (
-    energyNutrient &&
-    typeof energyNutrient.value === 'number' &&
-    Number.isFinite(energyNutrient.value)
-  ) {
-    return energyNutrient.value;
-  }
-
-  const fallback = nutrients.find(nutrient => {
-    const value = nutrient?.value;
-    return typeof value === 'number' && Number.isFinite(value);
-  });
-
-  return typeof fallback?.value === 'number' ? fallback.value : 0;
-};
-
-const calculateDishCalories = (
-  dish: DishCandidate | null | undefined,
-  servings = 1
-) => {
-  if (!dish) return 0;
-  const energy = resolveDishEnergyValue(dish);
-  if (!Number.isFinite(energy) || energy <= 0) return 0;
-
-  const normalizedServings =
-    typeof servings === 'number' && Number.isFinite(servings) && servings > 0
-      ? servings
-      : 1;
-  const baseServings = resolveDishBaseServings(dish);
-  return (energy * normalizedServings) / baseServings;
+const calculateDishCalories = (dish: DishCandidate | null | undefined) => {
+  if (!dish?.nutrition?.nutrients?.length) return 0;
+  const energy = dish.nutrition.nutrients[0];
+  if (!energy || typeof energy.value !== 'number') return 0;
+  return energy.value;
 };
 
 const getMealContextForDate = async (
@@ -1848,11 +1785,7 @@ const getMealContextForDate = async (
       meal.dishes?.map(dish => {
         const dishId = dish.dishId?.toString();
         const detail = dishId ? dishById.get(dishId) : undefined;
-        const servings =
-          typeof dish.servings === 'number' && Number.isFinite(dish.servings)
-            ? dish.servings
-            : 1;
-        const calories = calculateDishCalories(detail, servings);
+        const calories = calculateDishCalories(detail);
         mealCalories += calories;
         return detail?.name ?? dish.name ?? 'N/A';
       }) ?? [];
@@ -2151,7 +2084,7 @@ const materializeMeals = ({
   }> | null;
   dishesById: Map<string, DishCandidate>;
   candidatesByMealType: Map<string, DishCandidate[]>;
-}): MaterializedMeal[] => {
+}) => {
   const usedDishIds = new Set<string>();
 
   return mealSlots.map((slot, index) => {
@@ -2160,7 +2093,13 @@ const materializeMeals = ({
       slot.dishCount,
       MEAL_RECOMMENDATION_PROMPT_CONFIG.maxDishesPerMeal
     );
-    const selectedDishRows: MaterializedMealDish[] = [];
+    const selectedDishRows: Array<{
+      dishId: string;
+      name: string;
+      servings: number;
+      image?: string;
+      nutrition: DishNutrition;
+    }> = [];
     const seenInMeal = new Set<string>();
     const deferredAiDuplicates: Array<{
       dish: DishCandidate;
@@ -2225,165 +2164,6 @@ const materializeMeals = ({
       dishes: selectedDishRows
     };
   });
-};
-
-const calculateTotalMealsCalories = (
-  meals: MaterializedMeal[],
-  dishesById: Map<string, DishCandidate>
-) => {
-  let totalCalories = 0;
-
-  meals.forEach(meal => {
-    meal.dishes.forEach(dish => {
-      totalCalories += calculateDishCalories(
-        dishesById.get(dish.dishId),
-        dish.servings
-      );
-    });
-  });
-
-  return totalCalories;
-};
-
-const enforceMealsCaloriesUpperBound = ({
-  meals,
-  dishesById,
-  candidatesByMealType,
-  caloriesTarget
-}: {
-  meals: MaterializedMeal[];
-  dishesById: Map<string, DishCandidate>;
-  candidatesByMealType: Map<string, DishCandidate[]>;
-  caloriesTarget?: number;
-}): MaterializedMeal[] => {
-  if (
-    typeof caloriesTarget !== 'number' ||
-    !Number.isFinite(caloriesTarget) ||
-    caloriesTarget <= 0
-  ) {
-    return meals;
-  }
-
-  const maxAllowedCalories = Math.round(
-    caloriesTarget * MEAL_CALORIES_TARGET_UPPER_RATIO
-  );
-  if (maxAllowedCalories <= 0) return meals;
-
-  const adjustedMeals = meals.map(meal => ({
-    ...meal,
-    dishes: meal.dishes.map(dish => ({ ...dish }))
-  }));
-
-  let totalCalories = calculateTotalMealsCalories(adjustedMeals, dishesById);
-  if (totalCalories <= maxAllowedCalories) return adjustedMeals;
-
-  const pointers = () =>
-    adjustedMeals
-      .flatMap((meal, mealIndex) =>
-        meal.dishes.map((_, dishIndex) => ({ mealIndex, dishIndex }))
-      )
-      .sort((left, right) => {
-        const leftDish = adjustedMeals[left.mealIndex]?.dishes[left.dishIndex];
-        const rightDish =
-          adjustedMeals[right.mealIndex]?.dishes[right.dishIndex];
-        const leftCalories = leftDish
-          ? calculateDishCalories(
-              dishesById.get(leftDish.dishId),
-              leftDish.servings
-            )
-          : 0;
-        const rightCalories = rightDish
-          ? calculateDishCalories(
-              dishesById.get(rightDish.dishId),
-              rightDish.servings
-            )
-          : 0;
-        return rightCalories - leftCalories;
-      });
-
-  for (const pointer of pointers()) {
-    if (totalCalories <= maxAllowedCalories) break;
-    const row = adjustedMeals[pointer.mealIndex]?.dishes[pointer.dishIndex];
-    if (!row) continue;
-
-    const perServingCalories = calculateDishCalories(
-      dishesById.get(row.dishId),
-      1
-    );
-    if (perServingCalories <= 0) continue;
-
-    while (
-      row.servings > MEAL_RECOMMENDATION_PROMPT_CONFIG.minServings &&
-      totalCalories > maxAllowedCalories
-    ) {
-      row.servings -= 1;
-      totalCalories -= perServingCalories;
-    }
-  }
-
-  if (totalCalories <= maxAllowedCalories) {
-    return adjustedMeals;
-  }
-
-  for (const pointer of pointers()) {
-    if (totalCalories <= maxAllowedCalories) break;
-    const meal = adjustedMeals[pointer.mealIndex];
-    const row = meal?.dishes[pointer.dishIndex];
-    if (!meal || !row) continue;
-
-    const currentDish = dishesById.get(row.dishId);
-    const currentCalories = calculateDishCalories(currentDish, row.servings);
-    if (!currentDish || currentCalories <= 0) continue;
-
-    const candidatePool = candidatesByMealType.get(meal.mealType) ?? [];
-    if (!candidatePool.length) continue;
-
-    const usedDishIds = new Set(
-      adjustedMeals.flatMap(item => item.dishes.map(dish => dish.dishId))
-    );
-    usedDishIds.delete(row.dishId);
-
-    const uniqueFirstCandidates = [
-      ...candidatePool.filter(candidate => !usedDishIds.has(candidate._id)),
-      ...candidatePool.filter(candidate => usedDishIds.has(candidate._id))
-    ];
-
-    let replacement: {
-      dish: DishCandidate;
-      servings: number;
-      calories: number;
-    } | null = null;
-
-    for (const candidate of uniqueFirstCandidates) {
-      if (candidate._id === row.dishId) continue;
-      const candidateServings = MEAL_RECOMMENDATION_PROMPT_CONFIG.minServings;
-      const candidateCalories = calculateDishCalories(
-        candidate,
-        candidateServings
-      );
-      if (candidateCalories <= 0 || candidateCalories >= currentCalories) {
-        continue;
-      }
-
-      if (!replacement || candidateCalories < replacement.calories) {
-        replacement = {
-          dish: candidate,
-          servings: candidateServings,
-          calories: candidateCalories
-        };
-      }
-    }
-
-    if (!replacement) continue;
-
-    meal.dishes[pointer.dishIndex] = toDishResponse(
-      replacement.dish,
-      replacement.servings
-    );
-    totalCalories = totalCalories - currentCalories + replacement.calories;
-  }
-
-  return adjustedMeals;
 };
 
 const resolveTargetExerciseCount = (
@@ -2560,14 +2340,14 @@ const toDishResponse = (dish: DishCandidate, servings: number) => ({
 });
 
 const toScheduleMealPayloads = (
-  meals: MaterializedMeal[],
+  meals: ReturnType<typeof materializeMeals>,
   dishesById: Map<string, DishCandidate>
 ) =>
   meals.map(meal => ({
     mealType: meal.mealType,
     dishes: meal.dishes.map(dish => {
       const dishCandidate = dishesById.get(dish.dishId);
-      const energy = calculateDishCalories(dishCandidate, dish.servings);
+      const energy = calculateDishCalories(dishCandidate);
 
       return {
         dishId: dish.dishId,
