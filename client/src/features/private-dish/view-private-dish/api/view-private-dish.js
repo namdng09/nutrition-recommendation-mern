@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import apiClient from '~/lib/api-client';
 import { buildQueryParams } from '~/lib/build-query-params';
@@ -13,9 +13,10 @@ const fetchPrivateDishes = async params => {
   return response.data.data;
 };
 
-export const usePrivateDishes = (params = {}) => {
-  return useSuspenseQuery({
+export const usePrivateDishes = (params = {}, options = {}) => {
+  return useQuery({
     queryKey: [...QUERY_KEYS.PRIVATE_DISHES, params],
-    queryFn: () => fetchPrivateDishes(params)
+    queryFn: () => fetchPrivateDishes(params),
+    enabled: options.enabled ?? true
   });
 };
