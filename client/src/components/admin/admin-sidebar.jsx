@@ -2,11 +2,14 @@ import {
   Apple,
   BicepsFlexed,
   ClipboardCheck,
+  Cpu,
+  FlaskConical,
   Ham,
   Home,
   MessageSquare,
   Package,
   StickyNote,
+  TestTube,
   Users,
   Wallet
 } from 'lucide-react';
@@ -105,6 +108,26 @@ export function AdminSidebar({ ...props }) {
           title: 'Bài tập',
           url: '/admin/manage-exercises',
           icon: BicepsFlexed
+        }
+      ]
+    },
+    {
+      title: 'Quản lý AI',
+      items: [
+        {
+          title: 'Dashboard AI',
+          url: '/admin/ai-dashboard',
+          icon: Cpu
+        },
+        {
+          title: 'Đánh giá AI',
+          url: '/admin/ai-evaluations',
+          icon: FlaskConical
+        },
+        {
+          title: 'Test Cases AI',
+          url: '/admin/ai-test-cases',
+          icon: TestTube
         }
       ]
     }

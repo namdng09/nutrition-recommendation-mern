@@ -453,6 +453,18 @@ const router = createBrowserRouter([
           {
             path: 'feedbacks/',
             Component: lazy(() => import('~/app/admin/feedbacks/page'))
+          },
+          {
+            path: 'ai-dashboard/',
+            Component: lazy(() => import('~/app/admin/ai-dashboard/page'))
+          },
+          {
+            path: 'ai-evaluations/',
+            Component: lazy(() => import('~/app/admin/ai-evaluations/page'))
+          },
+          {
+            path: 'ai-test-cases/',
+            Component: lazy(() => import('~/app/admin/ai-test-cases/page'))
           }
         ]
       },

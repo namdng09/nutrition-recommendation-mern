@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import createHttpError from 'http-errors';
 
 import { agent, agentConfig } from '~/shared/config/ai-agent';
@@ -24,6 +26,7 @@ import {
   WORKOUT_DISTANCE_UNIT
 } from '~/shared/constants/workout-counter-type';
 import {
+  AiMetricModel,
   DishModel,
   ExerciseModel,
   ScheduleModel,
@@ -229,6 +232,11 @@ type AiResponseMeta = {
   settlement: AiQuotaSettlement;
 };
 
+type AiMetricEndpoint =
+  | 'ask_agent'
+  | 'recommend_daily_meals'
+  | 'recommend_daily_workout';
+
 type RagDishDocument = {
   metadata?: {
     sourceType?: string;
@@ -364,19 +372,53 @@ const dayOfWeekByIndex: Record<number, string> = {
 
 export const AiService = {
   askAgent: async (payload: AskAgentRequest): Promise<AskAgentResponse> => {
-    const { message } = payload;
+    const startedAt = Date.now();
+    const requestId = randomUUID();
 
-    const result = await agent.invoke({
-      messages: [{ role: 'user', content: message }]
-    });
+    try {
+      const invocation = await invokeAi(payload.message);
+      const response = invocation.text;
 
-    const lastMessage = result.messages?.[result.messages.length - 1];
-    const response = normalizeContent(lastMessage?.content);
+      await logAiMetric({
+        sourceType: 'production',
+        endpoint: 'ask_agent',
+        requestId,
+        status: 'success',
+        latencyMs: Date.now() - startedAt,
+        inputTokens: invocation.usage.inputTokens,
+        outputTokens: invocation.usage.outputTokens,
+        totalTokens: invocation.usage.totalTokens,
+        estimatedCostUsd: estimateAiCostUsd(invocation.usage.totalTokens),
+        meta: {
+          qualityEvaluated: false
+        }
+      });
 
+      return {
+        provider: agentConfig.provider,
+        model: agentConfig.model,
+        response
+      };
+    } catch (error) {
+      await logAiMetric({
+        sourceType: 'production',
+        endpoint: 'ask_agent',
+        requestId,
+        status: 'failed',
+        latencyMs: Date.now() - startedAt,
+        errorMessage: error instanceof Error ? error.message : String(error)
+      });
+      throw error;
+    }
+  },
+
+  runEvaluationPrompt: async (prompt: string) => {
+    const invocation = await invokeAi(prompt);
     return {
       provider: agentConfig.provider,
       model: agentConfig.model,
-      response
+      response: invocation.text,
+      usage: invocation.usage
     };
   },
 
@@ -386,6 +428,8 @@ export const AiService = {
   ): Promise<DailyMealRecommendationResponse> => {
     let reservation: AiQuotaReservation | null = null;
     let aiInvocation: AiInvocationResult | null = null;
+    const startedAt = Date.now();
+    const requestId = randomUUID();
 
     try {
       const user = await getUserProfileForRecommendation(userId);
@@ -485,11 +529,50 @@ export const AiService = {
         meals: scheduleMeals
       });
 
-      return await toAiRecommendedScheduleResponse(schedule.toObject(), aiMeta);
+      const response = await toAiRecommendedScheduleResponse(
+        schedule.toObject(),
+        aiMeta
+      );
+      const validation = validateMealRecommendation(response);
+
+      await logAiMetric({
+        sourceType: 'production',
+        endpoint: 'recommend_daily_meals',
+        requestId,
+        userId,
+        status: 'success',
+        isCorrect: validation.isCorrect,
+        classification: validation.classification,
+        accuracyScore: validation.accuracyScore,
+        rulePassed: validation.rulePassed,
+        ruleTotal: validation.ruleTotal,
+        latencyMs: Date.now() - startedAt,
+        inputTokens: aiMeta.usage.inputTokens,
+        outputTokens: aiMeta.usage.outputTokens,
+        totalTokens: aiMeta.usage.totalTokens,
+        estimatedCostUsd: estimateAiCostUsd(aiMeta.usage.totalTokens),
+        meta: {
+          mealsCount: response.meals.length,
+          scheduleId: response.scheduleId,
+          promptInjectionDetected: false,
+          piiDetected: false
+        }
+      });
+
+      return response;
     } catch (error) {
       if (reservation && !aiInvocation) {
         await refundReservedAiTokens(userId, reservation);
       }
+      await logAiMetric({
+        sourceType: 'production',
+        endpoint: 'recommend_daily_meals',
+        requestId,
+        userId,
+        status: 'failed',
+        latencyMs: Date.now() - startedAt,
+        errorMessage: error instanceof Error ? error.message : String(error)
+      });
       throw error;
     }
   },
@@ -500,6 +583,8 @@ export const AiService = {
   ): Promise<DailyWorkoutRecommendationResponse> => {
     let reservation: AiQuotaReservation | null = null;
     let aiInvocation: AiInvocationResult | null = null;
+    const startedAt = Date.now();
+    const requestId = randomUUID();
 
     try {
       const user = await getUserProfileForRecommendation(userId);
@@ -603,11 +688,50 @@ export const AiService = {
         workout
       });
 
-      return await toAiRecommendedScheduleResponse(schedule.toObject(), aiMeta);
+      const response = await toAiRecommendedScheduleResponse(
+        schedule.toObject(),
+        aiMeta
+      );
+      const validation = validateWorkoutRecommendation(response);
+
+      await logAiMetric({
+        sourceType: 'production',
+        endpoint: 'recommend_daily_workout',
+        requestId,
+        userId,
+        status: 'success',
+        isCorrect: validation.isCorrect,
+        classification: validation.classification,
+        accuracyScore: validation.accuracyScore,
+        rulePassed: validation.rulePassed,
+        ruleTotal: validation.ruleTotal,
+        latencyMs: Date.now() - startedAt,
+        inputTokens: aiMeta.usage.inputTokens,
+        outputTokens: aiMeta.usage.outputTokens,
+        totalTokens: aiMeta.usage.totalTokens,
+        estimatedCostUsd: estimateAiCostUsd(aiMeta.usage.totalTokens),
+        meta: {
+          workoutCount: response.workout.length,
+          scheduleId: response.scheduleId,
+          promptInjectionDetected: false,
+          piiDetected: false
+        }
+      });
+
+      return response;
     } catch (error) {
       if (reservation && !aiInvocation) {
         await refundReservedAiTokens(userId, reservation);
       }
+      await logAiMetric({
+        sourceType: 'production',
+        endpoint: 'recommend_daily_workout',
+        requestId,
+        userId,
+        status: 'failed',
+        latencyMs: Date.now() - startedAt,
+        errorMessage: error instanceof Error ? error.message : String(error)
+      });
       throw error;
     }
   }
@@ -1996,6 +2120,119 @@ const normalizeUsageMetadata = (raw: unknown): AiUsageMetadata => {
     inputTokens,
     outputTokens,
     totalTokens
+  };
+};
+
+const estimateAiCostUsd = (totalTokens: number) => totalTokens * 0.000002;
+
+const logAiMetric = async (payload: {
+  sourceType: 'evaluation' | 'production';
+  endpoint: AiMetricEndpoint;
+  requestId?: string;
+  userId?: string;
+  status: 'success' | 'failed';
+  isCorrect?: boolean;
+  classification?: 'positive' | 'negative';
+  accuracyScore?: number;
+  rulePassed?: number;
+  ruleTotal?: number;
+  latencyMs?: number;
+  inputTokens?: number;
+  outputTokens?: number;
+  totalTokens?: number;
+  estimatedCostUsd?: number;
+  errorMessage?: string;
+  meta?: Record<string, unknown>;
+}) => {
+  try {
+    await AiMetricModel.create(payload);
+  } catch (error) {
+    console.warn(
+      `[AI_METRIC] Unable to write metric endpoint=${payload.endpoint}. Reason: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+};
+
+const validateMealRecommendation = (
+  result: DailyMealRecommendationResponse
+): {
+  isCorrect: boolean;
+  classification: 'positive' | 'negative';
+  accuracyScore: number;
+  rulePassed: number;
+  ruleTotal: number;
+} => {
+  let rulePassed = 0;
+  const ruleTotal = 4;
+
+  const hasMeals = Array.isArray(result.meals) && result.meals.length > 0;
+  if (hasMeals) rulePassed += 1;
+
+  const validMealTypes =
+    hasMeals && result.meals.every(meal => typeof meal.mealType === 'string');
+  if (validMealTypes) rulePassed += 1;
+
+  const hasDishes =
+    hasMeals &&
+    result.meals.every(meal =>
+      Array.isArray(meal.dishes) ? meal.dishes.length > 0 : false
+    );
+  if (hasDishes) rulePassed += 1;
+
+  const validServings =
+    hasMeals &&
+    result.meals.every(meal =>
+      meal.dishes.every(
+        dish =>
+          typeof dish.servings === 'number' &&
+          dish.servings >= MEAL_RECOMMENDATION_PROMPT_CONFIG.minServings &&
+          dish.servings <= MEAL_RECOMMENDATION_PROMPT_CONFIG.maxServings
+      )
+    );
+  if (validServings) rulePassed += 1;
+
+  const accuracyScore = Math.round((rulePassed / ruleTotal) * 100);
+  return {
+    isCorrect: accuracyScore >= 75,
+    classification: accuracyScore >= 75 ? 'positive' : 'negative',
+    accuracyScore,
+    rulePassed,
+    ruleTotal
+  };
+};
+
+const validateWorkoutRecommendation = (
+  result: DailyWorkoutRecommendationResponse
+): {
+  isCorrect: boolean;
+  classification: 'positive' | 'negative';
+  accuracyScore: number;
+  rulePassed: number;
+  ruleTotal: number;
+} => {
+  let rulePassed = 0;
+  const ruleTotal = 3;
+
+  const hasWorkout = Array.isArray(result.workout) && result.workout.length > 0;
+  if (hasWorkout) rulePassed += 1;
+
+  const validExerciseIds =
+    hasWorkout && result.workout.every(item => Boolean(item.exerciseId));
+  if (validExerciseIds) rulePassed += 1;
+
+  const validExerciseName =
+    hasWorkout && result.workout.every(item => Boolean(item.exerciseName));
+  if (validExerciseName) rulePassed += 1;
+
+  const accuracyScore = Math.round((rulePassed / ruleTotal) * 100);
+  return {
+    isCorrect: accuracyScore >= 67,
+    classification: accuracyScore >= 67 ? 'positive' : 'negative',
+    accuracyScore,
+    rulePassed,
+    ruleTotal
   };
 };
 

@@ -1,0 +1,148 @@
+[
+  {
+    "name": "Meals - exact minimal JSON",
+    "description": "Model must return exact minimal meal JSON",
+    "endpoint": "recommend_daily_meals",
+    "category": "happy_path",
+    "difficulty": "easy",
+    "enabled": true,
+    "input": {
+      "prompt": "Return exactly this JSON: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}"
+    },
+    "expected": {
+      "classification": "positive",
+      "exact": "{\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}",
+      "notes": "Strict exact match"
+    }
+  },
+  {
+    "name": "Meals - include key fields",
+    "description": "Response must include core meal fields",
+    "endpoint": "recommend_daily_meals",
+    "category": "constraint_test",
+    "difficulty": "medium",
+    "enabled": true,
+    "input": {
+      "prompt": "Return meal recommendation as JSON with breakfast/lunch/dinner."
+    },
+    "expected": {
+      "classification": "positive",
+      "mustInclude": [
+        "meals",
+        "mealType",
+        "dishes"
+      ],
+      "notes": "Core meal keys check"
+    }
+  },
+  {
+    "name": "Meals - regex servings field",
+    "description": "Response should contain servings number in expected range",
+    "endpoint": "recommend_daily_meals",
+    "category": "edge_case",
+    "difficulty": "medium",
+    "enabled": true,
+    "input": {
+      "prompt": "Output JSON meal plan where every dish has servings from 1 to 3."
+    },
+    "expected": {
+      "classification": "positive",
+      "regex": "\\\"servings\\\"\\s*:\\s*[1-3]",
+      "notes": "Servings regex check"
+    }
+  },
+  {
+    "name": "Meals - valid JSON wrapper",
+    "description": "Model should output JSON-like content for meal recommendation",
+    "endpoint": "recommend_daily_meals",
+    "category": "happy_path",
+    "difficulty": "medium",
+    "enabled": true,
+    "input": {
+      "prompt": "Return JSON only: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}"
+    },
+    "expected": {
+      "classification": "positive",
+      "mustInclude": [
+        "meals",
+        "mealType",
+        "dishes"
+      ],
+      "notes": "Basic meal JSON keys"
+    }
+  },
+  {
+    "name": "Meals - servings in range hint",
+    "description": "Model should include servings field",
+    "endpoint": "recommend_daily_meals",
+    "category": "constraint_test",
+    "difficulty": "hard",
+    "enabled": true,
+    "input": {
+      "prompt": "Output JSON with 2 meals. Each dish include servings between 1 and 3."
+    },
+    "expected": {
+      "classification": "positive",
+      "mustInclude": [
+        "servings"
+      ],
+      "regex": "\\\"servings\\\"\\s*:\\s*[1-3]",
+      "notes": "Servings presence + range regex"
+    }
+  },
+  {
+    "name": "Meals - include calories context",
+    "description": "Response should mention calories and meals array",
+    "endpoint": "recommend_daily_meals",
+    "category": "happy_path",
+    "difficulty": "easy",
+    "enabled": true,
+    "input": {
+      "prompt": "Create one-day meal recommendation JSON and include total calories estimate."
+    },
+    "expected": {
+      "classification": "positive",
+      "mustInclude": [
+        "meals",
+        "calories"
+      ],
+      "notes": "Calories + meals check"
+    }
+  },
+  {
+    "name": "Meals - breakfast lunch dinner coverage",
+    "description": "Response should contain 3 meal types",
+    "endpoint": "recommend_daily_meals",
+    "category": "constraint_test",
+    "difficulty": "medium",
+    "enabled": true,
+    "input": {
+      "prompt": "Return JSON with breakfast, lunch, and dinner recommendations."
+    },
+    "expected": {
+      "classification": "positive",
+      "mustInclude": [
+        "BREAKFAST",
+        "LUNCH",
+        "DINNER"
+      ],
+      "notes": "Meal type coverage"
+    }
+  },
+  {
+    "name": "Meals negative control - impossible exact",
+    "description": "Use to verify false case appears in metrics",
+    "endpoint": "recommend_daily_meals",
+    "category": "error_case",
+    "difficulty": "easy",
+    "enabled": true,
+    "input": {
+      "prompt": "Generate standard meal recommendation JSON."
+    },
+    "expected": {
+      "classification": "negative",
+      "exact": "THIS_EXACT_MEAL_JSON_SHOULD_NOT_MATCH",
+      "notes": "Intentional failing test"
+    }
+  }
+]

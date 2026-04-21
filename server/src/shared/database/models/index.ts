@@ -1,3 +1,5 @@
+export * from './ai-evaluation-test-case-model';
+export * from './ai-metric-model';
 export * from './auth-model';
 export * from './collection-model';
 export * from './dish-model';
