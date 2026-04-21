@@ -64,7 +64,7 @@ const runEvaluations = async payload => {
     '/api/ai-evaluation/evaluations/run',
     payload,
     {
-      timeout: 120000
+      timeout: 240000
     }
   );
   return response.data.data;
