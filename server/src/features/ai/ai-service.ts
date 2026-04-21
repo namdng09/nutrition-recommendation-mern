@@ -26,7 +26,6 @@ import {
   WORKOUT_DISTANCE_UNIT
 } from '~/shared/constants/workout-counter-type';
 import {
-  AiMetricModel,
   DishModel,
   ExerciseModel,
   ScheduleModel,
@@ -58,6 +57,11 @@ import exerciseRecommendationPrompt, {
 import mealRecommendationPrompt, {
   MEAL_RECOMMENDATION_PROMPT_CONFIG
 } from './meal-recommendation-prompt';
+import {
+  calculateDishCalories,
+  estimateAiCostUsd,
+  MetricsCollector
+} from './metrics';
 
 type NutritionItem = {
   label?: string | null;
@@ -379,7 +383,7 @@ export const AiService = {
       const invocation = await invokeAi(payload.message);
       const response = invocation.text;
 
-      await logAiMetric({
+      await MetricsCollector.logMetric({
         sourceType: 'production',
         endpoint: 'ask_agent',
         requestId,
@@ -400,7 +404,7 @@ export const AiService = {
         response
       };
     } catch (error) {
-      await logAiMetric({
+      await MetricsCollector.logMetric({
         sourceType: 'production',
         endpoint: 'ask_agent',
         requestId,
@@ -533,9 +537,31 @@ export const AiService = {
         schedule.toObject(),
         aiMeta
       );
-      const validation = validateMealRecommendation(response);
 
-      await logAiMetric({
+      const validationContext = {
+        userProfile: {
+          allergies: user.allergens,
+          diet: user.diet ?? '',
+          calorieTarget: user.nutritionTarget?.caloriesTarget ?? 2000,
+          goal: user.goal?.target ?? ''
+        },
+        mealSlots: mealSlots.map(slot => ({
+          mealType: slot.mealType,
+          calorieTarget: 0
+        })),
+        dishCatalog: candidateDishes.map(dish => ({
+          dishId: dish._id,
+          allergens: dish.ingredients.flatMap(i => i.allergens),
+          calories: calculateDishCalories(dish)
+        }))
+      };
+
+      const validation = await MetricsCollector.validateMealProduction(
+        aiInvocation.text,
+        validationContext
+      );
+
+      await MetricsCollector.logMetric({
         sourceType: 'production',
         endpoint: 'recommend_daily_meals',
         requestId,
@@ -544,6 +570,8 @@ export const AiService = {
         isCorrect: validation.isCorrect,
         classification: validation.classification,
         accuracyScore: validation.accuracyScore,
+        ruleScore: validation.ruleScore,
+        semanticScore: validation.semanticScore,
         rulePassed: validation.rulePassed,
         ruleTotal: validation.ruleTotal,
         latencyMs: Date.now() - startedAt,
@@ -555,7 +583,8 @@ export const AiService = {
           mealsCount: response.meals.length,
           scheduleId: response.scheduleId,
           promptInjectionDetected: false,
-          piiDetected: false
+          piiDetected: false,
+          validationReport: validation.validationReport
         }
       });
 
@@ -564,7 +593,7 @@ export const AiService = {
       if (reservation && !aiInvocation) {
         await refundReservedAiTokens(userId, reservation);
       }
-      await logAiMetric({
+      await MetricsCollector.logMetric({
         sourceType: 'production',
         endpoint: 'recommend_daily_meals',
         requestId,
@@ -692,9 +721,12 @@ export const AiService = {
         schedule.toObject(),
         aiMeta
       );
-      const validation = validateWorkoutRecommendation(response);
 
-      await logAiMetric({
+      const validation = MetricsCollector.validateWorkoutBasic(
+        response.workout
+      );
+
+      await MetricsCollector.logMetric({
         sourceType: 'production',
         endpoint: 'recommend_daily_workout',
         requestId,
@@ -703,6 +735,7 @@ export const AiService = {
         isCorrect: validation.isCorrect,
         classification: validation.classification,
         accuracyScore: validation.accuracyScore,
+        ruleScore: validation.ruleScore,
         rulePassed: validation.rulePassed,
         ruleTotal: validation.ruleTotal,
         latencyMs: Date.now() - startedAt,
@@ -723,7 +756,7 @@ export const AiService = {
       if (reservation && !aiInvocation) {
         await refundReservedAiTokens(userId, reservation);
       }
-      await logAiMetric({
+      await MetricsCollector.logMetric({
         sourceType: 'production',
         endpoint: 'recommend_daily_workout',
         requestId,
@@ -1866,13 +1899,6 @@ const buildRetrievalSummary = (
   ].join('\n');
 };
 
-const calculateDishCalories = (dish: DishCandidate | null | undefined) => {
-  if (!dish?.nutrition?.nutrients?.length) return 0;
-  const energy = dish.nutrition.nutrients[0];
-  if (!energy || typeof energy.value !== 'number') return 0;
-  return energy.value;
-};
-
 const getMealContextForDate = async (
   userId: string,
   date: Date
@@ -2120,119 +2146,6 @@ const normalizeUsageMetadata = (raw: unknown): AiUsageMetadata => {
     inputTokens,
     outputTokens,
     totalTokens
-  };
-};
-
-const estimateAiCostUsd = (totalTokens: number) => totalTokens * 0.000002;
-
-const logAiMetric = async (payload: {
-  sourceType: 'evaluation' | 'production';
-  endpoint: AiMetricEndpoint;
-  requestId?: string;
-  userId?: string;
-  status: 'success' | 'failed';
-  isCorrect?: boolean;
-  classification?: 'positive' | 'negative';
-  accuracyScore?: number;
-  rulePassed?: number;
-  ruleTotal?: number;
-  latencyMs?: number;
-  inputTokens?: number;
-  outputTokens?: number;
-  totalTokens?: number;
-  estimatedCostUsd?: number;
-  errorMessage?: string;
-  meta?: Record<string, unknown>;
-}) => {
-  try {
-    await AiMetricModel.create(payload);
-  } catch (error) {
-    console.warn(
-      `[AI_METRIC] Unable to write metric endpoint=${payload.endpoint}. Reason: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
-  }
-};
-
-const validateMealRecommendation = (
-  result: DailyMealRecommendationResponse
-): {
-  isCorrect: boolean;
-  classification: 'positive' | 'negative';
-  accuracyScore: number;
-  rulePassed: number;
-  ruleTotal: number;
-} => {
-  let rulePassed = 0;
-  const ruleTotal = 4;
-
-  const hasMeals = Array.isArray(result.meals) && result.meals.length > 0;
-  if (hasMeals) rulePassed += 1;
-
-  const validMealTypes =
-    hasMeals && result.meals.every(meal => typeof meal.mealType === 'string');
-  if (validMealTypes) rulePassed += 1;
-
-  const hasDishes =
-    hasMeals &&
-    result.meals.every(meal =>
-      Array.isArray(meal.dishes) ? meal.dishes.length > 0 : false
-    );
-  if (hasDishes) rulePassed += 1;
-
-  const validServings =
-    hasMeals &&
-    result.meals.every(meal =>
-      meal.dishes.every(
-        dish =>
-          typeof dish.servings === 'number' &&
-          dish.servings >= MEAL_RECOMMENDATION_PROMPT_CONFIG.minServings &&
-          dish.servings <= MEAL_RECOMMENDATION_PROMPT_CONFIG.maxServings
-      )
-    );
-  if (validServings) rulePassed += 1;
-
-  const accuracyScore = Math.round((rulePassed / ruleTotal) * 100);
-  return {
-    isCorrect: accuracyScore >= 75,
-    classification: accuracyScore >= 75 ? 'positive' : 'negative',
-    accuracyScore,
-    rulePassed,
-    ruleTotal
-  };
-};
-
-const validateWorkoutRecommendation = (
-  result: DailyWorkoutRecommendationResponse
-): {
-  isCorrect: boolean;
-  classification: 'positive' | 'negative';
-  accuracyScore: number;
-  rulePassed: number;
-  ruleTotal: number;
-} => {
-  let rulePassed = 0;
-  const ruleTotal = 3;
-
-  const hasWorkout = Array.isArray(result.workout) && result.workout.length > 0;
-  if (hasWorkout) rulePassed += 1;
-
-  const validExerciseIds =
-    hasWorkout && result.workout.every(item => Boolean(item.exerciseId));
-  if (validExerciseIds) rulePassed += 1;
-
-  const validExerciseName =
-    hasWorkout && result.workout.every(item => Boolean(item.exerciseName));
-  if (validExerciseName) rulePassed += 1;
-
-  const accuracyScore = Math.round((rulePassed / ruleTotal) * 100);
-  return {
-    isCorrect: accuracyScore >= 67,
-    classification: accuracyScore >= 67 ? 'positive' : 'negative',
-    accuracyScore,
-    rulePassed,
-    ruleTotal
   };
 };
 

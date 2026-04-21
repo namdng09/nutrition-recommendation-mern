@@ -195,7 +195,9 @@ ${response}
 ## Yêu cầu:
 - Chỉ trả về một số nguyên từ 0-100
 - Không giải thích, không thêm text
-- Ví dụ output hợp lệ: "75"`;
+- Ví dụ output hợp lệ: "75"
+
+CRITICAL: Respond with ONLY the number. No JSON, no text, no explanation.`;
 
   try {
     const result = await AiService.runEvaluationPrompt(evalPrompt);
@@ -495,12 +497,27 @@ export const AiEvaluationService = {
     const startedAt = new Date();
     const results: Array<Record<string, unknown>> = [];
 
+    const JSON_INSTRUCTION = `
+
+CRITICAL INSTRUCTIONS:
+1. You MUST respond with ONLY valid JSON
+2. NO explanations, NO conversational text, NO markdown formatting
+3. Start your response with { and end with }
+4. If you cannot generate the exact format, return: {"error": "unable to generate"}
+5. Do NOT ask for more information - generate the response based on available context
+
+Example valid response:
+{"meals":[{"mealType":"BREAKFAST","dishes":[{"dishId":"1","servings":1}]}]}
+
+Now generate your JSON response:`;
+
     for (const testCase of testCases) {
       const start = Date.now();
-      const prompt = String(
+      const rawPrompt = String(
         (testCase.input as Record<string, unknown>)?.prompt ??
           JSON.stringify(testCase.input)
       );
+      const prompt = rawPrompt + JSON_INSTRUCTION;
 
       try {
         const aiResult = await AiService.runEvaluationPrompt(prompt);

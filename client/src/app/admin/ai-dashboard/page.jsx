@@ -60,33 +60,53 @@ const getDatesByRange = days => {
 };
 
 const formatPeriodLabel = (period, granularity) => {
-  if (!period) return '';
+  if (!period || typeof period !== 'string') return '';
 
-  // Parse as UTC by appending 'Z'
-  const normalized = period.replace(' ', 'T') + ':00Z';
-  const date = new Date(normalized);
+  try {
+    // Handle format: "2026-04-21" or "2026-04-21 17:00"
+    let normalized = period;
+    if (period.includes(' ')) {
+      // Already has time, append Z for UTC
+      normalized = period.replace(' ', 'T') + ':00Z';
+    } else {
+      // Date only, treat as UTC date
+      normalized = period + 'T00:00:00Z';
+    }
 
-  if (granularity === 'hour') {
+    const date = new Date(normalized);
+
+    if (Number.isNaN(date.getTime())) {
+      return period; // Return original if parsing fails
+    }
+
+    if (granularity === 'hour') {
+      return new Intl.DateTimeFormat('en-GB', {
+        timeZone: VN_TZ,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }).format(date); // e.g. "17:00"
+    }
+
     return new Intl.DateTimeFormat('en-GB', {
       timeZone: VN_TZ,
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    }).format(date); // e.g. "17:00"
+      day: '2-digit',
+      month: '2-digit'
+    }).format(date); // e.g. "21/04"
+  } catch {
+    return period || '';
   }
-
-  return new Intl.DateTimeFormat('en-GB', {
-    timeZone: VN_TZ,
-    day: '2-digit',
-    month: '2-digit'
-  }).format(date); // e.g. "21/04"
 };
 
 const formatCurrency = value => `$${Number(value || 0).toFixed(4)}`;
 
 const transformTrendsData = data => {
+  if (!data || !Array.isArray(data)) return [];
+
   const grouped = {};
-  (data || []).forEach(item => {
+  data.forEach(item => {
+    if (!item.period) return;
+
     if (!grouped[item.period]) {
       grouped[item.period] = {
         period: item.period,
@@ -267,41 +287,49 @@ const Page = () => {
         <CardHeader>
           <CardTitle>Xu hướng Accuracy: Production vs Evaluation</CardTitle>
         </CardHeader>
-        <CardContent className='h-[320px]'>
-          <ResponsiveContainer width='100%' height='100%'>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray='3 3' />
-              <XAxis
-                dataKey='period'
-                tickFormatter={period => formatPeriodLabel(period, granularity)}
-              />
-              <YAxis domain={[0, 100]} />
-              <Tooltip
-                labelFormatter={period =>
-                  formatPeriodLabel(period, granularity)
-                }
-              />
-              <Legend />
-              <Line
-                type='monotone'
-                dataKey='production'
-                name='Production'
-                stroke='#6366f1'
-                strokeWidth={2}
-                dot={true}
-                connectNulls
-              />
-              <Line
-                type='monotone'
-                dataKey='evaluation'
-                name='Evaluation'
-                stroke='#22c55e'
-                strokeWidth={2}
-                dot={true}
-                connectNulls
-              />
-            </LineChart>
-          </ResponsiveContainer>
+        <CardContent className='h-[320px] min-h-[320px]'>
+          {chartData.length === 0 ? (
+            <div className='flex h-full items-center justify-center text-muted-foreground'>
+              {isLoading ? 'Đang tải...' : 'Chưa có dữ liệu'}
+            </div>
+          ) : (
+            <ResponsiveContainer width='100%' height='100%'>
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray='3 3' />
+                <XAxis
+                  dataKey='period'
+                  tickFormatter={period =>
+                    formatPeriodLabel(period, granularity)
+                  }
+                />
+                <YAxis domain={[0, 100]} />
+                <Tooltip
+                  labelFormatter={period =>
+                    formatPeriodLabel(period, granularity)
+                  }
+                />
+                <Legend />
+                <Line
+                  type='monotone'
+                  dataKey='production'
+                  name='Production'
+                  stroke='#6366f1'
+                  strokeWidth={2}
+                  dot={true}
+                  connectNulls
+                />
+                <Line
+                  type='monotone'
+                  dataKey='evaluation'
+                  name='Evaluation'
+                  stroke='#22c55e'
+                  strokeWidth={2}
+                  dot={true}
+                  connectNulls
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -17,7 +17,7 @@ const model = new ChatGoogleGenerativeAI({
   apiKey: googleApiKey,
   model: agentConfig.model,
   temperature: 0.3,
-  maxOutputTokens: 512
+  maxOutputTokens: 2048
 });
 
 export const agent = createAgent({

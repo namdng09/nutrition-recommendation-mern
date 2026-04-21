@@ -1,0 +1,233 @@
+import { randomUUID } from 'node:crypto';
+
+import {
+  MealRecommendationValidator,
+  SemanticValidator
+} from '~/features/ai-evaluation/validators';
+import { AiMetricModel } from '~/shared/database/models';
+
+export interface MealValidationContext {
+  userProfile: {
+    allergies: string[];
+    diet: string;
+    calorieTarget: number;
+    goal: string;
+  };
+  mealSlots: Array<{
+    mealType: string;
+    calorieTarget: number;
+  }>;
+  dishCatalog: Array<{
+    dishId: string;
+    allergens: string[];
+    calories: number;
+  }>;
+}
+
+export interface LogMetricPayload {
+  sourceType: 'evaluation' | 'production';
+  endpoint: string;
+  requestId?: string;
+  userId?: string;
+  status: 'success' | 'failed';
+  isCorrect?: boolean;
+  classification?: 'positive' | 'negative';
+  accuracyScore?: number;
+  ruleScore?: number;
+  semanticScore?: number;
+  rulePassed?: number;
+  ruleTotal?: number;
+  latencyMs: number;
+  inputTokens?: number;
+  outputTokens?: number;
+  totalTokens?: number;
+  estimatedCostUsd?: number;
+  errorMessage?: string;
+  prompt?: string;
+  response?: string;
+  expected?: Record<string, unknown>;
+  testCaseId?: string;
+  testCaseName?: string;
+  meta?: Record<string, unknown>;
+}
+
+const estimateAiCostUsd = (totalTokens: number): number => {
+  const INPUT_COST_PER_1K = 0.00125;
+  const OUTPUT_COST_PER_1K = 0.005;
+  return (totalTokens * INPUT_COST_PER_1K) / 1000;
+};
+
+const calculateDishCalories = (
+  dish?: {
+    nutrition?: {
+      nutrients?: Array<{
+        label?: string | null;
+        value?: number | null;
+      }> | null;
+    } | null;
+  } | null
+): number => {
+  if (!dish?.nutrition?.nutrients?.length) return 0;
+  const energy = dish.nutrition.nutrients[0];
+  if (!energy || typeof energy.value !== 'number') return 0;
+  return energy.value;
+};
+
+export const MetricsCollector = {
+  async logMetric(payload: LogMetricPayload): Promise<void> {
+    try {
+      await AiMetricModel.create({
+        sourceType: payload.sourceType,
+        endpoint: payload.endpoint,
+        requestId: payload.requestId ?? randomUUID(),
+        userId: payload.userId,
+        status: payload.status,
+        isCorrect: payload.isCorrect,
+        classification: payload.classification,
+        accuracyScore: payload.accuracyScore,
+        ruleScore: payload.ruleScore,
+        semanticScore: payload.semanticScore,
+        rulePassed: payload.rulePassed,
+        ruleTotal: payload.ruleTotal,
+        latencyMs: payload.latencyMs,
+        inputTokens: payload.inputTokens,
+        outputTokens: payload.outputTokens,
+        totalTokens: payload.totalTokens,
+        estimatedCostUsd:
+          payload.estimatedCostUsd ??
+          estimateAiCostUsd(payload.totalTokens ?? 0),
+        errorMessage: payload.errorMessage,
+        prompt: payload.prompt,
+        response: payload.response,
+        expected: payload.expected,
+        testCaseId: payload.testCaseId,
+        testCaseName: payload.testCaseName,
+        meta: payload.meta
+      });
+    } catch (error) {
+      console.warn(
+        `[AI_METRIC] Unable to write metric endpoint=${payload.endpoint}. Reason: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
+  },
+
+  async validateMealProduction(
+    aiOutputText: string,
+    context: MealValidationContext
+  ): Promise<{
+    isCorrect: boolean;
+    classification: 'positive' | 'negative';
+    accuracyScore: number;
+    ruleScore: number;
+    semanticScore: number;
+    rulePassed: number;
+    ruleTotal: number;
+    validationReport: Record<string, unknown>;
+  }> {
+    const validator = new MealRecommendationValidator();
+    const validationReport = await validator.validate(aiOutputText, context);
+
+    const hardPassed = validationReport.hard_checks.filter(
+      r => r.passed
+    ).length;
+    const ruleScore = Math.round(
+      (hardPassed / validationReport.hard_checks.length) * 100
+    );
+
+    let semanticScore = 0;
+    if (validationReport.overall_score > 0) {
+      const semanticValidator = new SemanticValidator();
+      const semanticResult = await semanticValidator.evaluate(aiOutputText, {
+        goal: context.userProfile.goal,
+        diet: context.userProfile.diet,
+        calories: context.userProfile.calorieTarget,
+        allergies: context.userProfile.allergies
+      });
+      semanticScore = semanticResult.overallScore;
+    }
+
+    const accuracyScore = Math.round(ruleScore * 0.6 + semanticScore * 0.4);
+    const isCorrect = accuracyScore >= 70;
+
+    return {
+      isCorrect,
+      classification: isCorrect ? 'positive' : 'negative',
+      accuracyScore,
+      ruleScore,
+      semanticScore,
+      rulePassed: hardPassed,
+      ruleTotal: validationReport.hard_checks.length,
+      validationReport: {
+        overall_score: validationReport.overall_score,
+        passed: validationReport.passed,
+        hard_checks: validationReport.hard_checks.map(r => ({
+          id: r.message,
+          passed: r.passed,
+          score: r.score
+        })),
+        soft_checks: validationReport.soft_checks.map(r => ({
+          id: r.message,
+          passed: r.passed,
+          score: r.score
+        }))
+      }
+    };
+  },
+
+  async validateMealEvaluation(
+    aiOutputText: string,
+    context: MealValidationContext
+  ): Promise<{
+    isCorrect: boolean;
+    classification: 'positive' | 'negative';
+    accuracyScore: number;
+    ruleScore: number;
+    semanticScore: number;
+    rulePassed: number;
+    ruleTotal: number;
+    validationReport: Record<string, unknown>;
+  }> {
+    return this.validateMealProduction(aiOutputText, context);
+  },
+
+  validateWorkoutBasic: (
+    workout: Array<{ exerciseId?: string; exerciseName?: string }>
+  ): {
+    isCorrect: boolean;
+    classification: 'positive' | 'negative';
+    accuracyScore: number;
+    ruleScore: number;
+    rulePassed: number;
+    ruleTotal: number;
+  } => {
+    let rulePassed = 0;
+    const ruleTotal = 3;
+
+    const hasWorkout = Array.isArray(workout) && workout.length > 0;
+    if (hasWorkout) rulePassed += 1;
+
+    const validExerciseIds =
+      hasWorkout && workout.every(item => Boolean(item.exerciseId));
+    if (validExerciseIds) rulePassed += 1;
+
+    const validExerciseName =
+      hasWorkout && workout.every(item => Boolean(item.exerciseName));
+    if (validExerciseName) rulePassed += 1;
+
+    const ruleScore = Math.round((rulePassed / ruleTotal) * 100);
+    const isCorrect = ruleScore >= 67;
+
+    return {
+      isCorrect,
+      classification: isCorrect ? 'positive' : 'negative',
+      accuracyScore: ruleScore,
+      ruleScore,
+      rulePassed,
+      ruleTotal
+    };
+  }
+};
+
+export { calculateDishCalories, estimateAiCostUsd };
