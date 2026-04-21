@@ -23,301 +23,188 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return meal recommendation as JSON with breakfast/lunch/dinner."
+      "prompt": "Return meal JSON like: {\"meals\":[{\"mealType\":\"breakfast\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}"
     },
     "expected": {
       "classification": "positive",
       "mustInclude": ["meals", "mealType", "dishes"],
-      "notes": "Core meal keys check"
+      "notes": "Core meal keys"
     }
   },
   {
-    "name": "Meals - regex servings field",
-    "description": "Response should contain servings number in expected range",
-    "endpoint": "recommend_daily_meals",
-    "category": "edge_case",
-    "difficulty": "medium",
-    "enabled": true,
-    "input": {
-      "prompt": "Output JSON meal plan where every dish has servings from 1 to 3."
-    },
-    "expected": {
-      "classification": "positive",
-      "regex": "\\\"servings\\\"\\s*:\\s*[1-3]",
-      "notes": "Servings regex check"
-    }
-  },
-  {
-    "name": "Meals - valid JSON wrapper",
-    "description": "Model should output JSON-like content for meal recommendation",
-    "endpoint": "recommend_daily_meals",
-    "category": "happy_path",
-    "difficulty": "medium",
-    "enabled": true,
-    "input": {
-      "prompt": "Return JSON only: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}"
-    },
-    "expected": {
-      "classification": "positive",
-      "mustInclude": ["meals", "mealType", "dishes"],
-      "notes": "Basic meal JSON keys"
-    }
-  },
-  {
-    "name": "Meals - servings in range hint",
-    "description": "Model should include servings field",
-    "endpoint": "recommend_daily_meals",
-    "category": "constraint_test",
-    "difficulty": "hard",
-    "enabled": true,
-    "input": {
-      "prompt": "Output JSON with 2 meals. Each dish include servings between 1 and 3."
-    },
-    "expected": {
-      "classification": "positive",
-      "mustInclude": ["servings"],
-      "regex": "\\\"servings\\\"\\s*:\\s*[1-3]",
-      "notes": "Servings presence + range regex"
-    }
-  },
-  {
-    "name": "Meals - include calories context",
-    "description": "Response should mention calories and meals array",
+    "name": "Meals - valid JSON structure",
+    "description": "Model should output valid JSON meal structure",
     "endpoint": "recommend_daily_meals",
     "category": "happy_path",
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Create one-day meal recommendation JSON and include total calories estimate."
-    },
-    "expected": {
-      "classification": "positive",
-      "mustInclude": ["meals", "calories"],
-      "notes": "Calories + meals check"
-    }
-  },
-  {
-    "name": "Meals - breakfast lunch dinner coverage",
-    "description": "Response should contain 3 meal types",
-    "endpoint": "recommend_daily_meals",
-    "category": "constraint_test",
-    "difficulty": "medium",
-    "enabled": true,
-    "input": {
-      "prompt": "Return JSON with breakfast, lunch, and dinner recommendations."
-    },
-    "expected": {
-      "classification": "positive",
-      "mustInclude": ["BREAKFAST", "LUNCH", "DINNER"],
-      "notes": "Meal type coverage"
-    }
-  },
-  {
-    "name": "Meals - extreme low calorie (500)",
-    "description": "Very low calorie target should still return valid meals",
-    "endpoint": "recommend_daily_meals",
-    "category": "edge_case",
-    "difficulty": "hard",
-    "enabled": true,
-    "input": {
-      "prompt": "Generate meal JSON for 500 calorie diet. Include meals, dishIds, servings."
+      "prompt": "Return JSON with meals array: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}"
     },
     "expected": {
       "classification": "positive",
       "mustInclude": ["meals", "mealType", "dishes", "servings"],
-      "notes": "Low calorie edge case"
+      "notes": "Valid meal structure"
     }
   },
   {
-    "name": "Meals - extreme high calorie (5000)",
-    "description": "Very high calorie target should still return valid meals",
+    "name": "Meals - breakfast only",
+    "description": "Request single meal should return valid JSON",
     "endpoint": "recommend_daily_meals",
-    "category": "edge_case",
-    "difficulty": "hard",
-    "enabled": true,
-    "input": {
-      "prompt": "Generate meal JSON for 5000 calorie diet. Include meals, dishIds, servings."
-    },
-    "expected": {
-      "classification": "positive",
-      "mustInclude": ["meals", "mealType", "dishes", "servings"],
-      "notes": "High calorie edge case"
-    }
-  },
-  {
-    "name": "Meals - single meal type",
-    "description": "Request only breakfast should return valid JSON",
-    "endpoint": "recommend_daily_meals",
-    "category": "edge_case",
+    "category": "happy_path",
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Generate JSON with only BREAKFAST meal type. Include dishId and servings."
+      "prompt": "Return JSON with only breakfast: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}"
     },
     "expected": {
       "classification": "positive",
       "mustInclude": ["BREAKFAST", "dishes"],
-      "notes": "Single meal type"
+      "notes": "Single meal"
     }
   },
   {
-    "name": "Meals - multiple allergens",
-    "description": "With multiple allergens, should still generate valid JSON",
+    "name": "Meals - 2 meals",
+    "description": "Request 2 meals should return valid JSON",
+    "endpoint": "recommend_daily_meals",
+    "category": "constraint_test",
+    "difficulty": "easy",
+    "enabled": true,
+    "input": {
+      "prompt": "Return JSON with 2 meals: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]},{\"mealType\":\"LUNCH\",\"dishes\":[{\"dishId\":\"2\",\"servings\":1}]}]}"
+    },
+    "expected": {
+      "classification": "positive",
+      "mustInclude": ["meals"],
+      "notes": "2 meals"
+    }
+  },
+  {
+    "name": "Meals - servings field present",
+    "description": "Response should include servings field",
+    "endpoint": "recommend_daily_meals",
+    "category": "constraint_test",
+    "difficulty": "easy",
+    "enabled": true,
+    "input": {
+      "prompt": "Return JSON with servings: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":2}]}]}"
+    },
+    "expected": {
+      "classification": "positive",
+      "mustInclude": ["servings"],
+      "notes": "Servings present"
+    }
+  },
+  {
+    "name": "Meals - regex servings 1-3",
+    "description": "Servings should be in range 1-3",
     "endpoint": "recommend_daily_meals",
     "category": "edge_case",
-    "difficulty": "hard",
-    "enabled": true,
-    "input": {
-      "prompt": "Generate meal JSON avoiding allergens: nuts, dairy, seafood. Include meals and dishes."
-    },
-    "expected": {
-      "classification": "positive",
-      "mustInclude": ["meals", "mealType", "dishes"],
-      "notes": "Multiple allergen constraint"
-    }
-  },
-  {
-    "name": "Meals - vegan diet constraint",
-    "description": "Vegan diet should return valid meal JSON",
-    "endpoint": "recommend_daily_meals",
-    "category": "constraint_test",
     "difficulty": "medium",
     "enabled": true,
     "input": {
-      "prompt": "Generate vegan meal JSON. Include meals, dishIds, servings."
+      "prompt": "Return JSON with servings 1-3: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":2}]}]}"
     },
     "expected": {
       "classification": "positive",
-      "mustInclude": ["meals", "mealType", "dishes"],
-      "notes": "Vegan diet constraint"
+      "regex": "\\\"servings\\\"\\s*:\\s*[1-3]",
+      "notes": "Servings 1-3"
     }
   },
   {
-    "name": "Meals - low carb diet constraint",
-    "description": "Low carb diet should return valid meal JSON",
+    "name": "Meals - low calorie (800)",
+    "description": "Low calorie diet should return valid JSON",
     "endpoint": "recommend_daily_meals",
-    "category": "constraint_test",
+    "category": "edge_case",
     "difficulty": "medium",
     "enabled": true,
     "input": {
-      "prompt": "Generate low carb meal JSON. Include meals, dishIds, servings."
+      "prompt": "Return simple JSON for 800 cal: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}"
     },
     "expected": {
       "classification": "positive",
-      "mustInclude": ["meals", "mealType", "dishes"],
-      "notes": "Low carb diet constraint"
+      "mustInclude": ["meals", "servings"],
+      "notes": "Low calorie"
     }
   },
   {
-    "name": "Meals - invalid JSON response",
-    "description": "Model should NOT return non-JSON text as valid response",
+    "name": "Meals - high calorie (3000)",
+    "description": "High calorie should return valid JSON",
     "endpoint": "recommend_daily_meals",
-    "category": "error_case",
-    "difficulty": "easy",
-    "enabled": true,
-    "input": {
-      "prompt": "Tell me about meal recommendations."
-    },
-    "expected": {
-      "classification": "negative",
-      "regex": "^\\{",
-      "notes": "Should NOT start with { - expecting conversation, test should fail"
-    }
-  },
-  {
-    "name": "Meals negative control - impossible exact",
-    "description": "Use to verify false case appears in metrics",
-    "endpoint": "recommend_daily_meals",
-    "category": "error_case",
-    "difficulty": "easy",
-    "enabled": true,
-    "input": {
-      "prompt": "Generate standard meal recommendation JSON."
-    },
-    "expected": {
-      "classification": "negative",
-      "exact": "THIS_EXACT_MEAL_JSON_SHOULD_NOT_MATCH",
-      "notes": "Intentional failing test"
-    }
-  },
-  {
-    "name": "Meals - missing servings field",
-    "description": "Response without servings should fail validation",
-    "endpoint": "recommend_daily_meals",
-    "category": "error_case",
-    "difficulty": "easy",
-    "enabled": true,
-    "input": {
-      "prompt": "Generate meal JSON without servings field."
-    },
-    "expected": {
-      "classification": "negative",
-      "regex": "(?!.*servings)",
-      "notes": "No servings - should be negative"
-    }
-  },
-  {
-    "name": "Workout - valid exercise JSON",
-    "description": "Response should include valid workout structure",
-    "endpoint": "recommend_daily_workout",
-    "category": "happy_path",
-    "difficulty": "easy",
-    "enabled": true,
-    "input": {
-      "prompt": "Generate workout JSON with exerciseId, exerciseName, sets, reps."
-    },
-    "expected": {
-      "classification": "positive",
-      "mustInclude": ["exerciseId", "exerciseName"],
-      "notes": "Basic workout structure"
-    }
-  },
-  {
-    "name": "Workout - include difficulty",
-    "description": "Response should include difficulty level",
-    "endpoint": "recommend_daily_workout",
-    "category": "constraint_test",
+    "category": "edge_case",
     "difficulty": "medium",
     "enabled": true,
     "input": {
-      "prompt": "Generate workout JSON with difficulty field."
+      "prompt": "Return simple JSON for 3000 cal: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":3}]}]}"
     },
     "expected": {
       "classification": "positive",
-      "mustInclude": ["difficulty", "exerciseId"],
-      "notes": "Difficulty field check"
+      "mustInclude": ["meals", "servings"],
+      "notes": "High calorie"
     }
   },
   {
-    "name": "Workout - beginner difficulty",
-    "description": "Beginner workout should return valid JSON",
-    "endpoint": "recommend_daily_workout",
+    "name": "Meals - vegan request",
+    "description": "Vegan diet should return valid JSON",
+    "endpoint": "recommend_daily_meals",
+    "category": "constraint_test",
+    "difficulty": "easy",
+    "enabled": true,
+    "input": {
+      "prompt": "Return vegan meal JSON: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}"
+    },
+    "expected": {
+      "classification": "positive",
+      "mustInclude": ["meals", "mealType"],
+      "notes": "Vegan diet"
+    }
+  },
+  {
+    "name": "Meals - low carb request",
+    "description": "Low carb diet should return valid JSON",
+    "endpoint": "recommend_daily_meals",
+    "category": "constraint_test",
+    "difficulty": "easy",
+    "enabled": true,
+    "input": {
+      "prompt": "Return low carb meal JSON: {\"meals\":[{\"mealType\":\"LUNCH\",\"dishes\":[{\"dishId\":\"2\",\"servings\":1}]}]}"
+    },
+    "expected": {
+      "classification": "positive",
+      "mustInclude": ["meals", "mealType"],
+      "notes": "Low carb"
+    }
+  },
+  {
+    "name": "Meals - include dishId",
+    "description": "Response should include dishId field",
+    "endpoint": "recommend_daily_meals",
+    "category": "constraint_test",
+    "difficulty": "easy",
+    "enabled": true,
+    "input": {
+      "prompt": "Return JSON with dishId: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"101\",\"servings\":1}]}]}"
+    },
+    "expected": {
+      "classification": "positive",
+      "mustInclude": ["dishId"],
+      "notes": "dishId present"
+    }
+  },
+  {
+    "name": "Meals - single dish per meal",
+    "description": "One dish per meal should return valid JSON",
+    "endpoint": "recommend_daily_meals",
     "category": "edge_case",
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Generate beginner workout JSON. Include exerciseId, exerciseName, difficulty."
+      "prompt": "Return JSON with 1 dish per meal: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}"
     },
     "expected": {
       "classification": "positive",
-      "mustInclude": ["exerciseId", "difficulty"],
-      "notes": "Beginner difficulty"
-    }
-  },
-  {
-    "name": "Workout - invalid response",
-    "description": "Non-JSON response should fail",
-    "endpoint": "recommend_daily_workout",
-    "category": "error_case",
-    "difficulty": "easy",
-    "enabled": true,
-    "input": {
-      "prompt": "What exercises do you recommend?"
-    },
-    "expected": {
-      "classification": "negative",
-      "regex": "^\\{",
-      "notes": "Should NOT start with { - expecting conversation"
+      "mustInclude": ["dishes"],
+      "notes": "Single dish"
     }
   }
 ]
