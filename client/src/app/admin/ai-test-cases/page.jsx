@@ -36,7 +36,8 @@ const DEFAULT_FORM = {
   category: 'happy_path',
   difficulty: 'medium',
   prompt: '',
-  expectedContains: ''
+  expectedContains: '',
+  expectedClassification: 'positive'
 };
 
 const Page = () => {
@@ -73,10 +74,10 @@ const Page = () => {
       expected: form.expectedContains
         ? {
             mustInclude: [form.expectedContains],
-            classification: 'positive'
+            classification: form.expectedClassification
           }
         : {
-            classification: 'positive'
+            classification: form.expectedClassification
           }
     };
 
@@ -103,7 +104,8 @@ const Page = () => {
       category: item.category || 'happy_path',
       difficulty: item.difficulty || 'medium',
       prompt: item.input?.prompt || '',
-      expectedContains: item.expected?.mustInclude?.[0] || ''
+      expectedContains: item.expected?.mustInclude?.[0] || '',
+      expectedClassification: item.expected?.classification || 'positive'
     });
   };
 
@@ -131,102 +133,180 @@ const Page = () => {
         </CardHeader>
         <CardContent>
           <form className='space-y-4' onSubmit={onSubmit}>
-            <div className='grid gap-3 md:grid-cols-2'>
-              <Input
-                placeholder='Tên test case'
-                value={form.name}
-                onChange={event =>
-                  setForm(prev => ({ ...prev, name: event.target.value }))
-                }
-              />
-              <Input
-                placeholder='Mô tả'
-                value={form.description}
-                onChange={event =>
-                  setForm(prev => ({
-                    ...prev,
-                    description: event.target.value
-                  }))
-                }
-              />
+            <div className='rounded-lg border bg-muted/30 p-4 space-y-4'>
+              <p className='text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground'>
+                Input cấu hình
+              </p>
+
+              <div className='grid gap-3 md:grid-cols-2'>
+                <div className='space-y-1.5'>
+                  <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
+                    Tên test case
+                  </label>
+                  <Input
+                    placeholder='Ví dụ: Meals - strict JSON match'
+                    value={form.name}
+                    onChange={event =>
+                      setForm(prev => ({ ...prev, name: event.target.value }))
+                    }
+                  />
+                </div>
+
+                <div className='space-y-1.5'>
+                  <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
+                    Mô tả
+                  </label>
+                  <Input
+                    placeholder='Mục tiêu của test case'
+                    value={form.description}
+                    onChange={event =>
+                      setForm(prev => ({
+                        ...prev,
+                        description: event.target.value
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className='grid gap-3 md:grid-cols-3'>
+                <div className='space-y-1.5'>
+                  <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
+                    Endpoint
+                  </label>
+                  <Select
+                    value={form.endpoint}
+                    onValueChange={value =>
+                      setForm(prev => ({ ...prev, endpoint: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder='Endpoint' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='ask_agent'>ask_agent</SelectItem>
+                      <SelectItem value='recommend_daily_meals'>
+                        recommend_daily_meals
+                      </SelectItem>
+                      <SelectItem value='recommend_daily_workout'>
+                        recommend_daily_workout
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className='space-y-1.5'>
+                  <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
+                    Category
+                  </label>
+                  <Select
+                    value={form.category}
+                    onValueChange={value =>
+                      setForm(prev => ({ ...prev, category: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder='Category' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='happy_path'>happy_path</SelectItem>
+                      <SelectItem value='edge_case'>edge_case</SelectItem>
+                      <SelectItem value='constraint_test'>
+                        constraint_test
+                      </SelectItem>
+                      <SelectItem value='error_case'>error_case</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className='space-y-1.5'>
+                  <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
+                    Difficulty
+                  </label>
+                  <Select
+                    value={form.difficulty}
+                    onValueChange={value =>
+                      setForm(prev => ({ ...prev, difficulty: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder='Difficulty' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='easy'>easy</SelectItem>
+                      <SelectItem value='medium'>medium</SelectItem>
+                      <SelectItem value='hard'>hard</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className='space-y-1.5'>
+                <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
+                  Prompt test case
+                </label>
+                <Textarea
+                  placeholder='Mô tả chính xác prompt để đánh giá...'
+                  className='min-h-28'
+                  value={form.prompt}
+                  onChange={event =>
+                    setForm(prev => ({ ...prev, prompt: event.target.value }))
+                  }
+                />
+              </div>
             </div>
 
-            <div className='grid gap-3 md:grid-cols-3'>
-              <Select
-                value={form.endpoint}
-                onValueChange={value =>
-                  setForm(prev => ({ ...prev, endpoint: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder='Endpoint' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='ask_agent'>ask_agent</SelectItem>
-                  <SelectItem value='recommend_daily_meals'>
-                    recommend_daily_meals
-                  </SelectItem>
-                  <SelectItem value='recommend_daily_workout'>
-                    recommend_daily_workout
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+            <div className='rounded-lg border border-emerald-200/60 bg-emerald-50/40 p-4 space-y-4'>
+              <p className='text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700'>
+                Expected assertion
+              </p>
 
-              <Select
-                value={form.category}
-                onValueChange={value =>
-                  setForm(prev => ({ ...prev, category: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder='Category' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='happy_path'>happy_path</SelectItem>
-                  <SelectItem value='edge_case'>edge_case</SelectItem>
-                  <SelectItem value='constraint_test'>
-                    constraint_test
-                  </SelectItem>
-                  <SelectItem value='error_case'>error_case</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className='grid gap-3 md:grid-cols-2'>
+                <div className='space-y-1.5'>
+                  <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
+                    Expected contains (optional)
+                  </label>
+                  <Input
+                    placeholder='Ví dụ: meals hoặc servings'
+                    value={form.expectedContains}
+                    onChange={event =>
+                      setForm(prev => ({
+                        ...prev,
+                        expectedContains: event.target.value
+                      }))
+                    }
+                  />
+                </div>
 
-              <Select
-                value={form.difficulty}
-                onValueChange={value =>
-                  setForm(prev => ({ ...prev, difficulty: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder='Difficulty' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='easy'>easy</SelectItem>
-                  <SelectItem value='medium'>medium</SelectItem>
-                  <SelectItem value='hard'>hard</SelectItem>
-                </SelectContent>
-              </Select>
+                <div className='space-y-1.5'>
+                  <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
+                    Expected classification
+                  </label>
+                  <Select
+                    value={form.expectedClassification}
+                    onValueChange={value =>
+                      setForm(prev => ({
+                        ...prev,
+                        expectedClassification: value
+                      }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder='Expected classification' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='positive'>positive</SelectItem>
+                      <SelectItem value='negative'>negative</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <p className='text-xs text-emerald-800/90'>
+                positive: các checks phải match. negative: các checks phải không
+                match.
+              </p>
             </div>
-
-            <Textarea
-              placeholder='Prompt test case...'
-              className='min-h-28'
-              value={form.prompt}
-              onChange={event =>
-                setForm(prev => ({ ...prev, prompt: event.target.value }))
-              }
-            />
-
-            <Input
-              placeholder='Expected contains (optional)'
-              value={form.expectedContains}
-              onChange={event =>
-                setForm(prev => ({
-                  ...prev,
-                  expectedContains: event.target.value
-                }))
-              }
-            />
 
             <div className='flex gap-2'>
               <Button
@@ -258,6 +338,7 @@ const Page = () => {
                 <TableHead>Endpoint</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead>Difficulty</TableHead>
+                <TableHead>Expected</TableHead>
                 <TableHead>Trạng thái</TableHead>
                 <TableHead>Hành động</TableHead>
               </TableRow>
@@ -269,6 +350,11 @@ const Page = () => {
                   <TableCell>{item.endpoint}</TableCell>
                   <TableCell>{item.category}</TableCell>
                   <TableCell>{item.difficulty}</TableCell>
+                  <TableCell>
+                    <Badge variant='outline'>
+                      {item.expected?.classification || 'positive'}
+                    </Badge>
+                  </TableCell>
                   <TableCell>
                     <Badge variant={item.enabled ? 'secondary' : 'destructive'}>
                       {item.enabled ? 'enabled' : 'disabled'}
@@ -298,7 +384,7 @@ const Page = () => {
               {!testCasesQuery.isLoading && rows.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={7}
                     className='text-center text-muted-foreground'
                   >
                     Chưa có test case.

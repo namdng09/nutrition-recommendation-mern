@@ -181,7 +181,7 @@ const Page = () => {
         </div>
       </div>
 
-      <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-4'>
+      <div className='grid gap-4 md:grid-cols-3 xl:grid-cols-5'>
         <Card>
           <CardHeader className='pb-2'>
             <CardTitle className='text-sm font-medium'>Accuracy</CardTitle>
@@ -240,6 +240,24 @@ const Page = () => {
             </p>
             <p className='text-xs text-muted-foreground'>
               Tỉ lệ request thành công
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className='pb-2'>
+            <CardTitle className='text-sm font-medium'>Security</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className='text-2xl font-semibold'>
+              {isLoading
+                ? '--'
+                : (summaryQuery.data?.security?.piiDetected ?? 0) +
+                  (summaryQuery.data?.security?.injectionDetected ?? 0)}
+            </p>
+            <p className='text-xs text-muted-foreground'>
+              PII: {summaryQuery.data?.security?.piiDetected ?? 0} | Injection:{' '}
+              {summaryQuery.data?.security?.injectionDetected ?? 0}
             </p>
           </CardContent>
         </Card>

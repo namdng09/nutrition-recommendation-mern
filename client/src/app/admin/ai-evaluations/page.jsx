@@ -32,6 +32,13 @@ const formatDateTime = value => {
   return new Date(value).toLocaleString('vi-VN');
 };
 
+const getResultLabel = isCorrect => (isCorrect ? 'Pass' : 'Fail');
+
+const getClassificationLabel = classification => {
+  if (!classification) return '--';
+  return classification === 'positive' ? 'Positive' : 'Negative';
+};
+
 const Page = () => {
   const [lastRun, setLastRun] = useState(null);
   const [selectedMetricId, setSelectedMetricId] = useState(null);
@@ -129,7 +136,8 @@ const Page = () => {
                 <TableHead>Thời gian</TableHead>
                 <TableHead>Test case</TableHead>
                 <TableHead>Score</TableHead>
-                <TableHead>Đúng/Sai</TableHead>
+                <TableHead>Kết quả</TableHead>
+                <TableHead>Phân loại</TableHead>
                 <TableHead>Latency</TableHead>
                 <TableHead className='text-right'>Chi tiết</TableHead>
               </TableRow>
@@ -139,12 +147,19 @@ const Page = () => {
                 <TableRow key={item._id}>
                   <TableCell>{formatDateTime(item.createdAt)}</TableCell>
                   <TableCell>
-                    {item?.meta?.testCaseName || item.endpoint}
+                    {item?.testCaseName ||
+                      item?.meta?.testCaseName ||
+                      item.endpoint}
                   </TableCell>
                   <TableCell>{item.accuracyScore ?? 0}</TableCell>
                   <TableCell>
                     <Badge variant={item.isCorrect ? 'default' : 'destructive'}>
-                      {item.isCorrect ? 'True / Positive' : 'False / Negative'}
+                      {getResultLabel(item.isCorrect)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant='secondary'>
+                      {getClassificationLabel(item.classification)}
                     </Badge>
                   </TableCell>
                   <TableCell>{item.latencyMs ?? 0}ms</TableCell>
@@ -165,7 +180,7 @@ const Page = () => {
               (resultsQuery.data || []).length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={7}
                     className='text-center text-muted-foreground'
                   >
                     Chưa có dữ liệu đánh giá.
@@ -186,7 +201,7 @@ const Page = () => {
           }
         }}
       >
-        <DialogContent className='sm:max-w-2xl'>
+        <DialogContent className='sm:max-w-2xl max-h-[90vh] overflow-y-auto'>
           <DialogHeader>
             <DialogTitle>Chi tiết kết quả đánh giá</DialogTitle>
             <DialogDescription>
@@ -215,40 +230,56 @@ const Page = () => {
                 </p>
                 <p>
                   <span className='font-medium'>Rule score:</span>{' '}
-                  {detailQuery.data?.evaluation?.ruleScore ?? 0}
+                  {detailQuery.data?.ruleScore ?? 0}
                 </p>
                 <p>
                   <span className='font-medium'>Semantic score:</span>{' '}
-                  {detailQuery.data?.evaluation?.semanticScore ?? 0}
+                  {detailQuery.data?.semanticScore ?? 0}
                 </p>
                 <p>
                   <span className='font-medium'>Accuracy:</span>{' '}
-                  {detailQuery.data?.evaluation?.accuracyScore ?? 0}
+                  {detailQuery.data?.accuracyScore ?? 0}
+                </p>
+                <p>
+                  <span className='font-medium'>Kết quả:</span>{' '}
+                  {detailQuery.data?.isCorrect ? 'True' : 'False'}
                 </p>
                 <p>
                   <span className='font-medium'>Checks:</span>{' '}
                   {detailQuery.data?.evaluation?.passedChecks ?? 0}/
                   {detailQuery.data?.evaluation?.totalChecks ?? 0}
                 </p>
+                <p>
+                  <span className='font-medium'>Latency:</span>{' '}
+                  {detailQuery.data?.latencyMs ?? 0}ms
+                </p>
+                <p>
+                  <span className='font-medium'>Tokens:</span>{' '}
+                  {detailQuery.data?.totalTokens ?? 0}
+                </p>
+                <p>
+                  <span className='font-medium'>Cost:</span> $
+                  {detailQuery.data?.estimatedCostUsd ?? '0'}
+                </p>
               </div>
 
               <div>
                 <p className='mb-1 text-sm font-medium'>Prompt</p>
-                <pre className='max-h-28 overflow-auto rounded-md bg-muted p-2 text-xs'>
+                <pre className='max-h-28 overflow-auto whitespace-pre-wrap break-words rounded-md bg-muted p-2 text-xs'>
                   {detailQuery.data?.prompt || '--'}
                 </pre>
               </div>
 
               <div>
                 <p className='mb-1 text-sm font-medium'>Expected</p>
-                <pre className='max-h-28 overflow-auto rounded-md bg-muted p-2 text-xs'>
+                <pre className='max-h-28 overflow-auto whitespace-pre-wrap break-words rounded-md bg-muted p-2 text-xs'>
                   {JSON.stringify(detailQuery.data?.expected || {}, null, 2)}
                 </pre>
               </div>
 
               <div>
                 <p className='mb-1 text-sm font-medium'>Response</p>
-                <pre className='max-h-36 overflow-auto rounded-md bg-muted p-2 text-xs'>
+                <pre className='max-h-36 overflow-auto whitespace-pre-wrap break-words rounded-md bg-muted p-2 text-xs'>
                   {detailQuery.data?.response || '--'}
                 </pre>
               </div>
