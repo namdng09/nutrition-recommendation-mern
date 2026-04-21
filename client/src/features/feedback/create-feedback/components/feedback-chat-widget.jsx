@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { HiChatAlt2, HiX } from 'react-icons/hi';
+import { useSelector } from 'react-redux';
+
+import { ROLE } from '~/constants/role';
 
 import { useCreateFeedback } from '../api/create-feedback';
 import FeedbackChatPanel from './feedback-chat-panel';
 
 export default function FeedbackChatWidget() {
+  const { user, loading } = useSelector(state => state.auth);
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
@@ -78,6 +82,13 @@ export default function FeedbackChatWidget() {
       content
     });
   };
+
+  const isRestrictedRole =
+    user?.role === ROLE.NUTRITIONIST || user?.role === ROLE.ADMIN;
+
+  if (loading || isRestrictedRole) {
+    return null;
+  }
 
   return (
     <div className='fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3'>

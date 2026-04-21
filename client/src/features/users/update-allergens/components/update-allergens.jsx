@@ -3,7 +3,6 @@ import { OctagonAlert } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
 import { Form, FormItem, FormMessage } from '~/components/ui/form';
 import { Spinner } from '~/components/ui/spinner';
@@ -12,65 +11,6 @@ import { useUpdateAllergens } from '~/features/users/update-allergens/api/update
 import { updateAllergensSchema } from '~/features/users/update-allergens/schemas/update-allergens-shema';
 import { useProfileForPage } from '~/features/users/view-profile/api/view-profile';
 import { cn } from '~/lib/utils';
-
-// Color mapping for allergen categories (chỉ dùng cho background)
-const ALLERGEN_CATEGORY_COLORS = {
-  'Các thực phẩm dễ gây dị ứng phổ biến': {
-    bg: 'bg-red-50',
-    selectedBg: 'bg-red-50',
-    hoverBg: 'hover:bg-red-50'
-  },
-  'Các loại ngũ cốc có chứa gluten': {
-    bg: 'bg-amber-50',
-    selectedBg: 'bg-amber-50',
-    hoverBg: 'hover:bg-amber-50'
-  },
-  'Các loại hải sản và sản phẩm từ hải sản': {
-    bg: 'bg-blue-50',
-    selectedBg: 'bg-blue-50',
-    hoverBg: 'hover:bg-blue-50'
-  },
-  'Các loại hạt và hạt có dầu': {
-    bg: 'bg-orange-50',
-    selectedBg: 'bg-orange-50',
-    hoverBg: 'hover:bg-orange-50'
-  },
-  'Các loại thịt và sản phẩm từ thịt': {
-    bg: 'bg-rose-50',
-    selectedBg: 'bg-rose-50',
-    hoverBg: 'hover:bg-rose-50'
-  },
-  'Các loại trái cây': {
-    bg: 'bg-pink-50',
-    selectedBg: 'bg-pink-50',
-    hoverBg: 'hover:bg-pink-50'
-  },
-  'Các loại rau củ': {
-    bg: 'bg-green-50',
-    selectedBg: 'bg-green-50',
-    hoverBg: 'hover:bg-green-50'
-  },
-  'Các loại gia vị và thảo mộc': {
-    bg: 'bg-emerald-50',
-    selectedBg: 'bg-emerald-50',
-    hoverBg: 'hover:bg-emerald-50'
-  },
-  'Các loại đậu': {
-    bg: 'bg-teal-50',
-    selectedBg: 'bg-teal-50',
-    hoverBg: 'hover:bg-teal-50'
-  },
-  'Các loại nấm': {
-    bg: 'bg-purple-50',
-    selectedBg: 'bg-purple-50',
-    hoverBg: 'hover:bg-purple-50'
-  },
-  Khác: {
-    bg: 'bg-gray-50',
-    selectedBg: 'bg-gray-50',
-    hoverBg: 'hover:bg-gray-50'
-  }
-};
 
 export function UpdateAllergens() {
   const { data: profile } = useProfileForPage();
@@ -155,10 +95,6 @@ export function UpdateAllergens() {
                         return (
                           <FormItem className='space-y-6'>
                             {ALLERGEN_GROUPS.map(group => {
-                              const colors =
-                                ALLERGEN_CATEGORY_COLORS[group.category] ||
-                                ALLERGEN_CATEGORY_COLORS['Khác'];
-
                               return (
                                 <div key={group.category} className='space-y-3'>
                                   {/* Category Header */}
@@ -186,13 +122,13 @@ export function UpdateAllergens() {
                                           className={cn(
                                             'relative inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border-2',
                                             isSelected
-                                              ? `${colors.selectedBg} border-red-500 text-red-700 shadow-sm scale-[1.02]`
-                                              : `bg-background border-border text-foreground ${colors.hoverBg} hover:border-gray-300`
+                                              ? 'bg-destructive/10 border-destructive/50 text-destructive shadow-sm scale-[1.02]'
+                                              : 'bg-background border-border text-foreground hover:bg-accent/40 hover:border-primary/30'
                                           )}
                                         >
                                           {option.label}
                                           {isSelected && (
-                                            <span className='ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-red-500 text-white text-xs'></span>
+                                            <span className='ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-destructive text-white text-xs'></span>
                                           )}
                                         </button>
                                       );

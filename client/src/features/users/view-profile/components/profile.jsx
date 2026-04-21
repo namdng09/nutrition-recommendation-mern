@@ -29,14 +29,19 @@ import { useProfileForPage } from '~/features/users/view-profile/api/view-profil
 import { useLogout } from '~/hooks/useLogout';
 
 const Profile = () => {
+  const PROFILE_UPDATE_SUCCESS_TOAST_ID = 'profile-update-success';
+  const PROFILE_UPDATE_SUCCESS_MESSAGE = 'Hồ sơ được cập nhật thành công';
+
   const handleLogout = useLogout();
   const fileInputRef = useRef(null);
   const user = useSelector(state => state.auth.user);
 
   const { data: profile } = useProfileForPage();
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile({
-    onSuccess: response => {
-      toast.success(response?.message || 'Cập nhật hồ sơ thành công');
+    onSuccess: () => {
+      toast.success(PROFILE_UPDATE_SUCCESS_MESSAGE, {
+        id: PROFILE_UPDATE_SUCCESS_TOAST_ID
+      });
     },
     onError: error => {
       toast.error(error?.response?.data?.message || 'Cập nhật hồ sơ thất bại');
@@ -77,6 +82,19 @@ const Profile = () => {
   const dailyAiTokenLimit = formatTokenValue(profile?.aiDailyTokenLimit);
   const quotaResetAtText = formatQuotaResetAt(profile?.aiQuotaResetAt);
   const mealSettings = profile?.mealSettings || [];
+  const effectiveRole = profile?.role || user?.role;
+  const shouldShowMembershipAndAi =
+    effectiveRole !== ROLE.NUTRITIONIST && effectiveRole !== ROLE.ADMIN;
+  const roleDisplayText =
+    effectiveRole === ROLE.NUTRITIONIST
+      ? 'Chuyên gia dinh dưỡng'
+      : effectiveRole || 'Chưa cập nhật';
+  const membershipBadgeClass =
+    membershipLevel === 'Tài khoản VIP'
+      ? 'text-orange-light'
+      : membershipLevel === 'Tài khoản thường'
+        ? 'text-cyan-light'
+        : 'border-primary/20 bg-primary/5 text-primary';
 
   const form = useForm({
     resolver: yupResolver(updateProfileSchema),
@@ -111,7 +129,9 @@ const Profile = () => {
   const handleSaveNutritionistProfile = data => {
     updateNutritionistProfile(data, {
       onSuccess: () => {
-        toast.success('Hồ sơ dinh dưỡng được cập nhật thành công');
+        toast.success(PROFILE_UPDATE_SUCCESS_MESSAGE, {
+          id: PROFILE_UPDATE_SUCCESS_TOAST_ID
+        });
       },
       onError: error => {
         toast.error(
@@ -272,72 +292,78 @@ const Profile = () => {
                         </label>
                         <div className='space-y-2'>
                           <div className='inline-flex h-10 items-center rounded-xl border border-primary/20 bg-primary/5 px-4 text-sm font-medium text-primary'>
-                            {profile?.role}
+                            {roleDisplayText}
                           </div>
                         </div>
                       </div>
 
-                      {/* Membership Level - Read Only */}
-                      <div className='grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3 sm:gap-4 items-start sm:items-center'>
-                        <label className='text-sm font-medium pt-2 sm:pt-0'>
-                          Gói thành viên
-                        </label>
-                        <div className='space-y-2'>
-                          <div className='inline-flex h-10 items-center rounded-xl border border-emerald-200 bg-emerald-50 px-4 text-sm font-medium text-emerald-700'>
-                            {membershipLevel}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* AI Tokens - Read Only */}
-                      <div className='grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3 sm:gap-4 items-start sm:items-center'>
-                        <label className='text-sm font-medium pt-2 sm:pt-0'>
-                          Token AI
-                        </label>
-                        <div className='space-y-2'>
-                          <div className='inline-flex h-10 items-center rounded-xl border border-border bg-muted px-4 text-sm font-medium'>
-                            {dailyAiTokenLimit === '--'
-                              ? remainingAiTokens
-                              : `${remainingAiTokens} / ${dailyAiTokenLimit}`}
-                          </div>
-                          {/* <p className='text-xs text-muted-foreground'>
-                            {quotaResetAtText
-                              ? `Quota sẽ đặt lại vào: ${quotaResetAtText}`
-                              : 'Số token AI còn lại trong ngày'}
-                          </p> */}
-                        </div>
-                      </div>
-
-                      {/* Schedule Settings */}
-                      <div className='grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3 sm:gap-4 items-start'>
-                        <label className='text-sm font-medium pt-2'>
-                          Lịch ăn
-                        </label>
-                        <div className='space-y-3'>
-                          {mealSettings.length > 0 ? (
-                            <div className='flex flex-wrap gap-2'>
-                              {mealSettings.map(setting => (
-                                <span
-                                  key={setting.name}
-                                  className='inline-flex h-8 items-center rounded-full border border-primary/20 bg-primary/5 px-3 text-xs font-semibold text-primary'
-                                >
-                                  {setting.name}
-                                </span>
-                              ))}
+                      {shouldShowMembershipAndAi && (
+                        <>
+                          {/* Membership Level - Read Only */}
+                          <div className='grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3 sm:gap-4 items-start sm:items-center'>
+                            <label className='text-sm font-medium pt-2 sm:pt-0'>
+                              Gói thành viên
+                            </label>
+                            <div className='space-y-2'>
+                              <div
+                                className={`inline-flex h-10 items-center rounded-xl border px-4 text-sm font-medium ${membershipBadgeClass}`}
+                              >
+                                {membershipLevel}
+                              </div>
                             </div>
-                          ) : (
-                            <p className='text-sm text-muted-foreground'>
-                              Bạn chưa thiết lập lịch ăn.
-                            </p>
-                          )}
+                          </div>
 
-                          <Button variant='outline' size='sm' asChild>
-                            <Link to='/profile/schedule-settings'>
-                              Xem và cập nhật lịch ăn
-                            </Link>
-                          </Button>
-                        </div>
-                      </div>
+                          {/* AI Tokens - Read Only */}
+                          <div className='grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3 sm:gap-4 items-start sm:items-center'>
+                            <label className='text-sm font-medium pt-2 sm:pt-0'>
+                              Token AI
+                            </label>
+                            <div className='space-y-2'>
+                              <div className='inline-flex h-10 items-center rounded-xl border border-border bg-muted px-4 text-sm font-medium'>
+                                {dailyAiTokenLimit === '--'
+                                  ? remainingAiTokens
+                                  : `${remainingAiTokens} / ${dailyAiTokenLimit}`}
+                              </div>
+                              {/* <p className='text-xs text-muted-foreground'>
+                                {quotaResetAtText
+                                  ? `Quota sẽ đặt lại vào: ${quotaResetAtText}`
+                                  : 'Số token AI còn lại trong ngày'}
+                              </p> */}
+                            </div>
+                          </div>
+
+                          {/* Schedule Settings */}
+                          <div className='grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3 sm:gap-4 items-start'>
+                            <label className='text-sm font-medium pt-2'>
+                              Lịch ăn
+                            </label>
+                            <div className='space-y-3'>
+                              {mealSettings.length > 0 ? (
+                                <div className='flex flex-wrap gap-2'>
+                                  {mealSettings.map(setting => (
+                                    <span
+                                      key={setting.name}
+                                      className='inline-flex h-8 items-center rounded-full border border-primary/20 bg-primary/5 px-3 text-xs font-semibold text-primary'
+                                    >
+                                      {setting.name}
+                                    </span>
+                                  ))}
+                                </div>
+                              ) : (
+                                <p className='text-sm text-muted-foreground'>
+                                  Bạn chưa thiết lập lịch ăn.
+                                </p>
+                              )}
+
+                              <Button variant='outline' size='sm' asChild>
+                                <Link to='/profile/schedule-settings'>
+                                  Xem và cập nhật lịch ăn
+                                </Link>
+                              </Button>
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

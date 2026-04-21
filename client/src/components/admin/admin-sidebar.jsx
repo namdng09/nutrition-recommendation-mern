@@ -122,7 +122,7 @@ export function AdminSidebar({ ...props }) {
       ]
     },
     {
-      title: 'Quản lý',
+      title: 'Quản lý món ăn',
       items: [
         {
           title: 'Nguyên liệu',
@@ -138,19 +138,34 @@ export function AdminSidebar({ ...props }) {
           title: 'Bộ sưu tập',
           url: '/nutritionist/manage-collections',
           icon: Package
-        },
+        }
+      ]
+    },
+    {
+      title: 'Quản lý bài viết',
+      items: [
         {
           title: 'Bài viết',
           url: '/nutritionist/manage-posts',
           icon: StickyNote
-        },
+        }
+      ]
+    },
+    {
+      title: 'Feedback người dùng',
+      items: [
         {
           title: 'Feedback',
           url: '/nutritionist/feedbacks',
           icon: MessageSquare
-        },
+        }
+      ]
+    },
+    {
+      title: 'Đánh giá món riêng',
+      items: [
         {
-          title: 'Review món riêng',
+          title: 'Đánh giá món riêng',
           url: '/nutritionist/reviews',
           icon: ClipboardCheck
         }
@@ -174,11 +189,15 @@ export function AdminSidebar({ ...props }) {
       <SidebarHeader className='transition-all duration-300 ease-in-out'>
         <div className='flex items-center gap-2 transition-all duration-300 ease-in-out group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0'>
           <div className='flex aspect-square size-8 items-center justify-center transition-all duration-300 ease-in-out'>
-            <img src='/vite.svg' alt='Logo' className='h-8 w-8' />
+            <img
+              src='/logo2.png'
+              alt='EatDee Logo'
+              className='h-8 w-8 object-contain'
+            />
           </div>
           <div className='grid flex-1 text-left text-sm leading-tight transition-all duration-300 ease-in-out group-data-[collapsible=icon]:hidden group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0 overflow-hidden'>
             <span className='truncate font-semibold transition-all duration-300 ease-in-out'>
-              Vite App
+              EatDee
             </span>
             <span className='truncate text-xs transition-all duration-300 ease-in-out'>
               Admin Panel
