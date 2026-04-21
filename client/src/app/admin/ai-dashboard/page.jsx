@@ -63,14 +63,14 @@ const formatPeriodLabel = (period, granularity) => {
   if (!period || typeof period !== 'string') return '';
 
   try {
-    // Handle format: "2026-04-21" or "2026-04-21 17:00"
+    // Handle format: "2026-04-21" or "2026-04-21 17:00" from backend (which is now in VN time)
     let normalized = period;
     if (period.includes(' ')) {
-      // Already has time, append Z for UTC
-      normalized = period.replace(' ', 'T') + ':00Z';
+      // Already has time, append +07:00 to specify VN timezone
+      normalized = period.replace(' ', 'T') + ':00+07:00';
     } else {
-      // Date only, treat as UTC date
-      normalized = period + 'T00:00:00Z';
+      // Date only, treat as VN midnight
+      normalized = period + 'T00:00:00+07:00';
     }
 
     const date = new Date(normalized);
@@ -315,7 +315,8 @@ const Page = () => {
                   name='Production'
                   stroke='#6366f1'
                   strokeWidth={2}
-                  dot={true}
+                  dot={{ r: 4, strokeWidth: 2 }}
+                  activeDot={{ r: 6 }}
                   connectNulls
                 />
                 <Line
@@ -324,7 +325,8 @@ const Page = () => {
                   name='Evaluation'
                   stroke='#22c55e'
                   strokeWidth={2}
-                  dot={true}
+                  dot={{ r: 4, strokeWidth: 2 }}
+                  activeDot={{ r: 6 }}
                   connectNulls
                 />
               </LineChart>

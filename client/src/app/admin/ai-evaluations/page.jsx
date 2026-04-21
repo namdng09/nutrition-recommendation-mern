@@ -32,7 +32,10 @@ const formatDateTime = value => {
   return new Date(value).toLocaleString('vi-VN');
 };
 
-const getResultLabel = isCorrect => (isCorrect ? 'Pass' : 'Fail');
+const getResultLabel = (isCorrect, evaluation) => {
+  if (evaluation?.isErrorResponse) return 'Error';
+  return isCorrect ? 'Pass' : 'Fail';
+};
 
 const getClassificationLabel = classification => {
   if (!classification) return '--';
@@ -154,7 +157,7 @@ const Page = () => {
                   <TableCell>{item.accuracyScore ?? 0}</TableCell>
                   <TableCell>
                     <Badge variant={item.isCorrect ? 'default' : 'destructive'}>
-                      {getResultLabel(item.isCorrect)}
+                      {getResultLabel(item.isCorrect, item.evaluation)}
                     </Badge>
                   </TableCell>
                   <TableCell>

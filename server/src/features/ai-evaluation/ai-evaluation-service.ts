@@ -22,24 +22,28 @@ const toDateFilter = (query: ListMetricsQuery) => {
   const createdAt: Record<string, Date> = {};
 
   if (hasStart) {
-    const start = new Date(query.startDate as string);
-    if (Number.isNaN(start.getTime())) {
-      throw createHttpError(400, 'startDate không hợp lệ');
+    const startStr = query.startDate as string;
+    const start =
+      startStr.length === 10
+        ? new Date(`${startStr}T00:00:00+07:00`)
+        : new Date(startStr);
+    if (!Number.isNaN(start.getTime())) {
+      createdAt.$gte = start;
     }
-    start.setHours(0, 0, 0, 0);
-    createdAt.$gte = start;
   }
 
   if (hasEnd) {
-    const end = new Date(query.endDate as string);
-    if (Number.isNaN(end.getTime())) {
-      throw createHttpError(400, 'endDate không hợp lệ');
+    const endStr = query.endDate as string;
+    const end =
+      endStr.length === 10
+        ? new Date(`${endStr}T23:59:59.999+07:00`)
+        : new Date(endStr);
+    if (!Number.isNaN(end.getTime())) {
+      createdAt.$lte = end;
     }
-    end.setHours(23, 59, 59, 999);
-    createdAt.$lte = end;
   }
 
-  return createdAt;
+  return Object.keys(createdAt).length > 0 ? createdAt : null;
 };
 
 const buildMetricFilter = (query: ListMetricsQuery) => {
@@ -70,6 +74,18 @@ const computeScore = (ruleScore: number, semanticScore: number) =>
 
 const evaluateTestCaseResult = (response: string, expected?: any) => {
   const text = response.trim();
+
+  if (text.includes('"error"') && text.includes('unable to generate')) {
+    return {
+      hasExpectation: true,
+      passedChecks: 0,
+      totalChecks: 1,
+      ruleScore: 0,
+      matched: false,
+      isErrorResponse: true
+    };
+  }
+
   const checks: boolean[] = [];
 
   if (expected?.exact) {
@@ -104,7 +120,8 @@ const evaluateTestCaseResult = (response: string, expected?: any) => {
     passedChecks,
     totalChecks: checks.length,
     ruleScore,
-    matched: hasExpectation && passedChecks === checks.length
+    matched: hasExpectation && passedChecks === checks.length,
+    isErrorResponse: false
   };
 };
 
@@ -346,7 +363,11 @@ export const AiEvaluationService = {
         $group: {
           _id: {
             period: {
-              $dateToString: { format: dateFormat, date: '$createdAt' }
+              $dateToString: {
+                format: dateFormat,
+                date: '$createdAt',
+                timezone: '+07:00'
+              }
             },
             sourceType: '$sourceType'
           },
@@ -621,7 +642,8 @@ Now generate your JSON response:`;
             matched: evaluation.matched,
             passedChecks: evaluation.passedChecks,
             totalChecks: evaluation.totalChecks,
-            passThreshold: 70
+            passThreshold: 70,
+            isErrorResponse: evaluation.isErrorResponse ?? false
           }
         });
 
