@@ -37,9 +37,7 @@ export default function CreateGroceryModal({ open, onClose }) {
     if (dates.length === 0) return;
 
     const finalTitle = title.trim() || 'Danh sách mua sắm của tôi';
-
     const selected = dates.map(d => format(d, 'yyyy-MM-dd'));
-
     const newDates = selected.filter(d => !existingDates.includes(d));
 
     if (newDates.length === 0) {
@@ -58,12 +56,12 @@ export default function CreateGroceryModal({ open, onClose }) {
   return (
     <div className='fixed inset-0 z-[9999] flex items-center justify-center p-4'>
       <div
-        className='absolute inset-0 bg-background/60 backdrop-blur-md animate-in fade-in duration-300'
+        className='absolute inset-0 animate-in fade-in bg-background/60 duration-300 backdrop-blur-md'
         onClick={onClose}
       />
 
-      <div className='relative z-10 w-full max-w-[520px] rounded-[32px] bg-card border border-border shadow-[0_32px_64px_-12px_rgba(0,0,0,0.2)] animate-in zoom-in-95 duration-300'>
-        <div className='p-8 space-y-6'>
+      <div className='relative z-10 flex max-h-[90vh] w-full max-w-[520px] flex-col overflow-hidden rounded-[32px] border border-border bg-card shadow-[0_32px_64px_-12px_rgba(0,0,0,0.2)] animate-in zoom-in-95 duration-300'>
+        <div className='space-y-6 overflow-y-auto p-8'>
           <CreateGroceryHeader onClose={onClose} />
 
           <CreateGroceryInput
@@ -75,29 +73,33 @@ export default function CreateGroceryModal({ open, onClose }) {
 
           <div className='min-h-[32px]'>
             {dates.length > 0 ? (
-              <div className='flex flex-wrap gap-2 animate-in slide-in-from-top-2 duration-300'>
-                {dates.map(d => (
-                  <div
-                    key={d.toISOString()}
-                    className='flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-1.5 rounded-xl text-[11px] font-bold shadow-sm border border-primary'
-                  >
-                    <IoCheckmarkCircle size={14} />
-                    {formatDateVI(d)}
-                  </div>
-                ))}
+              <div className='max-h-36 overflow-y-auto pr-1'>
+                <div className='flex flex-wrap gap-2'>
+                  {dates.map(d => (
+                    <div
+                      key={d.toISOString()}
+                      className='flex items-center gap-1.5 rounded-xl border border-primary bg-primary px-3 py-1.5 text-[11px] font-bold text-primary-foreground shadow-sm'
+                    >
+                      <IoCheckmarkCircle size={14} />
+                      {formatDateVI(d)}
+                    </div>
+                  ))}
+                </div>
               </div>
             ) : (
-              <p className='text-[11px] text-muted-foreground/60 italic ml-1'>
+              <p className='ml-1 text-[11px] italic text-muted-foreground/60'>
                 * Vui lòng chọn ít nhất một ngày
               </p>
             )}
           </div>
+        </div>
 
-          <div className='flex items-center gap-4 pt-2'>
+        <div className='border-t border-border bg-card p-8 pt-4'>
+          <div className='flex items-center gap-4'>
             <Button
               variant='ghost'
               onClick={onClose}
-              className='flex-1 h-12 rounded-2xl font-bold'
+              className='h-12 flex-1 rounded-2xl font-bold'
             >
               Huỷ bỏ
             </Button>
@@ -105,7 +107,7 @@ export default function CreateGroceryModal({ open, onClose }) {
             <Button
               onClick={handleCreate}
               disabled={isPending || dates.length === 0}
-              className='flex-[2] h-12 rounded-2xl font-bold shadow-[0_8px_20px_-6px_rgba(var(--primary),0.3)] gap-2'
+              className='h-12 flex-[2] gap-2 rounded-2xl font-bold shadow-[0_8px_20px_-6px_rgba(var(--primary),0.3)]'
             >
               {isPending ? (
                 <div className='flex items-center gap-2'>
