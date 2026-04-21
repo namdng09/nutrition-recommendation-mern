@@ -39,13 +39,18 @@ export default function BlockToggleIngredientButton({ ingredientId }) {
       size='icon'
       variant='ghost'
       disabled={isLoading}
-      className={`rounded-full transition-all duration-300 ${
+      className={`rounded-full border shadow-sm transition-all duration-300 active:scale-95 ${
         blocked
-          ? 'border-2 border-rose-500 bg-rose-100 text-rose-700 ring-4 ring-rose-200'
-          : 'border border-slate-200 bg-slate-50 text-slate-400'
+          ? 'animate-in zoom-in fade-in border-red-700 bg-red-600 text-white shadow-red-200 hover:bg-red-700'
+          : 'border-slate-200 bg-slate-100 text-slate-500 hover:bg-slate-200'
       }`}
     >
-      <FaBan size={14} />
+      <FaBan
+        size={14}
+        className={`transition-transform duration-500 ${
+          blocked ? 'scale-125 rotate-[360deg]' : 'scale-100 rotate-0'
+        }`}
+      />
     </Button>
   );
 }

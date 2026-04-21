@@ -23,6 +23,12 @@ export default function CreateGroceryModal({ open, onClose }) {
       (g.date ?? []).map(d => format(new Date(d), 'yyyy-MM-dd'))
     ) ?? [];
 
+  const handleClose = () => {
+    setTitle('');
+    setDates([]);
+    onClose();
+  };
+
   const { mutate, isPending } = useCreateGrocery({
     onSuccess: () => {
       setTitle('');
@@ -57,12 +63,12 @@ export default function CreateGroceryModal({ open, onClose }) {
     <div className='fixed inset-0 z-[9999] flex items-center justify-center p-4'>
       <div
         className='absolute inset-0 animate-in fade-in bg-background/60 duration-300 backdrop-blur-md'
-        onClick={onClose}
+        onClick={handleClose}
       />
 
       <div className='relative z-10 flex max-h-[90vh] w-full max-w-[520px] flex-col overflow-hidden rounded-[32px] border border-border bg-card shadow-[0_32px_64px_-12px_rgba(0,0,0,0.2)] animate-in zoom-in-95 duration-300'>
         <div className='space-y-6 overflow-y-auto p-8'>
-          <CreateGroceryHeader onClose={onClose} />
+          <CreateGroceryHeader onClose={handleClose} />
 
           <CreateGroceryInput
             value={title}
@@ -98,7 +104,7 @@ export default function CreateGroceryModal({ open, onClose }) {
           <div className='flex items-center gap-4'>
             <Button
               variant='ghost'
-              onClick={onClose}
+              onClick={handleClose}
               className='h-12 flex-1 rounded-2xl font-bold'
             >
               Huỷ bỏ

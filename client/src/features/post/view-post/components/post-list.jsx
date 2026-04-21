@@ -7,6 +7,8 @@ import PostFilter from './post-filter';
 import PostListHeader from './post-list-header';
 import PostPagination from './post-pagination';
 
+const PAGE_SIZE = 6;
+
 export default function PostList() {
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState({
@@ -16,9 +18,16 @@ export default function PostList() {
 
   const data = usePost({
     ...filters,
-    page
+    page,
+    limit: PAGE_SIZE
   });
-  const { docs: posts, totalPages, hasPrevPage, hasNextPage } = data.data;
+
+  const {
+    docs: posts = [],
+    totalPages = 1,
+    hasPrevPage = false,
+    hasNextPage = false
+  } = data.data || {};
 
   const handleSearch = nextFilters => {
     setPage(1);
@@ -124,8 +133,8 @@ export default function PostList() {
         totalPages={totalPages}
         hasPrevPage={hasPrevPage}
         hasNextPage={hasNextPage}
-        onPrev={() => setPage(p => p - 1)}
-        onNext={() => setPage(p => p + 1)}
+        onPrev={() => setPage(p => Math.max(1, p - 1))}
+        onNext={() => setPage(p => Math.min(totalPages, p + 1))}
       />
     </div>
   );

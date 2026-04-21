@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import { FiSend } from 'react-icons/fi';
+import { useSelector } from 'react-redux';
 
 import { formatDateVI } from '~/lib/utils';
 
@@ -8,6 +9,9 @@ import { useAddPostComment } from '../../add-post-comment/api/add-post-comment';
 import DeleteCommentModal from './delete-comment-modal';
 
 export default function PostComments({ postId, comments = [] }) {
+  const user = useSelector(state => state.auth.user);
+  const currentUserId = user?.id || user?._id;
+
   const { mutate: addComment } = useAddPostComment();
   const [comment, setComment] = useState('');
 
@@ -57,7 +61,10 @@ export default function PostComments({ postId, comments = [] }) {
                 Hãy giữ bình luận lịch sự và hữu ích cho cộng đồng.
               </p>
 
-              <button className='inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:shadow-primary/30 active:scale-95'>
+              <button
+                type='submit'
+                className='inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:shadow-primary/30 active:scale-95'
+              >
                 Gửi
                 <FiSend size={16} />
               </button>
@@ -67,41 +74,51 @@ export default function PostComments({ postId, comments = [] }) {
       </form>
 
       <div className='space-y-4'>
-        {comments.map(c => (
-          <div
-            key={c._id}
-            className='group rounded-[1.5rem] bg-background p-5 shadow-sm ring-1 ring-border/50 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:ring-primary/20'
-          >
-            <div className='flex gap-4'>
-              <div className='shrink-0'>
-                <div className='flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground shadow-sm'>
-                  <FaUserCircle size={28} />
-                </div>
-              </div>
+        {comments.map(c => {
+          const authorId = c.author?._id || c.author?.id;
+          const canDelete =
+            !!currentUserId &&
+            !!authorId &&
+            String(currentUserId) === String(authorId);
 
-              <div className='min-w-0 flex-1'>
-                <div className='mb-3 flex items-start justify-between gap-3'>
-                  <div className='min-w-0'>
-                    <p className='truncate text-sm font-black uppercase tracking-tight text-foreground'>
-                      {c.author?.name}
-                    </p>
-                    <span className='inline-flex items-center rounded-full bg-muted/70 px-2.5 py-1 text-[10px] font-bold text-muted-foreground/70'>
-                      {formatDateVI(c.createdAt)}
-                    </span>
-                  </div>
-
-                  <div className='shrink-0 opacity-80 transition group-hover:opacity-100'>
-                    <DeleteCommentModal postId={postId} commentId={c._id} />
+          return (
+            <div
+              key={c._id}
+              className='group rounded-[1.5rem] bg-background p-5 shadow-sm ring-1 ring-border/50 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:ring-primary/20'
+            >
+              <div className='flex gap-4'>
+                <div className='shrink-0'>
+                  <div className='flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground shadow-sm'>
+                    <FaUserCircle size={28} />
                   </div>
                 </div>
 
-                <p className='whitespace-pre-line text-[15px] leading-relaxed text-muted-foreground'>
-                  {c.content}
-                </p>
+                <div className='min-w-0 flex-1'>
+                  <div className='mb-3 flex items-start justify-between gap-3'>
+                    <div className='min-w-0'>
+                      <p className='truncate text-sm font-black uppercase tracking-tight text-foreground'>
+                        {c.author?.name}
+                      </p>
+                      <span className='inline-flex items-center rounded-full bg-muted/70 px-2.5 py-1 text-[10px] font-bold text-muted-foreground/70'>
+                        {formatDateVI(c.createdAt)}
+                      </span>
+                    </div>
+
+                    {canDelete ? (
+                      <div className='shrink-0 opacity-80 transition group-hover:opacity-100'>
+                        <DeleteCommentModal postId={postId} commentId={c._id} />
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <p className='whitespace-pre-line text-[15px] leading-relaxed text-muted-foreground'>
+                    {c.content}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
