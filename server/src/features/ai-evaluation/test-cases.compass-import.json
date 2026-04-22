@@ -7,7 +7,7 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return exactly this JSON: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}",
+      "prompt": "I want to lose weight with Keto diet, around 1800 calories. Give me meal recommendations.",
       "context": {
         "goal": "Giảm cân",
         "diet": "Keto",
@@ -17,8 +17,8 @@
     },
     "expected": {
       "classification": "positive",
-      "exact": "{\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}",
-      "notes": "Strict exact match"
+      "mustInclude": ["meals", "mealType", "dishes", "dishId", "servings"],
+      "notes": "Valid JSON structure"
     }
   },
   {
@@ -29,7 +29,7 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return meal JSON like: {\"meals\":[{\"mealType\":\"breakfast\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}",
+      "prompt": "I'm aiming to maintain my weight with a balanced diet at 2000 calories. What meals do you recommend?",
       "context": {
         "goal": "Duy trì cân nặng",
         "diet": "Cân bằng",
@@ -51,7 +51,7 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return JSON with meals array: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}",
+      "prompt": "I want to build muscle with high protein diet, around 2500 calories. Suggest meals please.",
       "context": {
         "goal": "Tăng cơ",
         "diet": "High protein",
@@ -73,7 +73,7 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return JSON with only breakfast: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}",
+      "prompt": "I need a very low calorie plan for weight loss, around 1200 calories. Just breakfast would be enough for now.",
       "context": {
         "goal": "Giảm cân",
         "diet": "Low calorie",
@@ -95,7 +95,7 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return JSON with 2 meals: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]},{\"mealType\":\"LUNCH\",\"dishes\":[{\"dishId\":\"2\",\"servings\":1}]}]}",
+      "prompt": "For weight maintenance with balanced diet at 2000 calories, give me breakfast and lunch please.",
       "context": {
         "goal": "Duy trì cân nặng",
         "diet": "Cân bằng",
@@ -117,7 +117,7 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return JSON with servings: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":2}]}]}",
+      "prompt": "I'm trying to gain weight with high calorie diet, around 3000 calories. Can you recommend meals with proper servings?",
       "context": {
         "goal": "Tăng cân",
         "diet": "High calorie",
@@ -139,7 +139,7 @@
     "difficulty": "medium",
     "enabled": true,
     "input": {
-      "prompt": "Return JSON with servings 1-3: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":2}]}]}",
+      "prompt": "I'm on a low carb diet for weight loss, around 1500 calories. Give me meal recommendations please.",
       "context": {
         "goal": "Giảm cân",
         "diet": "Low carb",
@@ -161,7 +161,7 @@
     "difficulty": "medium",
     "enabled": true,
     "input": {
-      "prompt": "Return simple JSON for 800 cal: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}",
+      "prompt": "I need to lose weight quickly with very low calorie diet, around 800 calories. What can you recommend?",
       "context": {
         "goal": "Giảm cân nhanh",
         "diet": "Very low calorie",
@@ -183,7 +183,7 @@
     "difficulty": "medium",
     "enabled": true,
     "input": {
-      "prompt": "Return simple JSON for 3000 cal: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":3}]}]}",
+      "prompt": "I'm bulking up and need maximum muscle gain, around 3000 calories. Give me meal recommendations.",
       "context": {
         "goal": "Tăng cơ tối đa",
         "diet": "Bulking",
@@ -205,7 +205,7 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return vegan meal JSON: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}",
+      "prompt": "I follow a vegan diet and want to maintain my health, around 2000 calories. What meals would you recommend?",
       "context": {
         "goal": "Duy trì sức khỏe",
         "diet": "Vegan",
@@ -227,7 +227,7 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return low carb meal JSON: {\"meals\":[{\"mealType\":\"LUNCH\",\"dishes\":[{\"dishId\":\"2\",\"servings\":1}]}]}",
+      "prompt": "I'm doing low carb diet for weight loss, around 1800 calories. Recommend lunch meals please.",
       "context": {
         "goal": "Giảm cân",
         "diet": "Low carb",
@@ -249,7 +249,7 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return JSON with dishId: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"101\",\"servings\":1}]}]}",
+      "prompt": "For weight maintenance with balanced diet at 2000 calories, give me breakfast with a specific dish ID please.",
       "context": {
         "goal": "Duy trì cân nặng",
         "diet": "Cân bằng",
@@ -271,7 +271,7 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return JSON with 1 dish per meal: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}",
+      "prompt": "I want a simple weight loss plan around 1500 calories. Just one dish per meal is fine.",
       "context": {
         "goal": "Giảm cân",
         "diet": "Simple",
