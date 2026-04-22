@@ -8,12 +8,19 @@ export interface SemanticScore {
   overallScore: number;
 }
 
+const RULE_WEIGHTS = {
+  nutritionBalance: 1,
+  mealVariety: 0.8,
+  constraintSatisfaction: 0.7,
+  cookingTimeFeasibility: 0.3
+} as const;
+
 const SEMANTIC_EVALUATION_PROMPT = `Bạn là chuyên gia dinh dưỡng. Đánh giá gợi ý bữa ăn bằng thang 0-100 theo:
 
-1. NUTRITION_BALANCE (35%): Cân bằng macros giữa các bữa
-2. MEAL_VARIETY (30%): Đa dạng món ăn, phương pháp nấu
-3. CONSTRAINT_SATISFACTION (25%): Thỏa mãn các yêu cầu về mục tiêu, chế độ ăn, calo, dị ứng
-4. COOKING_TIME_FEASIBILITY (10%): Lý do lựa chọn món ăn, cách chế biến phù hợp
+1. NUTRITION_BALANCE: Cân bằng macros giữa các bữa
+2. MEAL_VARIETY: Đa dạng món ăn, phương pháp nấu
+3. CONSTRAINT_SATISFACTION: Thỏa mãn các yêu cầu về mục tiêu, chế độ ăn, calo, dị ứng
+4. COOKING_TIME_FEASIBILITY: Lý do lựa chọn món ăn, cách chế biến phù hợp
 
 Context:
 - User goal: {goal}
@@ -66,18 +73,22 @@ export class SemanticValidator {
         return this.defaultScore('Invalid JSON response from LLM');
       }
 
-      const nutritionBalance = Number(parsed.nutrition_balance) || 50;
-      const mealVariety = Number(parsed.meal_variety) || 50;
-      const constraintSatisfaction =
-        Number(parsed.constraint_satisfaction) || 50;
-      const cookingTimeFeasibility =
-        Number(parsed.cooking_time_feasibility) || 50;
+      const nutritionBalance = Number(parsed.nutrition_balance);
+      const mealVariety = Number(parsed.meal_variety);
+      const constraintSatisfaction = Number(parsed.constraint_satisfaction);
+      const cookingTimeFeasibility = Number(parsed.cooking_time_feasibility);
+
+      const semanticScore =
+        nutritionBalance * RULE_WEIGHTS.nutritionBalance +
+        mealVariety * RULE_WEIGHTS.mealVariety +
+        constraintSatisfaction * RULE_WEIGHTS.constraintSatisfaction +
+        cookingTimeFeasibility * RULE_WEIGHTS.cookingTimeFeasibility;
+
+      const totalScoreCanBeAchieved =
+        100 * Object.values(RULE_WEIGHTS).reduce((a, b) => a + b, 0);
 
       const overallScore = Math.round(
-        nutritionBalance * 0.35 +
-          mealVariety * 0.3 +
-          constraintSatisfaction * 0.25 +
-          cookingTimeFeasibility * 0.1
+        (semanticScore / totalScoreCanBeAchieved) * 100
       );
 
       return {
