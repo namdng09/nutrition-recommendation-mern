@@ -20,6 +20,7 @@ Context:
 - Diet: {diet}
 - Calories target: {calories}
 - Allergies: {allergies}
+- Meal plan JSON: {mealPlan}
 
 Output JSON only:
 {
@@ -49,11 +50,13 @@ export class SemanticValidator {
     diet: string;
     calories: number;
     allergies: string[];
+    mealPlanJson?: string;
   }): Promise<SemanticScore> {
     const prompt = SEMANTIC_EVALUATION_PROMPT.replace('{goal}', context.goal)
       .replace('{diet}', context.diet)
       .replace('{calories}', String(context.calories))
-      .replace('{allergies}', context.allergies.join(', ') || 'none');
+      .replace('{allergies}', context.allergies.join(', ') || 'none')
+      .replace('{mealPlan}', context.mealPlanJson ?? 'N/A');
 
     try {
       const result = await AiService.runEvaluationPrompt(prompt);

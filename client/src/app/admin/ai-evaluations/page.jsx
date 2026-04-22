@@ -220,8 +220,8 @@ const Page = () => {
                   {detailQuery.data?.endpoint || '--'}
                 </p>
                 <p>
-                  <span className='font-medium'>Rule score:</span>{' '}
-                  {detailQuery.data?.ruleScore ?? 0}
+                  <span className='font-medium'>Pass threshold:</span>{' '}
+                  {detailQuery.data?.evaluation?.passThreshold ?? 90}
                 </p>
                 <p>
                   <span className='font-medium'>Semantic score:</span>{' '}

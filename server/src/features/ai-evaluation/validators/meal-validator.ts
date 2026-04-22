@@ -48,17 +48,17 @@ const extractJsonObject = (text: string): Record<string, unknown> | null => {
 };
 
 const RULE_WEIGHTS = {
-  jsonSchemaValid: 60 / 7,
-  allDishIdsExist: 60 / 7,
-  noAllergenDishes: 60 / 7,
-  servingsInRange: 60 / 7,
-  noDuplicateDishes: 60 / 7,
-  mealTypeMatch: 60 / 7,
-  mealCountMatch: 60 / 7,
-  macroTargetMet: 14,
-  nutritionVariety: 10,
-  cookingTimeFeasibility: 6,
-  constraintSatisfaction: 10
+  jsonSchemaValid: 1,
+  allDishIdsExist: 1,
+  noAllergenDishes: 1,
+  servingsInRange: 1,
+  noDuplicateDishes: 1,
+  mealTypeMatch: 1,
+  mealCountMatch: 1,
+  macroTargetMet: 0.35,
+  nutritionVariety: 0.25,
+  cookingTimeFeasibility: 0.15,
+  constraintSatisfaction: 0.25
 } as const;
 
 const jsonSchemaValid = (output: string): ValidationResult => {

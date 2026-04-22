@@ -444,7 +444,7 @@ Now generate your JSON response:`;
               matched: false,
               passedChecks: 0,
               totalChecks: 0,
-              passThreshold: 70
+              passThreshold: 90
             }
           });
 
@@ -485,10 +485,8 @@ Now generate your JSON response:`;
           status: 'success',
           isCorrect: isAccurate,
           classification: isAccurate ? 'positive' : 'negative',
-          ruleScore: evaluation.ruleScore,
           semanticScore,
           accuracyScore,
-          rulePassed: evaluation.passedChecks,
           ruleTotal: evaluation.totalChecks,
           latencyMs: Date.now() - start,
           inputTokens: aiResult.usage.inputTokens,
@@ -505,7 +503,7 @@ Now generate your JSON response:`;
             matched: evaluation.matched,
             passedChecks: evaluation.passedChecks,
             totalChecks: evaluation.totalChecks,
-            passThreshold: 70,
+            passThreshold: 90,
             isErrorResponse: evaluation.isErrorResponse ?? false
           }
         });
@@ -514,7 +512,6 @@ Now generate your JSON response:`;
           testCaseId: testCase._id.toString(),
           name: testCase.name,
           isCorrect: isAccurate,
-          ruleScore: evaluation.ruleScore,
           semanticScore,
           accuracyScore,
           latencyMs: Date.now() - start
@@ -537,7 +534,7 @@ Now generate your JSON response:`;
             matched: false,
             passedChecks: 0,
             totalChecks: 0,
-            passThreshold: 70
+            passThreshold: 90
           }
         });
 

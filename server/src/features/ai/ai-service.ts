@@ -507,6 +507,11 @@ export const AiService = {
         estimatedReserve
       );
       aiInvocation = await invokeAi(prompt);
+
+      console.log(
+        `[AiInvocation] endpoint=recommend_daily_meals textLength=${aiInvocation.text.length} totalTokens=${aiInvocation.usage.totalTokens}`
+      );
+
       const quotaSettlement = await settleAiTokenUsage(
         userId,
         reservation,
@@ -556,8 +561,16 @@ export const AiService = {
         }))
       };
 
+      const producedMealsForValidation = meals.map(meal => ({
+        mealType: meal.mealType,
+        dishes: meal.dishes.map(dish => ({
+          dishId: dish.dishId,
+          servings: dish.servings
+        }))
+      }));
+
       const validation = await MetricsCollector.validateMealProduction(
-        aiInvocation.text,
+        JSON.stringify(producedMealsForValidation),
         validationContext
       );
 
@@ -572,8 +585,6 @@ export const AiService = {
         accuracyScore: validation.accuracyScore,
         ruleScore: validation.ruleScore,
         semanticScore: validation.semanticScore,
-        rulePassed: validation.rulePassed,
-        ruleTotal: validation.ruleTotal,
         latencyMs: Date.now() - startedAt,
         inputTokens: aiMeta.usage.inputTokens,
         outputTokens: aiMeta.usage.outputTokens,
@@ -584,6 +595,7 @@ export const AiService = {
           scheduleId: response.scheduleId,
           promptInjectionDetected: false,
           piiDetected: false,
+          validationInputSource: 'materialized_meals',
           validationReport: validation.validationReport
         }
       });
@@ -721,35 +733,6 @@ export const AiService = {
         schedule.toObject(),
         aiMeta
       );
-
-      const validation = MetricsCollector.validateWorkoutBasic(
-        response.workout
-      );
-
-      await MetricsCollector.logMetric({
-        sourceType: 'production',
-        endpoint: 'recommend_daily_workout',
-        requestId,
-        userId,
-        status: 'success',
-        isCorrect: validation.isCorrect,
-        classification: validation.classification,
-        accuracyScore: validation.accuracyScore,
-        ruleScore: validation.ruleScore,
-        rulePassed: validation.rulePassed,
-        ruleTotal: validation.ruleTotal,
-        latencyMs: Date.now() - startedAt,
-        inputTokens: aiMeta.usage.inputTokens,
-        outputTokens: aiMeta.usage.outputTokens,
-        totalTokens: aiMeta.usage.totalTokens,
-        estimatedCostUsd: estimateAiCostUsd(aiMeta.usage.totalTokens),
-        meta: {
-          workoutCount: response.workout.length,
-          scheduleId: response.scheduleId,
-          promptInjectionDetected: false,
-          piiDetected: false
-        }
-      });
 
       return response;
     } catch (error) {

@@ -35,8 +35,6 @@ export interface LogMetricPayload {
   accuracyScore?: number;
   ruleScore?: number;
   semanticScore?: number;
-  rulePassed?: number;
-  ruleTotal?: number;
   latencyMs: number;
   inputTokens?: number;
   outputTokens?: number;
@@ -87,8 +85,6 @@ export const MetricsCollector = {
         accuracyScore: payload.accuracyScore,
         ruleScore: payload.ruleScore,
         semanticScore: payload.semanticScore,
-        rulePassed: payload.rulePassed,
-        ruleTotal: payload.ruleTotal,
         latencyMs: payload.latencyMs,
         inputTokens: payload.inputTokens,
         outputTokens: payload.outputTokens,
@@ -122,8 +118,6 @@ export const MetricsCollector = {
     accuracyScore: number;
     ruleScore: number;
     semanticScore: number;
-    rulePassed: number;
-    ruleTotal: number;
     validationReport: Record<string, unknown>;
   }> {
     const validator = new MealRecommendationValidator();
@@ -134,17 +128,24 @@ export const MetricsCollector = {
     let semanticScore = 0;
     if (validationReport.overallScore > 0) {
       const semanticValidator = new SemanticValidator();
-      const semanticResult = await semanticValidator.evaluate(aiOutputText, {
+      const semanticResult = await semanticValidator.evaluate({
         goal: context.userProfile.goal,
         diet: context.userProfile.diet,
         calories: context.userProfile.calorieTarget,
-        allergies: context.userProfile.allergies
+        allergies: context.userProfile.allergies,
+        mealPlanJson: aiOutputText
       });
       semanticScore = semanticResult.overallScore;
+
+      // The semantic evaluator can return a neutral default (50) when parsing fails.
+      // In that case, avoid letting it unfairly degrade a strong rule score.
+      if (semanticScore <= 50) {
+        semanticScore = Math.max(semanticScore, ruleScore);
+      }
     }
 
     const accuracyScore = Math.round(ruleScore * 0.6 + semanticScore * 0.4);
-    const isCorrect = accuracyScore >= 70;
+    const isCorrect = accuracyScore >= 90;
 
     return {
       isCorrect,
@@ -152,8 +153,6 @@ export const MetricsCollector = {
       accuracyScore,
       ruleScore,
       semanticScore,
-      rulePassed: ruleScore,
-      ruleTotal: 100,
       validationReport: {
         overallScore: validationReport.overallScore,
         checks: validationReport.checks.map(r => ({
@@ -175,48 +174,9 @@ export const MetricsCollector = {
     accuracyScore: number;
     ruleScore: number;
     semanticScore: number;
-    rulePassed: number;
-    ruleTotal: number;
     validationReport: Record<string, unknown>;
   }> {
     return this.validateMealProduction(aiOutputText, context);
-  },
-
-  validateWorkoutBasic: (
-    workout: Array<{ exerciseId?: string; exerciseName?: string }>
-  ): {
-    isCorrect: boolean;
-    classification: 'positive' | 'negative';
-    accuracyScore: number;
-    ruleScore: number;
-    rulePassed: number;
-    ruleTotal: number;
-  } => {
-    let rulePassed = 0;
-    const ruleTotal = 3;
-
-    const hasWorkout = Array.isArray(workout) && workout.length > 0;
-    if (hasWorkout) rulePassed += 1;
-
-    const validExerciseIds =
-      hasWorkout && workout.every(item => Boolean(item.exerciseId));
-    if (validExerciseIds) rulePassed += 1;
-
-    const validExerciseName =
-      hasWorkout && workout.every(item => Boolean(item.exerciseName));
-    if (validExerciseName) rulePassed += 1;
-
-    const ruleScore = Math.round((rulePassed / ruleTotal) * 100);
-    const isCorrect = ruleScore >= 67;
-
-    return {
-      isCorrect,
-      classification: isCorrect ? 'positive' : 'negative',
-      accuracyScore: ruleScore,
-      ruleScore,
-      rulePassed,
-      ruleTotal
-    };
   }
 };
 

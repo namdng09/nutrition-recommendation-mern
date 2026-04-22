@@ -27,8 +27,6 @@ const aiMetricSchema = new Schema(
     ruleScore: { type: Number, min: 0, max: 100 },
     semanticScore: { type: Number, min: 0, max: 100 },
     accuracyScore: { type: Number, min: 0, max: 100 },
-    rulePassed: { type: Number, min: 0 },
-    ruleTotal: { type: Number, min: 0 },
     latencyMs: { type: Number, min: 0, default: 0 },
     inputTokens: { type: Number, min: 0, default: 0 },
     outputTokens: { type: Number, min: 0, default: 0 },
@@ -45,7 +43,7 @@ const aiMetricSchema = new Schema(
       matched: { type: Boolean, default: false },
       passedChecks: { type: Number, min: 0, default: 0 },
       totalChecks: { type: Number, min: 0, default: 0 },
-      passThreshold: { type: Number, min: 0, max: 100, default: 70 }
+      passThreshold: { type: Number, min: 0, max: 100, default: 90 }
     },
     meta: { type: Schema.Types.Mixed }
   },
