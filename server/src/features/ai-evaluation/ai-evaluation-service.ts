@@ -423,10 +423,11 @@ Now generate your JSON response:`;
           const errorMessage =
             'Test case thiếu expected.exact/mustInclude/regex nên không thể chấm điểm';
 
-          const metric = await AiMetricModel.create({
+          await AiMetricModel.create({
             sourceType: 'evaluation',
             endpoint: testCase.endpoint,
             status: 'failed',
+            classification: testCase.expected?.classification,
             accuracyScore: 0,
             latencyMs: Date.now() - start,
             inputTokens: aiResult.usage.inputTokens,
@@ -469,7 +470,8 @@ Now generate your JSON response:`;
             calories: Number(input?.calories ?? 2000),
             allergies: Array.isArray(input?.allergies)
               ? input.allergies.map(String)
-              : []
+              : [],
+            mealPlanJson: aiResult.response
           };
           const semanticResult = await semanticValidator.evaluate(context);
           semanticScore = semanticResult.overallScore;
@@ -484,7 +486,7 @@ Now generate your JSON response:`;
           endpoint: testCase.endpoint,
           status: 'success',
           isCorrect: isAccurate,
-          classification: isAccurate ? 'positive' : 'negative',
+          classification: testCase.expected?.classification,
           semanticScore,
           accuracyScore,
           ruleTotal: evaluation.totalChecks,
@@ -521,6 +523,7 @@ Now generate your JSON response:`;
           sourceType: 'evaluation',
           endpoint: testCase.endpoint,
           status: 'failed',
+          classification: testCase.expected?.classification,
           accuracyScore: 0,
           latencyMs: Date.now() - start,
           errorMessage: error instanceof Error ? error.message : String(error),

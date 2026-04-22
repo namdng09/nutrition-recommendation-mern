@@ -167,7 +167,8 @@ export const MetricsCollector = {
 
   async validateMealEvaluation(
     aiOutputText: string,
-    context: MealValidationContext
+    context: MealValidationContext,
+    expectedClassification?: 'positive' | 'negative'
   ): Promise<{
     isCorrect: boolean;
     classification: 'positive' | 'negative';
@@ -176,7 +177,11 @@ export const MetricsCollector = {
     semanticScore: number;
     validationReport: Record<string, unknown>;
   }> {
-    return this.validateMealProduction(aiOutputText, context);
+    const result = await this.validateMealProduction(aiOutputText, context);
+    return {
+      ...result,
+      classification: expectedClassification ?? result.classification
+    };
   }
 };
 
