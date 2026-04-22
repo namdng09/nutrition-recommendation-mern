@@ -691,7 +691,7 @@ Now generate your JSON response:`;
   },
 
   listEvaluationResults: async (query: ListMetricsQuery) => {
-    const filter = buildMetricFilter({ ...query, sourceType: 'evaluation' });
+    const filter = buildMetricFilter(query);
     return AiMetricModel.find(filter).sort({ createdAt: -1 }).limit(200).lean();
   },
 
