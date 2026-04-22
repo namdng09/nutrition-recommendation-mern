@@ -138,7 +138,10 @@ const Page = () => {
               onClick={() => setIsSelectTestCaseOpen(true)}
             >
               <Play className='mr-2 h-4 w-4' />
-              Chọn test case ({selectedTestCaseIds.length || 'all'})
+              Chọn test case
+              {selectedTestCaseIds.length > 0
+                ? ` (${selectedTestCaseIds.length})`
+                : ''}
             </Button>
 
             <Button variant='outline' onClick={() => resultsQuery.refetch()}>
@@ -406,7 +409,7 @@ const Page = () => {
           <DialogHeader>
             <DialogTitle>Chọn test cases để chạy</DialogTitle>
             <DialogDescription>
-              Để trống để chạy tất cả test cases đang được bật
+              Chưa chọn test case nào. Bỏ trống để bỏ qua test case.
             </DialogDescription>
           </DialogHeader>
 
@@ -435,13 +438,19 @@ const Page = () => {
             <Button
               variant='outline'
               onClick={() => {
-                const allIds = (testCasesQuery.data || [])
+                const enabledIds = (testCasesQuery.data || [])
                   .filter(tc => tc.enabled)
                   .map(tc => tc._id);
-                setSelectedTestCaseIds(allIds);
+                const allSelected =
+                  enabledIds.length > 0 &&
+                  enabledIds.every(id => selectedTestCaseIds.includes(id));
+                setSelectedTestCaseIds(allSelected ? [] : enabledIds);
               }}
             >
-              Chọn tất cả
+              {selectedTestCaseIds.length ===
+              (testCasesQuery.data || []).filter(tc => tc.enabled).length
+                ? 'Bỏ chọn tất cả'
+                : 'Chọn tất cả'}
             </Button>
             <div className='flex gap-2'>
               <Button
@@ -450,7 +459,12 @@ const Page = () => {
               >
                 Hủy
               </Button>
-              <Button onClick={runSelected} disabled={runMutation.isPending}>
+              <Button
+                onClick={runSelected}
+                disabled={
+                  runMutation.isPending || selectedTestCaseIds.length === 0
+                }
+              >
                 <Play className='mr-2 h-4 w-4' />
                 {runMutation.isPending ? 'Đang chạy...' : 'Chạy'}
               </Button>
