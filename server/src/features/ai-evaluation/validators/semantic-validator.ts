@@ -15,27 +15,22 @@ const RULE_WEIGHTS = {
   cookingTimeFeasibility: 0.3
 } as const;
 
-const SEMANTIC_EVALUATION_PROMPT = `Bạn là chuyên gia dinh dưỡng. Đánh giá gợi ý bữa ăn bằng thang 0-100 theo:
+const SEMANTIC_EVALUATION_PROMPT = `You are a nutrition expert. Rate this meal plan on 0-100 scale:
 
-1. NUTRITION_BALANCE: Cân bằng macros giữa các bữa
-2. MEAL_VARIETY: Đa dạng món ăn, phương pháp nấu
-3. CONSTRAINT_SATISFACTION: Thỏa mãn các yêu cầu về mục tiêu, chế độ ăn, calo, dị ứng
-4. COOKING_TIME_FEASIBILITY: Lý do lựa chọn món ăn, cách chế biến phù hợp
+1. NUTRITION_BALANCE: Macro balance across meals
+2. MEAL_VARIETY: Dish diversity, cooking methods
+3. CONSTRAINT_SATISFACTION: Meets goal, diet, calories, allergy requirements
+4. COOKING_TIME_FEASIBILITY: Reasonability of dish choices and preparation
 
 Context:
 - User goal: {goal}
 - Diet: {diet}
 - Calories target: {calories}
 - Allergies: {allergies}
-- Meal plan JSON: {mealPlan}
+- Meal plan to evaluate: {mealPlan}
 
-Output JSON only:
-{
-  "nutrition_balance": 85,
-  "meal_variety": 70,
-  "constraint_satisfaction": 90,
-  "cooking_time_feasibility": 80,
-}`;
+Respond ONLY with valid JSON:
+{"nutrition_balance": 0-100, "meal_variety": 0-100, "constraint_satisfaction": 0-100, "cooking_time_feasibility": 0-100}`;
 
 const extractJsonObject = (text: string): Record<string, unknown> | null => {
   const trimmed = text.trim();
