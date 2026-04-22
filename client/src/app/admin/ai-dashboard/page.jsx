@@ -127,7 +127,7 @@ const transformTrendsData = data => {
 
 const Page = () => {
   const [range, setRange] = useState('1');
-  const [source, setSource] = useState('both');
+  const [sourceType, setSourceType] = useState('both');
 
   const granularity = range === '1' ? 'hour' : 'day';
 
@@ -135,10 +135,10 @@ const Page = () => {
   const params = useMemo(
     () => ({
       ...dateParams,
-      source,
+      sourceType,
       granularity
     }),
-    [dateParams, source, granularity]
+    [dateParams, sourceType, granularity]
   );
 
   const summaryQuery = useAIMetricsSummary(params);
@@ -162,7 +162,7 @@ const Page = () => {
         </div>
 
         <div className='flex flex-wrap gap-2'>
-          <Select value={source} onValueChange={setSource}>
+          <Select value={sourceType} onValueChange={setSourceType}>
             <SelectTrigger className='w-[160px]'>
               <SelectValue placeholder='Nguồn dữ liệu' />
             </SelectTrigger>

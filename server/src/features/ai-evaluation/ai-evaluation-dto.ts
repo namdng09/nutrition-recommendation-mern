@@ -7,7 +7,7 @@ export const aiMetricSourceSchema = z.enum([
 ]);
 
 export const listMetricsQuerySchema = z.object({
-  source: aiMetricSourceSchema.optional(),
+  sourceType: aiMetricSourceSchema.optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   endpoint: z

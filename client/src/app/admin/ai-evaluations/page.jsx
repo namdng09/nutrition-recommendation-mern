@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
+import { Checkbox } from '~/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -12,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle
 } from '~/components/ui/dialog';
+import { ScrollArea } from '~/components/ui/scroll-area';
 import {
   Table,
   TableBody,
@@ -43,11 +45,16 @@ const getClassificationLabel = classification => {
 };
 
 const Page = () => {
-  const [lastRun, setLastRun] = useState(null);
+  const [source, setSource] = useState('evaluation');
+  const [selectedTestCaseIds, setSelectedTestCaseIds] = useState([]);
+  const [isSelectTestCaseOpen, setIsSelectTestCaseOpen] = useState(false);
   const [selectedMetricId, setSelectedMetricId] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [lastRun, setLastRun] = useState(null);
   const testCasesQuery = useAITestCases();
-  const resultsQuery = useAIEvaluationResults({ source: 'evaluation' });
+  const [queryKey, setQueryKey] = useState(0);
+  const params = source ? { sourceType: source } : {};
+  const resultsQuery = useAIEvaluationResults(params, { queryKey: [queryKey] });
   const detailQuery = useAIEvaluationResultDetail(selectedMetricId, {
     enabled: isDetailOpen && Boolean(selectedMetricId)
   });
@@ -58,10 +65,22 @@ const Page = () => {
     [testCasesQuery.data]
   );
 
-  const runAll = async () => {
+  const toggleTestCase = testCaseId => {
+    setSelectedTestCaseIds(prev =>
+      prev.includes(testCaseId)
+        ? prev.filter(id => id !== testCaseId)
+        : [...prev, testCaseId]
+    );
+  };
+
+  const runSelected = async () => {
     try {
-      const result = await runMutation.mutateAsync({});
+      const result = await runMutation.mutateAsync({
+        testCaseIds:
+          selectedTestCaseIds.length > 0 ? selectedTestCaseIds : undefined
+      });
       setLastRun(result);
+      setIsSelectTestCaseOpen(false);
       toast.success('Chạy đánh giá thành công');
       resultsQuery.refetch();
     } catch (error) {
@@ -74,6 +93,10 @@ const Page = () => {
     setIsDetailOpen(true);
   };
 
+  const clearLastRun = () => {
+    setLastRun(null);
+  };
+
   return (
     <div className='space-y-6'>
       <Card>
@@ -82,37 +105,113 @@ const Page = () => {
         </CardHeader>
         <CardContent className='space-y-4'>
           <div className='flex flex-wrap items-center gap-2'>
-            <Badge variant='secondary'>{enabledCount} test case đang bật</Badge>
+            <Badge variant='secondary'>{enabledCount} test case</Badge>
             <Badge variant='outline'>
-              {resultsQuery.data?.length ?? 0} kết quả gần nhất
+              {resultsQuery.data?.length ?? 0} kết quả
             </Badge>
           </div>
 
-          <div className='flex flex-wrap gap-2'>
+          <div className='flex flex-wrap items-center gap-2'>
             <Button
-              onClick={runAll}
-              disabled={runMutation.isPending || enabledCount === 0}
+              variant={source === 'evaluation' ? 'default' : 'outline'}
+              size='sm'
+              onClick={() => {
+                setSource('evaluation');
+                setQueryKey(k => k + 1);
+              }}
+            >
+              Evaluation
+            </Button>
+            <Button
+              variant={source === 'production' ? 'default' : 'outline'}
+              size='sm'
+              onClick={() => {
+                setSource('production');
+                setQueryKey(k => k + 1);
+              }}
+            >
+              Production
+            </Button>
+
+            <Button
+              variant='outline'
+              onClick={() => setIsSelectTestCaseOpen(true)}
             >
               <Play className='mr-2 h-4 w-4' />
-              {runMutation.isPending
-                ? 'Đang chạy...'
-                : 'Chạy tất cả test cases'}
+              Chọn test case ({selectedTestCaseIds.length || 'all'})
             </Button>
 
             <Button variant='outline' onClick={() => resultsQuery.refetch()}>
               <RefreshCw className='mr-2 h-4 w-4' />
-              Làm mới kết quả
+              Làm mới
             </Button>
           </div>
 
-          {lastRun ? (
-            <div className='rounded-md border p-3 text-sm'>
-              <p>Tổng: {lastRun.total}</p>
-              <p>Đúng: {lastRun.successCount}</p>
-              <p>Sai: {lastRun.failedCount}</p>
-              <p>Accuracy trung bình: {lastRun.averageAccuracy}%</p>
+          {lastRun && (
+            <div className='relative'>
+              <div className='grid grid-cols-2 md:grid-cols-5 gap-2'>
+                <Card>
+                  <CardHeader className='pb-1'>
+                    <CardTitle className='text-xs'>Accuracy</CardTitle>
+                  </CardHeader>
+                  <CardContent className='pb-2'>
+                    <p className='text-xl font-bold'>
+                      {lastRun.averageAccuracy ?? 0}%
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className='pb-1'>
+                    <CardTitle className='text-xs'>Latency</CardTitle>
+                  </CardHeader>
+                  <CardContent className='pb-2'>
+                    <p className='text-xl font-bold'>
+                      {lastRun.averageLatencyMs ?? 0}ms
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className='pb-1'>
+                    <CardTitle className='text-xs'>Cost</CardTitle>
+                  </CardHeader>
+                  <CardContent className='pb-2'>
+                    <p className='text-xl font-bold'>
+                      ${lastRun.totalCostUsd ?? 0}
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className='pb-1'>
+                    <CardTitle className='text-xs'>Stability</CardTitle>
+                  </CardHeader>
+                  <CardContent className='pb-2'>
+                    <p className='text-xl font-bold'>
+                      {lastRun.stability ?? 0}%
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className='pb-1'>
+                    <CardTitle className='text-xs'>Results</CardTitle>
+                  </CardHeader>
+                  <CardContent className='pb-2'>
+                    <p className='text-xl font-bold'>{lastRun.total}</p>
+                    <p className='text-xs text-muted-foreground'>
+                      Pass: {lastRun.successCount} | Fail: {lastRun.failedCount}
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+              <Button
+                variant='ghost'
+                size='sm'
+                className='absolute top-0 right-0'
+                onClick={clearLastRun}
+              >
+                X
+              </Button>
             </div>
-          ) : null}
+          )}
         </CardContent>
       </Card>
 
@@ -124,9 +223,12 @@ const Page = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Source</TableHead>
                 <TableHead>Thời gian</TableHead>
                 <TableHead>Test case</TableHead>
-                <TableHead>Score</TableHead>
+                <TableHead>Rule</TableHead>
+                <TableHead>Sem</TableHead>
+                <TableHead>Acc</TableHead>
                 <TableHead>Kết quả</TableHead>
                 <TableHead>Phân loại</TableHead>
                 <TableHead>Latency</TableHead>
@@ -136,12 +238,19 @@ const Page = () => {
             <TableBody>
               {(resultsQuery.data || []).map(item => (
                 <TableRow key={item._id}>
+                  <TableCell>
+                    <Badge variant='outline' className='text-xs'>
+                      {item.sourceType === 'evaluation' ? 'Eval' : 'Prod'}
+                    </Badge>
+                  </TableCell>
                   <TableCell>{formatDateTime(item.createdAt)}</TableCell>
                   <TableCell>
                     {item?.testCaseName ||
                       item?.meta?.testCaseName ||
                       item.endpoint}
                   </TableCell>
+                  <TableCell>{item.ruleScore ?? '-'}</TableCell>
+                  <TableCell>{item.semanticScore ?? '-'}</TableCell>
                   <TableCell>{item.accuracyScore ?? 0}</TableCell>
                   <TableCell>
                     <Badge variant={item.isCorrect ? 'default' : 'destructive'}>
@@ -171,7 +280,7 @@ const Page = () => {
               (resultsQuery.data || []).length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={7}
+                    colSpan={10}
                     className='text-center text-muted-foreground'
                   >
                     Chưa có dữ liệu đánh giá.
@@ -286,6 +395,67 @@ const Page = () => {
               ) : null}
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isSelectTestCaseOpen}
+        onOpenChange={setIsSelectTestCaseOpen}
+      >
+        <DialogContent className='sm:max-w-lg'>
+          <DialogHeader>
+            <DialogTitle>Chọn test cases để chạy</DialogTitle>
+            <DialogDescription>
+              Để trống để chạy tất cả test cases đang được bật
+            </DialogDescription>
+          </DialogHeader>
+
+          <ScrollArea className='h-[400px]'>
+            <div className='space-y-2 p-1'>
+              {(testCasesQuery.data || []).map(tc => (
+                <div
+                  key={tc._id}
+                  className='flex items-center gap-2 rounded-md border p-2 hover:bg-muted cursor-pointer'
+                  onClick={() => toggleTestCase(tc._id)}
+                >
+                  <Checkbox
+                    checked={selectedTestCaseIds.includes(tc._id)}
+                    onCheckedChange={() => toggleTestCase(tc._id)}
+                  />
+                  <span className='flex-1 text-sm'>{tc.name}</span>
+                  <Badge variant='outline' className='text-xs'>
+                    {tc.category}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+
+          <div className='flex justify-between'>
+            <Button
+              variant='outline'
+              onClick={() => {
+                const allIds = (testCasesQuery.data || [])
+                  .filter(tc => tc.enabled)
+                  .map(tc => tc._id);
+                setSelectedTestCaseIds(allIds);
+              }}
+            >
+              Chọn tất cả
+            </Button>
+            <div className='flex gap-2'>
+              <Button
+                variant='outline'
+                onClick={() => setIsSelectTestCaseOpen(false)}
+              >
+                Hủy
+              </Button>
+              <Button onClick={runSelected} disabled={runMutation.isPending}>
+                <Play className='mr-2 h-4 w-4' />
+                {runMutation.isPending ? 'Đang chạy...' : 'Chạy'}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

@@ -50,7 +50,7 @@ const toDateFilter = (query: ListMetricsQuery) => {
 
 const buildMetricFilter = (query: ListMetricsQuery) => {
   const filter: Record<string, unknown> = {};
-  const source = query.source ?? 'both';
+  const source = query.sourceType ?? 'both';
 
   if (source !== 'both') {
     filter.sourceType = source;
@@ -205,7 +205,7 @@ export const AiEvaluationService = {
     const avgCostUsd = safeAvg(totalCostUsd, totalRequests);
 
     return {
-      source: query.source ?? 'both',
+      sourceType: query.sourceType ?? 'both',
       endpoint: query.endpoint ?? 'all',
       totalRequests,
       successfulRequests,
@@ -294,7 +294,7 @@ export const AiEvaluationService = {
   },
 
   getMetricsBySource: async (query: ListMetricsQuery) => {
-    const filter = buildMetricFilter({ ...query, source: 'both' });
+    const filter = buildMetricFilter({ ...query, sourceType: 'both' });
     const result = await AiMetricModel.aggregate([
       { $match: filter },
       {
@@ -466,9 +466,17 @@ Now generate your JSON response:`;
           results.push({
             testCaseId: testCase._id.toString(),
             name: testCase.name,
+            endpoint: testCase.endpoint,
+            status: 'failed',
             isCorrect: false,
             accuracyScore: 0,
+            ruleScore: 0,
+            semanticScore: 0,
             latencyMs: Date.now() - start,
+            inputTokens: aiResult.usage.inputTokens,
+            outputTokens: aiResult.usage.outputTokens,
+            totalTokens: aiResult.usage.totalTokens,
+            estimatedCostUsd: aiResult.usage.totalTokens * 0.000002,
             error: errorMessage
           });
 
@@ -532,10 +540,17 @@ Now generate your JSON response:`;
         results.push({
           testCaseId: testCase._id.toString(),
           name: testCase.name,
+          endpoint: testCase.endpoint,
+          status: 'success',
           isCorrect: isAccurate,
+          ruleScore: evaluation.ruleScore,
           semanticScore,
           accuracyScore,
-          latencyMs: Date.now() - start
+          latencyMs: Date.now() - start,
+          inputTokens: aiResult.usage.inputTokens,
+          outputTokens: aiResult.usage.outputTokens,
+          totalTokens: aiResult.usage.totalTokens,
+          estimatedCostUsd: aiResult.usage.totalTokens * 0.000002
         });
       } catch (error) {
         await AiMetricModel.create({
@@ -564,15 +579,67 @@ Now generate your JSON response:`;
         results.push({
           testCaseId: testCase._id.toString(),
           name: testCase.name,
+          endpoint: testCase.endpoint,
+          status: 'failed',
           isCorrect: false,
+          ruleScore: 0,
+          semanticScore: 0,
           accuracyScore: 0,
           latencyMs: Date.now() - start,
+          inputTokens: 0,
+          outputTokens: 0,
+          totalTokens: 0,
+          estimatedCostUsd: 0,
           error: error instanceof Error ? error.message : String(error)
         });
       }
     }
 
     const successCount = results.filter(item => item.isCorrect === true).length;
+    const totalTokens = results.reduce(
+      (sum, item) => sum + Number(item.totalTokens ?? 0),
+      0
+    );
+    const totalLatency = results.reduce(
+      (sum, item) => sum + Number(item.latencyMs ?? 0),
+      0
+    );
+    const totalCost = results.reduce(
+      (sum, item) => sum + Number(item.estimatedCostUsd ?? 0),
+      0
+    );
+    const totalRequests = results.length;
+    const successfulRequests = results.filter(
+      item => item.status === 'success'
+    ).length;
+    const stability =
+      totalRequests > 0 ? (successfulRequests / totalRequests) * 100 : 0;
+
+    const successful = results.filter(item => item.status === 'success');
+    const accuracyItems = successful.filter(
+      item => typeof item.accuracyScore === 'number'
+    );
+    const correctItems = successful.filter(
+      item => typeof item.isCorrect === 'boolean'
+    );
+    const avgAccuracy = safeAvg(
+      accuracyItems.reduce(
+        (sum, item) => sum + Number(item.accuracyScore ?? 0),
+        0
+      ),
+      accuracyItems.length
+    );
+    const trueRate = safeAvg(
+      correctItems.filter(item => item.isCorrect).length,
+      correctItems.length
+    );
+    const avgLatencyMs = safeAvg(
+      successful.reduce((sum, item) => sum + Number(item.latencyMs ?? 0), 0),
+      successful.length
+    );
+    const avgCostUsd = safeAvg(totalCost, totalRequests);
+    const endpoints = Array.from(new Set(testCases.map(item => item.endpoint)));
+    const endpoint = endpoints.length === 1 ? endpoints[0] : 'all';
 
     return {
       startedAt,
@@ -589,12 +656,42 @@ Now generate your JSON response:`;
           results.length
         ).toFixed(2)
       ),
+      averageLatencyMs:
+        totalRequests > 0 ? Math.round(totalLatency / totalRequests) : 0,
+      totalCostUsd: Number(totalCost.toFixed(6)),
+      totalTokens,
+      stability: Number(stability.toFixed(2)),
+      summary: {
+        sourceType: 'evaluation',
+        endpoint,
+        totalRequests,
+        successfulRequests,
+        failedRequests: totalRequests - successfulRequests,
+        accuracy: {
+          avgScore: Number(avgAccuracy.toFixed(2)),
+          trueRate: Number((trueRate * 100).toFixed(2))
+        },
+        latency: {
+          avgMs: Number(avgLatencyMs.toFixed(2))
+        },
+        cost: {
+          totalUsd: Number(totalCost.toFixed(6)),
+          avgUsd: Number(avgCostUsd.toFixed(6))
+        },
+        stability: {
+          successRate: Number(stability.toFixed(2))
+        },
+        security: {
+          piiDetected: 0,
+          injectionDetected: 0
+        }
+      },
       results
     };
   },
 
   listEvaluationResults: async (query: ListMetricsQuery) => {
-    const filter = buildMetricFilter({ ...query, source: 'evaluation' });
+    const filter = buildMetricFilter({ ...query, sourceType: 'evaluation' });
     return AiMetricModel.find(filter).sort({ createdAt: -1 }).limit(200).lean();
   },
 
