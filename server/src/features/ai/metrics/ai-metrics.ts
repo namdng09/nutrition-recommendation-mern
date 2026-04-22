@@ -129,15 +129,10 @@ export const MetricsCollector = {
     const validator = new MealRecommendationValidator();
     const validationReport = await validator.validate(aiOutputText, context);
 
-    const hardPassed = validationReport.hard_checks.filter(
-      r => r.passed
-    ).length;
-    const ruleScore = Math.round(
-      (hardPassed / validationReport.hard_checks.length) * 100
-    );
+    const ruleScore = Math.round(validationReport.overallScore);
 
     let semanticScore = 0;
-    if (validationReport.overall_score > 0) {
+    if (validationReport.overallScore > 0) {
       const semanticValidator = new SemanticValidator();
       const semanticResult = await semanticValidator.evaluate(aiOutputText, {
         goal: context.userProfile.goal,
@@ -157,20 +152,15 @@ export const MetricsCollector = {
       accuracyScore,
       ruleScore,
       semanticScore,
-      rulePassed: hardPassed,
-      ruleTotal: validationReport.hard_checks.length,
+      rulePassed: ruleScore,
+      ruleTotal: 100,
       validationReport: {
-        overall_score: validationReport.overall_score,
-        passed: validationReport.passed,
-        hard_checks: validationReport.hard_checks.map(r => ({
+        overallScore: validationReport.overallScore,
+        checks: validationReport.checks.map(r => ({
           id: r.message,
-          passed: r.passed,
-          score: r.score
-        })),
-        soft_checks: validationReport.soft_checks.map(r => ({
-          id: r.message,
-          passed: r.passed,
-          score: r.score
+          weight: r.weight,
+          score: r.score,
+          details: r.details
         }))
       }
     };

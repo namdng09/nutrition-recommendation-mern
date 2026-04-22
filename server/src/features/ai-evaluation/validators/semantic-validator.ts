@@ -1,10 +1,10 @@
 import { AiService } from '~/features/ai/ai-service';
 
 export interface SemanticScore {
-  nutrition_balance: number;
-  meal_variety: number;
-  constraint_satisfaction: number;
-  reasoning: string;
+  nutritionBalance: number;
+  mealVariety: number;
+  constraintSatisfaction: number;
+  cookingTimeFeasibility: number;
   overallScore: number;
 }
 
@@ -12,7 +12,8 @@ const SEMANTIC_EVALUATION_PROMPT = `Bạn là chuyên gia dinh dưỡng. Đánh 
 
 1. NUTRITION_BALANCE (35%): Cân bằng macros giữa các bữa
 2. MEAL_VARIETY (30%): Đa dạng món ăn, phương pháp nấu
-3. CONSTRAINT_SATISFACTION (35%): Đáp ứng mục tiêu/diet người dùng
+3. CONSTRAINT_SATISFACTION (25%): Thỏa mãn các yêu cầu về mục tiêu, chế độ ăn, calo, dị ứng
+4. COOKING_TIME_FEASIBILITY (10%): Lý do lựa chọn món ăn, cách chế biến phù hợp
 
 Context:
 - User goal: {goal}
@@ -25,7 +26,7 @@ Output JSON only:
   "nutrition_balance": 85,
   "meal_variety": 70,
   "constraint_satisfaction": 90,
-  "reasoning": "Brief explanation"
+  "cooking_time_feasibility": 80,
 }`;
 
 const extractJsonObject = (text: string): Record<string, unknown> | null => {
@@ -43,15 +44,12 @@ const extractJsonObject = (text: string): Record<string, unknown> | null => {
 };
 
 export class SemanticValidator {
-  async evaluate(
-    response: string,
-    context: {
-      goal: string;
-      diet: string;
-      calories: number;
-      allergies: string[];
-    }
-  ): Promise<SemanticScore> {
+  async evaluate(context: {
+    goal: string;
+    diet: string;
+    calories: number;
+    allergies: string[];
+  }): Promise<SemanticScore> {
     const prompt = SEMANTIC_EVALUATION_PROMPT.replace('{goal}', context.goal)
       .replace('{diet}', context.diet)
       .replace('{calories}', String(context.calories))
@@ -65,23 +63,25 @@ export class SemanticValidator {
         return this.defaultScore('Invalid JSON response from LLM');
       }
 
-      const nutrition_balance = Number(parsed.nutrition_balance) || 50;
-      const meal_variety = Number(parsed.meal_variety) || 50;
-      const constraint_satisfaction =
+      const nutritionBalance = Number(parsed.nutrition_balance) || 50;
+      const mealVariety = Number(parsed.meal_variety) || 50;
+      const constraintSatisfaction =
         Number(parsed.constraint_satisfaction) || 50;
-      const reasoning = String(parsed.reasoning) || '';
+      const cookingTimeFeasibility =
+        Number(parsed.cooking_time_feasibility) || 50;
 
       const overallScore = Math.round(
-        nutrition_balance * 0.35 +
-          meal_variety * 0.3 +
-          constraint_satisfaction * 0.35
+        nutritionBalance * 0.35 +
+          mealVariety * 0.3 +
+          constraintSatisfaction * 0.25 +
+          cookingTimeFeasibility * 0.1
       );
 
       return {
-        nutrition_balance,
-        meal_variety,
-        constraint_satisfaction,
-        reasoning,
+        nutritionBalance,
+        mealVariety,
+        constraintSatisfaction,
+        cookingTimeFeasibility,
         overallScore
       };
     } catch (error) {
@@ -94,10 +94,10 @@ export class SemanticValidator {
 
   private defaultScore(reason: string): SemanticScore {
     return {
-      nutrition_balance: 50,
-      meal_variety: 50,
-      constraint_satisfaction: 50,
-      reasoning: `Fallback: ${reason}`,
+      nutritionBalance: 50,
+      mealVariety: 50,
+      constraintSatisfaction: 50,
+      cookingTimeFeasibility: 50,
       overallScore: 50
     };
   }

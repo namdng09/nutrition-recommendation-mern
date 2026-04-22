@@ -46,8 +46,7 @@ export const updateTestCaseSchema = createTestCaseSchema.partial();
 
 export const runEvaluationSchema = z.object({
   testCaseIds: z.array(z.string()).optional(),
-  limit: z.number().int().min(1).max(200).optional(),
-  enableLLMJudge: z.boolean().optional().default(false)
+  limit: z.number().int().min(1).max(200).optional()
 });
 
 export type RunEvaluationRequest = z.infer<typeof runEvaluationSchema>;

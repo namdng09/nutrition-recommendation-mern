@@ -19,8 +19,7 @@ export interface ValidationContext {
 export interface ValidationRule {
   id: string;
   name: string;
-  type: 'hard' | 'soft';
-  weight?: number;
+  weight: number;
   check: (
     output: Record<string, unknown>,
     context: ValidationContext
@@ -28,17 +27,13 @@ export interface ValidationRule {
 }
 
 export interface ValidationResult {
-  type: 'hard' | 'soft';
-  weight?: number;
-  passed: boolean;
+  weight: number;
   score: number;
   message: string;
   details?: Record<string, unknown>;
 }
 
 export interface ValidationReport {
-  overall_score: number;
-  hard_checks: ValidationResult[];
-  soft_checks: ValidationResult[];
-  passed: boolean;
+  overallScore: number;
+  checks: ValidationResult[];
 }

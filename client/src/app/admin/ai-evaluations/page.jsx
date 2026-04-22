@@ -1,4 +1,4 @@
-import { Eye, Play, RefreshCw, Sparkles } from 'lucide-react';
+import { Eye, Play, RefreshCw } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -46,7 +46,6 @@ const Page = () => {
   const [lastRun, setLastRun] = useState(null);
   const [selectedMetricId, setSelectedMetricId] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [enableLLMJudge, setEnableLLMJudge] = useState(false);
   const testCasesQuery = useAITestCases();
   const resultsQuery = useAIEvaluationResults({ source: 'evaluation' });
   const detailQuery = useAIEvaluationResultDetail(selectedMetricId, {
@@ -61,7 +60,7 @@ const Page = () => {
 
   const runAll = async () => {
     try {
-      const result = await runMutation.mutateAsync({ enableLLMJudge });
+      const result = await runMutation.mutateAsync({});
       setLastRun(result);
       toast.success('Chạy đánh giá thành công');
       resultsQuery.refetch();
@@ -88,17 +87,6 @@ const Page = () => {
               {resultsQuery.data?.length ?? 0} kết quả gần nhất
             </Badge>
           </div>
-
-          <label className='flex items-center gap-2 text-sm'>
-            <input
-              type='checkbox'
-              checked={enableLLMJudge}
-              onChange={e => setEnableLLMJudge(e.target.checked)}
-              className='h-4 w-4 rounded border-gray-300'
-            />
-            <Sparkles className='h-4 w-4 text-amber-500' />
-            Sử dụng LLM Judge (chậm hơn, tốn phí)
-          </label>
 
           <div className='flex flex-wrap gap-2'>
             <Button

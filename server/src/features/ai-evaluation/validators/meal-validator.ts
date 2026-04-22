@@ -6,25 +6,66 @@ import {
 } from './types';
 
 const extractJsonObject = (text: string): Record<string, unknown> | null => {
-  const trimmed = text.trim();
-  const firstBrace = trimmed.indexOf('{');
-  const lastBrace = trimmed.lastIndexOf('}');
-  if (firstBrace >= 0 && lastBrace > firstBrace) {
+  const cleaned = text
+    .trim()
+    .replace(/^```json\s*/i, '')
+    .replace(/^```/i, '')
+    .replace(/```$/i, '')
+    .trim();
+  try {
+    const parsed = JSON.parse(cleaned);
+    if (Array.isArray(parsed)) return { meals: parsed };
+    if (typeof parsed === 'object' && parsed !== null)
+      return parsed as Record<string, unknown>;
+  } catch {
+    /* empty */
+  }
+
+  const firstBracket = cleaned.indexOf('[');
+  const lastBracket = cleaned.lastIndexOf(']');
+  if (firstBracket >= 0 && lastBracket > firstBracket) {
     try {
-      return JSON.parse(trimmed.slice(firstBrace, lastBrace + 1));
+      const parsed = JSON.parse(cleaned.slice(firstBracket, lastBracket + 1));
+      if (Array.isArray(parsed)) return { meals: parsed };
     } catch {
-      return null;
+      /* empty */
     }
   }
+
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace >= 0 && lastBrace > firstBrace) {
+    try {
+      const parsed = JSON.parse(cleaned.slice(firstBrace, lastBrace + 1));
+      if (typeof parsed === 'object' && parsed !== null)
+        return parsed as Record<string, unknown>;
+    } catch {
+      /* empty */
+    }
+  }
+
   return null;
 };
+
+const RULE_WEIGHTS = {
+  jsonSchemaValid: 60 / 7,
+  allDishIdsExist: 60 / 7,
+  noAllergenDishes: 60 / 7,
+  servingsInRange: 60 / 7,
+  noDuplicateDishes: 60 / 7,
+  mealTypeMatch: 60 / 7,
+  mealCountMatch: 60 / 7,
+  macroTargetMet: 14,
+  nutritionVariety: 10,
+  cookingTimeFeasibility: 6,
+  constraintSatisfaction: 10
+} as const;
 
 const jsonSchemaValid = (output: string): ValidationResult => {
   const parsed = extractJsonObject(output);
   if (!parsed) {
     return {
-      type: 'hard',
-      passed: false,
+      weight: RULE_WEIGHTS.jsonSchemaValid,
       score: 0,
       message: 'Invalid JSON output'
     };
@@ -32,8 +73,7 @@ const jsonSchemaValid = (output: string): ValidationResult => {
   const meals = (parsed as Record<string, unknown>).meals;
   if (!Array.isArray(meals)) {
     return {
-      type: 'hard',
-      passed: false,
+      weight: RULE_WEIGHTS.jsonSchemaValid,
       score: 0,
       message: 'Missing meals array'
     };
@@ -41,8 +81,7 @@ const jsonSchemaValid = (output: string): ValidationResult => {
   for (const meal of meals) {
     if (typeof meal !== 'object' || meal === null) {
       return {
-        type: 'hard',
-        passed: false,
+        weight: RULE_WEIGHTS.jsonSchemaValid,
         score: 0,
         message: 'Invalid meal structure'
       };
@@ -50,24 +89,21 @@ const jsonSchemaValid = (output: string): ValidationResult => {
     const mealObj = meal as Record<string, unknown>;
     if (typeof mealObj.mealType !== 'string') {
       return {
-        type: 'hard',
-        passed: false,
+        weight: RULE_WEIGHTS.jsonSchemaValid,
         score: 0,
         message: 'Missing mealType'
       };
     }
     if (!Array.isArray(mealObj.dishes)) {
       return {
-        type: 'hard',
-        passed: false,
+        weight: RULE_WEIGHTS.jsonSchemaValid,
         score: 0,
         message: 'Missing dishes array'
       };
     }
   }
   return {
-    type: 'hard',
-    passed: true,
+    weight: RULE_WEIGHTS.jsonSchemaValid,
     score: 100,
     message: 'JSON schema valid'
   };
@@ -87,16 +123,14 @@ const allDishIdsExist = (
     .filter(id => !catalogIds.has(id));
   if (missing.length > 0) {
     return {
-      type: 'hard',
-      passed: false,
+      weight: RULE_WEIGHTS.allDishIdsExist,
       score: 0,
       message: `Missing dish IDs: ${[...new Set(missing)].join(', ')}`,
       details: { missingIds: [...new Set(missing)] }
     };
   }
   return {
-    type: 'hard',
-    passed: true,
+    weight: RULE_WEIGHTS.allDishIdsExist,
     score: 100,
     message: 'All dish IDs exist'
   };
@@ -112,8 +146,7 @@ const noAllergenDishes = (
   );
   if (userAllergies.size === 0) {
     return {
-      type: 'hard',
-      passed: true,
+      weight: RULE_WEIGHTS.noAllergenDishes,
       score: 100,
       message: 'No allergies to check'
     };
@@ -139,16 +172,14 @@ const noAllergenDishes = (
   }
   if (violations.length > 0) {
     return {
-      type: 'hard',
-      passed: false,
+      weight: RULE_WEIGHTS.noAllergenDishes,
       score: 0,
       message: `Allergen violations: ${violations.join('; ')}`,
       details: { violations }
     };
   }
   return {
-    type: 'hard',
-    passed: true,
+    weight: RULE_WEIGHTS.noAllergenDishes,
     score: 100,
     message: 'No allergen dishes'
   };
@@ -171,16 +202,14 @@ const servingsInRange = (output: Record<string, unknown>): ValidationResult => {
   }
   if (invalid.length > 0) {
     return {
-      type: 'hard',
-      passed: false,
+      weight: RULE_WEIGHTS.servingsInRange,
       score: 0,
       message: `Servings out of range (1-5): ${invalid.map(i => `${i.dishId}=${i.servings}`).join(', ')}`,
       details: { invalid }
     };
   }
   return {
-    type: 'hard',
-    passed: true,
+    weight: RULE_WEIGHTS.servingsInRange,
     score: 100,
     message: 'All servings in range'
   };
@@ -206,16 +235,14 @@ const noDuplicateDishes = (
   }
   if (duplicates.length > 0) {
     return {
-      type: 'hard',
-      passed: false,
+      weight: RULE_WEIGHTS.noDuplicateDishes,
       score: 0,
       message: `Duplicate dishes: ${[...new Set(duplicates)].join(', ')}`,
       details: { duplicates: [...new Set(duplicates)] }
     };
   }
   return {
-    type: 'hard',
-    passed: true,
+    weight: RULE_WEIGHTS.noDuplicateDishes,
     score: 100,
     message: 'No duplicate dishes'
   };
@@ -240,16 +267,14 @@ const mealTypeMatch = (
   }
   if (mismatches.length > 0) {
     return {
-      type: 'hard',
-      passed: false,
+      weight: RULE_WEIGHTS.mealTypeMatch,
       score: 0,
       message: `Meal type mismatches: ${mismatches.join('; ')}`,
       details: { mismatches }
     };
   }
   return {
-    type: 'hard',
-    passed: true,
+    weight: RULE_WEIGHTS.mealTypeMatch,
     score: 100,
     message: 'Meal types match slots'
   };
@@ -263,15 +288,13 @@ const mealCountMatch = (
   const slotCount = context.mealSlots.length;
   if (meals.length !== slotCount) {
     return {
-      type: 'hard',
-      passed: false,
+      weight: RULE_WEIGHTS.mealCountMatch,
       score: Math.max(0, 100 - Math.abs(meals.length - slotCount) * 20),
       message: `Expected ${slotCount} meals, got ${meals.length}`
     };
   }
   return {
-    type: 'hard',
-    passed: true,
+    weight: RULE_WEIGHTS.mealCountMatch,
     score: 100,
     message: 'Meal count matches'
   };
@@ -304,9 +327,7 @@ const macroTargetMet = (
     ? 100
     : Math.max(0, 100 - (Math.abs(totalCalories - target) / target) * 100);
   return {
-    type: 'soft',
-    weight: 0.35,
-    passed: inRange,
+    weight: RULE_WEIGHTS.macroTargetMet,
     score: Math.round(score),
     message: `Total ${Math.round(totalCalories)} cal (target ${target}, range ${Math.round(min)}-${Math.round(max)})`,
     details: { totalCalories, target, inRange }
@@ -323,9 +344,7 @@ const nutritionVariety = (
   const dishCount = dishes.length;
   const score = Math.min(100, dishCount * 20);
   return {
-    type: 'soft',
-    weight: 0.25,
-    passed: dishCount >= 3,
+    weight: RULE_WEIGHTS.nutritionVariety,
     score,
     message: `${dishCount} dishes, variety score ${score}`,
     details: { dishCount }
@@ -341,9 +360,7 @@ const cookingTimeFeasibility = (
     m => ((m.dishes ?? []) as Array<unknown>).length <= maxPerMeal
   );
   return {
-    type: 'soft',
-    weight: 0.15,
-    passed: feasible,
+    weight: RULE_WEIGHTS.cookingTimeFeasibility,
     score: feasible ? 100 : 60,
     message: feasible ? 'Cooking time feasible' : 'Too many dishes per meal',
     details: {
@@ -363,9 +380,7 @@ const constraintSatisfaction = (
   );
   const score = totalDishes >= 3 ? 100 : totalDishes * 30;
   return {
-    type: 'soft',
-    weight: 0.25,
-    passed: score >= 70,
+    weight: RULE_WEIGHTS.constraintSatisfaction,
     score,
     message: `Constraint satisfaction score: ${score}`,
     details: { totalDishes }
@@ -376,71 +391,67 @@ export const mealValidationRules: ValidationRule[] = [
   {
     id: 'json_schema_valid',
     name: 'JSON Schema Valid',
-    type: 'hard',
+    weight: RULE_WEIGHTS.jsonSchemaValid,
     check: async output => jsonSchemaValid(JSON.stringify(output))
   },
   {
     id: 'all_dish_ids_exist',
     name: 'All Dish IDs Exist',
-    type: 'hard',
+    weight: RULE_WEIGHTS.allDishIdsExist,
     check: async (output, ctx) => allDishIdsExist(output, ctx)
   },
   {
     id: 'no_allergen_dishes',
     name: 'No Allergen Dishes',
-    type: 'hard',
+    weight: RULE_WEIGHTS.noAllergenDishes,
     check: async (output, ctx) => noAllergenDishes(output, ctx)
   },
   {
     id: 'servings_in_range',
     name: 'Servings In Range (1-5)',
-    type: 'hard',
+    weight: RULE_WEIGHTS.servingsInRange,
     check: async output => servingsInRange(output)
   },
   {
     id: 'no_duplicate_dishes',
     name: 'No Duplicate Dishes',
-    type: 'hard',
+    weight: RULE_WEIGHTS.noDuplicateDishes,
     check: async output => noDuplicateDishes(output)
   },
   {
     id: 'meal_type_match',
     name: 'Meal Type Matches Slot',
-    type: 'hard',
+    weight: RULE_WEIGHTS.mealTypeMatch,
     check: async (output, ctx) => mealTypeMatch(output, ctx)
   },
   {
     id: 'meal_count_match',
     name: 'Meal Count Matches Slots',
-    type: 'hard',
+    weight: RULE_WEIGHTS.mealCountMatch,
     check: async (output, ctx) => mealCountMatch(output, ctx)
   },
   {
     id: 'macro_target_met',
     name: 'Macro Target Met (±15%)',
-    type: 'soft',
-    weight: 0.35,
+    weight: RULE_WEIGHTS.macroTargetMet,
     check: async (output, ctx) => macroTargetMet(output, ctx)
   },
   {
     id: 'nutrition_variety',
     name: 'Nutrition Variety',
-    type: 'soft',
-    weight: 0.25,
+    weight: RULE_WEIGHTS.nutritionVariety,
     check: async output => nutritionVariety(output)
   },
   {
     id: 'cooking_time_feasibility',
     name: 'Cooking Time Feasibility',
-    type: 'soft',
-    weight: 0.15,
+    weight: RULE_WEIGHTS.cookingTimeFeasibility,
     check: async output => cookingTimeFeasibility(output)
   },
   {
     id: 'constraint_satisfaction',
     name: 'Constraint Satisfaction',
-    type: 'soft',
-    weight: 0.25,
+    weight: RULE_WEIGHTS.constraintSatisfaction,
     check: async (output, ctx) => constraintSatisfaction(output, ctx)
   }
 ];
@@ -455,37 +466,45 @@ export class MealRecommendationValidator {
     const parsed = extractJsonObject(output);
     if (!parsed) {
       return {
-        overall_score: 0,
-        hard_checks: [
-          { type: 'hard', passed: false, score: 0, message: 'Invalid JSON' }
-        ],
-        soft_checks: [],
-        passed: false
+        overallScore: 0,
+        checks: [
+          {
+            weight: RULE_WEIGHTS.jsonSchemaValid,
+            score: 0,
+            message: 'Invalid JSON'
+          }
+        ]
       };
     }
 
-    const results = await Promise.all(
-      this.rules.map(rule => rule.check(parsed, context))
+    const checks = await Promise.all(
+      this.rules.map(async rule => {
+        const result = await rule.check(parsed, context);
+        return {
+          ...result,
+          weight: rule.weight
+        };
+      })
     );
 
-    const hardResults = results.filter(r => r.type === 'hard');
-    const softResults = results.filter(r => r.type === 'soft');
+    const achievedScore = checks.reduce(
+      (sum, check) => sum + check.score * check.weight,
+      0
+    );
 
-    const hardPassed = hardResults.filter(r => r.passed).length;
-    const hardScore = (hardPassed / hardResults.length) * 100;
+    const totalScoreCanBeAchieved = checks.reduce(
+      (sum, check) => sum + 100 * check.weight,
+      0
+    );
 
-    const softScore = softResults.reduce((sum, r) => {
-      const weight = r.weight ?? 1 / softResults.length;
-      return sum + r.score * weight;
-    }, 0);
-
-    const overall = hardScore * 0.6 + softScore * 0.4;
+    const overall =
+      totalScoreCanBeAchieved > 0
+        ? (achievedScore / totalScoreCanBeAchieved) * 100
+        : 0;
 
     return {
-      overall_score: Math.round(overall),
-      hard_checks: hardResults,
-      soft_checks: softResults,
-      passed: hardResults.every(r => r.passed)
+      overallScore: Math.round(overall),
+      checks
     };
   }
 }

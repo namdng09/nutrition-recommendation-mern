@@ -1,7 +1,6 @@
 import createHttpError from 'http-errors';
 
 import { AiService } from '~/features/ai/ai-service';
-import { agentConfig } from '~/shared/config/ai-agent';
 import {
   AiEvaluationTestCaseModel,
   AiMetricModel
@@ -12,6 +11,9 @@ import type {
   ListMetricsQuery,
   RunEvaluationRequest
 } from './ai-evaluation-dto';
+import { SemanticValidator } from './validators/semantic-validator';
+
+const semanticValidator = new SemanticValidator();
 
 const toDateFilter = (query: ListMetricsQuery) => {
   const hasStart = Boolean(query.startDate);
@@ -147,136 +149,6 @@ const extractJsonObject = (text: string): Record<string, unknown> | null => {
   }
 
   return null;
-};
-
-const evaluateMealSemanticScore = (response: string) => {
-  const parsed = extractJsonObject(response);
-  if (!parsed) return 10;
-
-  const meals = parsed.meals;
-  if (!Array.isArray(meals) || meals.length === 0) return 20;
-
-  let score = 40;
-
-  const hasValidMealTypes = meals.every(
-    meal =>
-      meal && typeof (meal as Record<string, unknown>).mealType === 'string'
-  );
-  if (hasValidMealTypes) score += 20;
-
-  const hasNonEmptyDishes = meals.every(meal => {
-    if (!meal || typeof meal !== 'object') return false;
-    const dishes = (meal as Record<string, unknown>).dishes;
-    return Array.isArray(dishes) && dishes.length > 0;
-  });
-  if (hasNonEmptyDishes) score += 20;
-
-  const servingsInRange = meals.every(meal => {
-    if (!meal || typeof meal !== 'object') return false;
-    const dishes = (meal as Record<string, unknown>).dishes;
-    if (!Array.isArray(dishes) || dishes.length === 0) return false;
-
-    return dishes.every(dish => {
-      if (!dish || typeof dish !== 'object') return false;
-      const servings = (dish as Record<string, unknown>).servings;
-      return typeof servings === 'number' && servings >= 1 && servings <= 5;
-    });
-  });
-  if (servingsInRange) score += 20;
-
-  return score;
-};
-
-const evaluateMealSemanticScoreWithLLM = async (
-  prompt: string,
-  response: string,
-  expected: Record<string, unknown> | undefined
-): Promise<number> => {
-  const evalPrompt = `Bạn là một chuyên gia đánh giá chất lượng phản hồi AI.
-
-Hãy đánh giá phản hồi AI dưới đây với thang điểm từ 0-100, dựa trên các tiêu chí:
-1. **Độ chính xác** (40%): Phản hồi có đúng với yêu cầu không?
-2. **Tính đầy đủ** (30%): Phản hồi có đầy đủ thông tin cần thiết không?
-3. **Tính thực tế** (20%): Các giá trị (calo, khẩu phần) có hợp lý không?
-4. **Cấu trúc** (10%): JSON output có đúng format không?
-
-## Prompt gốc:
-${prompt}
-
-## Expected (nếu có):
-${expected ? JSON.stringify(expected, null, 2) : 'Không có'}
-
-## AI Response cần đánh giá:
-${response}
-
-## Yêu cầu:
-- Chỉ trả về một số nguyên từ 0-100
-- Không giải thích, không thêm text
-- Ví dụ output hợp lệ: "75"
-
-CRITICAL: Respond with ONLY the number. No JSON, no text, no explanation.`;
-
-  try {
-    const result = await AiService.runEvaluationPrompt(evalPrompt);
-    const text = result.response.trim();
-    const match = text.match(/^(\d+)/);
-    if (match) {
-      const score = parseInt(match[1], 10);
-      return Math.min(100, Math.max(0, score));
-    }
-    return 50;
-  } catch (error) {
-    console.warn(
-      '[LLM_JUDGE] Failed to evaluate:',
-      error instanceof Error ? error.message : String(error)
-    );
-    return 50;
-  }
-};
-
-const evaluateWorkoutSemanticScoreWithLLM = async (
-  prompt: string,
-  response: string,
-  expected: Record<string, unknown> | undefined
-): Promise<number> => {
-  const evalPrompt = `Bạn là một chuyên gia đánh giá chất lượng phản hồi AI.
-
-Hãy đánh giá phản hồi AI dưới đây với thang điểm từ 0-100, dựa trên các tiêu chí:
-1. **Độ chính xác** (40%): Phản hồi có đúng với yêu cầu không?
-2. **Tính đầy đủ** (30%): Phản hồi có đầy đủ thông tin cần thiết không?
-3. **Tính thực tế** (20%): Bài tập, số rep/set có hợp lý không?
-4. **Cấu trúc** (10%): JSON output có đúng format không?
-
-## Prompt gốc:
-${prompt}
-
-## Expected (nếu có):
-${expected ? JSON.stringify(expected, null, 2) : 'Không có'}
-
-## AI Response cần đánh giá:
-${response}
-
-## Yêu cầu:
-- Chỉ trả về một số nguyên từ 0-100
-- Không giải thích, không thêm text
-- Ví dụ output hợp lệ: "75"`;
-
-  try {
-    const result = await AiService.runEvaluationPrompt(evalPrompt);
-    const text = result.response.trim();
-    const match = text.match(/^(\d+)/);
-    if (match) {
-      const score = parseInt(match[1], 10);
-      return Math.min(100, Math.max(0, score));
-    }
-    return 50;
-  } catch (error) {
-    console.warn(
-      '[LLM_JUDGE] Failed to evaluate:',
-      error instanceof Error ? error.message : String(error)
-    );
-    return 50;
-  }
 };
 
 export const AiEvaluationService = {
@@ -588,35 +460,26 @@ Now generate your JSON response:`;
           continue;
         }
 
-        const isCorrect = evaluation.matched;
         let semanticScore: number;
-        if (payload.enableLLMJudge) {
-          const expectedObj = testCase.expected ?? undefined;
-          if (testCase.endpoint === 'recommend_daily_meals') {
-            semanticScore = await evaluateMealSemanticScoreWithLLM(
-              prompt,
-              aiResult.response,
-              expectedObj
-            );
-          } else if (testCase.endpoint === 'recommend_daily_workout') {
-            semanticScore = await evaluateWorkoutSemanticScoreWithLLM(
-              prompt,
-              aiResult.response,
-              expectedObj
-            );
-          } else {
-            semanticScore = evaluation.ruleScore;
-          }
+        if (testCase.endpoint === 'recommend_daily_meals') {
+          const input = testCase.input as Record<string, unknown>;
+          const context = {
+            goal: String(input?.goal ?? 'maintain weight'),
+            diet: String(input?.diet ?? 'balanced'),
+            calories: Number(input?.calories ?? 2000),
+            allergies: Array.isArray(input?.allergies)
+              ? input.allergies.map(String)
+              : []
+          };
+          const semanticResult = await semanticValidator.evaluate(context);
+          semanticScore = semanticResult.overallScore;
         } else {
-          semanticScore =
-            testCase.endpoint === 'recommend_daily_meals'
-              ? evaluateMealSemanticScore(aiResult.response)
-              : evaluation.ruleScore;
+          semanticScore = evaluation.ruleScore;
         }
         const accuracyScore = computeScore(evaluation.ruleScore, semanticScore);
-        const isAccurate = accuracyScore >= 70;
+        const isAccurate = accuracyScore >= 90;
 
-        const metric = await AiMetricModel.create({
+        await AiMetricModel.create({
           sourceType: 'evaluation',
           endpoint: testCase.endpoint,
           status: 'success',
