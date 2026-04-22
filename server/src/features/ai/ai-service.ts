@@ -2,7 +2,12 @@ import { randomUUID } from 'node:crypto';
 
 import createHttpError from 'http-errors';
 
-import { agent, agentConfig } from '~/shared/config/ai-agent';
+import {
+  agent,
+  agentConfig,
+  evaluationAgent,
+  evaluationConfig
+} from '~/shared/config/ai-agent';
 import {
   type AiQuotaEndpoint,
   estimateReserveTokensForPrompt,
@@ -417,10 +422,10 @@ export const AiService = {
   },
 
   runEvaluationPrompt: async (prompt: string) => {
-    const invocation = await invokeAi(prompt);
+    const invocation = await invokeEvaluationAi(prompt);
     return {
-      provider: agentConfig.provider,
-      model: agentConfig.model,
+      provider: evaluationConfig.provider,
+      model: evaluationConfig.model,
       response: invocation.text,
       usage: invocation.usage
     };
@@ -2134,6 +2139,23 @@ const normalizeUsageMetadata = (raw: unknown): AiUsageMetadata => {
 
 const invokeAi = async (prompt: string): Promise<AiInvocationResult> => {
   const result = await agent.invoke({
+    messages: [{ role: 'user', content: prompt }]
+  });
+  const lastMessage = result.messages?.[result.messages.length - 1];
+  const text = normalizeContent(lastMessage?.content);
+
+  const usage = normalizeUsageMetadata(
+    (lastMessage as any)?.usage_metadata ??
+      (result as any)?.llmOutput?.tokenUsage
+  );
+
+  return { text, usage };
+};
+
+const invokeEvaluationAi = async (
+  prompt: string
+): Promise<AiInvocationResult> => {
+  const result = await evaluationAgent.invoke({
     messages: [{ role: 'user', content: prompt }]
   });
   const lastMessage = result.messages?.[result.messages.length - 1];
