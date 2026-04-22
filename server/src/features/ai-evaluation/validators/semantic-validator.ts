@@ -15,21 +15,25 @@ const RULE_WEIGHTS = {
   cookingTimeFeasibility: 0.3
 } as const;
 
-const SEMANTIC_EVALUATION_PROMPT = `You are a nutrition expert. Rate this meal plan on 0-100 scale:
+const SEMANTIC_EVALUATION_PROMPT = `You are a nutrition expert. Rate this meal plan on 0-100 scale.
 
-1. NUTRITION_BALANCE: Macro balance across meals
-2. MEAL_VARIETY: Dish diversity, cooking methods
-3. CONSTRAINT_SATISFACTION: Meets goal, diet, calories, allergy requirements
-4. COOKING_TIME_FEASIBILITY: Reasonability of dish choices and preparation
+Evaluate based ONLY on the meal plan JSON structure. Do NOT ask for dish details. Rate using your expert knowledge.
 
 Context:
 - User goal: {goal}
 - Diet: {diet}
 - Calories target: {calories}
 - Allergies: {allergies}
-- Meal plan to evaluate: {mealPlan}
 
-Respond ONLY with valid JSON:
+Meal plan JSON: {mealPlan}
+
+Rate these aspects:
+1. NUTRITION_BALANCE: Macro balance across meals (protein, carbs, fats distribution)
+2. MEAL_VARIETY: Different meal types, dish count variety
+3. CONSTRAINT_SATISFACTION: Matches goal/diet/calories/allergies
+4. COOKING_TIME_FEASIBILITY: Reasonable portions and serving counts
+
+Respond ONLY with valid JSON - no text, no questions:
 {"nutrition_balance": 0-100, "meal_variety": 0-100, "constraint_satisfaction": 0-100, "cooking_time_feasibility": 0-100}`;
 
 const extractJsonObject = (text: string): Record<string, unknown> | null => {
@@ -65,8 +69,14 @@ export class SemanticValidator {
       const parsed = extractJsonObject(result.response);
 
       if (!parsed) {
+        console.warn(
+          '[SemanticValidator] Failed to parse JSON from LLM response. Raw:',
+          result.response.slice(0, 300)
+        );
         return this.defaultScore('Invalid JSON response from LLM');
       }
+
+      console.log('[SemanticValidator] Parsed scores:', parsed);
 
       const nutritionBalance = Number(parsed.nutrition_balance);
       const mealVariety = Number(parsed.meal_variety);

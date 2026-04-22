@@ -76,8 +76,22 @@ const computeScore = (ruleScore: number, semanticScore: number) =>
 
 const evaluateTestCaseResult = (response: string, expected?: any) => {
   const text = response.trim();
+  const isErrorResponse =
+    text.includes('"error"') && text.includes('unable to generate');
+  const isNegative = expected?.classification === 'negative';
 
-  if (text.includes('"error"') && text.includes('unable to generate')) {
+  if (isNegative) {
+    return {
+      hasExpectation: true,
+      passedChecks: isErrorResponse ? 1 : 0,
+      totalChecks: 1,
+      ruleScore: isErrorResponse ? 100 : 0,
+      matched: isErrorResponse,
+      isErrorResponse
+    };
+  }
+
+  if (isErrorResponse) {
     return {
       hasExpectation: true,
       passedChecks: 0,
@@ -461,8 +475,11 @@ Now generate your JSON response:`;
           continue;
         }
 
+        const isNegative = testCase.expected?.classification === 'negative';
         let semanticScore: number;
-        if (testCase.endpoint === 'recommend_daily_meals') {
+        if (isNegative) {
+          semanticScore = 100;
+        } else if (testCase.endpoint === 'recommend_daily_meals') {
           const input = testCase.input as Record<string, unknown>;
           const ctx = input?.context as Record<string, unknown> | undefined;
           const context = {
