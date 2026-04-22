@@ -423,6 +423,7 @@ const Page = () => {
                 >
                   <Checkbox
                     checked={selectedTestCaseIds.includes(tc._id)}
+                    onClick={e => e.stopPropagation()}
                     onCheckedChange={() => toggleTestCase(tc._id)}
                   />
                   <span className='flex-1 text-sm'>{tc.name}</span>
