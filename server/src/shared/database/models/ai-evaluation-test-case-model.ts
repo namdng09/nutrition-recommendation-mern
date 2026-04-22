@@ -20,7 +20,15 @@ const aiEvaluationTestCaseSchema = new Schema(
       default: 'medium'
     },
     enabled: { type: Boolean, default: true },
-    input: { type: Schema.Types.Mixed, required: true },
+    input: {
+      prompt: { type: String, required: true },
+      context: {
+        goal: { type: String, required: true },
+        diet: { type: String, required: true },
+        calories: { type: Number, required: true },
+        allergies: { type: [String], default: [] }
+      }
+    },
     expected: {
       isCorrect: { type: Boolean, default: true },
       classification: {

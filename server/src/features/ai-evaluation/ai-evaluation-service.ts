@@ -464,12 +464,13 @@ Now generate your JSON response:`;
         let semanticScore: number;
         if (testCase.endpoint === 'recommend_daily_meals') {
           const input = testCase.input as Record<string, unknown>;
+          const ctx = input?.context as Record<string, unknown> | undefined;
           const context = {
-            goal: String(input?.goal ?? 'maintain weight'),
-            diet: String(input?.diet ?? 'balanced'),
-            calories: Number(input?.calories ?? 2000),
-            allergies: Array.isArray(input?.allergies)
-              ? input.allergies.map(String)
+            goal: String(ctx?.goal ?? 'maintain weight'),
+            diet: String(ctx?.diet ?? 'balanced'),
+            calories: Number(ctx?.calories ?? 2000),
+            allergies: Array.isArray(ctx?.allergies)
+              ? ctx.allergies.map(String)
               : [],
             mealPlanJson: aiResult.response
           };

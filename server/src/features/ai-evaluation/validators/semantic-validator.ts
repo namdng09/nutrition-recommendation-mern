@@ -8,7 +8,7 @@ export interface SemanticScore {
   overallScore: number;
 }
 
-const SEMANTIC_EVALUATION_PROMPT = `Bạn là chuyên gia dinh dưỡng. Đánh giá meal recommendation 0-100 theo:
+const SEMANTIC_EVALUATION_PROMPT = `Bạn là chuyên gia dinh dưỡng. Đánh giá gợi ý bữa ăn bằng thang 0-100 theo:
 
 1. NUTRITION_BALANCE (35%): Cân bằng macros giữa các bữa
 2. MEAL_VARIETY (30%): Đa dạng món ăn, phương pháp nấu

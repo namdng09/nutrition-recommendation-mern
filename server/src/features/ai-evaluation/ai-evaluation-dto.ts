@@ -18,6 +18,16 @@ export const listMetricsQuerySchema = z.object({
 
 export type ListMetricsQuery = z.infer<typeof listMetricsQuerySchema>;
 
+export const testCaseInputSchema = z.object({
+  prompt: z.string().min(1, 'prompt là bắt buộc'),
+  context: z.object({
+    goal: z.string().min(1, 'goal là bắt buộc'),
+    diet: z.string().min(1, 'diet là bắt buộc'),
+    calories: z.number().int().min(1, 'calories phải > 0'),
+    allergies: z.array(z.string()).default([])
+  })
+});
+
 export const createTestCaseSchema = z.object({
   name: z.string().trim().min(1, 'name là bắt buộc'),
   description: z.string().optional(),
@@ -28,7 +38,7 @@ export const createTestCaseSchema = z.object({
     .enum(['happy_path', 'edge_case', 'constraint_test', 'error_case'])
     .default('happy_path'),
   difficulty: z.enum(['easy', 'medium', 'hard']).default('medium'),
-  input: z.record(z.string(), z.unknown()),
+  input: testCaseInputSchema,
   expected: z
     .object({
       classification: z.enum(['positive', 'negative']).default('positive'),

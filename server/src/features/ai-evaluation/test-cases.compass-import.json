@@ -7,7 +7,13 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return exactly this JSON: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}"
+      "prompt": "Return exactly this JSON: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}",
+      "context": {
+        "goal": "Giảm cân",
+        "diet": "Keto",
+        "calories": 1800,
+        "allergies": []
+      }
     },
     "expected": {
       "classification": "positive",
@@ -23,7 +29,13 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return meal JSON like: {\"meals\":[{\"mealType\":\"breakfast\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}"
+      "prompt": "Return meal JSON like: {\"meals\":[{\"mealType\":\"breakfast\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}",
+      "context": {
+        "goal": "Duy trì cân nặng",
+        "diet": "Cân bằng",
+        "calories": 2000,
+        "allergies": []
+      }
     },
     "expected": {
       "classification": "positive",
@@ -39,7 +51,13 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return JSON with meals array: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}"
+      "prompt": "Return JSON with meals array: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}",
+      "context": {
+        "goal": "Tăng cơ",
+        "diet": "High protein",
+        "calories": 2500,
+        "allergies": []
+      }
     },
     "expected": {
       "classification": "positive",
@@ -55,7 +73,13 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return JSON with only breakfast: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}"
+      "prompt": "Return JSON with only breakfast: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}",
+      "context": {
+        "goal": "Giảm cân",
+        "diet": "Low calorie",
+        "calories": 1200,
+        "allergies": []
+      }
     },
     "expected": {
       "classification": "positive",
@@ -71,7 +95,13 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return JSON with 2 meals: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]},{\"mealType\":\"LUNCH\",\"dishes\":[{\"dishId\":\"2\",\"servings\":1}]}]}"
+      "prompt": "Return JSON with 2 meals: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]},{\"mealType\":\"LUNCH\",\"dishes\":[{\"dishId\":\"2\",\"servings\":1}]}]}",
+      "context": {
+        "goal": "Duy trì cân nặng",
+        "diet": "Cân bằng",
+        "calories": 2000,
+        "allergies": []
+      }
     },
     "expected": {
       "classification": "positive",
@@ -87,7 +117,13 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return JSON with servings: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":2}]}]}"
+      "prompt": "Return JSON with servings: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":2}]}]}",
+      "context": {
+        "goal": "Tăng cân",
+        "diet": "High calorie",
+        "calories": 3000,
+        "allergies": []
+      }
     },
     "expected": {
       "classification": "positive",
@@ -103,7 +139,13 @@
     "difficulty": "medium",
     "enabled": true,
     "input": {
-      "prompt": "Return JSON with servings 1-3: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":2}]}]}"
+      "prompt": "Return JSON with servings 1-3: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":2}]}]}",
+      "context": {
+        "goal": "Giảm cân",
+        "diet": "Low carb",
+        "calories": 1500,
+        "allergies": []
+      }
     },
     "expected": {
       "classification": "positive",
@@ -119,7 +161,13 @@
     "difficulty": "medium",
     "enabled": true,
     "input": {
-      "prompt": "Return simple JSON for 800 cal: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}"
+      "prompt": "Return simple JSON for 800 cal: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}",
+      "context": {
+        "goal": "Giảm cân nhanh",
+        "diet": "Very low calorie",
+        "calories": 800,
+        "allergies": []
+      }
     },
     "expected": {
       "classification": "positive",
@@ -135,7 +183,13 @@
     "difficulty": "medium",
     "enabled": true,
     "input": {
-      "prompt": "Return simple JSON for 3000 cal: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":3}]}]}"
+      "prompt": "Return simple JSON for 3000 cal: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":3}]}]}",
+      "context": {
+        "goal": "Tăng cơ tối đa",
+        "diet": "Bulking",
+        "calories": 3000,
+        "allergies": []
+      }
     },
     "expected": {
       "classification": "positive",
@@ -151,7 +205,13 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return vegan meal JSON: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}"
+      "prompt": "Return vegan meal JSON: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}",
+      "context": {
+        "goal": "Duy trì sức khỏe",
+        "diet": "Vegan",
+        "calories": 2000,
+        "allergies": []
+      }
     },
     "expected": {
       "classification": "positive",
@@ -167,7 +227,13 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return low carb meal JSON: {\"meals\":[{\"mealType\":\"LUNCH\",\"dishes\":[{\"dishId\":\"2\",\"servings\":1}]}]}"
+      "prompt": "Return low carb meal JSON: {\"meals\":[{\"mealType\":\"LUNCH\",\"dishes\":[{\"dishId\":\"2\",\"servings\":1}]}]}",
+      "context": {
+        "goal": "Giảm cân",
+        "diet": "Low carb",
+        "calories": 1800,
+        "allergies": []
+      }
     },
     "expected": {
       "classification": "positive",
@@ -183,7 +249,13 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return JSON with dishId: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"101\",\"servings\":1}]}]}"
+      "prompt": "Return JSON with dishId: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"101\",\"servings\":1}]}]}",
+      "context": {
+        "goal": "Duy trì cân nặng",
+        "diet": "Cân bằng",
+        "calories": 2000,
+        "allergies": []
+      }
     },
     "expected": {
       "classification": "positive",
@@ -199,7 +271,13 @@
     "difficulty": "easy",
     "enabled": true,
     "input": {
-      "prompt": "Return JSON with 1 dish per meal: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}"
+      "prompt": "Return JSON with 1 dish per meal: {\"meals\":[{\"mealType\":\"BREAKFAST\",\"dishes\":[{\"dishId\":\"1\",\"servings\":1}]}]}",
+      "context": {
+        "goal": "Giảm cân",
+        "diet": "Simple",
+        "calories": 1500,
+        "allergies": []
+      }
     },
     "expected": {
       "classification": "positive",

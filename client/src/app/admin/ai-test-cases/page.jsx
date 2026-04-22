@@ -36,6 +36,10 @@ const DEFAULT_FORM = {
   category: 'happy_path',
   difficulty: 'medium',
   prompt: '',
+  contextGoal: '',
+  contextDiet: '',
+  contextCalories: '',
+  contextAllergies: '',
   expectedContains: '',
   expectedClassification: 'positive'
 };
@@ -62,6 +66,17 @@ const Page = () => {
       return;
     }
 
+    if (
+      !form.contextGoal.trim() ||
+      !form.contextDiet.trim() ||
+      !form.contextCalories
+    ) {
+      toast.error(
+        'Context (goal, diet, calories) là bắt buộc cho semantic scoring'
+      );
+      return;
+    }
+
     const payload = {
       name: form.name,
       description: form.description,
@@ -69,7 +84,15 @@ const Page = () => {
       category: form.category,
       difficulty: form.difficulty,
       input: {
-        prompt: form.prompt
+        prompt: form.prompt,
+        context: {
+          goal: form.contextGoal,
+          diet: form.contextDiet,
+          calories: parseInt(form.contextCalories, 10),
+          allergies: form.contextAllergies
+            ? form.contextAllergies.split(',').map(s => s.trim())
+            : []
+        }
       },
       expected: form.expectedContains
         ? {
@@ -104,6 +127,10 @@ const Page = () => {
       category: item.category || 'happy_path',
       difficulty: item.difficulty || 'medium',
       prompt: item.input?.prompt || '',
+      contextGoal: item.input?.context?.goal || '',
+      contextDiet: item.input?.context?.diet || '',
+      contextCalories: String(item.input?.context?.calories || ''),
+      contextAllergies: item.input?.context?.allergies?.join(', ') || '',
       expectedContains: item.expected?.mustInclude?.[0] || '',
       expectedClassification: item.expected?.classification || 'positive'
     });
@@ -253,6 +280,81 @@ const Page = () => {
                     setForm(prev => ({ ...prev, prompt: event.target.value }))
                   }
                 />
+              </div>
+
+              <div className='rounded-lg border border-blue-200/60 bg-blue-50/40 p-4 space-y-4'>
+                <p className='text-xs font-semibold uppercase tracking-[0.16em] text-blue-700'>
+                  Context (bắt buộc cho semantic scoring)
+                </p>
+
+                <div className='grid gap-3 md:grid-cols-2'>
+                  <div className='space-y-1.5'>
+                    <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
+                      Goal
+                    </label>
+                    <Input
+                      placeholder='Ví dụ: Giảm cân, Tăng cơ'
+                      value={form.contextGoal}
+                      onChange={event =>
+                        setForm(prev => ({
+                          ...prev,
+                          contextGoal: event.target.value
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <div className='space-y-1.5'>
+                    <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
+                      Diet
+                    </label>
+                    <Input
+                      placeholder='Ví dụ: Vegan, Keto, Low carb'
+                      value={form.contextDiet}
+                      onChange={event =>
+                        setForm(prev => ({
+                          ...prev,
+                          contextDiet: event.target.value
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className='grid gap-3 md:grid-cols-2'>
+                  <div className='space-y-1.5'>
+                    <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
+                      Calories
+                    </label>
+                    <Input
+                      type='number'
+                      placeholder='Ví dụ: 2000'
+                      value={form.contextCalories}
+                      onChange={event =>
+                        setForm(prev => ({
+                          ...prev,
+                          contextCalories: event.target.value
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <div className='space-y-1.5'>
+                    <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
+                      Allergies (comma-separated)
+                    </label>
+                    <Input
+                      placeholder='Ví dụ: peanut, shellfish'
+                      value={form.contextAllergies}
+                      onChange={event =>
+                        setForm(prev => ({
+                          ...prev,
+                          contextAllergies: event.target.value
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
