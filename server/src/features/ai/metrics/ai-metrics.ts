@@ -114,7 +114,6 @@ export const MetricsCollector = {
     context: MealValidationContext
   ): Promise<{
     isCorrect: boolean;
-    classification: 'positive' | 'negative';
     accuracyScore: number;
     ruleScore: number;
     semanticScore: number;
@@ -149,7 +148,6 @@ export const MetricsCollector = {
 
     return {
       isCorrect,
-      classification: isCorrect ? 'positive' : 'negative',
       accuracyScore,
       ruleScore,
       semanticScore,
@@ -168,7 +166,7 @@ export const MetricsCollector = {
   async validateMealEvaluation(
     aiOutputText: string,
     context: MealValidationContext,
-    expectedClassification?: 'positive' | 'negative'
+    expectedClassification: 'positive' | 'negative'
   ): Promise<{
     isCorrect: boolean;
     classification: 'positive' | 'negative';
@@ -180,7 +178,7 @@ export const MetricsCollector = {
     const result = await this.validateMealProduction(aiOutputText, context);
     return {
       ...result,
-      classification: expectedClassification ?? result.classification
+      classification: expectedClassification
     };
   }
 };

@@ -586,7 +586,6 @@ export const AiService = {
         userId,
         status: 'success',
         isCorrect: validation.isCorrect,
-        classification: validation.classification,
         accuracyScore: validation.accuracyScore,
         ruleScore: validation.ruleScore,
         semanticScore: validation.semanticScore,
