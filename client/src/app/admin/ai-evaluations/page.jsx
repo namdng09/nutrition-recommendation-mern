@@ -228,6 +228,10 @@ const Page = () => {
                   {detailQuery.data?.semanticScore ?? 0}
                 </p>
                 <p>
+                  <span className='font-medium'>Rule score:</span>{' '}
+                  {detailQuery.data?.ruleScore ?? 0}
+                </p>
+                <p>
                   <span className='font-medium'>Accuracy:</span>{' '}
                   {detailQuery.data?.accuracyScore ?? 0}
                 </p>
