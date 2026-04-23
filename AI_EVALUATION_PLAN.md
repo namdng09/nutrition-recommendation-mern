@@ -10,12 +10,13 @@ System để đánh giá LLM output cho meal recommendation. Client yêu cầu:
 
 **Two Metric Sources:**
 
-| Type | Source | Tracked By |
-|------|--------|-----------|
-| **Evaluation Metrics** | Running test cases | Manual trigger (test dataset) |
+| Type                   | Source             | Tracked By                     |
+| ---------------------- | ------------------ | ------------------------------ |
+| **Evaluation Metrics** | Running test cases | Manual trigger (test dataset)  |
 | **Production Metrics** | Real user requests | Auto-collect on every API call |
 
 **Why Both:**
+
 - Evaluation might pass but production might fail (different real-world data)
 - Production metrics show real latency/cost under load
 - Compare test accuracy vs real accuracy to detect drift
@@ -23,6 +24,7 @@ System để đánh giá LLM output cho meal recommendation. Client yêu cầu:
 **Simplified:** Prompt stored in code/config, no prompt management UI.
 
 **Context:**
+
 - LLM: Gemini
 - Integration: LangChain
 - Test dataset: Chưa có (cần build)
@@ -36,7 +38,7 @@ System để đánh giá LLM output cho meal recommendation. Client yêu cầu:
 
 ### 2.1 Rule-based Validator
 
-**File:** `server/src/features/ai/validators/meal-validator.ts`
+**File:** `server/src/features/ai-evaluation/validators/meal-validator.ts`
 
 ```typescript
 interface ValidationRule {
@@ -47,7 +49,7 @@ interface ValidationRule {
 
 interface ValidationResult {
   passed: boolean;
-  score: number;           // 0-1
+  score: number; // 0-1
   message: string;
   details?: any;
 }
@@ -62,40 +64,43 @@ class MealRecommendationValidator {
     this.noDuplicateDishes,
     this.mealTypeMatch,
     this.mealCountMatch,
-    
+
     // Soft checks
     this.macroTargetMet,
     this.nutritionVariety,
     this.cookingTimeFeasibility
   ];
-  
-  async validate(output: LLMOutput, context: ValidationContext): Promise<ValidationReport> {
+
+  async validate(
+    output: LLMOutput,
+    context: ValidationContext
+  ): Promise<ValidationReport> {
     const results = await Promise.all(
       this.rules.map(rule => rule.check(output, context))
     );
-    
-    const hardResults = results.filter(r => r.type === "hard");
-    const softResults = results.filter(r => r.type === "soft");
-    
+
+    const hardResults = results.filter(r => r.type === 'hard');
+    const softResults = results.filter(r => r.type === 'soft');
+
     return {
-      overall_score: this.calculateScore(hardResults, softResults),
+      overallScore: this.calculateScore(hardResults, softResults),
       hard_checks: hardResults,
       soft_checks: softResults,
       passed: hardResults.every(r => r.passed)
     };
   }
-  
+
   private calculateScore(hard: Result[], soft: Result[]): number {
     const hardScore = hard.filter(r => r.passed).length / hard.length;
     const softScore = soft.reduce((sum, r) => sum + r.score, 0) / soft.length;
-    return (hardScore * 0.6) + (softScore * 0.4);
+    return hardScore * 0.6 + softScore * 0.4;
   }
 }
 ```
 
 ### 2.2 Semantic Validator (LLM Judge)
 
-**File:** `server/src/features/ai/validators/semantic-validator.ts`
+**File:** `server/src/features/ai-evaluation/validators/semantic-validator.ts`
 
 Use Gemini Flash (cheaper model) to score:
 
@@ -121,7 +126,10 @@ Output JSON:
 }}`;
 
 class SemanticValidator {
-  async evaluate(output: LLMOutput, context: ValidationContext): Promise<SemanticScore> {
+  async evaluate(
+    output: LLMOutput,
+    context: ValidationContext
+  ): Promise<SemanticScore> {
     const prompt = fillTemplate(SEMANTIC_EVALUATION_PROMPT, context);
     const response = await this.llm.invoke(prompt);
     return parseJsonResponse(response);
@@ -140,7 +148,7 @@ Trong đó:
 
 Threshold đánh giá:
 - >= 85%: Excellent
-- 70-84%: Good  
+- 70-84%: Good
 - 50-69%: Needs improvement
 - < 50%: Poor
 ```
@@ -157,33 +165,33 @@ Threshold đánh giá:
 interface AIMetrics {
   // Request identification
   request_id: string;
-  source_type: "evaluation" | "production";  // NEW: Distinguish metric source
+  source_type: 'evaluation' | 'production'; // NEW: Distinguish metric source
   timestamp: Date;
-  
+
   // Accuracy
-  validation_score: number;           // 0-100
-  rule_score: number;                 // 0-100
-  semantic_score: number;             // 0-100
+  validation_score: number; // 0-100
+  rule_score: number; // 0-100
+  semantic_score: number; // 0-100
   passed_hard_checks: number;
   total_hard_checks: number;
   validation_details: CheckResult[];
-  
+
   // Latency
   total_latency_ms: number;
   time_to_first_token_ms: number;
   generation_time_ms: number;
-  
+
   // Cost
   input_tokens: number;
   output_tokens: number;
   total_tokens: number;
-  estimated_cost_usd: number;         // Gemini pricing: $0.001-0.005/1k tokens
-  
+  estimated_cost_usd: number; // Gemini pricing: $0.001-0.005/1k tokens
+
   // Stability
-  output_hash: string;                // SHA256 of output
+  output_hash: string; // SHA256 of output
   is_retry: boolean;
   retry_count: number;
-  
+
   // Security
   pii_detected: boolean;
   prompt_injection_detected: boolean;
@@ -191,21 +199,21 @@ interface AIMetrics {
 }
 
 interface MetricsAggregate {
-  period: string;                     // "2024-W01", "2024-01-15"
-  source_type: "evaluation" | "production";  // NEW: Distinguish metric source
-  
+  period: string; // "2024-W01", "2024-01-15"
+  source_type: 'evaluation' | 'production'; // NEW: Distinguish metric source
+
   // Averaged metrics
   avg_accuracy: number;
   avg_latency_ms: number;
   avg_cost_usd: number;
-  
+
   // Counts
   total_requests: number;
   successful_requests: number;
   failed_requests: number;
-  
+
   // Stability
-  variance_score: number;             // Lower = more stable
+  variance_score: number; // Lower = more stable
 }
 ```
 
@@ -214,42 +222,45 @@ interface MetricsAggregate {
 ```typescript
 // Middleware to collect metrics on every LLM call
 class MetricsMiddleware {
-  async invoke(prompt: string, context: any): Promise<{ output: any, metrics: AIMetrics }> {
+  async invoke(
+    prompt: string,
+    context: any
+  ): Promise<{ output: any; metrics: AIMetrics }> {
     const startTime = Date.now();
     const requestId = generateUUID();
-    
+
     try {
       // Call LLM
       const output = await this.llm.invoke(prompt);
       const firstTokenTime = Date.now();
-      
+
       // Validate
       const validation = await this.validator.validate(output, context);
       const semantic = await this.semanticValidator.evaluate(output, context);
-      
+
       const metrics: AIMetrics = {
         request_id: requestId,
         timestamp: new Date(),
-        
-        validation_score: validation.overall_score,
+
+        validation_score: validation.overallScore,
         rule_score: validation.hardScore,
         semantic_score: semantic.overallScore,
-        
+
         total_latency_ms: Date.now() - startTime,
         time_to_first_token_ms: firstTokenTime - startTime,
-        
+
         input_tokens: usage.prompt_tokens,
         output_tokens: usage.completion_tokens,
         estimated_cost_usd: this.calculateCost(usage),
-        
+
         output_hash: hash(output),
         pii_detected: false,
         prompt_injection_detected: false
       };
-      
+
       // Save to DB
       await this.metricsRepository.save(metrics);
-      
+
       return { output, metrics };
     } catch (error) {
       await this.metricsRepository.save({
@@ -273,33 +284,33 @@ class MealRecommendationService {
   async generateMeal(input: IInputGenerateMeal): Promise<MealRecommendation> {
     const startTime = Date.now();
     const requestId = generateUUID();
-    
+
     try {
       // Existing logic...
       const output = await this.generateMealRecommendation(input);
-      
+
       // Auto-validate (rule-based only for production - skip expensive semantic)
       const validation = await this.validator.validate(output, context);
-      
+
       // Log metrics with source_type = "production"
       await this.metricsService.log({
         request_id: requestId,
-        source_type: "production",  // Auto-mark as production
+        source_type: 'production', // Auto-mark as production
         timestamp: new Date(),
-        validation_score: validation.overall_score,
+        validation_score: validation.overallScore,
         latency_ms: Date.now() - startTime,
         tokens_used: usage.total_tokens,
         cost_usd: this.calculateCost(usage),
-        status: "success"
+        status: 'success'
       });
-      
+
       return output;
     } catch (error) {
       // Log failed request
       await this.metricsService.log({
         request_id: requestId,
-        source_type: "production",
-        status: "failed",
+        source_type: 'production',
+        status: 'failed',
         error: error.message
       });
       throw error;
@@ -310,10 +321,10 @@ class MealRecommendationService {
 
 **Key difference:**
 
-| Source | Validation | Metrics Collected |
-|--------|------------|-------------------|
-| Production | Rule-based only (fast) | Basic (score, latency, cost) |
-| Evaluation | Rule + Semantic (thorough) | Full (with semantic scores) |
+| Source     | Validation                 | Metrics Collected            |
+| ---------- | -------------------------- | ---------------------------- |
+| Production | Rule-based only (fast)     | Basic (score, latency, cost) |
+| Evaluation | Rule + Semantic (thorough) | Full (with semantic scores)  |
 
 ---
 
@@ -328,28 +339,28 @@ interface TestCase {
   id: string;
   name: string;
   description: string;
-  
+
   // Input
   input: {
     user_profile: IUserProfile;
     meal_slots: IMealSlot[];
     dish_catalog: IDishCatalog;
   };
-  
+
   // Expected output (ground truth)
   expected_output: {
     meals: IMeal[];
     total_calories?: number;
     macro_breakdown?: MacroBreakdown;
   };
-  
+
   // Validation rules for this test case
-  validation_rules: string[];         // IDs of rules to apply
-  
+  validation_rules: string[]; // IDs of rules to apply
+
   // Metadata
-  category: "happy_path" | "edge_case" | "constraint_test" | "error_case";
-  difficulty: "easy" | "medium" | "hard";
-  created_by: "synthetic" | "human";
+  category: 'happy_path' | 'edge_case' | 'constraint_test' | 'error_case';
+  difficulty: 'easy' | 'medium' | 'hard';
+  created_by: 'synthetic' | 'human';
   tags: string[];
 }
 
@@ -357,7 +368,7 @@ interface TestSuite {
   id: string;
   name: string;
   description: string;
-  test_cases: string[];              // TestCase IDs
+  test_cases: string[]; // TestCase IDs
   created_at: Date;
 }
 ```
@@ -367,16 +378,19 @@ interface TestSuite {
 **Strategy:**
 
 1. **Happy Path (40%)**
+
    - Normal user profiles
    - Standard meal slots
    - Full dish catalog available
 
 2. **Edge Cases (30%)**
+
    - Extreme calorie goals (very low/high)
    - Multiple allergens
    - Very limited dish catalog
 
 3. **Constraint Tests (20%)**
+
    - Vegan diet + low carb
    - Muscle gain + calorie deficit (conflict)
    - All slots same meal type
@@ -392,22 +406,22 @@ interface TestSuite {
 class TestDataGenerator {
   async generateTestSuite(count: number): Promise<TestCase[]> {
     const cases: TestCase[] = [];
-    
+
     // Generate happy path cases
     for (let i = 0; i < count * 0.4; i++) {
       cases.push(this.generateHappyPath());
     }
-    
+
     // Generate edge cases
     for (let i = 0; i < count * 0.3; i++) {
       cases.push(this.generateEdgeCase());
     }
-    
+
     // ... etc
-    
+
     return cases;
   }
-  
+
   private generateHappyPath(): TestCase {
     return {
       // Random valid user profile
@@ -431,24 +445,24 @@ class TestDataGenerator {
   _id: ObjectId,
   name: String,
   description: String,
-  
+
   // Input
   input: {
     user_profile: Object,
     meal_slots: [Object],
     dish_catalog: [Object]
   },
-  
+
   // Expected output
   expected_output: Object,
   validation_rules: [String],
-  
+
   // Metadata
   category: String,
   difficulty: String,
   created_by: String,
   tags: [String],
-  
+
   created_at: Date
 }
 ```
@@ -459,18 +473,18 @@ class TestDataGenerator {
 // mongoose model: EvaluationResult
 {
   _id: ObjectId,
-  
+
   // References
   test_case_id: ObjectId,
   evaluation_run_id: ObjectId,
-  
+
   // Input
   input_hash: String,
-  
+
   // Output
   llm_output: Object,
   output_hash: String,
-  
+
   // Validation
   validation_score: Number,
   rule_score: Number,
@@ -485,16 +499,16 @@ class TestDataGenerator {
     score: Number,
     reasoning: String
   }],
-  
+
   // Metrics
   latency_ms: Number,
   tokens_used: Number,
   cost_usd: Number,
-  
+
   // Status
   status: String,           // "success" | "failed" | "error"
   error_message: String?,
-  
+
   created_at: Date
 }
 ```
@@ -505,29 +519,29 @@ class TestDataGenerator {
 // mongoose model: MetricsAggregate
 {
   _id: ObjectId,
-  
+
   period: String,           // "daily", "weekly", "monthly"
   period_key: String,       // "2024-01-15", "2024-W03"
-  
+
   // Aggregated values
   total_requests: Number,
   success_count: Number,
   failure_count: Number,
-  
+
   avg_accuracy: Number,
   avg_latency_ms: Number,
   avg_cost_usd: Number,
-  
+
   // Distribution
   accuracy_histogram: [Number],   // Count by score ranges
   latency_p50: Number,
   latency_p95: Number,
   latency_p99: Number,
-  
+
   // Stability
   unique_outputs: Number,
   output_variance: Number,
-  
+
   created_at: Date,
   updated_at: Date
 }
@@ -657,23 +671,27 @@ GET    /api/admin/metrics/summary?source=both       - Combined view
 ## 6. Implementation Roadmap
 
 ### Phase 1: Foundation (Week 1)
+
 - [ ] Create database models (TestCase, EvaluationResult, MetricsAggregate, EvaluationRun)
 - [ ] Implement Rule-based Validator
 - [ ] Add metrics collection middleware to existing LLM calls (production auto-track)
 - [ ] Create evaluation API
 
 ### Phase 2: Test Data (Week 2)
+
 - [ ] Build Test Data Generator (synthetic cases)
 - [ ] Create human curation flow for test cases
 - [ ] Implement Semantic Validator (LLM judge)
 - [ ] Build evaluation batch processing
 
 ### Phase 3: Analytics (Week 3)
+
 - [ ] Implement metrics aggregation (daily/weekly)
 - [ ] Build trend analysis
 - [ ] Create metrics dashboard APIs
 
 ### Phase 4: UI Dashboard (Week 4)
+
 - [ ] Build Dashboard AI page
 - [ ] Build Evaluations page
 - [ ] Build Test Cases page
@@ -710,40 +728,43 @@ server/src/features/ai/
 ## 8. Evaluation Criteria Reference
 
 ### Hard Constraints (Must Pass)
-| Rule | Check | Pass Condition |
-|------|-------|-----------------|
-| json_schema_valid | Output is valid JSON matching schema | JSON parses + schema match |
-| dish_existence | All dishIds exist in catalog | 100% exist |
-| allergen_check | No dishes contain user allergens | 0 allergen dishes |
-| servings_range | All servings are 1-5 | 100% in range |
-| no_duplicate_dishes | No repeat dishId in same day | 0 duplicates |
-| meal_type_match | mealType matches slot.mealType | 100% match |
+
+| Rule                | Check                                | Pass Condition             |
+| ------------------- | ------------------------------------ | -------------------------- |
+| json_schema_valid   | Output is valid JSON matching schema | JSON parses + schema match |
+| dish_existence      | All dishIds exist in catalog         | 100% exist                 |
+| allergen_check      | No dishes contain user allergens     | 0 allergen dishes          |
+| servings_range      | All servings are 1-5                 | 100% in range              |
+| no_duplicate_dishes | No repeat dishId in same day         | 0 duplicates               |
+| meal_type_match     | mealType matches slot.mealType       | 100% match                 |
 
 ### Soft Constraints (Scored 0-100)
-| Metric | Weight | Good | Fair | Poor |
-|--------|--------|------|------|------|
-| macro_balance | 35% | >=80% target | 60-79% | <60% |
-| nutrition_variety | 25% | >=70 | 50-69 | <50 |
-| constraint_satisfaction | 25% | >=90 | 70-89 | <70 |
-| cooking_time_feasibility | 15% | >=80 | 60-79 | <60 |
+
+| Metric                   | Weight | Good         | Fair   | Poor |
+| ------------------------ | ------ | ------------ | ------ | ---- |
+| macro_balance            | 35%    | >=80% target | 60-79% | <60% |
+| nutrition_variety        | 25%    | >=70         | 50-69  | <50  |
+| constraint_satisfaction  | 25%    | >=90         | 70-89  | <70  |
+| cooking_time_feasibility | 15%    | >=80         | 60-79  | <60  |
 
 ### Overall Rating
-| Score | Rating | Action |
-|-------|--------|--------|
-| >= 85 | Excellent | Ship/Deploy |
-| 70-84 | Good | Minor improvements |
+
+| Score | Rating     | Action             |
+| ----- | ---------- | ------------------ |
+| >= 85 | Excellent  | Ship/Deploy        |
+| 70-84 | Good       | Minor improvements |
 | 50-69 | Needs Work | Major improvements |
-| < 50 | Poor | Do not deploy |
+| < 50  | Poor       | Do not deploy      |
 
 ---
 
 ## 9. Cost Estimation (Gemini)
 
-| Operation | Input Tokens | Output Tokens | Est. Cost |
-|-----------|-------------|----------------|-----------|
-| Meal Generation | ~2000 | ~500 | $0.0025 |
-| Semantic Validation | ~1500 | ~200 | $0.0015 |
-| Total per request | ~3500 | ~700 | **$0.004** |
+| Operation           | Input Tokens | Output Tokens | Est. Cost  |
+| ------------------- | ------------ | ------------- | ---------- |
+| Meal Generation     | ~2000        | ~500          | $0.0025    |
+| Semantic Validation | ~1500        | ~200          | $0.0015    |
+| Total per request   | ~3500        | ~700          | **$0.004** |
 
 **Monthly estimate:** 10,000 requests × $0.004 = **$40/month**
 
@@ -819,12 +840,14 @@ client/src/
 **Components:**
 
 1. **Metric Cards** (4 cards in grid):
+
    - **Accuracy**: Score 0-100% with color badge (Green >=85, Yellow 70-84, Red <70)
    - **Latency**: Average ms with p50/p95
    - **Cost**: Total spend ($) + per-request cost
    - **Stability**: Variance score (0-1, lower = more stable)
 
 2. **Source Toggle**: Show metrics for:
+
    - **Evaluation** (test runs)
    - **Production** (real user requests)
    - **Both** (combined comparison)
@@ -833,6 +856,7 @@ client/src/
 4. **Secondary Chart**: Bar chart - Compare evaluation vs production
 
 **Interaction:**
+
 - Range selector (today, last7days, last30days, thisMonth, etc.)
 - Source filter (Evaluation / Production / Both)
 - Manual refresh button "Làm mới" (like existing dashboard)
@@ -843,6 +867,7 @@ client/src/
 **Layout:** Two sections (top + bottom)
 
 **Top Section - Run Evaluation:**
+
 - Select Test Suite (Dropdown)
 - Button "Chạy đánh giá"
 - Progress bar (when running)
@@ -858,6 +883,7 @@ client/src/
 | Actions | View Detail |
 
 **Filters:**
+
 - By date range
 - By status
 
@@ -873,6 +899,7 @@ client/src/
 | Actions | View, Delete |
 
 **Actions:**
+
 - Button "Tạo test case mới"
 - Bulk delete
 
@@ -893,12 +920,12 @@ export const useAIMetrics = (params, options) => {
 
 ### 11.9 Color Scheme for Metrics
 
-| Metric | Green (Good) | Yellow (Fair) | Red (Poor) |
-|--------|--------------|---------------|------------|
-| Accuracy | >= 85% | 70-84% | < 70% |
-| Latency | < 2000ms | 2000-4000ms | > 4000ms |
-| Cost | < $0.005 | $0.005-$0.01 | > $0.01 |
-| Stability | < 0.2 | 0.2-0.5 | > 0.5 |
+| Metric    | Green (Good) | Yellow (Fair) | Red (Poor) |
+| --------- | ------------ | ------------- | ---------- |
+| Accuracy  | >= 85%       | 70-84%        | < 70%      |
+| Latency   | < 2000ms     | 2000-4000ms   | > 4000ms   |
+| Cost      | < $0.005     | $0.005-$0.01  | > $0.01    |
+| Stability | < 0.2        | 0.2-0.5       | > 0.5      |
 
 ### 10.8 Implementation Priority
 
