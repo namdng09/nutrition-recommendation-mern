@@ -1,9 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-import {
-  MealRecommendationValidator,
-  SemanticValidator
-} from '~/features/ai-evaluation/validators';
+import { SemanticValidator } from '~/features/ai-evaluation/validators';
 import { AiMetricModel } from '~/shared/database/models';
 
 export interface MealValidationContext {
@@ -48,6 +45,199 @@ export interface LogMetricPayload {
   testCaseName?: string;
   meta?: Record<string, unknown>;
 }
+
+const PASS_THRESHOLD = 90;
+
+const extractMealJson = (text: string): Record<string, unknown> | null => {
+  const cleaned = text
+    .trim()
+    .replace(/^```json\s*/i, '')
+    .replace(/^```/i, '')
+    .replace(/```$/i, '')
+    .trim();
+  try {
+    const parsed = JSON.parse(cleaned);
+    if (Array.isArray(parsed)) return { meals: parsed };
+    if (typeof parsed === 'object' && parsed !== null)
+      return parsed as Record<string, unknown>;
+  } catch {
+    /* empty */
+  }
+
+  const firstBracket = cleaned.indexOf('[');
+  const lastBracket = cleaned.lastIndexOf(']');
+  if (firstBracket >= 0 && lastBracket > firstBracket) {
+    try {
+      const parsed = JSON.parse(cleaned.slice(firstBracket, lastBracket + 1));
+      if (Array.isArray(parsed)) return { meals: parsed };
+    } catch {
+      /* empty */
+    }
+  }
+
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace >= 0 && lastBrace > firstBrace) {
+    try {
+      const parsed = JSON.parse(cleaned.slice(firstBrace, lastBrace + 1));
+      if (typeof parsed === 'object' && parsed !== null)
+        return parsed as Record<string, unknown>;
+    } catch {
+      /* empty */
+    }
+  }
+
+  return null;
+};
+
+type MealCheck = {
+  score: number;
+  message: string;
+  details?: Record<string, unknown>;
+};
+
+const runMealChecks = (
+  output: Record<string, unknown>,
+  context: MealValidationContext
+): MealCheck[] => {
+  const meals = (output.meals ?? []) as Array<Record<string, unknown>>;
+  const checks: MealCheck[] = [];
+
+  // JSON schema
+  const schemaOk =
+    Array.isArray(meals) &&
+    meals.every(
+      m =>
+        typeof m === 'object' &&
+        m !== null &&
+        typeof (m as Record<string, unknown>).mealType === 'string' &&
+        Array.isArray((m as Record<string, unknown>).dishes)
+    );
+  checks.push({
+    score: schemaOk ? 1 : 0,
+    message: schemaOk ? 'JSON schema valid' : 'Invalid JSON schema'
+  });
+
+  // All dish IDs exist
+  const catalogIds = new Set(context.dishCatalog.map(d => String(d.dishId)));
+  const allDishes = meals.flatMap(
+    m => (m.dishes ?? []) as Array<Record<string, unknown>>
+  );
+  const missing = allDishes
+    .map(d => String(d.dishId))
+    .filter(id => !catalogIds.has(id));
+  checks.push(
+    missing.length > 0
+      ? {
+          score: 0,
+          message: `Missing dish IDs: ${[...new Set(missing)].join(', ')}`,
+          details: { missingIds: [...new Set(missing)] }
+        }
+      : { score: 1, message: 'All dish IDs exist' }
+  );
+
+  // No allergen dishes
+  const userAllergies = new Set(
+    context.userProfile.allergies.map(a => a.toLowerCase())
+  );
+  if (userAllergies.size === 0) {
+    checks.push({ score: 1, message: 'No allergies to check' });
+  } else {
+    const dishMap = new Map(
+      context.dishCatalog.map(d => [String(d.dishId), d])
+    );
+    const violations: string[] = [];
+    for (const dish of allDishes) {
+      const catalogDish = dishMap.get(String(dish.dishId));
+      if (!catalogDish) continue;
+      const allergens = new Set(
+        ((catalogDish as any).allergens ?? []).map((a: string) =>
+          a.toLowerCase()
+        )
+      );
+      const found = [...userAllergies].filter(a => allergens.has(a));
+      if (found.length > 0)
+        violations.push(`${dish.dishId}: ${found.join(', ')}`);
+    }
+    checks.push(
+      violations.length > 0
+        ? {
+            score: 0,
+            message: `Allergen violations: ${violations.join('; ')}`,
+            details: { violations }
+          }
+        : { score: 1, message: 'No allergen dishes' }
+    );
+  }
+
+  // Servings in range 1–5
+  const badServings = allDishes
+    .filter(
+      d =>
+        typeof d.servings !== 'number' ||
+        (d.servings as number) < 1 ||
+        (d.servings as number) > 5
+    )
+    .map(d => ({ dishId: String(d.dishId), servings: d.servings }));
+  checks.push(
+    badServings.length > 0
+      ? {
+          score: 0,
+          message: `Servings out of range (1-5): ${badServings.map(i => `${i.dishId}=${i.servings}`).join(', ')}`,
+          details: { invalid: badServings }
+        }
+      : { score: 1, message: 'All servings in range' }
+  );
+
+  // No duplicate dishes
+  const seen = new Set<string>();
+  const duplicates: string[] = [];
+  for (const d of allDishes) {
+    const id = String(d.dishId);
+    if (seen.has(id)) duplicates.push(id);
+    seen.add(id);
+  }
+  checks.push(
+    duplicates.length > 0
+      ? {
+          score: 0,
+          message: `Duplicate dishes: ${[...new Set(duplicates)].join(', ')}`,
+          details: { duplicates: [...new Set(duplicates)] }
+        }
+      : { score: 1, message: 'No duplicate dishes' }
+  );
+
+  // Meal type matches slots
+  const slotTypes = new Set(
+    context.mealSlots.map(s => s.mealType.toLowerCase())
+  );
+  const mismatches = meals
+    .map(m => String((m as Record<string, unknown>).mealType).toLowerCase())
+    .filter(t => !slotTypes.has(t));
+  checks.push(
+    mismatches.length > 0
+      ? {
+          score: 0,
+          message: `Meal type mismatches: ${mismatches.map(t => `${t} not in slots`).join('; ')}`,
+          details: { mismatches }
+        }
+      : { score: 1, message: 'Meal types match slots' }
+  );
+
+  // Meal count matches slots
+  checks.push(
+    meals.length !== context.mealSlots.length
+      ? {
+          score: 0,
+          message: `Expected ${context.mealSlots.length} meals, got ${meals.length}`
+        }
+      : { score: 1, message: 'Meal count matches' }
+  );
+
+  return checks;
+};
+
+// ────────────────────────────────────────────────────────────────────────────
 
 const estimateAiCostUsd = (totalTokens: number): number => {
   const INPUT_COST_PER_1K = 0.00125;
@@ -119,13 +309,27 @@ export const MetricsCollector = {
     semanticScore: number;
     validationReport: Record<string, unknown>;
   }> {
-    const validator = new MealRecommendationValidator();
-    const validationReport = await validator.validate(aiOutputText, context);
+    const parsed = extractMealJson(aiOutputText);
+    if (!parsed) {
+      return {
+        isCorrect: false,
+        accuracyScore: 0,
+        ruleScore: 0,
+        semanticScore: 0,
+        validationReport: {
+          overallScore: 0,
+          checks: [{ score: 0, message: 'Invalid JSON' }]
+        }
+      };
+    }
 
-    const ruleScore = Math.round(validationReport.overallScore);
+    const checks = runMealChecks(parsed, context);
+    const passedRules = checks.filter(c => c.score >= 0.5).length;
+    const overallScore = checks.length > 0 ? passedRules / checks.length : 0;
+    const ruleScore = Math.round(overallScore * 100);
 
     let semanticScore = 0;
-    if (validationReport.overallScore > 0) {
+    if (ruleScore > 0) {
       const semanticValidator = new SemanticValidator();
       const preset = (context as any).preset;
       const semanticResult = await semanticValidator.evaluate({
@@ -136,7 +340,9 @@ export const MetricsCollector = {
         mealPlanJson: aiOutputText,
         preset: preset
       });
-      semanticScore = semanticResult.overallScore;
+      // null means LLM failed to evaluate — fall back to rule score to avoid fake data
+      semanticScore =
+        semanticResult !== null ? semanticResult.overallScore : ruleScore;
       console.log(`[SemanticValidator] result:`, semanticResult);
 
       // The semantic evaluator can return a neutral default (50) when parsing fails.
@@ -147,7 +353,7 @@ export const MetricsCollector = {
     }
 
     const accuracyScore = Math.round(ruleScore * 0.6 + semanticScore * 0.4);
-    const isCorrect = accuracyScore >= 90;
+    const isCorrect = accuracyScore >= PASS_THRESHOLD;
 
     return {
       isCorrect,
@@ -155,8 +361,8 @@ export const MetricsCollector = {
       ruleScore,
       semanticScore,
       validationReport: {
-        overallScore: validationReport.overallScore,
-        checks: validationReport.checks.map(r => ({
+        overallScore: Math.round(overallScore * 100),
+        checks: checks.map(r => ({
           id: r.message,
           score: r.score,
           details: r.details

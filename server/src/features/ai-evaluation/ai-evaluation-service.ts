@@ -15,6 +15,8 @@ import { SemanticValidator } from './validators/semantic-validator';
 
 const semanticValidator = new SemanticValidator();
 
+const PASS_THRESHOLD = 90;
+const EVAL_CONCURRENCY = 5;
 const toDateFilter = (query: ListMetricsQuery) => {
   const hasStart = Boolean(query.startDate);
   const hasEnd = Boolean(query.endDate);
@@ -426,7 +428,10 @@ Example valid response:
 
 Now generate your JSON response:`;
 
-    for (const testCase of testCases) {
+    // Run evaluations with bounded concurrency to avoid overwhelming the LLM API
+    const runSingleCase = async (
+      testCase: (typeof testCases)[number]
+    ): Promise<Record<string, unknown>> => {
       const start = Date.now();
       const rawPrompt = String(
         (testCase.input as Record<string, unknown>)?.prompt ??
@@ -470,11 +475,11 @@ Now generate your JSON response:`;
               matched: false,
               passedChecks: 0,
               totalChecks: 0,
-              passThreshold: 90
+              passThreshold: PASS_THRESHOLD
             }
           });
 
-          results.push({
+          return {
             testCaseId: testCase._id.toString(),
             name: testCase.name,
             endpoint: testCase.endpoint,
@@ -482,7 +487,7 @@ Now generate your JSON response:`;
             isCorrect: false,
             accuracyScore: 0,
             ruleScore: 0,
-            semanticScore: 0,
+            semanticScore: null,
             latencyMs: Date.now() - start,
             inputTokens: aiResult.usage.inputTokens,
             outputTokens: aiResult.usage.outputTokens,
@@ -492,13 +497,11 @@ Now generate your JSON response:`;
               aiResult.usage.outputTokens
             ),
             error: errorMessage
-          });
-
-          continue;
+          };
         }
 
         const isNegative = testCase.expected?.classification === 'negative';
-        let semanticScore: number;
+        let semanticScore: number | null;
         if (isNegative) {
           semanticScore = 100;
         } else if (testCase.endpoint === 'recommend_daily_meals') {
@@ -515,12 +518,20 @@ Now generate your JSON response:`;
             preset: ctx?.preset as string | undefined
           };
           const semanticResult = await semanticValidator.evaluate(context);
-          semanticScore = semanticResult.overallScore;
+          // null means LLM evaluator failed — store null to avoid fake data in DB
+          semanticScore =
+            semanticResult !== null ? semanticResult.overallScore : null;
         } else {
-          semanticScore = evaluation.ruleScore;
+          semanticScore = null; // no semantic judge for this endpoint
         }
-        const accuracyScore = computeScore(evaluation.ruleScore, semanticScore);
-        const isAccurate = accuracyScore >= 90;
+
+        // When semanticScore is null, accuracy is based on ruleScore alone
+        const effectiveSemanticScore = semanticScore ?? evaluation.ruleScore;
+        const accuracyScore = computeScore(
+          evaluation.ruleScore,
+          effectiveSemanticScore
+        );
+        const isAccurate = accuracyScore >= PASS_THRESHOLD;
 
         await AiMetricModel.create({
           sourceType: 'evaluation',
@@ -550,12 +561,12 @@ Now generate your JSON response:`;
             matched: evaluation.matched,
             passedChecks: evaluation.passedChecks,
             totalChecks: evaluation.totalChecks,
-            passThreshold: 90,
+            passThreshold: PASS_THRESHOLD,
             isErrorResponse: evaluation.isErrorResponse ?? false
           }
         });
 
-        results.push({
+        return {
           testCaseId: testCase._id.toString(),
           name: testCase.name,
           endpoint: testCase.endpoint,
@@ -572,7 +583,7 @@ Now generate your JSON response:`;
             aiResult.usage.inputTokens,
             aiResult.usage.outputTokens
           )
-        });
+        };
       } catch (error) {
         await AiMetricModel.create({
           sourceType: 'evaluation',
@@ -593,18 +604,18 @@ Now generate your JSON response:`;
             matched: false,
             passedChecks: 0,
             totalChecks: 0,
-            passThreshold: 90
+            passThreshold: PASS_THRESHOLD
           }
         });
 
-        results.push({
+        return {
           testCaseId: testCase._id.toString(),
           name: testCase.name,
           endpoint: testCase.endpoint,
           status: 'failed',
           isCorrect: false,
           ruleScore: 0,
-          semanticScore: 0,
+          semanticScore: null,
           accuracyScore: 0,
           latencyMs: Date.now() - start,
           inputTokens: 0,
@@ -612,7 +623,19 @@ Now generate your JSON response:`;
           totalTokens: 0,
           estimatedCostUsd: 0,
           error: error instanceof Error ? error.message : String(error)
-        });
+        };
+      }
+    };
+
+    // Process in batches of EVAL_CONCURRENCY
+    for (let i = 0; i < testCases.length; i += EVAL_CONCURRENCY) {
+      const batch = testCases.slice(i, i + EVAL_CONCURRENCY);
+      const batchResults = await Promise.allSettled(batch.map(runSingleCase));
+      for (const settled of batchResults) {
+        if (settled.status === 'fulfilled') {
+          results.push(settled.value);
+        }
+        // rejected case already handled inside runSingleCase — should not reach here
       }
     }
 
