@@ -1,8 +1,6 @@
 import { AiService } from '~/features/ai/ai-service';
 
-import { MealPresetOptions, mealPresets } from '../fixtures';
-
-const PRESET_OPTIONS = MealPresetOptions.map(p => p.value);
+import { MealPresetKey, MealPresetOptions, mealPresets } from '../fixtures';
 
 export interface SemanticScore {
   nutritionBalance: number;
@@ -74,7 +72,9 @@ export class SemanticValidator {
     preset?: string;
   }): Promise<SemanticScore> {
     // Resolve preset data
-    const presetData = context.preset ? mealPresets[context.preset] : null;
+    const presetKey = context.preset as MealPresetKey;
+    const presetData =
+      presetKey && mealPresets[presetKey] ? mealPresets[presetKey] : null;
 
     const presetContext = presetData
       ? `

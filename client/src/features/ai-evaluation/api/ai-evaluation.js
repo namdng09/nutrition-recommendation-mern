@@ -36,6 +36,11 @@ const fetchTestCases = async () => {
   return response.data.data;
 };
 
+const fetchPresetOptions = async () => {
+  const response = await apiClient.get('/api/ai-evaluation/presets');
+  return response.data.data;
+};
+
 const createTestCase = async payload => {
   const response = await apiClient.post(
     '/api/ai-evaluation/test-cases',
@@ -111,6 +116,14 @@ export const useAITestCases = (options = {}) =>
   useQuery({
     queryKey: QUERY_KEYS.AI_TEST_CASES,
     queryFn: fetchTestCases,
+    ...options
+  });
+
+export const useAIPresetOptions = (options = {}) =>
+  useQuery({
+    queryKey: ['ai-preset-options'],
+    queryFn: fetchPresetOptions,
+    staleTime: Infinity,
     ...options
   });
 

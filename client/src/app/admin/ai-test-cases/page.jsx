@@ -23,6 +23,7 @@ import {
 } from '~/components/ui/table';
 import { Textarea } from '~/components/ui/textarea';
 import {
+  useAIPresetOptions,
   useAITestCases,
   useCreateAITestCase,
   useDeleteAITestCase,
@@ -36,6 +37,7 @@ const DEFAULT_FORM = {
   category: 'happy_path',
   difficulty: 'medium',
   prompt: '',
+  contextPreset: '',
   contextGoal: '',
   contextDiet: '',
   contextCalories: '',
@@ -49,6 +51,7 @@ const Page = () => {
   const [editingId, setEditingId] = useState(null);
 
   const testCasesQuery = useAITestCases();
+  const presetOptionsQuery = useAIPresetOptions();
   const createMutation = useCreateAITestCase();
   const updateMutation = useUpdateAITestCase();
   const deleteMutation = useDeleteAITestCase();
@@ -94,6 +97,7 @@ const Page = () => {
             : []
         }
       },
+      preset: form.contextPreset || undefined,
       expected: form.expectedContains
         ? {
             mustInclude: [form.expectedContains],
@@ -127,6 +131,7 @@ const Page = () => {
       category: item.category || 'happy_path',
       difficulty: item.difficulty || 'medium',
       prompt: item.input?.prompt || '',
+      contextPreset: item.preset || '',
       contextGoal: item.input?.context?.goal || '',
       contextDiet: item.input?.context?.diet || '',
       contextCalories: String(item.input?.context?.calories || ''),
@@ -160,6 +165,7 @@ const Page = () => {
         </CardHeader>
         <CardContent>
           <form className='space-y-4' onSubmit={onSubmit}>
+            {/* Input configuration section */}
             <div className='rounded-lg border bg-muted/30 p-4 space-y-4'>
               <p className='text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground'>
                 Input cấu hình
@@ -184,7 +190,7 @@ const Page = () => {
                     Mô tả
                   </label>
                   <Input
-                    placeholder='Mục tiêu của test case'
+                    placeholder='Mô tả ngắn về test case'
                     value={form.description}
                     onChange={event =>
                       setForm(prev => ({
@@ -194,9 +200,7 @@ const Page = () => {
                     }
                   />
                 </div>
-              </div>
 
-              <div className='grid gap-3 md:grid-cols-3'>
                 <div className='space-y-1.5'>
                   <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
                     Endpoint
@@ -208,16 +212,10 @@ const Page = () => {
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder='Endpoint' />
+                      <SelectValue placeholder='Chọn endpoint' />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value='ask_agent'>ask_agent</SelectItem>
-                      <SelectItem value='recommend_daily_meals'>
-                        recommend_daily_meals
-                      </SelectItem>
-                      <SelectItem value='recommend_daily_workout'>
-                        recommend_daily_workout
-                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -233,15 +231,12 @@ const Page = () => {
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder='Category' />
+                      <SelectValue placeholder='Chọn category' />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value='happy_path'>happy_path</SelectItem>
                       <SelectItem value='edge_case'>edge_case</SelectItem>
-                      <SelectItem value='constraint_test'>
-                        constraint_test
-                      </SelectItem>
-                      <SelectItem value='error_case'>error_case</SelectItem>
+                      <SelectItem value='negative'>negative</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -257,7 +252,7 @@ const Page = () => {
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder='Difficulty' />
+                      <SelectValue placeholder='Chọn difficulty' />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value='easy'>easy</SelectItem>
@@ -270,96 +265,118 @@ const Page = () => {
 
               <div className='space-y-1.5'>
                 <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
-                  Prompt test case
+                  Prompt
                 </label>
                 <Textarea
-                  placeholder='Mô tả chính xác prompt để đánh giá...'
-                  className='min-h-28'
+                  placeholder='Nhập prompt cho test case'
                   value={form.prompt}
                   onChange={event =>
                     setForm(prev => ({ ...prev, prompt: event.target.value }))
                   }
                 />
               </div>
+            </div>
 
-              <div className='rounded-lg border border-blue-200/60 bg-blue-50/40 p-4 space-y-4'>
-                <p className='text-xs font-semibold uppercase tracking-[0.16em] text-blue-700'>
-                  Context (bắt buộc cho semantic scoring)
-                </p>
+            {/* Context section */}
+            <div className='rounded-lg border p-4 space-y-4'>
+              <p className='text-xs font-semibold uppercase tracking-[0.16em]'>
+                Context (bắt buộc cho semantic scoring)
+              </p>
 
-                <div className='grid gap-3 md:grid-cols-2'>
-                  <div className='space-y-1.5'>
-                    <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
-                      Goal
-                    </label>
-                    <Input
-                      placeholder='Ví dụ: Giảm cân, Tăng cơ'
-                      value={form.contextGoal}
-                      onChange={event =>
-                        setForm(prev => ({
-                          ...prev,
-                          contextGoal: event.target.value
-                        }))
-                      }
-                    />
-                  </div>
-
-                  <div className='space-y-1.5'>
-                    <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
-                      Diet
-                    </label>
-                    <Input
-                      placeholder='Ví dụ: Vegan, Keto, Low carb'
-                      value={form.contextDiet}
-                      onChange={event =>
-                        setForm(prev => ({
-                          ...prev,
-                          contextDiet: event.target.value
-                        }))
-                      }
-                    />
-                  </div>
+              <div className='grid gap-3 md:grid-cols-2'>
+                <div className='space-y-1.5'>
+                  <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
+                    Preset (optional)
+                  </label>
+                  <Select
+                    value={form.contextPreset}
+                    onValueChange={value =>
+                      setForm(prev => ({ ...prev, contextPreset: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder='Chọn preset' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {presetOptionsQuery.data?.map(option => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                <div className='grid gap-3 md:grid-cols-2'>
-                  <div className='space-y-1.5'>
-                    <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
-                      Calories
-                    </label>
-                    <Input
-                      type='number'
-                      placeholder='Ví dụ: 2000'
-                      value={form.contextCalories}
-                      onChange={event =>
-                        setForm(prev => ({
-                          ...prev,
-                          contextCalories: event.target.value
-                        }))
-                      }
-                    />
-                  </div>
+                <div className='space-y-1.5'>
+                  <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
+                    Goal
+                  </label>
+                  <Input
+                    placeholder='Ví dụ: weight_loss'
+                    value={form.contextGoal}
+                    onChange={event =>
+                      setForm(prev => ({
+                        ...prev,
+                        contextGoal: event.target.value
+                      }))
+                    }
+                  />
+                </div>
 
-                  <div className='space-y-1.5'>
-                    <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
-                      Allergies (comma-separated)
-                    </label>
-                    <Input
-                      placeholder='Ví dụ: peanut, shellfish'
-                      value={form.contextAllergies}
-                      onChange={event =>
-                        setForm(prev => ({
-                          ...prev,
-                          contextAllergies: event.target.value
-                        }))
-                      }
-                    />
-                  </div>
+                <div className='space-y-1.5'>
+                  <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
+                    Diet
+                  </label>
+                  <Input
+                    placeholder='Ví dụ: vegetarian'
+                    value={form.contextDiet}
+                    onChange={event =>
+                      setForm(prev => ({
+                        ...prev,
+                        contextDiet: event.target.value
+                      }))
+                    }
+                  />
+                </div>
+
+                <div className='space-y-1.5'>
+                  <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
+                    Calories
+                  </label>
+                  <Input
+                    type='number'
+                    placeholder='Ví dụ: 2000'
+                    value={form.contextCalories}
+                    onChange={event =>
+                      setForm(prev => ({
+                        ...prev,
+                        contextCalories: event.target.value
+                      }))
+                    }
+                  />
+                </div>
+
+                <div className='space-y-1.5'>
+                  <label className='text-xs font-semibold uppercase tracking-wide text-foreground/80'>
+                    Allergies (comma-separated)
+                  </label>
+                  <Input
+                    placeholder='Ví dụ: peanut, shellfish'
+                    value={form.contextAllergies}
+                    onChange={event =>
+                      setForm(prev => ({
+                        ...prev,
+                        contextAllergies: event.target.value
+                      }))
+                    }
+                  />
                 </div>
               </div>
             </div>
 
-            <div className='rounded-lg border border-emerald-200/60 bg-emerald-50/40 p-4 space-y-4'>
-              <p className='text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700'>
+            {/* Expected assertion section */}
+            <div className='rounded-lg border p-4 space-y-4'>
+              <p className='text-xs font-semibold uppercase tracking-[0.16em]'>
                 Expected assertion
               </p>
 
@@ -404,7 +421,7 @@ const Page = () => {
                 </div>
               </div>
 
-              <p className='text-xs text-emerald-800/90'>
+              <p className='text-xs text-muted-foreground'>
                 positive: các checks phải match. negative: các checks phải không
                 match.
               </p>
