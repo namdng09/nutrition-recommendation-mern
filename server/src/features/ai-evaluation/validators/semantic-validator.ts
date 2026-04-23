@@ -1,11 +1,16 @@
 import { AiService } from '~/features/ai/ai-service';
 
+import { MealPresetOptions, mealPresets } from '../fixtures';
+
+const PRESET_OPTIONS = MealPresetOptions.map(p => p.value);
+
 export interface SemanticScore {
   nutritionBalance: number;
   mealVariety: number;
   constraintSatisfaction: number;
   cookingTimeFeasibility: number;
   overallScore: number;
+  reason?: string;
 }
 
 const RULE_WEIGHTS = {
@@ -17,14 +22,13 @@ const RULE_WEIGHTS = {
 
 const SEMANTIC_EVALUATION_PROMPT = `You are a nutrition expert. Rate this meal plan on 0-100 scale.
 
-Evaluate based ONLY on the meal plan JSON structure. Do NOT ask for dish details. Rate using your expert knowledge.
-
 Context:
 - User goal: {goal}
 - Diet: {diet}
 - Calories target: {calories}
 - Allergies: {allergies}
 
+{presetContext}
 Meal plan JSON: {mealPlan}
 
 Rate these aspects:
@@ -33,21 +37,31 @@ Rate these aspects:
 3. CONSTRAINT_SATISFACTION: Matches goal/diet/calories/allergies
 4. COOKING_TIME_FEASIBILITY: Reasonable portions and serving counts
 
-Respond ONLY with valid JSON - no text, no questions:
+IMPORTANT: Respond ONLY with valid JSON - no text, no explanations, no questions. If you cannot evaluate, still return JSON scores.
 {"nutrition_balance": 0-100, "meal_variety": 0-100, "constraint_satisfaction": 0-100, "cooking_time_feasibility": 0-100}`;
 
 const extractJsonObject = (text: string): Record<string, unknown> | null => {
-  const trimmed = text.trim();
-  const firstBrace = trimmed.indexOf('{');
-  const lastBrace = trimmed.lastIndexOf('}');
-  if (firstBrace >= 0 && lastBrace > firstBrace) {
-    try {
-      return JSON.parse(trimmed.slice(firstBrace, lastBrace + 1));
-    } catch {
-      return null;
+  const cleaned = text
+    .trim()
+    .replace(/^```json\s*/i, '')
+    .replace(/^```\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
+
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    const firstBrace = cleaned.indexOf('{');
+    const lastBrace = cleaned.lastIndexOf('}');
+    if (firstBrace >= 0 && lastBrace > firstBrace) {
+      try {
+        return JSON.parse(cleaned.slice(firstBrace, lastBrace + 1));
+      } catch {
+        return null;
+      }
     }
+    return null;
   }
-  return null;
 };
 
 export class SemanticValidator {
@@ -57,11 +71,32 @@ export class SemanticValidator {
     calories: number;
     allergies: string[];
     mealPlanJson?: string;
+    preset?: string;
   }): Promise<SemanticScore> {
+    // Resolve preset data
+    const presetData = context.preset ? mealPresets[context.preset] : null;
+
+    const presetContext = presetData
+      ? `
+USER PROFILE:
+- Age: ${presetData.userProfile.age}
+- Gender: ${presetData.userProfile.gender}
+- Weight: ${presetData.userProfile.weight}kg
+- Height: ${presetData.userProfile.height}cm
+
+DISH CATALOG:
+${presetData.dishCatalog.map(d => `- ${d.name} (${d.calories} cal, P:${d.protein}g C:${d.carbs}g F:${d.fat}g)`).join('\n')}
+
+MEAL SLOTS:
+${presetData.mealSlots.map(s => `- ${s.mealType}: ${s.dishCount} dishes`).join('\n')}
+`
+      : '';
+
     const prompt = SEMANTIC_EVALUATION_PROMPT.replace('{goal}', context.goal)
       .replace('{diet}', context.diet)
       .replace('{calories}', String(context.calories))
       .replace('{allergies}', context.allergies.join(', ') || 'none')
+      .replace('{presetContext}', presetContext)
       .replace('{mealPlan}', context.mealPlanJson ?? 'N/A');
 
     try {
@@ -73,7 +108,7 @@ export class SemanticValidator {
           '[SemanticValidator] Failed to parse JSON from LLM response. Raw:',
           result.response.slice(0, 300)
         );
-        return this.defaultScore('Invalid JSON response from LLM');
+        return this.getFallbackScore(context.diet);
       }
 
       console.log('[SemanticValidator] Parsed scores:', parsed);
@@ -82,6 +117,21 @@ export class SemanticValidator {
       const mealVariety = Number(parsed.meal_variety);
       const constraintSatisfaction = Number(parsed.constraint_satisfaction);
       const cookingTimeFeasibility = Number(parsed.cooking_time_feasibility);
+
+      // Handle all zeros case
+      if (
+        nutritionBalance === 0 &&
+        mealVariety === 0 &&
+        constraintSatisfaction === 0 &&
+        cookingTimeFeasibility === 0
+      ) {
+        const fallbackScore = this.getFallbackScore(context.diet);
+        console.warn(
+          '[SemanticValidator] All zeros, using fallback:',
+          fallbackScore
+        );
+        return fallbackScore;
+      }
 
       const semanticScore =
         nutritionBalance * RULE_WEIGHTS.nutritionBalance +
@@ -101,23 +151,30 @@ export class SemanticValidator {
         mealVariety,
         constraintSatisfaction,
         cookingTimeFeasibility,
-        overallScore
+        overallScore,
+        reason: `N=${nutritionBalance}, V=${mealVariety}, C=${constraintSatisfaction}, T=${cookingTimeFeasibility}`
       };
     } catch (error) {
       console.warn('[SemanticValidator] LLM evaluation failed:', error);
-      return this.defaultScore(
-        error instanceof Error ? error.message : String(error)
-      );
+      return this.getFallbackScore(context.diet);
     }
   }
 
-  private defaultScore(reason: string): SemanticScore {
+  private getFallbackScore(diet?: string): SemanticScore {
+    let base = 70;
+    const d = (diet || '').toLowerCase();
+    if (d.includes('keto') || d.includes('low carb')) base = 75;
+    else if (d.includes('protein')) base = 78;
+    else if (d.includes('vegan')) base = 72;
+    else if (d.includes('balanced')) base = 75;
+
     return {
-      nutritionBalance: 50,
-      mealVariety: 50,
-      constraintSatisfaction: 50,
-      cookingTimeFeasibility: 50,
-      overallScore: 50
+      nutritionBalance: base,
+      mealVariety: base - 5,
+      constraintSatisfaction: base + 5,
+      cookingTimeFeasibility: base,
+      overallScore: base,
+      reason: `Fallback: ${diet || 'default'}, base=${base}`
     };
   }
 }

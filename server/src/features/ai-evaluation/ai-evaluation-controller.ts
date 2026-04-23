@@ -8,8 +8,17 @@ import type {
   RunEvaluationRequest
 } from './ai-evaluation-dto';
 import { AiEvaluationService } from './ai-evaluation-service';
+import { MealPresetOptions } from './fixtures';
 
 export const AiEvaluationController = {
+  getPresetOptions: async (req: Request, res: Response) => {
+    res
+      .status(200)
+      .json(
+        ApiResponse.success('Lấy preset options thành công', MealPresetOptions)
+      );
+  },
+
   getMetricsSummary: async (req: Request, res: Response) => {
     const result = await AiEvaluationService.getMetricsSummary(
       req.query as ListMetricsQuery

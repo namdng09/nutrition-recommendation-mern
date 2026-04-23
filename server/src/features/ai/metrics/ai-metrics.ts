@@ -127,14 +127,17 @@ export const MetricsCollector = {
     let semanticScore = 0;
     if (validationReport.overallScore > 0) {
       const semanticValidator = new SemanticValidator();
+      const preset = (context as any).preset;
       const semanticResult = await semanticValidator.evaluate({
         goal: context.userProfile.goal,
         diet: context.userProfile.diet,
         calories: context.userProfile.calorieTarget,
         allergies: context.userProfile.allergies,
-        mealPlanJson: aiOutputText
+        mealPlanJson: aiOutputText,
+        preset: preset
       });
       semanticScore = semanticResult.overallScore;
+      console.log(`[SemanticValidator] result:`, semanticResult);
 
       // The semantic evaluator can return a neutral default (50) when parsing fails.
       // In that case, avoid letting it unfairly degrade a strong rule score.

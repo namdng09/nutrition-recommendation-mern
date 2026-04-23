@@ -24,7 +24,8 @@ export const testCaseInputSchema = z.object({
     goal: z.string().min(1, 'goal là bắt buộc'),
     diet: z.string().min(1, 'diet là bắt buộc'),
     calories: z.number().int().min(1, 'calories phải > 0'),
-    allergies: z.array(z.string()).default([])
+    allergies: z.array(z.string()).default([]),
+    preset: z.string().optional()
   })
 });
 

@@ -12,7 +12,8 @@
         "goal": "Giảm cân",
         "diet": "Keto",
         "calories": 1800,
-        "allergies": []
+        "allergies": [],
+        "preset": "keto_weight_loss"
       }
     },
     "expected": {
@@ -34,7 +35,8 @@
         "goal": "Duy trì cân nặng",
         "diet": "Cân bằng",
         "calories": 2000,
-        "allergies": []
+        "allergies": [],
+        "preset": "balanced_maintain"
       }
     },
     "expected": {
@@ -56,7 +58,8 @@
         "goal": "Tăng cơ",
         "diet": "High protein",
         "calories": 2500,
-        "allergies": []
+        "allergies": [],
+        "preset": "high_protein_muscle"
       }
     },
     "expected": {
@@ -78,7 +81,8 @@
         "goal": "Giảm cân",
         "diet": "Low calorie",
         "calories": 1200,
-        "allergies": []
+        "allergies": [],
+        "preset": "low_calorie"
       }
     },
     "expected": {
@@ -100,7 +104,8 @@
         "goal": "Duy trì cân nặng",
         "diet": "Cân bằng",
         "calories": 2000,
-        "allergies": []
+        "allergies": [],
+        "preset": "balanced_maintain"
       }
     },
     "expected": {
@@ -122,7 +127,8 @@
         "goal": "Tăng cân",
         "diet": "High calorie",
         "calories": 3000,
-        "allergies": []
+        "allergies": [],
+        "preset": "high_calorie"
       }
     },
     "expected": {
@@ -144,12 +150,13 @@
         "goal": "Giảm cân",
         "diet": "Low carb",
         "calories": 1500,
-        "allergies": []
+        "allergies": [],
+        "preset": "low_carb"
       }
     },
     "expected": {
       "classification": "positive",
-      "regex": "\\\"servings\\\"\\s*:\\s*[1-3]",
+      "regex": "\"servings\"\\s*:\\s*[1-3]",
       "notes": "Servings 1-3"
     }
   },
@@ -166,7 +173,8 @@
         "goal": "Giảm cân nhanh",
         "diet": "Very low calorie",
         "calories": 800,
-        "allergies": []
+        "allergies": [],
+        "preset": "low_calorie"
       }
     },
     "expected": {
@@ -187,7 +195,8 @@
         "goal": "Tăng cơ tối đa",
         "diet": "Bulking",
         "calories": 3000,
-        "allergies": []
+        "allergies": [],
+        "preset": "high_calorie"
       }
     },
     "expected": {
@@ -209,7 +218,8 @@
         "goal": "Duy trì sức khỏe",
         "diet": "Vegan",
         "calories": 2000,
-        "allergies": []
+        "allergies": [],
+        "preset": "vegan"
       }
     },
     "expected": {
@@ -231,7 +241,8 @@
         "goal": "Giảm cân",
         "diet": "Low carb",
         "calories": 1800,
-        "allergies": []
+        "allergies": [],
+        "preset": "low_carb"
       }
     },
     "expected": {
@@ -253,7 +264,8 @@
         "goal": "Duy trì cân nặng",
         "diet": "Cân bằng",
         "calories": 2000,
-        "allergies": []
+        "allergies": [],
+        "preset": "balanced_maintain"
       }
     },
     "expected": {
@@ -275,7 +287,8 @@
         "goal": "Giảm cân",
         "diet": "Simple",
         "calories": 1500,
-        "allergies": []
+        "allergies": [],
+        "preset": "low_calorie"
       }
     },
     "expected": {

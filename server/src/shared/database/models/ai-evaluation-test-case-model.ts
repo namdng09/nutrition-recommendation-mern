@@ -26,7 +26,8 @@ const aiEvaluationTestCaseSchema = new Schema(
         goal: { type: String, required: true },
         diet: { type: String, required: true },
         calories: { type: Number, required: true },
-        allergies: { type: [String], default: [] }
+        allergies: { type: [String], default: [] },
+        preset: { type: String }
       }
     },
     expected: {

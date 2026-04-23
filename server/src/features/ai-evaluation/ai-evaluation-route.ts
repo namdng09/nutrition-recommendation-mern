@@ -21,6 +21,8 @@ const router = Router();
 
 router.use(authenticate(), authorize([ROLE.ADMIN]));
 
+router.get('/presets', asyncHandler(AiEvaluationController.getPresetOptions));
+
 router.get(
   '/metrics/summary',
   validateQuery(listMetricsQuerySchema.shape),
