@@ -11,6 +11,13 @@ import {
   FormMessage
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '~/components/ui/select';
 import { USER_TARGET, USER_TARGET_OPTIONS } from '~/constants/user-target';
 import { cn } from '~/lib/utils';
 
@@ -206,25 +213,22 @@ export function StepTwoTwoGoal({ control }) {
                       <FormMessage className='text-xs text-destructive' />
                     </div>
                     <div className='w-full lg:w-[200px] flex justify-start lg:justify-end'>
-                      <div className='flex items-center gap-2 w-full'>
-                        <FormControl>
-                          <Input
-                            type='text'
-                            className='flex-1 lg:w-24 lg:flex-none text-center text-base h-11'
-                            {...field}
-                            value={field.value ?? ''}
-                            onChange={e => {
-                              const value = e.target.value;
-                              if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                                field.onChange(value);
-                              }
-                            }}
-                          />
-                        </FormControl>
-                        <span className='text-base text-muted-foreground w-16 text-right'>
-                          kg/tuần
-                        </span>
-                      </div>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger className='w-full lg:w-[160px] h-11 text-base'>
+                            <SelectValue placeholder='Chọn tốc độ' />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value='0.25'>0.25 kg/tuần</SelectItem>
+                            <SelectItem value='0.5'>0.5 kg/tuần</SelectItem>
+                            <SelectItem value='0.75'>0.75 kg/tuần</SelectItem>
+                            <SelectItem value='1'>1 kg/tuần</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
                     </div>
                   </FormItem>
                 )}
