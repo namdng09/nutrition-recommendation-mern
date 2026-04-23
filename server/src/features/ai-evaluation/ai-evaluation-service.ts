@@ -497,7 +497,8 @@ Now generate your JSON response:`;
             allergies: Array.isArray(ctx?.allergies)
               ? ctx.allergies.map(String)
               : [],
-            mealPlanJson: aiResult.response
+            mealPlanJson: aiResult.response,
+            preset: ctx?.preset as string | undefined
           };
           const semanticResult = await semanticValidator.evaluate(context);
           semanticScore = semanticResult.overallScore;

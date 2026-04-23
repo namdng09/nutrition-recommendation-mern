@@ -94,10 +94,10 @@ const Page = () => {
           calories: parseInt(form.contextCalories, 10),
           allergies: form.contextAllergies
             ? form.contextAllergies.split(',').map(s => s.trim())
-            : []
+            : [],
+          preset: form.contextPreset || undefined
         }
       },
-      preset: form.contextPreset || undefined,
       expected: form.expectedContains
         ? {
             mustInclude: [form.expectedContains],
@@ -131,7 +131,7 @@ const Page = () => {
       category: item.category || 'happy_path',
       difficulty: item.difficulty || 'medium',
       prompt: item.input?.prompt || '',
-      contextPreset: item.preset || '',
+      contextPreset: item.input?.context?.preset || '',
       contextGoal: item.input?.context?.goal || '',
       contextDiet: item.input?.context?.diet || '',
       contextCalories: String(item.input?.context?.calories || ''),
@@ -206,7 +206,7 @@ const Page = () => {
                     Endpoint
                   </label>
                   <Select
-                    value={form.endpoint}
+                    value={form.endpoint || ''}
                     onValueChange={value =>
                       setForm(prev => ({ ...prev, endpoint: value }))
                     }
@@ -216,6 +216,12 @@ const Page = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value='ask_agent'>ask_agent</SelectItem>
+                      <SelectItem value='recommend_daily_meals'>
+                        recommend_daily_meals
+                      </SelectItem>
+                      <SelectItem value='recommend_daily_workout'>
+                        recommend_daily_workout
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -225,7 +231,7 @@ const Page = () => {
                     Category
                   </label>
                   <Select
-                    value={form.category}
+                    value={form.category || ''}
                     onValueChange={value =>
                       setForm(prev => ({ ...prev, category: value }))
                     }
@@ -236,7 +242,10 @@ const Page = () => {
                     <SelectContent>
                       <SelectItem value='happy_path'>happy_path</SelectItem>
                       <SelectItem value='edge_case'>edge_case</SelectItem>
-                      <SelectItem value='negative'>negative</SelectItem>
+                      <SelectItem value='constraint_test'>
+                        constraint_test
+                      </SelectItem>
+                      <SelectItem value='error_case'>error_case</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -246,7 +255,7 @@ const Page = () => {
                     Difficulty
                   </label>
                   <Select
-                    value={form.difficulty}
+                    value={form.difficulty || ''}
                     onValueChange={value =>
                       setForm(prev => ({ ...prev, difficulty: value }))
                     }
@@ -289,7 +298,7 @@ const Page = () => {
                     Preset (optional)
                   </label>
                   <Select
-                    value={form.contextPreset}
+                    value={form.contextPreset || ''}
                     onValueChange={value =>
                       setForm(prev => ({ ...prev, contextPreset: value }))
                     }
@@ -402,7 +411,7 @@ const Page = () => {
                     Expected classification
                   </label>
                   <Select
-                    value={form.expectedClassification}
+                    value={form.expectedClassification || ''}
                     onValueChange={value =>
                       setForm(prev => ({
                         ...prev,
