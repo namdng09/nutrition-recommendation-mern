@@ -74,6 +74,14 @@ const safeAvg = (total: number, count: number) =>
 const computeScore = (ruleScore: number, semanticScore: number) =>
   Math.round(ruleScore * 0.6 + semanticScore * 0.4);
 
+const GEMINI_INPUT_COST_PER_1M = 0.3;
+const GEMINI_OUTPUT_COST_PER_1M = 2.5;
+
+const computeTokenCost = (inputTokens: number, outputTokens: number): number =>
+  (inputTokens * GEMINI_INPUT_COST_PER_1M +
+    outputTokens * GEMINI_OUTPUT_COST_PER_1M) /
+  1_000_000;
+
 const evaluateTestCaseResult = (response: string, expected?: any) => {
   const text = response.trim();
   const isErrorResponse =
@@ -447,7 +455,10 @@ Now generate your JSON response:`;
             inputTokens: aiResult.usage.inputTokens,
             outputTokens: aiResult.usage.outputTokens,
             totalTokens: aiResult.usage.totalTokens,
-            estimatedCostUsd: aiResult.usage.totalTokens * 0.000002,
+            estimatedCostUsd: computeTokenCost(
+              aiResult.usage.inputTokens,
+              aiResult.usage.outputTokens
+            ),
             errorMessage,
             testCaseId: testCase._id,
             testCaseName: testCase.name,
@@ -476,7 +487,10 @@ Now generate your JSON response:`;
             inputTokens: aiResult.usage.inputTokens,
             outputTokens: aiResult.usage.outputTokens,
             totalTokens: aiResult.usage.totalTokens,
-            estimatedCostUsd: aiResult.usage.totalTokens * 0.000002,
+            estimatedCostUsd: computeTokenCost(
+              aiResult.usage.inputTokens,
+              aiResult.usage.outputTokens
+            ),
             error: errorMessage
           });
 
@@ -522,7 +536,10 @@ Now generate your JSON response:`;
           inputTokens: aiResult.usage.inputTokens,
           outputTokens: aiResult.usage.outputTokens,
           totalTokens: aiResult.usage.totalTokens,
-          estimatedCostUsd: aiResult.usage.totalTokens * 0.000002,
+          estimatedCostUsd: computeTokenCost(
+            aiResult.usage.inputTokens,
+            aiResult.usage.outputTokens
+          ),
           testCaseId: testCase._id,
           testCaseName: testCase.name,
           prompt,
@@ -551,7 +568,10 @@ Now generate your JSON response:`;
           inputTokens: aiResult.usage.inputTokens,
           outputTokens: aiResult.usage.outputTokens,
           totalTokens: aiResult.usage.totalTokens,
-          estimatedCostUsd: aiResult.usage.totalTokens * 0.000002
+          estimatedCostUsd: computeTokenCost(
+            aiResult.usage.inputTokens,
+            aiResult.usage.outputTokens
+          )
         });
       } catch (error) {
         await AiMetricModel.create({
