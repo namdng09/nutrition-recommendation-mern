@@ -19,7 +19,6 @@ export interface ValidationContext {
 export interface ValidationRule {
   id: string;
   name: string;
-  weight: number;
   check: (
     output: Record<string, unknown>,
     context: ValidationContext
@@ -27,7 +26,6 @@ export interface ValidationRule {
 }
 
 export interface ValidationResult {
-  weight: number;
   score: number;
   message: string;
   details?: Record<string, unknown>;
@@ -35,5 +33,5 @@ export interface ValidationResult {
 
 export interface ValidationReport {
   overallScore: number;
-  checks: ValidationResult[];
+  checks: Omit<ValidationResult, never>[];
 }

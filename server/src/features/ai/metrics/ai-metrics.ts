@@ -158,7 +158,6 @@ export const MetricsCollector = {
         overallScore: validationReport.overallScore,
         checks: validationReport.checks.map(r => ({
           id: r.message,
-          weight: r.weight,
           score: r.score,
           details: r.details
         }))
