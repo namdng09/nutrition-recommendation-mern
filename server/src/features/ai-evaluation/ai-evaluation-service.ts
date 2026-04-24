@@ -15,6 +15,9 @@ import { SemanticValidator } from './validators/semantic-validator';
 
 const semanticValidator = new SemanticValidator();
 
+const PASS_THRESHOLD = 90;
+const EVAL_CONCURRENCY = 5;
+
 const toDateFilter = (query: ListMetricsQuery) => {
   const hasStart = Boolean(query.startDate);
   const hasEnd = Boolean(query.endDate);
@@ -147,30 +150,6 @@ const evaluateTestCaseResult = (response: string, expected?: any) => {
     matched: hasExpectation && passedChecks === checks.length,
     isErrorResponse: false
   };
-};
-
-const extractJsonObject = (text: string): Record<string, unknown> | null => {
-  const trimmed = text.trim();
-  const candidates = [trimmed];
-
-  const firstBrace = trimmed.indexOf('{');
-  const lastBrace = trimmed.lastIndexOf('}');
-  if (firstBrace >= 0 && lastBrace > firstBrace) {
-    candidates.push(trimmed.slice(firstBrace, lastBrace + 1));
-  }
-
-  for (const candidate of candidates) {
-    try {
-      const parsed = JSON.parse(candidate);
-      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-        return parsed as Record<string, unknown>;
-      }
-    } catch {
-      // noop
-    }
-  }
-
-  return null;
 };
 
 export const AiEvaluationService = {
@@ -413,20 +392,22 @@ export const AiEvaluationService = {
     const results: Array<Record<string, unknown>> = [];
 
     const JSON_INSTRUCTION = `
+        CRITICAL INSTRUCTIONS:
+        1. You MUST respond with ONLY valid JSON
+        2. NO explanations, NO conversational text, NO markdown formatting
+        3. Start your response with { and end with }
+        4. If you cannot generate the exact format, return: {"error": "unable to generate"}
+        5. Do NOT ask for more information - generate the response based on available context
 
-CRITICAL INSTRUCTIONS:
-1. You MUST respond with ONLY valid JSON
-2. NO explanations, NO conversational text, NO markdown formatting
-3. Start your response with { and end with }
-4. If you cannot generate the exact format, return: {"error": "unable to generate"}
-5. Do NOT ask for more information - generate the response based on available context
+        Example valid response:
+        {"meals":[{"mealType":"BREAKFAST","dishes":[{"dishId":"1","servings":1}]}]}
 
-Example valid response:
-{"meals":[{"mealType":"BREAKFAST","dishes":[{"dishId":"1","servings":1}]}]}
+        Now generate your JSON response:`;
 
-Now generate your JSON response:`;
-
-    for (const testCase of testCases) {
+    // Run evaluation for a single test case
+    const runSingleCase = async (
+      testCase: (typeof testCases)[number]
+    ): Promise<Record<string, unknown>> => {
       const start = Date.now();
       const rawPrompt = String(
         (testCase.input as Record<string, unknown>)?.prompt ??
@@ -470,11 +451,11 @@ Now generate your JSON response:`;
               matched: false,
               passedChecks: 0,
               totalChecks: 0,
-              passThreshold: 90
+              passThreshold: PASS_THRESHOLD
             }
           });
 
-          results.push({
+          return {
             testCaseId: testCase._id.toString(),
             name: testCase.name,
             endpoint: testCase.endpoint,
@@ -482,7 +463,7 @@ Now generate your JSON response:`;
             isCorrect: false,
             accuracyScore: 0,
             ruleScore: 0,
-            semanticScore: 0,
+            semanticScore: null,
             latencyMs: Date.now() - start,
             inputTokens: aiResult.usage.inputTokens,
             outputTokens: aiResult.usage.outputTokens,
@@ -492,13 +473,11 @@ Now generate your JSON response:`;
               aiResult.usage.outputTokens
             ),
             error: errorMessage
-          });
-
-          continue;
+          };
         }
 
         const isNegative = testCase.expected?.classification === 'negative';
-        let semanticScore: number;
+        let semanticScore: number | null;
         if (isNegative) {
           semanticScore = 100;
         } else if (testCase.endpoint === 'recommend_daily_meals') {
@@ -515,12 +494,18 @@ Now generate your JSON response:`;
             preset: ctx?.preset as string | undefined
           };
           const semanticResult = await semanticValidator.evaluate(context);
-          semanticScore = semanticResult.overallScore;
+          semanticScore =
+            semanticResult !== null ? semanticResult.overallScore : null;
         } else {
-          semanticScore = evaluation.ruleScore;
+          semanticScore = null;
         }
-        const accuracyScore = computeScore(evaluation.ruleScore, semanticScore);
-        const isAccurate = accuracyScore >= 90;
+
+        const effectiveSemanticScore = semanticScore ?? evaluation.ruleScore;
+        const accuracyScore = computeScore(
+          evaluation.ruleScore,
+          effectiveSemanticScore
+        );
+        const isAccurate = accuracyScore >= PASS_THRESHOLD;
 
         await AiMetricModel.create({
           sourceType: 'evaluation',
@@ -550,12 +535,12 @@ Now generate your JSON response:`;
             matched: evaluation.matched,
             passedChecks: evaluation.passedChecks,
             totalChecks: evaluation.totalChecks,
-            passThreshold: 90,
+            passThreshold: PASS_THRESHOLD,
             isErrorResponse: evaluation.isErrorResponse ?? false
           }
         });
 
-        results.push({
+        return {
           testCaseId: testCase._id.toString(),
           name: testCase.name,
           endpoint: testCase.endpoint,
@@ -572,7 +557,7 @@ Now generate your JSON response:`;
             aiResult.usage.inputTokens,
             aiResult.usage.outputTokens
           )
-        });
+        };
       } catch (error) {
         await AiMetricModel.create({
           sourceType: 'evaluation',
@@ -593,18 +578,18 @@ Now generate your JSON response:`;
             matched: false,
             passedChecks: 0,
             totalChecks: 0,
-            passThreshold: 90
+            passThreshold: PASS_THRESHOLD
           }
         });
 
-        results.push({
+        return {
           testCaseId: testCase._id.toString(),
           name: testCase.name,
           endpoint: testCase.endpoint,
           status: 'failed',
           isCorrect: false,
           ruleScore: 0,
-          semanticScore: 0,
+          semanticScore: null,
           accuracyScore: 0,
           latencyMs: Date.now() - start,
           inputTokens: 0,
@@ -612,7 +597,18 @@ Now generate your JSON response:`;
           totalTokens: 0,
           estimatedCostUsd: 0,
           error: error instanceof Error ? error.message : String(error)
-        });
+        };
+      }
+    };
+
+    // Process in batches of EVAL_CONCURRENCY for faster execution
+    for (let i = 0; i < testCases.length; i += EVAL_CONCURRENCY) {
+      const batch = testCases.slice(i, i + EVAL_CONCURRENCY);
+      const batchResults = await Promise.allSettled(batch.map(runSingleCase));
+      for (const settled of batchResults) {
+        if (settled.status === 'fulfilled') {
+          results.push(settled.value);
+        }
       }
     }
 

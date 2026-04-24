@@ -6,6 +6,8 @@ import {
 } from '~/features/ai-evaluation/validators';
 import { AiMetricModel } from '~/shared/database/models';
 
+const PASS_THRESHOLD = 90;
+
 export interface MealValidationContext {
   userProfile: {
     allergies: string[];
@@ -136,7 +138,9 @@ export const MetricsCollector = {
         mealPlanJson: aiOutputText,
         preset: preset
       });
-      semanticScore = semanticResult.overallScore;
+      // null means LLM evaluator failed — fall back to rule score to avoid fake data
+      semanticScore =
+        semanticResult !== null ? semanticResult.overallScore : ruleScore;
       console.log(`[SemanticValidator] result:`, semanticResult);
 
       // The semantic evaluator can return a neutral default (50) when parsing fails.
@@ -147,7 +151,7 @@ export const MetricsCollector = {
     }
 
     const accuracyScore = Math.round(ruleScore * 0.6 + semanticScore * 0.4);
-    const isCorrect = accuracyScore >= 90;
+    const isCorrect = accuracyScore >= PASS_THRESHOLD;
 
     return {
       isCorrect,
