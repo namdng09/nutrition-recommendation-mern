@@ -181,12 +181,12 @@ export function StepTwoTwoGoal({ control }) {
                       </FormLabel>
                       <FormMessage className='text-xs text-destructive' />
                     </div>
-                    <div className='w-full lg:w-[260px] flex flex-col justify-start lg:items-end'>
-                      <div className='flex items-center gap-2 w-full'>
+                    <div className='w-full lg:w-[200px] flex justify-start lg:justify-end'>
+                      <div className='flex items-center gap-2'>
                         <FormControl>
                           <Input
                             type='text'
-                            className='flex-1 lg:w-24 lg:flex-none text-center text-base h-11'
+                            className='w-full lg:w-32 text-center text-base h-11'
                             {...field}
                             value={field.value ?? ''}
                             onChange={e => {
@@ -241,8 +241,8 @@ export function StepTwoTwoGoal({ control }) {
               />
 
               {targetBMIWarning && (
-                <div className='w-full lg:flex lg:justify-end'>
-                  <p className='text-xs text-destructive w-full lg:w-[200px] text-left lg:text-right'>
+                <div className='flex'>
+                  <p className='text-md text-destructive lg:whitespace-nowrap'>
                     {targetBMIWarning}
                   </p>
                 </div>
