@@ -1,8 +1,7 @@
 import { Target } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
-import { Button } from '~/components/ui/button';
 import {
   FormControl,
   FormField,
@@ -21,13 +20,25 @@ import {
 import { USER_TARGET, USER_TARGET_OPTIONS } from '~/constants/user-target';
 import { cn } from '~/lib/utils';
 
+import { calculateBMI } from '../../utils/bmi';
+
 export function StepTwoTwoGoal({ control }) {
   const { setValue, getValues } = useFormContext();
   const mode = useWatch({ control, name: 'goal.mode' });
 
+  const height = useWatch({ control, name: 'height' });
   const currentWeight = useWatch({ control, name: 'weight' });
   const goalTarget = useWatch({ control, name: 'goal.target' });
   const weightGoal = useWatch({ control, name: 'goal.weightGoal' });
+
+  const targetBMI = calculateBMI(parseFloat(height), parseFloat(weightGoal));
+
+  const targetBMIWarning =
+    targetBMI && targetBMI < 18.5
+      ? 'BMI mục tiêu của bạn đang quá thấp so với ngưỡng bình thường.'
+      : targetBMI && targetBMI >= 24.9
+        ? 'BMI mục tiêu của bạn đang quá cao so với ngưỡng bình thường.'
+        : null;
 
   useEffect(() => {
     const hasSpecificGoal =
@@ -39,10 +50,8 @@ export function StepTwoTwoGoal({ control }) {
 
   const handleModeChange = newMode => {
     setValue('goal.mode', newMode);
-    // Don't clear values when switching modes to persist data
   };
 
-  // Inference Logic for Exact Mode - only run when values change
   useEffect(() => {
     if (mode === 'exact' && weightGoal && currentWeight) {
       let target;
@@ -60,9 +69,6 @@ export function StepTwoTwoGoal({ control }) {
       }
     }
   }, [mode, weightGoal, currentWeight, setValue, goalTarget]);
-
-  // Clean up exact mode values when switching to generic is NOT desired behavior anymore based on user request (implied by "lost target value" when switching).
-  // However, we might want to "clean" data before submission, not during UI toggling.
 
   return (
     <div className='space-y-6'>
@@ -175,7 +181,7 @@ export function StepTwoTwoGoal({ control }) {
                       </FormLabel>
                       <FormMessage className='text-xs text-destructive' />
                     </div>
-                    <div className='w-full lg:w-[200px] flex justify-start lg:justify-end'>
+                    <div className='w-full lg:w-[260px] flex flex-col justify-start lg:items-end'>
                       <div className='flex items-center gap-2 w-full'>
                         <FormControl>
                           <Input
@@ -218,7 +224,7 @@ export function StepTwoTwoGoal({ control }) {
                           onValueChange={field.onChange}
                           value={field.value}
                         >
-                          <SelectTrigger className='w-full lg:w-[160px] h-11 text-base'>
+                          <SelectTrigger className='w-full lg:w-40 h-11 text-base'>
                             <SelectValue placeholder='Chọn tốc độ' />
                           </SelectTrigger>
                           <SelectContent>
@@ -233,6 +239,14 @@ export function StepTwoTwoGoal({ control }) {
                   </FormItem>
                 )}
               />
+
+              {targetBMIWarning && (
+                <div className='w-full lg:flex lg:justify-end'>
+                  <p className='text-xs text-destructive w-full lg:w-[200px] text-left lg:text-right'>
+                    {targetBMIWarning}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
