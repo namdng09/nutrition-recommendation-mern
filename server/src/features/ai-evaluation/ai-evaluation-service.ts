@@ -148,7 +148,8 @@ const evaluateTestCaseResult = (response: string, expected?: any) => {
     totalChecks: checks.length,
     ruleScore,
     matched: hasExpectation && passedChecks === checks.length,
-    isErrorResponse: false
+    isErrorResponse: false,
+    checks
   };
 };
 
@@ -215,10 +216,11 @@ export const AiEvaluationService = {
             : 0
       },
       security: {
-        piiDetected: metrics.filter(item => item.meta?.piiDetected === true)
-          .length,
+        piiDetected: metrics.filter(
+          item => item.qualityMetadata?.piiDetected === true
+        ).length,
         injectionDetected: metrics.filter(
-          item => item.meta?.promptInjectionDetected === true
+          item => item.qualityMetadata?.promptInjectionDetected === true
         ).length
       }
     };
@@ -526,7 +528,12 @@ export const AiEvaluationService = {
           testExpectation: testCase.expected,
           validationReport: {
             overallScore: evaluation.ruleScore,
-            checks: evaluation.checks || []
+            checks: (evaluation.checks || []).map(
+              (passed: boolean, idx: number) => ({
+                id: `check_${idx}`,
+                score: passed ? 1 : 0
+              })
+            )
           }
         });
 
