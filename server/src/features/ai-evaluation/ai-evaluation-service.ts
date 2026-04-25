@@ -435,7 +435,6 @@ export const AiEvaluationService = {
             latencyMs: Date.now() - start,
             inputTokens: aiResult.usage.inputTokens,
             outputTokens: aiResult.usage.outputTokens,
-            totalTokens: aiResult.usage.totalTokens,
             estimatedCostUsd: computeTokenCost(
               aiResult.usage.inputTokens,
               aiResult.usage.outputTokens
@@ -445,13 +444,10 @@ export const AiEvaluationService = {
             testCaseName: testCase.name,
             prompt,
             response: aiResult.response,
-            expected: testCase.expected,
-            evaluation: {
-              hasExpectation: false,
-              matched: false,
-              passedChecks: 0,
-              totalChecks: 0,
-              passThreshold: PASS_THRESHOLD
+            testExpectation: testCase.expected,
+            validationReport: {
+              overallScore: 0,
+              checks: []
             }
           });
 
@@ -516,11 +512,9 @@ export const AiEvaluationService = {
           ruleScore: evaluation.ruleScore,
           semanticScore,
           accuracyScore,
-          ruleTotal: evaluation.totalChecks,
           latencyMs: Date.now() - start,
           inputTokens: aiResult.usage.inputTokens,
           outputTokens: aiResult.usage.outputTokens,
-          totalTokens: aiResult.usage.totalTokens,
           estimatedCostUsd: computeTokenCost(
             aiResult.usage.inputTokens,
             aiResult.usage.outputTokens
@@ -529,14 +523,10 @@ export const AiEvaluationService = {
           testCaseName: testCase.name,
           prompt,
           response: aiResult.response,
-          expected: testCase.expected,
-          evaluation: {
-            hasExpectation: evaluation.hasExpectation,
-            matched: evaluation.matched,
-            passedChecks: evaluation.passedChecks,
-            totalChecks: evaluation.totalChecks,
-            passThreshold: PASS_THRESHOLD,
-            isErrorResponse: evaluation.isErrorResponse ?? false
+          testExpectation: testCase.expected,
+          validationReport: {
+            overallScore: evaluation.ruleScore,
+            checks: evaluation.checks || []
           }
         });
 
@@ -571,14 +561,11 @@ export const AiEvaluationService = {
           testCaseId: testCase._id,
           testCaseName: testCase.name,
           prompt,
-          expected: testCase.expected,
+          testExpectation: testCase.expected,
           response: '',
-          evaluation: {
-            hasExpectation: true,
-            matched: false,
-            passedChecks: 0,
-            totalChecks: 0,
-            passThreshold: PASS_THRESHOLD
+          validationReport: {
+            overallScore: 0,
+            checks: []
           }
         });
 

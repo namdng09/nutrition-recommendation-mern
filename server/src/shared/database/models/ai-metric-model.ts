@@ -30,22 +30,30 @@ const aiMetricSchema = new Schema(
     latencyMs: { type: Number, min: 0, default: 0 },
     inputTokens: { type: Number, min: 0, default: 0 },
     outputTokens: { type: Number, min: 0, default: 0 },
-    totalTokens: { type: Number, min: 0, default: 0 },
     estimatedCostUsd: { type: Number, min: 0, default: 0 },
     errorMessage: { type: String },
     testCaseId: { type: Schema.Types.ObjectId, ref: 'AiEvaluationTestCase' },
     testCaseName: { type: String },
     prompt: { type: String },
     response: { type: String },
-    expected: { type: Schema.Types.Mixed },
-    evaluation: {
-      hasExpectation: { type: Boolean, default: false },
-      matched: { type: Boolean, default: false },
-      passedChecks: { type: Number, min: 0, default: 0 },
-      totalChecks: { type: Number, min: 0, default: 0 },
-      passThreshold: { type: Number, min: 0, max: 100, default: 90 }
+    testExpectation: {
+      classification: { type: String, enum: ['positive', 'negative'] },
+      exact: { type: String },
+      mustInclude: { type: [String], default: [] },
+      regex: { type: String }
     },
-    meta: { type: Schema.Types.Mixed }
+    validationReport: {
+      overallScore: { type: Number, min: 0, max: 100, default: 0 },
+      checks: { type: [Schema.Types.Mixed], default: [] }
+    },
+    qualityMetadata: {
+      mealsCount: { type: Number, min: 0, default: 0 },
+      scheduleId: { type: String },
+      inputSource: { type: String },
+      promptInjectionDetected: { type: Boolean, default: false },
+      piiDetected: { type: Boolean, default: false },
+      qualityEvaluated: { type: Boolean, default: false }
+    }
   },
   { timestamps: true }
 );

@@ -318,8 +318,9 @@ export class MealRecommendationValidator {
         overallScore: 0,
         checks: [
           {
+            id: 'Invalid JSON',
             score: 0,
-            message: 'Invalid JSON'
+            details: 'Response is not valid JSON'
           }
         ]
       };
@@ -332,11 +333,11 @@ export class MealRecommendationValidator {
     );
 
     const totalRules = checks.length;
-    const passedRules = checks.filter(c => c.score >= 50).length;
+    const passedRules = checks.filter(c => c.score >= 1).length;
     const overall = totalRules > 0 ? passedRules / totalRules : 0;
 
     return {
-      overallScore: Math.round(overall),
+      overallScore: Math.round(overall * 100),
       checks
     };
   }

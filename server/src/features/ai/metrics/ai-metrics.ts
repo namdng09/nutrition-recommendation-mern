@@ -40,15 +40,14 @@ export interface LogMetricPayload {
   latencyMs: number;
   inputTokens?: number;
   outputTokens?: number;
-  totalTokens?: number;
   estimatedCostUsd?: number;
   errorMessage?: string;
   prompt?: string;
   response?: string;
-  expected?: Record<string, unknown>;
   testCaseId?: string;
   testCaseName?: string;
-  meta?: Record<string, unknown>;
+  validationReport?: Record<string, unknown>;
+  qualityMetadata?: Record<string, unknown>;
 }
 
 const estimateAiCostUsd = (totalTokens: number): number => {
@@ -90,17 +89,18 @@ export const MetricsCollector = {
         latencyMs: payload.latencyMs,
         inputTokens: payload.inputTokens,
         outputTokens: payload.outputTokens,
-        totalTokens: payload.totalTokens,
         estimatedCostUsd:
           payload.estimatedCostUsd ??
-          estimateAiCostUsd(payload.totalTokens ?? 0),
+          estimateAiCostUsd(
+            (payload.inputTokens ?? 0) + (payload.outputTokens ?? 0)
+          ),
         errorMessage: payload.errorMessage,
         prompt: payload.prompt,
         response: payload.response,
-        expected: payload.expected,
         testCaseId: payload.testCaseId,
         testCaseName: payload.testCaseName,
-        meta: payload.meta
+        validationReport: payload.validationReport,
+        qualityMetadata: payload.qualityMetadata
       });
     } catch (error) {
       console.warn(
@@ -123,6 +123,9 @@ export const MetricsCollector = {
   }> {
     const validator = new MealRecommendationValidator();
     const validationReport = await validator.validate(aiOutputText, context);
+    console.log(
+      `[MealRecommendationValidator] overallScore: ${validationReport.overallScore}, checks: ${JSON.stringify(validationReport.checks)}`
+    );
 
     const ruleScore = Math.round(validationReport.overallScore);
 

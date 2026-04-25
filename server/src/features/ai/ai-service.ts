@@ -396,9 +396,8 @@ export const AiService = {
         latencyMs: Date.now() - startedAt,
         inputTokens: invocation.usage.inputTokens,
         outputTokens: invocation.usage.outputTokens,
-        totalTokens: invocation.usage.totalTokens,
         estimatedCostUsd: estimateAiCostUsd(invocation.usage.totalTokens),
-        meta: {
+        qualityMetadata: {
           qualityEvaluated: false
         }
       });
@@ -592,15 +591,15 @@ export const AiService = {
         latencyMs: Date.now() - startedAt,
         inputTokens: aiMeta.usage.inputTokens,
         outputTokens: aiMeta.usage.outputTokens,
-        totalTokens: aiMeta.usage.totalTokens,
         estimatedCostUsd: estimateAiCostUsd(aiMeta.usage.totalTokens),
-        meta: {
+        validationReport: validation.validationReport,
+        qualityMetadata: {
           mealsCount: response.meals.length,
           scheduleId: response.scheduleId,
+          inputSource: 'materialized_meals',
           promptInjectionDetected: false,
           piiDetected: false,
-          validationInputSource: 'materialized_meals',
-          validationReport: validation.validationReport
+          qualityEvaluated: true
         }
       });
 

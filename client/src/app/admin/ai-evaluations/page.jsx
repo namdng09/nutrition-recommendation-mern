@@ -1,5 +1,5 @@
 import { Eye, Play, RefreshCw } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Badge } from '~/components/ui/badge';
@@ -34,8 +34,7 @@ const formatDateTime = value => {
   return new Date(value).toLocaleString('vi-VN');
 };
 
-const getResultLabel = (isCorrect, evaluation) => {
-  if (evaluation?.isErrorResponse) return 'Error';
+const getResultLabel = isCorrect => {
   return isCorrect ? 'Pass' : 'Fail';
 };
 
@@ -49,6 +48,7 @@ const Page = () => {
   const [selectedTestCaseIds, setSelectedTestCaseIds] = useState([]);
   const [isSelectTestCaseOpen, setIsSelectTestCaseOpen] = useState(false);
   const [selectedMetricId, setSelectedMetricId] = useState(null);
+  const [selectedMetricSource, setSelectedMetricSource] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [lastRun, setLastRun] = useState(null);
   const testCasesQuery = useAITestCases();
@@ -58,6 +58,14 @@ const Page = () => {
   const detailQuery = useAIEvaluationResultDetail(selectedMetricId, {
     enabled: isDetailOpen && Boolean(selectedMetricId)
   });
+
+  // Set source type when detail data is loaded
+  useEffect(() => {
+    if (detailQuery.data?.sourceType) {
+      setSelectedMetricSource(detailQuery.data.sourceType);
+    }
+  }, [detailQuery.data?.sourceType]);
+
   const runMutation = useRunAIEvaluations();
 
   const enabledCount = useMemo(
@@ -90,6 +98,7 @@ const Page = () => {
 
   const onViewDetail = metricId => {
     setSelectedMetricId(metricId);
+    setSelectedMetricSource(null);
     setIsDetailOpen(true);
   };
 
@@ -247,17 +256,13 @@ const Page = () => {
                     </Badge>
                   </TableCell>
                   <TableCell>{formatDateTime(item.createdAt)}</TableCell>
-                  <TableCell>
-                    {item?.testCaseName ||
-                      item?.meta?.testCaseName ||
-                      item.endpoint}
-                  </TableCell>
+                  <TableCell>{item?.testCaseName || item.endpoint}</TableCell>
                   <TableCell>{item.ruleScore ?? '-'}</TableCell>
                   <TableCell>{item.semanticScore ?? '-'}</TableCell>
                   <TableCell>{item.accuracyScore ?? 0}</TableCell>
                   <TableCell>
                     <Badge variant={item.isCorrect ? 'default' : 'destructive'}>
-                      {getResultLabel(item.isCorrect, item.evaluation)}
+                      {getResultLabel(item.isCorrect)}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -295,12 +300,14 @@ const Page = () => {
         </CardContent>
       </Card>
 
+      {/* Evaluation Detail Dialog */}
       <Dialog
-        open={isDetailOpen}
+        open={isDetailOpen && selectedMetricSource === 'evaluation'}
         onOpenChange={open => {
           setIsDetailOpen(open);
           if (!open) {
             setSelectedMetricId(null);
+            setSelectedMetricSource(null);
           }
         }}
       >
@@ -332,8 +339,7 @@ const Page = () => {
                   {detailQuery.data?.endpoint || '--'}
                 </p>
                 <p>
-                  <span className='font-medium'>Pass threshold:</span>{' '}
-                  {detailQuery.data?.evaluation?.passThreshold ?? 90}
+                  <span className='font-medium'>Pass threshold:</span> 90
                 </p>
                 <p>
                   <span className='font-medium'>Semantic score:</span>{' '}
@@ -352,17 +358,13 @@ const Page = () => {
                   {detailQuery.data?.isCorrect ? 'True' : 'False'}
                 </p>
                 <p>
-                  <span className='font-medium'>Checks:</span>{' '}
-                  {detailQuery.data?.evaluation?.passedChecks ?? 0}/
-                  {detailQuery.data?.evaluation?.totalChecks ?? 0}
-                </p>
-                <p>
                   <span className='font-medium'>Latency:</span>{' '}
                   {detailQuery.data?.latencyMs ?? 0}ms
                 </p>
                 <p>
                   <span className='font-medium'>Tokens:</span>{' '}
-                  {detailQuery.data?.totalTokens ?? 0}
+                  {(detailQuery.data?.inputTokens ?? 0) +
+                    (detailQuery.data?.outputTokens ?? 0)}
                 </p>
                 <p>
                   <span className='font-medium'>Cost:</span> $
@@ -378,9 +380,13 @@ const Page = () => {
               </div>
 
               <div>
-                <p className='mb-1 text-sm font-medium'>Expected</p>
+                <p className='mb-1 text-sm font-medium'>Test Expectation</p>
                 <pre className='max-h-28 overflow-auto whitespace-pre-wrap break-words rounded-md bg-muted p-2 text-xs'>
-                  {JSON.stringify(detailQuery.data?.expected || {}, null, 2)}
+                  {JSON.stringify(
+                    detailQuery.data?.testExpectation || {},
+                    null,
+                    2
+                  )}
                 </pre>
               </div>
 
@@ -390,6 +396,124 @@ const Page = () => {
                   {detailQuery.data?.response || '--'}
                 </pre>
               </div>
+
+              {detailQuery.data?.errorMessage ? (
+                <p className='text-sm text-destructive'>
+                  Lỗi: {detailQuery.data.errorMessage}
+                </p>
+              ) : null}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Production Detail Dialog */}
+      <Dialog
+        open={isDetailOpen && selectedMetricSource === 'production'}
+        onOpenChange={open => {
+          setIsDetailOpen(open);
+          if (!open) {
+            setSelectedMetricId(null);
+            setSelectedMetricSource(null);
+          }
+        }}
+      >
+        <DialogContent className='sm:max-w-2xl max-h-[90vh] overflow-y-auto'>
+          <DialogHeader>
+            <DialogTitle>Chi tiết Production Metric</DialogTitle>
+            <DialogDescription>
+              Xem thông tin chi tiết từ production.
+            </DialogDescription>
+          </DialogHeader>
+
+          {detailQuery.isLoading ? (
+            <p className='text-sm text-muted-foreground'>
+              Đang tải chi tiết...
+            </p>
+          ) : detailQuery.isError ? (
+            <p className='text-sm text-destructive'>
+              Không tải được chi tiết kết quả.
+            </p>
+          ) : (
+            <div className='space-y-3'>
+              <div className='grid grid-cols-2 gap-2 text-sm'>
+                <p>
+                  <span className='font-medium'>Endpoint:</span>{' '}
+                  {detailQuery.data?.endpoint || '--'}
+                </p>
+                <p>
+                  <span className='font-medium'>Status:</span>{' '}
+                  {detailQuery.data?.status || '--'}
+                </p>
+                <p>
+                  <span className='font-medium'>User ID:</span>{' '}
+                  {detailQuery.data?.userId || '--'}
+                </p>
+                <p>
+                  <span className='font-medium'>Request ID:</span>{' '}
+                  {detailQuery.data?.requestId || '--'}
+                </p>
+                {detailQuery.data?.isCorrect !== undefined && (
+                  <>
+                    <p>
+                      <span className='font-medium'>Is Correct:</span>{' '}
+                      {detailQuery.data?.isCorrect ? 'True' : 'False'}
+                    </p>
+                    <p>
+                      <span className='font-medium'>Accuracy:</span>{' '}
+                      {detailQuery.data?.accuracyScore ?? 0}
+                    </p>
+                    <p>
+                      <span className='font-medium'>Rule score:</span>{' '}
+                      {detailQuery.data?.ruleScore ?? 0}
+                    </p>
+                    <p>
+                      <span className='font-medium'>Semantic score:</span>{' '}
+                      {detailQuery.data?.semanticScore ?? 0}
+                    </p>
+                  </>
+                )}
+                <p>
+                  <span className='font-medium'>Latency:</span>{' '}
+                  {detailQuery.data?.latencyMs ?? 0}ms
+                </p>
+                <p>
+                  <span className='font-medium'>Tokens:</span>{' '}
+                  {(detailQuery.data?.inputTokens ?? 0) +
+                    (detailQuery.data?.outputTokens ?? 0)}
+                </p>
+                <p>
+                  <span className='font-medium'>Cost:</span> $
+                  {detailQuery.data?.estimatedCostUsd ?? '0'}
+                </p>
+              </div>
+
+              {/* Quality Metadata */}
+              {detailQuery.data?.qualityMetadata && (
+                <div>
+                  <p className='mb-1 text-sm font-medium'>Quality Metadata</p>
+                  <pre className='max-h-32 overflow-auto whitespace-pre-wrap break-words rounded-md bg-muted p-2 text-xs'>
+                    {JSON.stringify(detailQuery.data?.qualityMetadata, null, 2)}
+                  </pre>
+                </div>
+              )}
+
+              {/* Validation Report */}
+              {detailQuery.data?.validationReport && (
+                <div>
+                  <p className='mb-1 text-sm font-medium'>
+                    Validation Report (score:{' '}
+                    {detailQuery.data?.validationReport?.overallScore ?? 0})
+                  </p>
+                  <pre className='max-h-32 overflow-auto whitespace-pre-wrap break-words rounded-md bg-muted p-2 text-xs'>
+                    {JSON.stringify(
+                      detailQuery.data?.validationReport,
+                      null,
+                      2
+                    )}
+                  </pre>
+                </div>
+              )}
 
               {detailQuery.data?.errorMessage ? (
                 <p className='text-sm text-destructive'>
