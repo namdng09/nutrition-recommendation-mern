@@ -34,7 +34,6 @@ import { Spinner } from '~/components/ui/spinner';
 import { ACTIVITY_LEVEL_OPTIONS } from '~/constants/activity-level';
 import { BODYFAT_OPTIONS } from '~/constants/bodyfat';
 import { GENDER_OPTIONS } from '~/constants/gender';
-import { MEDICAL_HISTORY_OPTIONS } from '~/constants/medical';
 import { useUpdatePhysicalStats } from '~/features/users/update-physical-stats/api/update-physical-stats';
 import { updatePhysicalStatsSchema } from '~/features/users/update-physical-stats/schemas/update-physical-stats-schema';
 import { useProfileForPage } from '~/features/users/view-profile/api/view-profile';
@@ -131,15 +130,6 @@ const UpdatePhysicalStats = () => {
       setDobInput(format(new Date(dobValue), 'dd/MM/yyyy'));
     }
   }, [form]);
-
-  // Sync other input with medical history on mount/change
-  useEffect(() => {
-    const medicalHistory = form.getValues('medicalHistory') || [];
-    const otherValues = medicalHistory.filter(
-      v => !MEDICAL_HISTORY_OPTIONS.some(opt => opt.value === v)
-    );
-    setOtherInput(otherValues.join(', '));
-  }, [form, profile]);
 
   const handleDateInputChange = e => {
     const value = e.target.value;
@@ -496,123 +486,6 @@ const UpdatePhysicalStats = () => {
                       />
                     </div>
                   </div>
-                </div>
-
-                <Separator />
-
-                {/* Medical History Section */}
-                <div className='p-6 space-y-6'>
-                  <div className='space-y-1'>
-                    <h3 className='text-base font-semibold flex items-center gap-2'>
-                      <Heart className='h-5 w-5 text-red-500' />
-                      Tiền sử bệnh lý
-                    </h3>
-                    <p className='text-sm text-muted-foreground'>
-                      Cho chúng tôi biết về tiền sử bệnh lý của bạn để tối ưu
-                      hóa thực đơn
-                    </p>
-                  </div>
-
-                  <Controller
-                    control={form.control}
-                    name='medicalHistory'
-                    render={({ field }) => {
-                      const currentValues = field.value || [];
-
-                      const toggleOption = optionValue => {
-                        if (currentValues.includes(optionValue)) {
-                          field.onChange(
-                            currentValues.filter(v => v !== optionValue)
-                          );
-                        } else {
-                          field.onChange([...currentValues, optionValue]);
-                        }
-                      };
-
-                      const handleOtherChange = e => {
-                        const newVal = e.target.value;
-                        setOtherInput(newVal);
-
-                        const newOthers = newVal
-                          ? newVal
-                              .split(',')
-                              .map(v => v.trim())
-                              .filter(v => v !== '')
-                          : [];
-
-                        const predefinedOnes = currentValues.filter(v =>
-                          MEDICAL_HISTORY_OPTIONS.some(opt => opt.value === v)
-                        );
-
-                        const uniqueNewOthers = [...new Set(newOthers)];
-                        field.onChange([...predefinedOnes, ...uniqueNewOthers]);
-                      };
-
-                      return (
-                        <FormItem className='space-y-4'>
-                          {/* Other Medical Input */}
-                          <div className='space-y-2'>
-                            <h4 className='text-sm font-medium text-primary'>
-                              Bệnh lý khác (nếu có)
-                            </h4>
-                            <Input
-                              className='w-full'
-                              placeholder='Nhập bệnh lý khác, cách nhau bởi dấu phẩy'
-                              value={otherInput}
-                              onChange={handleOtherChange}
-                            />
-                          </div>
-
-                          {/* Predefined Medical History Options */}
-                          <div className='space-y-2'>
-                            <h4 className='text-sm font-medium text-primary'>
-                              Các bệnh lý phổ biến
-                            </h4>
-                            <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2'>
-                              {MEDICAL_HISTORY_OPTIONS.map(option => {
-                                const isSelected = currentValues.includes(
-                                  option.value
-                                );
-                                return (
-                                  <button
-                                    key={option.value}
-                                    type='button'
-                                    onClick={() => toggleOption(option.value)}
-                                    className={cn(
-                                      'relative flex flex-col items-center justify-start p-2 rounded-xl border-2 transition-all duration-200 h-auto',
-                                      isSelected
-                                        ? 'border-primary bg-primary/5 shadow-md'
-                                        : 'border-border bg-background hover:bg-accent/60 hover:border-primary/30'
-                                    )}
-                                  >
-                                    <div className='relative w-full aspect-square rounded-lg overflow-hidden bg-muted shadow-sm shrink-0 mb-1.5'>
-                                      <img
-                                        src={option.image}
-                                        alt={option.label}
-                                        className='w-full h-full object-cover'
-                                      />
-                                    </div>
-                                    <span
-                                      className={cn(
-                                        'text-xs font-semibold text-center leading-tight w-full px-1',
-                                        isSelected
-                                          ? 'text-primary'
-                                          : 'text-foreground/80'
-                                      )}
-                                    >
-                                      {option.label}
-                                    </span>
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
-
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
                 </div>
               </div>
 
