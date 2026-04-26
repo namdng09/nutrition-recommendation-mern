@@ -2,2008 +2,1953 @@
   {
     "user": {
       "_id": {
-        "$oid": "69def7e6327d850cae4acae6"
+        "$oid": "69e5d7591881fcda2ea9e33f"
       },
-      "name": "Người dùng mẫu 20"
+      "name": "Người dùng mẫu 1"
     },
     "name": "Danh sách đi chợ mẫu 1",
     "date": [
       {
         "$date": {
-          "$numberLong": "1776220135478"
+          "$numberLong": "1776670554012"
         }
       },
       {
         "$date": {
-          "$numberLong": "1776392935478"
+          "$numberLong": "1776929754012"
         }
       }
     ],
     "ingredients": [
       {
         "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca4f"
+          "$oid": "69e5d7591881fcda2ea9e2df"
+        },
+        "name": "Bơ 11",
+        "image": "https://picsum.photos/seed/ingredient-11/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e7ec"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f4"
         },
         "name": "Trứng gà 32",
         "image": "https://picsum.photos/seed/ingredient-32/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf5e"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca51"
-        },
-        "name": "Hạnh nhân 34",
-        "image": "https://picsum.photos/seed/ingredient-34/400/300",
         "isPurchased": false,
         "_id": {
-          "$oid": "69def7e7327d850cae4acf5f"
+          "$oid": "69e5d75a1881fcda2ea9e7ed"
         }
       },
       {
         "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca3f"
-        },
-        "name": "Nấm mỡ 16",
-        "image": "https://picsum.photos/seed/ingredient-16/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf60"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca37"
+          "$oid": "69e5d7591881fcda2ea9e2dc"
         },
         "name": "Sữa chua Hy Lạp 8",
         "image": "https://picsum.photos/seed/ingredient-8/400/300",
         "isPurchased": true,
         "_id": {
-          "$oid": "69def7e7327d850cae4acf61"
+          "$oid": "69e5d75a1881fcda2ea9e7ee"
         }
       },
       {
         "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca30"
+          "$oid": "69e5d7591881fcda2ea9e2ed"
         },
-        "name": "Ức gà 1",
-        "image": "https://picsum.photos/seed/ingredient-1/400/300",
+        "name": "Rau chân vịt 25",
+        "image": "https://picsum.photos/seed/ingredient-25/400/300",
         "isPurchased": true,
         "_id": {
-          "$oid": "69def7e7327d850cae4acf62"
+          "$oid": "69e5d75a1881fcda2ea9e7ef"
         }
       },
       {
         "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca50"
+          "$oid": "69e5d7591881fcda2ea9e2fc"
         },
-        "name": "Đậu lăng 33",
-        "image": "https://picsum.photos/seed/ingredient-33/400/300",
+        "name": "Chuối 40",
+        "image": "https://picsum.photos/seed/ingredient-40/400/300",
         "isPurchased": false,
         "_id": {
-          "$oid": "69def7e7327d850cae4acf63"
+          "$oid": "69e5d75a1881fcda2ea9e7f0"
         }
       },
       {
         "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca52"
+          "$oid": "69e5d7591881fcda2ea9e2e9"
         },
-        "name": "Yến mạch 35",
-        "image": "https://picsum.photos/seed/ingredient-35/400/300",
-        "isPurchased": true,
+        "name": "Ức gà 21",
+        "image": "https://picsum.photos/seed/ingredient-21/400/300",
+        "isPurchased": false,
         "_id": {
-          "$oid": "69def7e7327d850cae4acf64"
+          "$oid": "69e5d75a1881fcda2ea9e7f1"
         }
       }
     ],
     "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
     "_id": {
-      "$oid": "69def7e7327d850cae4acf5d"
+      "$oid": "69e5d75a1881fcda2ea9e7eb"
     },
     "createdAt": {
       "$date": {
-        "$numberLong": "1776220135494"
+        "$numberLong": "1776670554029"
       }
     },
     "updatedAt": {
       "$date": {
-        "$numberLong": "1776220135494"
+        "$numberLong": "1776670554029"
       }
     }
   },
   {
     "user": {
       "_id": {
-        "$oid": "69def7e6327d850cae4acaaa"
+        "$oid": "69e5d7591881fcda2ea9e34b"
       },
-      "name": "Người dùng mẫu 5"
+      "name": "Người dùng mẫu 4"
     },
     "name": "Danh sách đi chợ mẫu 2",
     "date": [
       {
         "$date": {
-          "$numberLong": "1776220135478"
+          "$numberLong": "1776670554013"
         }
       },
       {
         "$date": {
-          "$numberLong": "1776652135478"
+          "$numberLong": "1777188954013"
         }
       }
     ],
     "ingredients": [
       {
         "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca43"
+          "$oid": "69e5d7591881fcda2ea9e2dd"
         },
-        "name": "Chuối 20",
-        "image": "https://picsum.photos/seed/ingredient-20/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf66"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca54"
-        },
-        "name": "Ớt chuông 37",
-        "image": "https://picsum.photos/seed/ingredient-37/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf67"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca44"
-        },
-        "name": "Ức gà 21",
-        "image": "https://picsum.photos/seed/ingredient-21/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf68"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca53"
-        },
-        "name": "Nấm mỡ 36",
-        "image": "https://picsum.photos/seed/ingredient-36/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf69"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca40"
-        },
-        "name": "Ớt chuông 17",
-        "image": "https://picsum.photos/seed/ingredient-17/400/300",
+        "name": "Cà chua 9",
+        "image": "https://picsum.photos/seed/ingredient-9/400/300",
         "isPurchased": true,
         "_id": {
-          "$oid": "69def7e7327d850cae4acf6a"
+          "$oid": "69e5d75a1881fcda2ea9e7f3"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2dc"
+        },
+        "name": "Sữa chua Hy Lạp 8",
+        "image": "https://picsum.photos/seed/ingredient-8/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e7f4"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2fc"
+        },
+        "name": "Chuối 40",
+        "image": "https://picsum.photos/seed/ingredient-40/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e7f5"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2d7"
+        },
+        "name": "Cà rốt 3",
+        "image": "https://picsum.photos/seed/ingredient-3/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e7f6"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2d6"
+        },
+        "name": "Bông cải xanh 2",
+        "image": "https://picsum.photos/seed/ingredient-2/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e7f7"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f4"
+        },
+        "name": "Trứng gà 32",
+        "image": "https://picsum.photos/seed/ingredient-32/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e7f8"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2d5"
+        },
+        "name": "Ức gà 1",
+        "image": "https://picsum.photos/seed/ingredient-1/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e7f9"
         }
       }
     ],
     "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
     "_id": {
-      "$oid": "69def7e7327d850cae4acf65"
+      "$oid": "69e5d75a1881fcda2ea9e7f2"
     },
     "createdAt": {
       "$date": {
-        "$numberLong": "1776220135494"
+        "$numberLong": "1776670554029"
       }
     },
     "updatedAt": {
       "$date": {
-        "$numberLong": "1776220135494"
+        "$numberLong": "1776670554029"
       }
     }
   },
   {
     "user": {
       "_id": {
-        "$oid": "69def7e6327d850cae4acace"
+        "$oid": "69e5d7591881fcda2ea9e38f"
       },
-      "name": "Người dùng mẫu 14"
+      "name": "Người dùng mẫu 21"
     },
     "name": "Danh sách đi chợ mẫu 3",
     "date": [
       {
         "$date": {
-          "$numberLong": "1776220135478"
+          "$numberLong": "1776670554013"
         }
       },
       {
         "$date": {
-          "$numberLong": "1776565735478"
+          "$numberLong": "1777188954013"
         }
       }
     ],
     "ingredients": [
       {
         "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca45"
+          "$oid": "69e5d7591881fcda2ea9e2eb"
         },
-        "name": "Bông cải xanh 22",
-        "image": "https://picsum.photos/seed/ingredient-22/400/300",
+        "name": "Cà rốt 23",
+        "image": "https://picsum.photos/seed/ingredient-23/400/300",
         "isPurchased": false,
         "_id": {
-          "$oid": "69def7e7327d850cae4acf6c"
+          "$oid": "69e5d75a1881fcda2ea9e7fb"
         }
       },
       {
         "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca37"
+          "$oid": "69e5d7591881fcda2ea9e2fd"
         },
-        "name": "Sữa chua Hy Lạp 8",
-        "image": "https://picsum.photos/seed/ingredient-8/400/300",
+        "name": "Ức gà 41",
+        "image": "https://picsum.photos/seed/ingredient-41/400/300",
         "isPurchased": true,
         "_id": {
-          "$oid": "69def7e7327d850cae4acf6d"
+          "$oid": "69e5d75a1881fcda2ea9e7fc"
         }
       },
       {
         "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca43"
-        },
-        "name": "Chuối 20",
-        "image": "https://picsum.photos/seed/ingredient-20/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf6e"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca3c"
+          "$oid": "69e5d7591881fcda2ea9e2e1"
         },
         "name": "Đậu lăng 13",
         "image": "https://picsum.photos/seed/ingredient-13/400/300",
         "isPurchased": true,
         "_id": {
-          "$oid": "69def7e7327d850cae4acf6f"
+          "$oid": "69e5d75a1881fcda2ea9e7fd"
         }
       },
       {
         "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca41"
-        },
-        "name": "Dưa leo 18",
-        "image": "https://picsum.photos/seed/ingredient-18/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf70"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca4e"
+          "$oid": "69e5d7591881fcda2ea9e2f3"
         },
         "name": "Bơ 31",
         "image": "https://picsum.photos/seed/ingredient-31/400/300",
         "isPurchased": true,
         "_id": {
-          "$oid": "69def7e7327d850cae4acf71"
+          "$oid": "69e5d75a1881fcda2ea9e7fe"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e301"
+        },
+        "name": "Rau chân vịt 45",
+        "image": "https://picsum.photos/seed/ingredient-45/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e7ff"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2d5"
+        },
+        "name": "Ức gà 1",
+        "image": "https://picsum.photos/seed/ingredient-1/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e800"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f0"
+        },
+        "name": "Sữa chua Hy Lạp 28",
+        "image": "https://picsum.photos/seed/ingredient-28/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e801"
         }
       }
     ],
     "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
     "_id": {
-      "$oid": "69def7e7327d850cae4acf6b"
+      "$oid": "69e5d75a1881fcda2ea9e7fa"
     },
     "createdAt": {
       "$date": {
-        "$numberLong": "1776220135494"
+        "$numberLong": "1776670554029"
       }
     },
     "updatedAt": {
       "$date": {
-        "$numberLong": "1776220135494"
+        "$numberLong": "1776670554029"
       }
     }
   },
   {
     "user": {
       "_id": {
-        "$oid": "69def7e6327d850cae4aca9e"
+        "$oid": "69e5d7591881fcda2ea9e353"
       },
-      "name": "Người dùng mẫu 2"
+      "name": "Người dùng mẫu 6"
     },
     "name": "Danh sách đi chợ mẫu 4",
     "date": [
       {
         "$date": {
-          "$numberLong": "1776220135478"
+          "$numberLong": "1776670554013"
         }
       },
       {
         "$date": {
-          "$numberLong": "1776565735478"
+          "$numberLong": "1776756954013"
         }
       }
     ],
     "ingredients": [
       {
         "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca33"
-        },
-        "name": "Gạo lứt 4",
-        "image": "https://picsum.photos/seed/ingredient-4/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf73"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca4c"
-        },
-        "name": "Cà chua 29",
-        "image": "https://picsum.photos/seed/ingredient-29/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf74"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca31"
-        },
-        "name": "Bông cải xanh 2",
-        "image": "https://picsum.photos/seed/ingredient-2/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf75"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca40"
-        },
-        "name": "Ớt chuông 17",
-        "image": "https://picsum.photos/seed/ingredient-17/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf76"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca42"
-        },
-        "name": "Táo 19",
-        "image": "https://picsum.photos/seed/ingredient-19/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf77"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca3b"
-        },
-        "name": "Trứng gà 12",
-        "image": "https://picsum.photos/seed/ingredient-12/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf78"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca5d"
-        },
-        "name": "Đậu hũ 46",
-        "image": "https://picsum.photos/seed/ingredient-46/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf79"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca3e"
-        },
-        "name": "Yến mạch 15",
-        "image": "https://picsum.photos/seed/ingredient-15/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf7a"
-        }
-      }
-    ],
-    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
-    "_id": {
-      "$oid": "69def7e7327d850cae4acf72"
-    },
-    "createdAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    },
-    "updatedAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    }
-  },
-  {
-    "user": {
-      "_id": {
-        "$oid": "69def7e6327d850cae4acaf2"
-      },
-      "name": "Người dùng mẫu 23"
-    },
-    "name": "Danh sách đi chợ mẫu 5",
-    "date": [
-      {
-        "$date": {
-          "$numberLong": "1776220135478"
-        }
-      },
-      {
-        "$date": {
-          "$numberLong": "1776392935478"
-        }
-      }
-    ],
-    "ingredients": [
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca31"
-        },
-        "name": "Bông cải xanh 2",
-        "image": "https://picsum.photos/seed/ingredient-2/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf7c"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca46"
-        },
-        "name": "Cà rốt 23",
-        "image": "https://picsum.photos/seed/ingredient-23/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf7d"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca50"
-        },
-        "name": "Đậu lăng 33",
-        "image": "https://picsum.photos/seed/ingredient-33/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf7e"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca56"
-        },
-        "name": "Táo 39",
-        "image": "https://picsum.photos/seed/ingredient-39/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf7f"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca3d"
-        },
-        "name": "Hạnh nhân 14",
-        "image": "https://picsum.photos/seed/ingredient-14/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf80"
-        }
-      }
-    ],
-    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
-    "_id": {
-      "$oid": "69def7e7327d850cae4acf7b"
-    },
-    "createdAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    },
-    "updatedAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    }
-  },
-  {
-    "user": {
-      "_id": {
-        "$oid": "69def7e6327d850cae4acaa6"
-      },
-      "name": "Người dùng mẫu 4"
-    },
-    "name": "Danh sách đi chợ mẫu 6",
-    "date": [
-      {
-        "$date": {
-          "$numberLong": "1776220135478"
-        }
-      },
-      {
-        "$date": {
-          "$numberLong": "1776565735478"
-        }
-      }
-    ],
-    "ingredients": [
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca40"
-        },
-        "name": "Ớt chuông 17",
-        "image": "https://picsum.photos/seed/ingredient-17/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf82"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca5a"
-        },
-        "name": "Cà rốt 43",
-        "image": "https://picsum.photos/seed/ingredient-43/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf83"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca5c"
-        },
-        "name": "Rau chân vịt 45",
-        "image": "https://picsum.photos/seed/ingredient-45/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf84"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca55"
-        },
-        "name": "Dưa leo 38",
-        "image": "https://picsum.photos/seed/ingredient-38/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf85"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca33"
-        },
-        "name": "Gạo lứt 4",
-        "image": "https://picsum.photos/seed/ingredient-4/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf86"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca4c"
-        },
-        "name": "Cà chua 29",
-        "image": "https://picsum.photos/seed/ingredient-29/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf87"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca52"
-        },
-        "name": "Yến mạch 35",
-        "image": "https://picsum.photos/seed/ingredient-35/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf88"
-        }
-      }
-    ],
-    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
-    "_id": {
-      "$oid": "69def7e7327d850cae4acf81"
-    },
-    "createdAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    },
-    "updatedAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    }
-  },
-  {
-    "user": {
-      "_id": {
-        "$oid": "69def7e6327d850cae4acab6"
-      },
-      "name": "Người dùng mẫu 8"
-    },
-    "name": "Danh sách đi chợ mẫu 7",
-    "date": [
-      {
-        "$date": {
-          "$numberLong": "1776220135478"
-        }
-      },
-      {
-        "$date": {
-          "$numberLong": "1776565735478"
-        }
-      }
-    ],
-    "ingredients": [
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca58"
-        },
-        "name": "Ức gà 41",
-        "image": "https://picsum.photos/seed/ingredient-41/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf8a"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca3c"
-        },
-        "name": "Đậu lăng 13",
-        "image": "https://picsum.photos/seed/ingredient-13/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf8b"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca3f"
-        },
-        "name": "Nấm mỡ 16",
-        "image": "https://picsum.photos/seed/ingredient-16/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf8c"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca3a"
-        },
-        "name": "Bơ 11",
-        "image": "https://picsum.photos/seed/ingredient-11/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf8d"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca3d"
-        },
-        "name": "Hạnh nhân 14",
-        "image": "https://picsum.photos/seed/ingredient-14/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf8e"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca59"
-        },
-        "name": "Bông cải xanh 42",
-        "image": "https://picsum.photos/seed/ingredient-42/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf8f"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca44"
-        },
-        "name": "Ức gà 21",
-        "image": "https://picsum.photos/seed/ingredient-21/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf90"
-        }
-      }
-    ],
-    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
-    "_id": {
-      "$oid": "69def7e7327d850cae4acf89"
-    },
-    "createdAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    },
-    "updatedAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    }
-  },
-  {
-    "user": {
-      "_id": {
-        "$oid": "69def7e6327d850cae4acaf2"
-      },
-      "name": "Người dùng mẫu 23"
-    },
-    "name": "Danh sách đi chợ mẫu 8",
-    "date": [
-      {
-        "$date": {
-          "$numberLong": "1776220135478"
-        }
-      },
-      {
-        "$date": {
-          "$numberLong": "1776824935479"
-        }
-      }
-    ],
-    "ingredients": [
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca45"
-        },
-        "name": "Bông cải xanh 22",
-        "image": "https://picsum.photos/seed/ingredient-22/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf92"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca37"
-        },
-        "name": "Sữa chua Hy Lạp 8",
-        "image": "https://picsum.photos/seed/ingredient-8/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf93"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca57"
-        },
-        "name": "Chuối 40",
-        "image": "https://picsum.photos/seed/ingredient-40/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf94"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca55"
-        },
-        "name": "Dưa leo 38",
-        "image": "https://picsum.photos/seed/ingredient-38/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf95"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca5e"
-        },
-        "name": "Cá hồi 47",
-        "image": "https://picsum.photos/seed/ingredient-47/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf96"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca31"
-        },
-        "name": "Bông cải xanh 2",
-        "image": "https://picsum.photos/seed/ingredient-2/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf97"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca53"
-        },
-        "name": "Nấm mỡ 36",
-        "image": "https://picsum.photos/seed/ingredient-36/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf98"
-        }
-      }
-    ],
-    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
-    "_id": {
-      "$oid": "69def7e7327d850cae4acf91"
-    },
-    "createdAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    },
-    "updatedAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    }
-  },
-  {
-    "user": {
-      "_id": {
-        "$oid": "69def7e6327d850cae4acaee"
-      },
-      "name": "Người dùng mẫu 22"
-    },
-    "name": "Danh sách đi chợ mẫu 9",
-    "date": [
-      {
-        "$date": {
-          "$numberLong": "1776220135479"
-        }
-      },
-      {
-        "$date": {
-          "$numberLong": "1776392935479"
-        }
-      }
-    ],
-    "ingredients": [
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca37"
-        },
-        "name": "Sữa chua Hy Lạp 8",
-        "image": "https://picsum.photos/seed/ingredient-8/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf9a"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca3e"
-        },
-        "name": "Yến mạch 15",
-        "image": "https://picsum.photos/seed/ingredient-15/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf9b"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca44"
-        },
-        "name": "Ức gà 21",
-        "image": "https://picsum.photos/seed/ingredient-21/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf9c"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca3a"
-        },
-        "name": "Bơ 11",
-        "image": "https://picsum.photos/seed/ingredient-11/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf9d"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca4f"
-        },
-        "name": "Trứng gà 32",
-        "image": "https://picsum.photos/seed/ingredient-32/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf9e"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca53"
-        },
-        "name": "Nấm mỡ 36",
-        "image": "https://picsum.photos/seed/ingredient-36/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acf9f"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca48"
-        },
-        "name": "Rau chân vịt 25",
-        "image": "https://picsum.photos/seed/ingredient-25/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfa0"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca4b"
-        },
-        "name": "Sữa chua Hy Lạp 28",
-        "image": "https://picsum.photos/seed/ingredient-28/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfa1"
-        }
-      }
-    ],
-    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
-    "_id": {
-      "$oid": "69def7e7327d850cae4acf99"
-    },
-    "createdAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    },
-    "updatedAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    }
-  },
-  {
-    "user": {
-      "_id": {
-        "$oid": "69def7e6327d850cae4aca9a"
-      },
-      "name": "Người dùng mẫu 1"
-    },
-    "name": "Danh sách đi chợ mẫu 10",
-    "date": [
-      {
-        "$date": {
-          "$numberLong": "1776220135479"
-        }
-      },
-      {
-        "$date": {
-          "$numberLong": "1776392935479"
-        }
-      }
-    ],
-    "ingredients": [
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca4c"
-        },
-        "name": "Cà chua 29",
-        "image": "https://picsum.photos/seed/ingredient-29/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfa3"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca50"
-        },
-        "name": "Đậu lăng 33",
-        "image": "https://picsum.photos/seed/ingredient-33/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfa4"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca30"
-        },
-        "name": "Ức gà 1",
-        "image": "https://picsum.photos/seed/ingredient-1/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfa5"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca3b"
-        },
-        "name": "Trứng gà 12",
-        "image": "https://picsum.photos/seed/ingredient-12/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfa6"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca31"
-        },
-        "name": "Bông cải xanh 2",
-        "image": "https://picsum.photos/seed/ingredient-2/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfa7"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca37"
-        },
-        "name": "Sữa chua Hy Lạp 8",
-        "image": "https://picsum.photos/seed/ingredient-8/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfa8"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca32"
-        },
-        "name": "Cà rốt 3",
-        "image": "https://picsum.photos/seed/ingredient-3/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfa9"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca44"
-        },
-        "name": "Ức gà 21",
-        "image": "https://picsum.photos/seed/ingredient-21/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfaa"
-        }
-      }
-    ],
-    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
-    "_id": {
-      "$oid": "69def7e7327d850cae4acfa2"
-    },
-    "createdAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    },
-    "updatedAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    }
-  },
-  {
-    "user": {
-      "_id": {
-        "$oid": "69def7e6327d850cae4acaa2"
-      },
-      "name": "Người dùng mẫu 3"
-    },
-    "name": "Danh sách đi chợ mẫu 11",
-    "date": [
-      {
-        "$date": {
-          "$numberLong": "1776220135479"
-        }
-      },
-      {
-        "$date": {
-          "$numberLong": "1776738535479"
-        }
-      }
-    ],
-    "ingredients": [
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca53"
-        },
-        "name": "Nấm mỡ 36",
-        "image": "https://picsum.photos/seed/ingredient-36/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfac"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca56"
-        },
-        "name": "Táo 39",
-        "image": "https://picsum.photos/seed/ingredient-39/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfad"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca5f"
-        },
-        "name": "Sữa chua Hy Lạp 48",
-        "image": "https://picsum.photos/seed/ingredient-48/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfae"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca30"
-        },
-        "name": "Ức gà 1",
-        "image": "https://picsum.photos/seed/ingredient-1/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfaf"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca34"
-        },
-        "name": "Rau chân vịt 5",
-        "image": "https://picsum.photos/seed/ingredient-5/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfb0"
-        }
-      }
-    ],
-    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
-    "_id": {
-      "$oid": "69def7e7327d850cae4acfab"
-    },
-    "createdAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    },
-    "updatedAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    }
-  },
-  {
-    "user": {
-      "_id": {
-        "$oid": "69def7e6327d850cae4acaba"
-      },
-      "name": "Người dùng mẫu 9"
-    },
-    "name": "Danh sách đi chợ mẫu 12",
-    "date": [
-      {
-        "$date": {
-          "$numberLong": "1776220135479"
-        }
-      },
-      {
-        "$date": {
-          "$numberLong": "1776306535479"
-        }
-      }
-    ],
-    "ingredients": [
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca43"
-        },
-        "name": "Chuối 20",
-        "image": "https://picsum.photos/seed/ingredient-20/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfb2"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca30"
-        },
-        "name": "Ức gà 1",
-        "image": "https://picsum.photos/seed/ingredient-1/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfb3"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca33"
-        },
-        "name": "Gạo lứt 4",
-        "image": "https://picsum.photos/seed/ingredient-4/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfb4"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca47"
-        },
-        "name": "Gạo lứt 24",
-        "image": "https://picsum.photos/seed/ingredient-24/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfb5"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca59"
-        },
-        "name": "Bông cải xanh 42",
-        "image": "https://picsum.photos/seed/ingredient-42/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfb6"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca42"
-        },
-        "name": "Táo 19",
-        "image": "https://picsum.photos/seed/ingredient-19/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfb7"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca60"
-        },
-        "name": "Cà chua 49",
-        "image": "https://picsum.photos/seed/ingredient-49/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfb8"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca3b"
-        },
-        "name": "Trứng gà 12",
-        "image": "https://picsum.photos/seed/ingredient-12/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfb9"
-        }
-      }
-    ],
-    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
-    "_id": {
-      "$oid": "69def7e7327d850cae4acfb1"
-    },
-    "createdAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    },
-    "updatedAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    }
-  },
-  {
-    "user": {
-      "_id": {
-        "$oid": "69def7e6327d850cae4acaca"
-      },
-      "name": "Người dùng mẫu 13"
-    },
-    "name": "Danh sách đi chợ mẫu 13",
-    "date": [
-      {
-        "$date": {
-          "$numberLong": "1776220135479"
-        }
-      },
-      {
-        "$date": {
-          "$numberLong": "1776824935479"
-        }
-      }
-    ],
-    "ingredients": [
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca33"
-        },
-        "name": "Gạo lứt 4",
-        "image": "https://picsum.photos/seed/ingredient-4/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfbb"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca57"
-        },
-        "name": "Chuối 40",
-        "image": "https://picsum.photos/seed/ingredient-40/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfbc"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca58"
-        },
-        "name": "Ức gà 41",
-        "image": "https://picsum.photos/seed/ingredient-41/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfbd"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca43"
-        },
-        "name": "Chuối 20",
-        "image": "https://picsum.photos/seed/ingredient-20/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfbe"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca56"
-        },
-        "name": "Táo 39",
-        "image": "https://picsum.photos/seed/ingredient-39/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfbf"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca5d"
-        },
-        "name": "Đậu hũ 46",
-        "image": "https://picsum.photos/seed/ingredient-46/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfc0"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca50"
-        },
-        "name": "Đậu lăng 33",
-        "image": "https://picsum.photos/seed/ingredient-33/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfc1"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca38"
-        },
-        "name": "Cà chua 9",
-        "image": "https://picsum.photos/seed/ingredient-9/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfc2"
-        }
-      }
-    ],
-    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
-    "_id": {
-      "$oid": "69def7e7327d850cae4acfba"
-    },
-    "createdAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    },
-    "updatedAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    }
-  },
-  {
-    "user": {
-      "_id": {
-        "$oid": "69def7e6327d850cae4acab6"
-      },
-      "name": "Người dùng mẫu 8"
-    },
-    "name": "Danh sách đi chợ mẫu 14",
-    "date": [
-      {
-        "$date": {
-          "$numberLong": "1776220135479"
-        }
-      },
-      {
-        "$date": {
-          "$numberLong": "1776565735479"
-        }
-      }
-    ],
-    "ingredients": [
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca4b"
-        },
-        "name": "Sữa chua Hy Lạp 28",
-        "image": "https://picsum.photos/seed/ingredient-28/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfc4"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca3b"
-        },
-        "name": "Trứng gà 12",
-        "image": "https://picsum.photos/seed/ingredient-12/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfc5"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca52"
-        },
-        "name": "Yến mạch 35",
-        "image": "https://picsum.photos/seed/ingredient-35/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfc6"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca4d"
-        },
-        "name": "Khoai lang 30",
-        "image": "https://picsum.photos/seed/ingredient-30/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfc7"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca59"
-        },
-        "name": "Bông cải xanh 42",
-        "image": "https://picsum.photos/seed/ingredient-42/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfc8"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca5e"
-        },
-        "name": "Cá hồi 47",
-        "image": "https://picsum.photos/seed/ingredient-47/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfc9"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca32"
-        },
-        "name": "Cà rốt 3",
-        "image": "https://picsum.photos/seed/ingredient-3/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfca"
-        }
-      }
-    ],
-    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
-    "_id": {
-      "$oid": "69def7e7327d850cae4acfc3"
-    },
-    "createdAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    },
-    "updatedAt": {
-      "$date": {
-        "$numberLong": "1776220135494"
-      }
-    }
-  },
-  {
-    "user": {
-      "_id": {
-        "$oid": "69def7e6327d850cae4acada"
-      },
-      "name": "Người dùng mẫu 17"
-    },
-    "name": "Danh sách đi chợ mẫu 15",
-    "date": [
-      {
-        "$date": {
-          "$numberLong": "1776220135479"
-        }
-      },
-      {
-        "$date": {
-          "$numberLong": "1776392935479"
-        }
-      }
-    ],
-    "ingredients": [
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca30"
-        },
-        "name": "Ức gà 1",
-        "image": "https://picsum.photos/seed/ingredient-1/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfcc"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca57"
-        },
-        "name": "Chuối 40",
-        "image": "https://picsum.photos/seed/ingredient-40/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfcd"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca3c"
-        },
-        "name": "Đậu lăng 13",
-        "image": "https://picsum.photos/seed/ingredient-13/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfce"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca3a"
-        },
-        "name": "Bơ 11",
-        "image": "https://picsum.photos/seed/ingredient-11/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfcf"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca5e"
-        },
-        "name": "Cá hồi 47",
-        "image": "https://picsum.photos/seed/ingredient-47/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfd0"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca58"
-        },
-        "name": "Ức gà 41",
-        "image": "https://picsum.photos/seed/ingredient-41/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfd1"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca47"
-        },
-        "name": "Gạo lứt 24",
-        "image": "https://picsum.photos/seed/ingredient-24/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfd2"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca54"
-        },
-        "name": "Ớt chuông 37",
-        "image": "https://picsum.photos/seed/ingredient-37/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfd3"
-        }
-      }
-    ],
-    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
-    "_id": {
-      "$oid": "69def7e7327d850cae4acfcb"
-    },
-    "createdAt": {
-      "$date": {
-        "$numberLong": "1776220135495"
-      }
-    },
-    "updatedAt": {
-      "$date": {
-        "$numberLong": "1776220135495"
-      }
-    }
-  },
-  {
-    "user": {
-      "_id": {
-        "$oid": "69def7e6327d850cae4acaca"
-      },
-      "name": "Người dùng mẫu 13"
-    },
-    "name": "Danh sách đi chợ mẫu 16",
-    "date": [
-      {
-        "$date": {
-          "$numberLong": "1776220135479"
-        }
-      },
-      {
-        "$date": {
-          "$numberLong": "1776479335479"
-        }
-      }
-    ],
-    "ingredients": [
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca36"
-        },
-        "name": "Cá hồi 7",
-        "image": "https://picsum.photos/seed/ingredient-7/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfd5"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca5b"
-        },
-        "name": "Gạo lứt 44",
-        "image": "https://picsum.photos/seed/ingredient-44/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfd6"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca4d"
-        },
-        "name": "Khoai lang 30",
-        "image": "https://picsum.photos/seed/ingredient-30/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfd7"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca41"
-        },
-        "name": "Dưa leo 18",
-        "image": "https://picsum.photos/seed/ingredient-18/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfd8"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca57"
-        },
-        "name": "Chuối 40",
-        "image": "https://picsum.photos/seed/ingredient-40/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfd9"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca38"
-        },
-        "name": "Cà chua 9",
-        "image": "https://picsum.photos/seed/ingredient-9/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfda"
-        }
-      }
-    ],
-    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
-    "_id": {
-      "$oid": "69def7e7327d850cae4acfd4"
-    },
-    "createdAt": {
-      "$date": {
-        "$numberLong": "1776220135495"
-      }
-    },
-    "updatedAt": {
-      "$date": {
-        "$numberLong": "1776220135495"
-      }
-    }
-  },
-  {
-    "user": {
-      "_id": {
-        "$oid": "69def7e6327d850cae4acaa2"
-      },
-      "name": "Người dùng mẫu 3"
-    },
-    "name": "Danh sách đi chợ mẫu 17",
-    "date": [
-      {
-        "$date": {
-          "$numberLong": "1776220135479"
-        }
-      },
-      {
-        "$date": {
-          "$numberLong": "1776392935479"
-        }
-      }
-    ],
-    "ingredients": [
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca36"
-        },
-        "name": "Cá hồi 7",
-        "image": "https://picsum.photos/seed/ingredient-7/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfdc"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca52"
-        },
-        "name": "Yến mạch 35",
-        "image": "https://picsum.photos/seed/ingredient-35/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfdd"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca5e"
-        },
-        "name": "Cá hồi 47",
-        "image": "https://picsum.photos/seed/ingredient-47/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfde"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca57"
-        },
-        "name": "Chuối 40",
-        "image": "https://picsum.photos/seed/ingredient-40/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfdf"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca3c"
-        },
-        "name": "Đậu lăng 13",
-        "image": "https://picsum.photos/seed/ingredient-13/400/300",
-        "isPurchased": false,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfe0"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca46"
-        },
-        "name": "Cà rốt 23",
-        "image": "https://picsum.photos/seed/ingredient-23/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfe1"
-        }
-      }
-    ],
-    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
-    "_id": {
-      "$oid": "69def7e7327d850cae4acfdb"
-    },
-    "createdAt": {
-      "$date": {
-        "$numberLong": "1776220135495"
-      }
-    },
-    "updatedAt": {
-      "$date": {
-        "$numberLong": "1776220135495"
-      }
-    }
-  },
-  {
-    "user": {
-      "_id": {
-        "$oid": "69def7e6327d850cae4acada"
-      },
-      "name": "Người dùng mẫu 17"
-    },
-    "name": "Danh sách đi chợ mẫu 18",
-    "date": [
-      {
-        "$date": {
-          "$numberLong": "1776220135479"
-        }
-      },
-      {
-        "$date": {
-          "$numberLong": "1776392935479"
-        }
-      }
-    ],
-    "ingredients": [
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca4a"
+          "$oid": "69e5d7591881fcda2ea9e2ef"
         },
         "name": "Cá hồi 27",
         "image": "https://picsum.photos/seed/ingredient-27/400/300",
         "isPurchased": true,
         "_id": {
-          "$oid": "69def7e7327d850cae4acfe3"
+          "$oid": "69e5d75a1881fcda2ea9e803"
         }
       },
       {
         "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca32"
+          "$oid": "69e5d7591881fcda2ea9e2f6"
         },
-        "name": "Cà rốt 3",
-        "image": "https://picsum.photos/seed/ingredient-3/400/300",
+        "name": "Hạnh nhân 34",
+        "image": "https://picsum.photos/seed/ingredient-34/400/300",
         "isPurchased": true,
         "_id": {
-          "$oid": "69def7e7327d850cae4acfe4"
+          "$oid": "69e5d75a1881fcda2ea9e804"
         }
       },
       {
         "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca5f"
+          "$oid": "69e5d7591881fcda2ea9e303"
         },
-        "name": "Sữa chua Hy Lạp 48",
-        "image": "https://picsum.photos/seed/ingredient-48/400/300",
+        "name": "Cá hồi 47",
+        "image": "https://picsum.photos/seed/ingredient-47/400/300",
         "isPurchased": false,
         "_id": {
-          "$oid": "69def7e7327d850cae4acfe5"
+          "$oid": "69e5d75a1881fcda2ea9e805"
         }
       },
       {
         "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca31"
+          "$oid": "69e5d7591881fcda2ea9e2eb"
         },
-        "name": "Bông cải xanh 2",
-        "image": "https://picsum.photos/seed/ingredient-2/400/300",
-        "isPurchased": true,
-        "_id": {
-          "$oid": "69def7e7327d850cae4acfe6"
-        }
-      },
-      {
-        "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca48"
-        },
-        "name": "Rau chân vịt 25",
-        "image": "https://picsum.photos/seed/ingredient-25/400/300",
+        "name": "Cà rốt 23",
+        "image": "https://picsum.photos/seed/ingredient-23/400/300",
         "isPurchased": false,
         "_id": {
-          "$oid": "69def7e7327d850cae4acfe7"
+          "$oid": "69e5d75a1881fcda2ea9e806"
         }
       },
       {
         "ingredientId": {
-          "$oid": "69def7e6327d850cae4aca4b"
+          "$oid": "69e5d7591881fcda2ea9e2db"
         },
-        "name": "Sữa chua Hy Lạp 28",
-        "image": "https://picsum.photos/seed/ingredient-28/400/300",
-        "isPurchased": true,
+        "name": "Cá hồi 7",
+        "image": "https://picsum.photos/seed/ingredient-7/400/300",
+        "isPurchased": false,
         "_id": {
-          "$oid": "69def7e7327d850cae4acfe8"
+          "$oid": "69e5d75a1881fcda2ea9e807"
         }
       }
     ],
     "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
     "_id": {
-      "$oid": "69def7e7327d850cae4acfe2"
+      "$oid": "69e5d75a1881fcda2ea9e802"
     },
     "createdAt": {
       "$date": {
-        "$numberLong": "1776220135495"
+        "$numberLong": "1776670554029"
       }
     },
     "updatedAt": {
       "$date": {
-        "$numberLong": "1776220135495"
+        "$numberLong": "1776670554029"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e39b"
+      },
+      "name": "Người dùng mẫu 24"
+    },
+    "name": "Danh sách đi chợ mẫu 5",
+    "date": [
+      {
+        "$date": {
+          "$numberLong": "1776670554013"
+        }
+      },
+      {
+        "$date": {
+          "$numberLong": "1776929754013"
+        }
+      }
+    ],
+    "ingredients": [
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f3"
+        },
+        "name": "Bơ 31",
+        "image": "https://picsum.photos/seed/ingredient-31/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e809"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2eb"
+        },
+        "name": "Cà rốt 23",
+        "image": "https://picsum.photos/seed/ingredient-23/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e80a"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2e2"
+        },
+        "name": "Hạnh nhân 14",
+        "image": "https://picsum.photos/seed/ingredient-14/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e80b"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f0"
+        },
+        "name": "Sữa chua Hy Lạp 28",
+        "image": "https://picsum.photos/seed/ingredient-28/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e80c"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e300"
+        },
+        "name": "Gạo lứt 44",
+        "image": "https://picsum.photos/seed/ingredient-44/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e80d"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2fb"
+        },
+        "name": "Táo 39",
+        "image": "https://picsum.photos/seed/ingredient-39/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e80e"
+        }
+      }
+    ],
+    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
+    "_id": {
+      "$oid": "69e5d75a1881fcda2ea9e808"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670554029"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670554029"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e383"
+      },
+      "name": "Người dùng mẫu 18"
+    },
+    "name": "Danh sách đi chợ mẫu 6",
+    "date": [
+      {
+        "$date": {
+          "$numberLong": "1776670554013"
+        }
+      },
+      {
+        "$date": {
+          "$numberLong": "1776756954013"
+        }
+      }
+    ],
+    "ingredients": [
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2dd"
+        },
+        "name": "Cà chua 9",
+        "image": "https://picsum.photos/seed/ingredient-9/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e810"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f6"
+        },
+        "name": "Hạnh nhân 34",
+        "image": "https://picsum.photos/seed/ingredient-34/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e811"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2ff"
+        },
+        "name": "Cà rốt 43",
+        "image": "https://picsum.photos/seed/ingredient-43/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e812"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2d7"
+        },
+        "name": "Cà rốt 3",
+        "image": "https://picsum.photos/seed/ingredient-3/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e813"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2e6"
+        },
+        "name": "Dưa leo 18",
+        "image": "https://picsum.photos/seed/ingredient-18/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e814"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e303"
+        },
+        "name": "Cá hồi 47",
+        "image": "https://picsum.photos/seed/ingredient-47/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e815"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2e8"
+        },
+        "name": "Chuối 20",
+        "image": "https://picsum.photos/seed/ingredient-20/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e816"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2d6"
+        },
+        "name": "Bông cải xanh 2",
+        "image": "https://picsum.photos/seed/ingredient-2/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e817"
+        }
+      }
+    ],
+    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
+    "_id": {
+      "$oid": "69e5d75a1881fcda2ea9e80f"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670554029"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670554029"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e367"
+      },
+      "name": "Người dùng mẫu 11"
+    },
+    "name": "Danh sách đi chợ mẫu 7",
+    "date": [
+      {
+        "$date": {
+          "$numberLong": "1776670554013"
+        }
+      },
+      {
+        "$date": {
+          "$numberLong": "1776756954013"
+        }
+      }
+    ],
+    "ingredients": [
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2d5"
+        },
+        "name": "Ức gà 1",
+        "image": "https://picsum.photos/seed/ingredient-1/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e819"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2fd"
+        },
+        "name": "Ức gà 41",
+        "image": "https://picsum.photos/seed/ingredient-41/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e81a"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f0"
+        },
+        "name": "Sữa chua Hy Lạp 28",
+        "image": "https://picsum.photos/seed/ingredient-28/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e81b"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2e9"
+        },
+        "name": "Ức gà 21",
+        "image": "https://picsum.photos/seed/ingredient-21/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e81c"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e300"
+        },
+        "name": "Gạo lứt 44",
+        "image": "https://picsum.photos/seed/ingredient-44/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e81d"
+        }
+      }
+    ],
+    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
+    "_id": {
+      "$oid": "69e5d75a1881fcda2ea9e818"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670554030"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670554030"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e383"
+      },
+      "name": "Người dùng mẫu 18"
+    },
+    "name": "Danh sách đi chợ mẫu 8",
+    "date": [
+      {
+        "$date": {
+          "$numberLong": "1776670554013"
+        }
+      },
+      {
+        "$date": {
+          "$numberLong": "1777275354013"
+        }
+      }
+    ],
+    "ingredients": [
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f0"
+        },
+        "name": "Sữa chua Hy Lạp 28",
+        "image": "https://picsum.photos/seed/ingredient-28/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e81f"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2fe"
+        },
+        "name": "Bông cải xanh 42",
+        "image": "https://picsum.photos/seed/ingredient-42/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e820"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2fb"
+        },
+        "name": "Táo 39",
+        "image": "https://picsum.photos/seed/ingredient-39/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e821"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e305"
+        },
+        "name": "Cà chua 49",
+        "image": "https://picsum.photos/seed/ingredient-49/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e822"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2dc"
+        },
+        "name": "Sữa chua Hy Lạp 8",
+        "image": "https://picsum.photos/seed/ingredient-8/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e823"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2fc"
+        },
+        "name": "Chuối 40",
+        "image": "https://picsum.photos/seed/ingredient-40/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e824"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e306"
+        },
+        "name": "Khoai lang 50",
+        "image": "https://picsum.photos/seed/ingredient-50/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e825"
+        }
+      }
+    ],
+    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
+    "_id": {
+      "$oid": "69e5d75a1881fcda2ea9e81e"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670554030"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670554030"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e363"
+      },
+      "name": "Người dùng mẫu 10"
+    },
+    "name": "Danh sách đi chợ mẫu 9",
+    "date": [
+      {
+        "$date": {
+          "$numberLong": "1776670554013"
+        }
+      },
+      {
+        "$date": {
+          "$numberLong": "1777016154013"
+        }
+      }
+    ],
+    "ingredients": [
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e300"
+        },
+        "name": "Gạo lứt 44",
+        "image": "https://picsum.photos/seed/ingredient-44/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e827"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2ef"
+        },
+        "name": "Cá hồi 27",
+        "image": "https://picsum.photos/seed/ingredient-27/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e828"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2e6"
+        },
+        "name": "Dưa leo 18",
+        "image": "https://picsum.photos/seed/ingredient-18/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e829"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2fb"
+        },
+        "name": "Táo 39",
+        "image": "https://picsum.photos/seed/ingredient-39/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e82a"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e303"
+        },
+        "name": "Cá hồi 47",
+        "image": "https://picsum.photos/seed/ingredient-47/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e82b"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2fa"
+        },
+        "name": "Dưa leo 38",
+        "image": "https://picsum.photos/seed/ingredient-38/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e82c"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2dd"
+        },
+        "name": "Cà chua 9",
+        "image": "https://picsum.photos/seed/ingredient-9/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e82d"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2dc"
+        },
+        "name": "Sữa chua Hy Lạp 8",
+        "image": "https://picsum.photos/seed/ingredient-8/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e82e"
+        }
+      }
+    ],
+    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
+    "_id": {
+      "$oid": "69e5d75a1881fcda2ea9e826"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670554030"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670554030"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e34f"
+      },
+      "name": "Người dùng mẫu 5"
+    },
+    "name": "Danh sách đi chợ mẫu 10",
+    "date": [
+      {
+        "$date": {
+          "$numberLong": "1776670554013"
+        }
+      },
+      {
+        "$date": {
+          "$numberLong": "1776929754013"
+        }
+      }
+    ],
+    "ingredients": [
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e305"
+        },
+        "name": "Cà chua 49",
+        "image": "https://picsum.photos/seed/ingredient-49/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e830"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f4"
+        },
+        "name": "Trứng gà 32",
+        "image": "https://picsum.photos/seed/ingredient-32/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e831"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2db"
+        },
+        "name": "Cá hồi 7",
+        "image": "https://picsum.photos/seed/ingredient-7/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e832"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2eb"
+        },
+        "name": "Cà rốt 23",
+        "image": "https://picsum.photos/seed/ingredient-23/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e833"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f6"
+        },
+        "name": "Hạnh nhân 34",
+        "image": "https://picsum.photos/seed/ingredient-34/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e834"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e304"
+        },
+        "name": "Sữa chua Hy Lạp 48",
+        "image": "https://picsum.photos/seed/ingredient-48/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e835"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2dc"
+        },
+        "name": "Sữa chua Hy Lạp 8",
+        "image": "https://picsum.photos/seed/ingredient-8/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e836"
+        }
+      }
+    ],
+    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
+    "_id": {
+      "$oid": "69e5d75a1881fcda2ea9e82f"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670554030"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670554030"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e35b"
+      },
+      "name": "Người dùng mẫu 8"
+    },
+    "name": "Danh sách đi chợ mẫu 11",
+    "date": [
+      {
+        "$date": {
+          "$numberLong": "1776670554013"
+        }
+      },
+      {
+        "$date": {
+          "$numberLong": "1777275354013"
+        }
+      }
+    ],
+    "ingredients": [
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2e2"
+        },
+        "name": "Hạnh nhân 14",
+        "image": "https://picsum.photos/seed/ingredient-14/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e838"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2fc"
+        },
+        "name": "Chuối 40",
+        "image": "https://picsum.photos/seed/ingredient-40/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e839"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f7"
+        },
+        "name": "Yến mạch 35",
+        "image": "https://picsum.photos/seed/ingredient-35/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e83a"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2d7"
+        },
+        "name": "Cà rốt 3",
+        "image": "https://picsum.photos/seed/ingredient-3/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e83b"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e300"
+        },
+        "name": "Gạo lứt 44",
+        "image": "https://picsum.photos/seed/ingredient-44/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e83c"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f0"
+        },
+        "name": "Sữa chua Hy Lạp 28",
+        "image": "https://picsum.photos/seed/ingredient-28/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e83d"
+        }
+      }
+    ],
+    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
+    "_id": {
+      "$oid": "69e5d75a1881fcda2ea9e837"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670554032"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670554032"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e36f"
+      },
+      "name": "Người dùng mẫu 13"
+    },
+    "name": "Danh sách đi chợ mẫu 12",
+    "date": [
+      {
+        "$date": {
+          "$numberLong": "1776670554013"
+        }
+      },
+      {
+        "$date": {
+          "$numberLong": "1776929754013"
+        }
+      }
+    ],
+    "ingredients": [
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e305"
+        },
+        "name": "Cà chua 49",
+        "image": "https://picsum.photos/seed/ingredient-49/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e83f"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2e2"
+        },
+        "name": "Hạnh nhân 14",
+        "image": "https://picsum.photos/seed/ingredient-14/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e840"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f4"
+        },
+        "name": "Trứng gà 32",
+        "image": "https://picsum.photos/seed/ingredient-32/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e841"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f0"
+        },
+        "name": "Sữa chua Hy Lạp 28",
+        "image": "https://picsum.photos/seed/ingredient-28/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e842"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f7"
+        },
+        "name": "Yến mạch 35",
+        "image": "https://picsum.photos/seed/ingredient-35/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e843"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2e4"
+        },
+        "name": "Nấm mỡ 16",
+        "image": "https://picsum.photos/seed/ingredient-16/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e844"
+        }
+      }
+    ],
+    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
+    "_id": {
+      "$oid": "69e5d75a1881fcda2ea9e83e"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670554032"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670554032"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e34f"
+      },
+      "name": "Người dùng mẫu 5"
+    },
+    "name": "Danh sách đi chợ mẫu 13",
+    "date": [
+      {
+        "$date": {
+          "$numberLong": "1776670554013"
+        }
+      },
+      {
+        "$date": {
+          "$numberLong": "1777275354013"
+        }
+      }
+    ],
+    "ingredients": [
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f0"
+        },
+        "name": "Sữa chua Hy Lạp 28",
+        "image": "https://picsum.photos/seed/ingredient-28/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e846"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2e5"
+        },
+        "name": "Ớt chuông 17",
+        "image": "https://picsum.photos/seed/ingredient-17/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e847"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2e0"
+        },
+        "name": "Trứng gà 12",
+        "image": "https://picsum.photos/seed/ingredient-12/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e848"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e300"
+        },
+        "name": "Gạo lứt 44",
+        "image": "https://picsum.photos/seed/ingredient-44/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e849"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f5"
+        },
+        "name": "Đậu lăng 33",
+        "image": "https://picsum.photos/seed/ingredient-33/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e84a"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e302"
+        },
+        "name": "Đậu hũ 46",
+        "image": "https://picsum.photos/seed/ingredient-46/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e84b"
+        }
+      }
+    ],
+    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
+    "_id": {
+      "$oid": "69e5d75a1881fcda2ea9e845"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670554032"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670554032"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e37b"
+      },
+      "name": "Người dùng mẫu 16"
+    },
+    "name": "Danh sách đi chợ mẫu 14",
+    "date": [
+      {
+        "$date": {
+          "$numberLong": "1776670554013"
+        }
+      },
+      {
+        "$date": {
+          "$numberLong": "1776929754013"
+        }
+      }
+    ],
+    "ingredients": [
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2ea"
+        },
+        "name": "Bông cải xanh 22",
+        "image": "https://picsum.photos/seed/ingredient-22/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e84d"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f1"
+        },
+        "name": "Cà chua 29",
+        "image": "https://picsum.photos/seed/ingredient-29/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e84e"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2e4"
+        },
+        "name": "Nấm mỡ 16",
+        "image": "https://picsum.photos/seed/ingredient-16/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e84f"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e305"
+        },
+        "name": "Cà chua 49",
+        "image": "https://picsum.photos/seed/ingredient-49/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e850"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f2"
+        },
+        "name": "Khoai lang 30",
+        "image": "https://picsum.photos/seed/ingredient-30/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e851"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2d5"
+        },
+        "name": "Ức gà 1",
+        "image": "https://picsum.photos/seed/ingredient-1/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e852"
+        }
+      }
+    ],
+    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
+    "_id": {
+      "$oid": "69e5d75a1881fcda2ea9e84c"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670554032"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670554032"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e35b"
+      },
+      "name": "Người dùng mẫu 8"
+    },
+    "name": "Danh sách đi chợ mẫu 15",
+    "date": [
+      {
+        "$date": {
+          "$numberLong": "1776670554013"
+        }
+      },
+      {
+        "$date": {
+          "$numberLong": "1776756954013"
+        }
+      }
+    ],
+    "ingredients": [
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e304"
+        },
+        "name": "Sữa chua Hy Lạp 48",
+        "image": "https://picsum.photos/seed/ingredient-48/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e854"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2e3"
+        },
+        "name": "Yến mạch 15",
+        "image": "https://picsum.photos/seed/ingredient-15/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e855"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f0"
+        },
+        "name": "Sữa chua Hy Lạp 28",
+        "image": "https://picsum.photos/seed/ingredient-28/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e856"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2d6"
+        },
+        "name": "Bông cải xanh 2",
+        "image": "https://picsum.photos/seed/ingredient-2/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e857"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2ec"
+        },
+        "name": "Gạo lứt 24",
+        "image": "https://picsum.photos/seed/ingredient-24/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e858"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e303"
+        },
+        "name": "Cá hồi 47",
+        "image": "https://picsum.photos/seed/ingredient-47/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e859"
+        }
+      }
+    ],
+    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
+    "_id": {
+      "$oid": "69e5d75a1881fcda2ea9e853"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670554032"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670554032"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e33f"
+      },
+      "name": "Người dùng mẫu 1"
+    },
+    "name": "Danh sách đi chợ mẫu 16",
+    "date": [
+      {
+        "$date": {
+          "$numberLong": "1776670554013"
+        }
+      },
+      {
+        "$date": {
+          "$numberLong": "1777016154013"
+        }
+      }
+    ],
+    "ingredients": [
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2df"
+        },
+        "name": "Bơ 11",
+        "image": "https://picsum.photos/seed/ingredient-11/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e85b"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e300"
+        },
+        "name": "Gạo lứt 44",
+        "image": "https://picsum.photos/seed/ingredient-44/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e85c"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2fb"
+        },
+        "name": "Táo 39",
+        "image": "https://picsum.photos/seed/ingredient-39/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e85d"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2d5"
+        },
+        "name": "Ức gà 1",
+        "image": "https://picsum.photos/seed/ingredient-1/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e85e"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2fd"
+        },
+        "name": "Ức gà 41",
+        "image": "https://picsum.photos/seed/ingredient-41/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e85f"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f9"
+        },
+        "name": "Ớt chuông 37",
+        "image": "https://picsum.photos/seed/ingredient-37/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e860"
+        }
+      }
+    ],
+    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
+    "_id": {
+      "$oid": "69e5d75a1881fcda2ea9e85a"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670554032"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670554032"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e38b"
+      },
+      "name": "Người dùng mẫu 20"
+    },
+    "name": "Danh sách đi chợ mẫu 17",
+    "date": [
+      {
+        "$date": {
+          "$numberLong": "1776670554013"
+        }
+      },
+      {
+        "$date": {
+          "$numberLong": "1776929754013"
+        }
+      }
+    ],
+    "ingredients": [
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2d7"
+        },
+        "name": "Cà rốt 3",
+        "image": "https://picsum.photos/seed/ingredient-3/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e862"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2db"
+        },
+        "name": "Cá hồi 7",
+        "image": "https://picsum.photos/seed/ingredient-7/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e863"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2e5"
+        },
+        "name": "Ớt chuông 17",
+        "image": "https://picsum.photos/seed/ingredient-17/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e864"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2e9"
+        },
+        "name": "Ức gà 21",
+        "image": "https://picsum.photos/seed/ingredient-21/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e865"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2dd"
+        },
+        "name": "Cà chua 9",
+        "image": "https://picsum.photos/seed/ingredient-9/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e866"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e304"
+        },
+        "name": "Sữa chua Hy Lạp 48",
+        "image": "https://picsum.photos/seed/ingredient-48/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e867"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2de"
+        },
+        "name": "Khoai lang 10",
+        "image": "https://picsum.photos/seed/ingredient-10/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e868"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2fc"
+        },
+        "name": "Chuối 40",
+        "image": "https://picsum.photos/seed/ingredient-40/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e869"
+        }
+      }
+    ],
+    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
+    "_id": {
+      "$oid": "69e5d75a1881fcda2ea9e861"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670554032"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670554032"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e38b"
+      },
+      "name": "Người dùng mẫu 20"
+    },
+    "name": "Danh sách đi chợ mẫu 18",
+    "date": [
+      {
+        "$date": {
+          "$numberLong": "1776670554013"
+        }
+      },
+      {
+        "$date": {
+          "$numberLong": "1776843354013"
+        }
+      }
+    ],
+    "ingredients": [
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2f0"
+        },
+        "name": "Sữa chua Hy Lạp 28",
+        "image": "https://picsum.photos/seed/ingredient-28/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e86b"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2eb"
+        },
+        "name": "Cà rốt 23",
+        "image": "https://picsum.photos/seed/ingredient-23/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e86c"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2e8"
+        },
+        "name": "Chuối 20",
+        "image": "https://picsum.photos/seed/ingredient-20/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e86d"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2ec"
+        },
+        "name": "Gạo lứt 24",
+        "image": "https://picsum.photos/seed/ingredient-24/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e86e"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e302"
+        },
+        "name": "Đậu hũ 46",
+        "image": "https://picsum.photos/seed/ingredient-46/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e86f"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2e0"
+        },
+        "name": "Trứng gà 12",
+        "image": "https://picsum.photos/seed/ingredient-12/400/300",
+        "isPurchased": false,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e870"
+        }
+      },
+      {
+        "ingredientId": {
+          "$oid": "69e5d7591881fcda2ea9e2fe"
+        },
+        "name": "Bông cải xanh 42",
+        "image": "https://picsum.photos/seed/ingredient-42/400/300",
+        "isPurchased": true,
+        "_id": {
+          "$oid": "69e5d75a1881fcda2ea9e871"
+        }
+      }
+    ],
+    "notes": "Danh sách đi chợ mẫu dùng để kiểm thử quan hệ schema.",
+    "_id": {
+      "$oid": "69e5d75a1881fcda2ea9e86a"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670554033"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670554033"
       }
     }
   }
