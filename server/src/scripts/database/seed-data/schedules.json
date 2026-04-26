@@ -1,0 +1,7285 @@
+[
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e33f"
+      },
+      "name": "Người dùng mẫu 1"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1775001600000"
+      }
+    },
+    "dayOfWeek": "Thứ Tư",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e53d"
+            },
+            "name": "Thông minh Tô 26",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-26/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e69c"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e54d"
+            },
+            "name": "Cân bằng Xào 27",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-27/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e69d"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e69b"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e53d"
+            },
+            "name": "Thông minh Tô 26",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-26/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e69f"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e54d"
+            },
+            "name": "Cân bằng Xào 27",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-27/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6a0"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e69e"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e31c"
+        },
+        "exerciseName": "Kéo tạ 8",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/8",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "3"
+          },
+          "unit": "km"
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e316"
+        },
+        "exerciseName": "Deadlift 6",
+        "exerciseType": "Linh hoạt",
+        "exerciseTutorial": "https://example.local/exercises/6",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "9"
+          },
+          "reps": {
+            "$numberInt": "8"
+          },
+          "sets": {
+            "$numberInt": "4"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e334"
+        },
+        "exerciseName": "Deadlift 16",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/16",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1778"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e69a"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553987"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553987"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e33f"
+      },
+      "name": "Người dùng mẫu 1"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1775088000000"
+      }
+    },
+    "dayOfWeek": "Thứ Năm",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e523"
+            },
+            "name": "Sung sức Salad 24",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-24/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6a3"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e530"
+            },
+            "name": "Năng lượng Trộn 25",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-25/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6a4"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6a2"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e530"
+            },
+            "name": "Năng lượng Trộn 25",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-25/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6a6"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e429"
+            },
+            "name": "Sung sức Bữa ăn 8",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-8/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6a7"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6a5"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e325"
+        },
+        "exerciseName": "Hít đất 11",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/11",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "7"
+          },
+          "reps": {
+            "$numberInt": "11"
+          },
+          "sets": {
+            "$numberInt": "3"
+          }
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e32b"
+        },
+        "exerciseName": "Plank 13",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/13",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "670"
+          }
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e6a1"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553988"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553988"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e343"
+      },
+      "name": "Người dùng mẫu 2"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1775260800000"
+      }
+    },
+    "dayOfWeek": "Thứ Bảy",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e499"
+            },
+            "name": "Thông minh Salad 15",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-15/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6aa"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e469"
+            },
+            "name": "Năng lượng Súp 12",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-12/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6ab"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6a9"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e469"
+            },
+            "name": "Năng lượng Súp 12",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-12/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6ad"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e5aa"
+            },
+            "name": "Mỗi ngày Súp 33",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-33/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6ae"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6ac"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e33a"
+        },
+        "exerciseName": "Kéo tạ 18",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/18",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "196"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e319"
+        },
+        "exerciseName": "Đẩy ngực ghế 7",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/7",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "35"
+          },
+          "reps": {
+            "$numberInt": "12"
+          },
+          "sets": {
+            "$numberInt": "4"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e325"
+        },
+        "exerciseName": "Hít đất 11",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/11",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "27"
+          },
+          "reps": {
+            "$numberInt": "10"
+          },
+          "sets": {
+            "$numberInt": "4"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e6a8"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553988"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553988"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e343"
+      },
+      "name": "Người dùng mẫu 2"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1775347200000"
+      }
+    },
+    "dayOfWeek": "Chủ Nhật",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e48c"
+            },
+            "name": "Sung sức Đĩa 14",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-14/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6b1"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e439"
+            },
+            "name": "Bổ dưỡng Súp 9",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-9/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6b2"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6b0"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e439"
+            },
+            "name": "Bổ dưỡng Súp 9",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-9/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6b4"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e469"
+            },
+            "name": "Năng lượng Súp 12",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-12/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6b5"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6b3"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e322"
+        },
+        "exerciseName": "Bật nhảy dang tay 10",
+        "exerciseType": "Linh hoạt",
+        "exerciseTutorial": "https://example.local/exercises/10",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1686"
+          }
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e331"
+        },
+        "exerciseName": "Leo núi tại chỗ 15",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/15",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "15"
+          },
+          "reps": {
+            "$numberInt": "11"
+          },
+          "sets": {
+            "$numberInt": "2"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e32b"
+        },
+        "exerciseName": "Plank 13",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/13",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "541"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e6af"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553988"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553988"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e347"
+      },
+      "name": "Người dùng mẫu 3"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1775520000000"
+      }
+    },
+    "dayOfWeek": "Thứ Ba",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3c6"
+            },
+            "name": "Thông minh Trộn 2",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-2/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6b8"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e59a"
+            },
+            "name": "Nhẹ nhàng Trộn 32",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-32/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6b9"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6b7"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3c6"
+            },
+            "name": "Thông minh Trộn 2",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-2/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6bb"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e59a"
+            },
+            "name": "Nhẹ nhàng Trộn 32",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-32/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6bc"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6ba"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e31f"
+        },
+        "exerciseName": "Burpee 9",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/9",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "2"
+          },
+          "unit": "m"
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e328"
+        },
+        "exerciseName": "Squat 12",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/12",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "23"
+          },
+          "reps": {
+            "$numberInt": "10"
+          },
+          "sets": {
+            "$numberInt": "4"
+          }
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e6b6"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553988"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553988"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e347"
+      },
+      "name": "Người dùng mẫu 3"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1775606400000"
+      }
+    },
+    "dayOfWeek": "Thứ Tư",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3b9"
+            },
+            "name": "Nhẹ nhàng Kết hợp 1",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-1/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6bf"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3c6"
+            },
+            "name": "Thông minh Trộn 2",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-2/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6c0"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6be"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e57a"
+            },
+            "name": "Cân bằng Tô 30",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-30/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6c2"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e55a"
+            },
+            "name": "Thông minh Xào 28",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-28/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6c3"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6c1"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e319"
+        },
+        "exerciseName": "Đẩy ngực ghế 7",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/7",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "40"
+          },
+          "reps": {
+            "$numberInt": "9"
+          },
+          "sets": {
+            "$numberInt": "4"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e31c"
+        },
+        "exerciseName": "Kéo tạ 8",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/8",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "7"
+          },
+          "unit": "m"
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e6bd"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553988"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553988"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e34b"
+      },
+      "name": "Người dùng mẫu 4"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1775779200000"
+      }
+    },
+    "dayOfWeek": "Thứ Sáu",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e56a"
+            },
+            "name": "Bổ dưỡng Phần ăn 29",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-29/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6c6"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3b9"
+            },
+            "name": "Nhẹ nhàng Kết hợp 1",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-1/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6c7"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6c5"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3c6"
+            },
+            "name": "Thông minh Trộn 2",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-2/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6c9"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e48c"
+            },
+            "name": "Sung sức Đĩa 14",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-14/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6ca"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6c8"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e307"
+        },
+        "exerciseName": "Hít đất 1",
+        "exerciseType": "Động",
+        "exerciseTutorial": "https://example.local/exercises/1",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "10"
+          },
+          "reps": {
+            "$numberInt": "13"
+          },
+          "sets": {
+            "$numberInt": "2"
+          }
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e319"
+        },
+        "exerciseName": "Đẩy ngực ghế 7",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/7",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "30"
+          },
+          "reps": {
+            "$numberInt": "9"
+          },
+          "sets": {
+            "$numberInt": "3"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e32b"
+        },
+        "exerciseName": "Plank 13",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/13",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1286"
+          }
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e6c4"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553989"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553989"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e34b"
+      },
+      "name": "Người dùng mẫu 4"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1775865600000"
+      }
+    },
+    "dayOfWeek": "Thứ Bảy",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e439"
+            },
+            "name": "Bổ dưỡng Súp 9",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-9/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6cd"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4e0"
+            },
+            "name": "Thanh mát Xào 20",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-20/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6ce"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6cc"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3b9"
+            },
+            "name": "Nhẹ nhàng Kết hợp 1",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-1/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6d0"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e56a"
+            },
+            "name": "Bổ dưỡng Phần ăn 29",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-29/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6d1"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6cf"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e307"
+        },
+        "exerciseName": "Hít đất 1",
+        "exerciseType": "Động",
+        "exerciseTutorial": "https://example.local/exercises/1",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "29"
+          },
+          "reps": {
+            "$numberInt": "8"
+          },
+          "sets": {
+            "$numberInt": "3"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e6cb"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553989"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553989"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e34f"
+      },
+      "name": "Người dùng mẫu 5"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1776038400000"
+      }
+    },
+    "dayOfWeek": "Thứ Hai",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e416"
+            },
+            "name": "Khỏe mạnh Súp 7",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-7/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6d4"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4c0"
+            },
+            "name": "Thanh mát Xào 18",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-18/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6d5"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6d3"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4c0"
+            },
+            "name": "Thanh mát Xào 18",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-18/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6d7"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e456"
+            },
+            "name": "Cân bằng Bữa ăn 11",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-11/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6d8"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6d6"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e32b"
+        },
+        "exerciseName": "Plank 13",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/13",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1400"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e6d2"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553989"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553989"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e34f"
+      },
+      "name": "Người dùng mẫu 5"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1776124800000"
+      }
+    },
+    "dayOfWeek": "Thứ Ba",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e57a"
+            },
+            "name": "Cân bằng Tô 30",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-30/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6db"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4a6"
+            },
+            "name": "Bổ dưỡng Đĩa 16",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-16/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6dc"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6da"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4a6"
+            },
+            "name": "Bổ dưỡng Đĩa 16",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-16/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6de"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e416"
+            },
+            "name": "Khỏe mạnh Súp 7",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-7/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6df"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6dd"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e31c"
+        },
+        "exerciseName": "Kéo tạ 8",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/8",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "1"
+          },
+          "unit": "m"
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e319"
+        },
+        "exerciseName": "Đẩy ngực ghế 7",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/7",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "66"
+          },
+          "reps": {
+            "$numberInt": "9"
+          },
+          "sets": {
+            "$numberInt": "4"
+          }
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e313"
+        },
+        "exerciseName": "Leo núi tại chỗ 5",
+        "exerciseType": "Kéo giãn",
+        "exerciseTutorial": "https://example.local/exercises/5",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "220"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e6d9"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553989"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553989"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e353"
+      },
+      "name": "Người dùng mẫu 6"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1776297600000"
+      }
+    },
+    "dayOfWeek": "Thứ Năm",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e456"
+            },
+            "name": "Cân bằng Bữa ăn 11",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-11/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6e2"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e469"
+            },
+            "name": "Năng lượng Súp 12",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-12/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6e3"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6e1"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4a6"
+            },
+            "name": "Bổ dưỡng Đĩa 16",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-16/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6e5"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4b3"
+            },
+            "name": "Năng lượng Trộn 17",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-17/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6e6"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6e4"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e32e"
+        },
+        "exerciseName": "Lunge 14",
+        "exerciseType": "Olympic",
+        "exerciseTutorial": "https://example.local/exercises/14",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "4"
+          },
+          "unit": "m"
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e310"
+        },
+        "exerciseName": "Lunge 4",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/4",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "314"
+          }
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e337"
+        },
+        "exerciseName": "Đẩy ngực ghế 17",
+        "exerciseType": "Cường độ",
+        "exerciseTutorial": "https://example.local/exercises/17",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "22"
+          },
+          "reps": {
+            "$numberInt": "14"
+          },
+          "sets": {
+            "$numberInt": "3"
+          }
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e6e0"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553989"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553989"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e353"
+      },
+      "name": "Người dùng mẫu 6"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1776384000000"
+      }
+    },
+    "dayOfWeek": "Thứ Sáu",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e429"
+            },
+            "name": "Sung sức Bữa ăn 8",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-8/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6e9"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e503"
+            },
+            "name": "Sung sức Bữa ăn 22",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-22/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6ea"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6e8"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e5cd"
+            },
+            "name": "Khỏe mạnh Trộn 35",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-35/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6ec"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e416"
+            },
+            "name": "Khỏe mạnh Súp 7",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-7/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6ed"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6eb"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e31c"
+        },
+        "exerciseName": "Kéo tạ 8",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/8",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "1"
+          },
+          "unit": "m"
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e334"
+        },
+        "exerciseName": "Deadlift 16",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/16",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1320"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e30d"
+        },
+        "exerciseName": "Plank 3",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/3",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "1"
+          },
+          "unit": "m"
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e6e7"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553989"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553989"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e357"
+      },
+      "name": "Người dùng mẫu 7"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1776556800000"
+      }
+    },
+    "dayOfWeek": "Chủ Nhật",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e429"
+            },
+            "name": "Sung sức Bữa ăn 8",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-8/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6f0"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e54d"
+            },
+            "name": "Cân bằng Xào 27",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-27/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6f1"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6ef"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4a6"
+            },
+            "name": "Bổ dưỡng Đĩa 16",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-16/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6f3"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3e6"
+            },
+            "name": "Năng lượng Tô 4",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-4/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6f4"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6f2"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e307"
+        },
+        "exerciseName": "Hít đất 1",
+        "exerciseType": "Động",
+        "exerciseTutorial": "https://example.local/exercises/1",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "54"
+          },
+          "reps": {
+            "$numberInt": "10"
+          },
+          "sets": {
+            "$numberInt": "4"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e6ee"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553989"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553989"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e357"
+      },
+      "name": "Người dùng mẫu 7"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1776643200000"
+      }
+    },
+    "dayOfWeek": "Thứ Hai",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e54d"
+            },
+            "name": "Cân bằng Xào 27",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-27/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6f7"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e57a"
+            },
+            "name": "Cân bằng Tô 30",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-30/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6f8"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6f6"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e54d"
+            },
+            "name": "Cân bằng Xào 27",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-27/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6fa"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e57a"
+            },
+            "name": "Cân bằng Tô 30",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-30/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6fb"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6f9"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e31c"
+        },
+        "exerciseName": "Kéo tạ 8",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/8",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "1"
+          },
+          "unit": "m"
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e313"
+        },
+        "exerciseName": "Leo núi tại chỗ 5",
+        "exerciseType": "Kéo giãn",
+        "exerciseTutorial": "https://example.local/exercises/5",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "276"
+          }
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e328"
+        },
+        "exerciseName": "Squat 12",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/12",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "28"
+          },
+          "reps": {
+            "$numberInt": "15"
+          },
+          "sets": {
+            "$numberInt": "3"
+          }
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e6f5"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553989"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553989"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e35b"
+      },
+      "name": "Người dùng mẫu 8"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1776816000000"
+      }
+    },
+    "dayOfWeek": "Thứ Tư",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3b9"
+            },
+            "name": "Nhẹ nhàng Kết hợp 1",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-1/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6fe"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e516"
+            },
+            "name": "Thông minh Đĩa 23",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-23/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e6ff"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e6fd"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e516"
+            },
+            "name": "Thông minh Đĩa 23",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-23/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e701"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4d0"
+            },
+            "name": "Mỗi ngày Trộn 19",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-19/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e702"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e700"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e313"
+        },
+        "exerciseName": "Leo núi tại chỗ 5",
+        "exerciseType": "Kéo giãn",
+        "exerciseTutorial": "https://example.local/exercises/5",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1419"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e30d"
+        },
+        "exerciseName": "Plank 3",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/3",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "2"
+          },
+          "unit": "m"
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e325"
+        },
+        "exerciseName": "Hít đất 11",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/11",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "25"
+          },
+          "reps": {
+            "$numberInt": "10"
+          },
+          "sets": {
+            "$numberInt": "4"
+          }
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e6fc"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553990"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553990"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e35b"
+      },
+      "name": "Người dùng mẫu 8"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1776902400000"
+      }
+    },
+    "dayOfWeek": "Thứ Năm",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e48c"
+            },
+            "name": "Sung sức Đĩa 14",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-14/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e705"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4a6"
+            },
+            "name": "Bổ dưỡng Đĩa 16",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-16/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e706"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e704"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4d0"
+            },
+            "name": "Mỗi ngày Trộn 19",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-19/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e708"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4c0"
+            },
+            "name": "Thanh mát Xào 18",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-18/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e709"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e707"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e328"
+        },
+        "exerciseName": "Squat 12",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/12",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "34"
+          },
+          "reps": {
+            "$numberInt": "10"
+          },
+          "sets": {
+            "$numberInt": "2"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e703"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553990"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553990"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e35f"
+      },
+      "name": "Người dùng mẫu 9"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1777075200000"
+      }
+    },
+    "dayOfWeek": "Thứ Bảy",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e56a"
+            },
+            "name": "Bổ dưỡng Phần ăn 29",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-29/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e70c"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e57a"
+            },
+            "name": "Cân bằng Tô 30",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-30/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e70d"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e70b"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e57a"
+            },
+            "name": "Cân bằng Tô 30",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-30/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e70f"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e54d"
+            },
+            "name": "Cân bằng Xào 27",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-27/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e710"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e70e"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e331"
+        },
+        "exerciseName": "Leo núi tại chỗ 15",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/15",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "11"
+          },
+          "reps": {
+            "$numberInt": "12"
+          },
+          "sets": {
+            "$numberInt": "4"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e70a"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553990"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553990"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e35f"
+      },
+      "name": "Người dùng mẫu 9"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1777161600000"
+      }
+    },
+    "dayOfWeek": "Chủ Nhật",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e416"
+            },
+            "name": "Khỏe mạnh Súp 7",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-7/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e713"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e446"
+            },
+            "name": "Khỏe mạnh Đĩa 10",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-10/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e714"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e712"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e446"
+            },
+            "name": "Khỏe mạnh Đĩa 10",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-10/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e716"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e5cd"
+            },
+            "name": "Khỏe mạnh Trộn 35",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-35/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e717"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e715"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e33a"
+        },
+        "exerciseName": "Kéo tạ 18",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/18",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "693"
+          }
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e30d"
+        },
+        "exerciseName": "Plank 3",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/3",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "3"
+          },
+          "unit": "km"
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e322"
+        },
+        "exerciseName": "Bật nhảy dang tay 10",
+        "exerciseType": "Linh hoạt",
+        "exerciseTutorial": "https://example.local/exercises/10",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1328"
+          }
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e711"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553990"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553990"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e363"
+      },
+      "name": "Người dùng mẫu 10"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1777334400000"
+      }
+    },
+    "dayOfWeek": "Thứ Ba",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4f3"
+            },
+            "name": "Cân bằng Tô 21",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-21/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e71a"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3f3"
+            },
+            "name": "Cân bằng Bữa ăn 5",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-5/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e71b"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e719"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4d0"
+            },
+            "name": "Mỗi ngày Trộn 19",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-19/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e71d"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e57a"
+            },
+            "name": "Cân bằng Tô 30",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-30/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e71e"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e71c"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e334"
+        },
+        "exerciseName": "Deadlift 16",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/16",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1273"
+          }
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e31c"
+        },
+        "exerciseName": "Kéo tạ 8",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/8",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "2"
+          },
+          "unit": "m"
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e718"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553990"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553990"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e363"
+      },
+      "name": "Người dùng mẫu 10"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1777420800000"
+      }
+    },
+    "dayOfWeek": "Thứ Tư",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e55a"
+            },
+            "name": "Thông minh Xào 28",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-28/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e721"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e429"
+            },
+            "name": "Sung sức Bữa ăn 8",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-8/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e722"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e720"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e429"
+            },
+            "name": "Sung sức Bữa ăn 8",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-8/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e724"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3e6"
+            },
+            "name": "Năng lượng Tô 4",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-4/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e725"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e723"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e307"
+        },
+        "exerciseName": "Hít đất 1",
+        "exerciseType": "Động",
+        "exerciseTutorial": "https://example.local/exercises/1",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "65"
+          },
+          "reps": {
+            "$numberInt": "10"
+          },
+          "sets": {
+            "$numberInt": "3"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e30a"
+        },
+        "exerciseName": "Squat 2",
+        "exerciseType": "Cường độ",
+        "exerciseTutorial": "https://example.local/exercises/2",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "52"
+          },
+          "reps": {
+            "$numberInt": "13"
+          },
+          "sets": {
+            "$numberInt": "2"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e32b"
+        },
+        "exerciseName": "Plank 13",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/13",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1695"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e71f"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553990"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553990"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e367"
+      },
+      "name": "Người dùng mẫu 11"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1777593600000"
+      }
+    },
+    "dayOfWeek": "Thứ Sáu",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4b3"
+            },
+            "name": "Năng lượng Trộn 17",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-17/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e728"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e499"
+            },
+            "name": "Thông minh Salad 15",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-15/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e729"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e727"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4b3"
+            },
+            "name": "Năng lượng Trộn 17",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-17/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e72b"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e499"
+            },
+            "name": "Thông minh Salad 15",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-15/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e72c"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e72a"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e30a"
+        },
+        "exerciseName": "Squat 2",
+        "exerciseType": "Cường độ",
+        "exerciseTutorial": "https://example.local/exercises/2",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "25"
+          },
+          "reps": {
+            "$numberInt": "13"
+          },
+          "sets": {
+            "$numberInt": "2"
+          }
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e325"
+        },
+        "exerciseName": "Hít đất 11",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/11",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "16"
+          },
+          "reps": {
+            "$numberInt": "13"
+          },
+          "sets": {
+            "$numberInt": "2"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e726"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553990"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553990"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e367"
+      },
+      "name": "Người dùng mẫu 11"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1777680000000"
+      }
+    },
+    "dayOfWeek": "Thứ Bảy",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e5e0"
+            },
+            "name": "Năng lượng Phần ăn 36",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-36/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e72f"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e499"
+            },
+            "name": "Thông minh Salad 15",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-15/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e730"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e72e"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e499"
+            },
+            "name": "Thông minh Salad 15",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-15/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e732"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3d9"
+            },
+            "name": "Sung sức Bữa ăn 3",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-3/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e733"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e731"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e313"
+        },
+        "exerciseName": "Leo núi tại chỗ 5",
+        "exerciseType": "Kéo giãn",
+        "exerciseTutorial": "https://example.local/exercises/5",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1202"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e72d"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e36b"
+      },
+      "name": "Người dùng mẫu 12"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1777852800000"
+      }
+    },
+    "dayOfWeek": "Thứ Hai",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4f3"
+            },
+            "name": "Cân bằng Tô 21",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-21/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e736"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e56a"
+            },
+            "name": "Bổ dưỡng Phần ăn 29",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-29/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e737"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e735"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e429"
+            },
+            "name": "Sung sức Bữa ăn 8",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-8/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e739"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e446"
+            },
+            "name": "Khỏe mạnh Đĩa 10",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-10/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e73a"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e738"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e32e"
+        },
+        "exerciseName": "Lunge 14",
+        "exerciseType": "Olympic",
+        "exerciseTutorial": "https://example.local/exercises/14",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "7"
+          },
+          "unit": "km"
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e32b"
+        },
+        "exerciseName": "Plank 13",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/13",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1158"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e734"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e36b"
+      },
+      "name": "Người dùng mẫu 12"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1777939200000"
+      }
+    },
+    "dayOfWeek": "Thứ Ba",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4c0"
+            },
+            "name": "Thanh mát Xào 18",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-18/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e73d"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3b9"
+            },
+            "name": "Nhẹ nhàng Kết hợp 1",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-1/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e73e"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e73c"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e523"
+            },
+            "name": "Sung sức Salad 24",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-24/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e740"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3c6"
+            },
+            "name": "Thông minh Trộn 2",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-2/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e741"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e73f"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e32e"
+        },
+        "exerciseName": "Lunge 14",
+        "exerciseType": "Olympic",
+        "exerciseTutorial": "https://example.local/exercises/14",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "2"
+          },
+          "unit": "km"
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e73b"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e36f"
+      },
+      "name": "Người dùng mẫu 13"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1778112000000"
+      }
+    },
+    "dayOfWeek": "Thứ Năm",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e416"
+            },
+            "name": "Khỏe mạnh Súp 7",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-7/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e744"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3b9"
+            },
+            "name": "Nhẹ nhàng Kết hợp 1",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-1/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e745"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e743"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e5bd"
+            },
+            "name": "Mỗi ngày Đĩa 34",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-34/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e747"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3e6"
+            },
+            "name": "Năng lượng Tô 4",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-4/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e748"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e746"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e310"
+        },
+        "exerciseName": "Lunge 4",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/4",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1341"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e742"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e36f"
+      },
+      "name": "Người dùng mẫu 13"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1778198400000"
+      }
+    },
+    "dayOfWeek": "Thứ Sáu",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e5cd"
+            },
+            "name": "Khỏe mạnh Trộn 35",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-35/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e74b"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4b3"
+            },
+            "name": "Năng lượng Trộn 17",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-17/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e74c"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e74a"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e416"
+            },
+            "name": "Khỏe mạnh Súp 7",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-7/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e74e"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e59a"
+            },
+            "name": "Nhẹ nhàng Trộn 32",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-32/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e74f"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e74d"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e310"
+        },
+        "exerciseName": "Lunge 4",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/4",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "531"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e31f"
+        },
+        "exerciseName": "Burpee 9",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/9",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "7"
+          },
+          "unit": "m"
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e749"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e373"
+      },
+      "name": "Người dùng mẫu 14"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1778371200000"
+      }
+    },
+    "dayOfWeek": "Chủ Nhật",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e5e0"
+            },
+            "name": "Năng lượng Phần ăn 36",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-36/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e752"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3b9"
+            },
+            "name": "Nhẹ nhàng Kết hợp 1",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-1/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e753"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e751"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e5e0"
+            },
+            "name": "Năng lượng Phần ăn 36",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-36/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e755"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3b9"
+            },
+            "name": "Nhẹ nhàng Kết hợp 1",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-1/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e756"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e754"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e307"
+        },
+        "exerciseName": "Hít đất 1",
+        "exerciseType": "Động",
+        "exerciseTutorial": "https://example.local/exercises/1",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "29"
+          },
+          "reps": {
+            "$numberInt": "14"
+          },
+          "sets": {
+            "$numberInt": "3"
+          }
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e334"
+        },
+        "exerciseName": "Deadlift 16",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/16",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "994"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e750"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e373"
+      },
+      "name": "Người dùng mẫu 14"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1778457600000"
+      }
+    },
+    "dayOfWeek": "Thứ Hai",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e403"
+            },
+            "name": "Thông minh Súp 6",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-6/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e759"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e5e0"
+            },
+            "name": "Năng lượng Phần ăn 36",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-36/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e75a"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e758"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e5e0"
+            },
+            "name": "Năng lượng Phần ăn 36",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-36/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e75c"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e503"
+            },
+            "name": "Sung sức Bữa ăn 22",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-22/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e75d"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e75b"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e319"
+        },
+        "exerciseName": "Đẩy ngực ghế 7",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/7",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "58"
+          },
+          "reps": {
+            "$numberInt": "8"
+          },
+          "sets": {
+            "$numberInt": "4"
+          }
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e31c"
+        },
+        "exerciseName": "Kéo tạ 8",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/8",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "8"
+          },
+          "unit": "km"
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e316"
+        },
+        "exerciseName": "Deadlift 6",
+        "exerciseType": "Linh hoạt",
+        "exerciseTutorial": "https://example.local/exercises/6",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "70"
+          },
+          "reps": {
+            "$numberInt": "8"
+          },
+          "sets": {
+            "$numberInt": "2"
+          }
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e757"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e377"
+      },
+      "name": "Người dùng mẫu 15"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1778630400000"
+      }
+    },
+    "dayOfWeek": "Thứ Tư",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e416"
+            },
+            "name": "Khỏe mạnh Súp 7",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-7/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e760"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e439"
+            },
+            "name": "Bổ dưỡng Súp 9",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-9/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e761"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e75f"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e439"
+            },
+            "name": "Bổ dưỡng Súp 9",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-9/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e763"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e53d"
+            },
+            "name": "Thông minh Tô 26",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-26/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e764"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e762"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e325"
+        },
+        "exerciseName": "Hít đất 11",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/11",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "31"
+          },
+          "reps": {
+            "$numberInt": "15"
+          },
+          "sets": {
+            "$numberInt": "3"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e75e"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e377"
+      },
+      "name": "Người dùng mẫu 15"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1778716800000"
+      }
+    },
+    "dayOfWeek": "Thứ Năm",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4b3"
+            },
+            "name": "Năng lượng Trộn 17",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-17/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e767"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e456"
+            },
+            "name": "Cân bằng Bữa ăn 11",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-11/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e768"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e766"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4b3"
+            },
+            "name": "Năng lượng Trộn 17",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-17/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e76a"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e456"
+            },
+            "name": "Cân bằng Bữa ăn 11",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-11/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e76b"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e769"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e33a"
+        },
+        "exerciseName": "Kéo tạ 18",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/18",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "365"
+          }
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e319"
+        },
+        "exerciseName": "Đẩy ngực ghế 7",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/7",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "66"
+          },
+          "reps": {
+            "$numberInt": "11"
+          },
+          "sets": {
+            "$numberInt": "3"
+          }
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e765"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553991"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e37b"
+      },
+      "name": "Người dùng mẫu 16"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1778889600000"
+      }
+    },
+    "dayOfWeek": "Thứ Bảy",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e57a"
+            },
+            "name": "Cân bằng Tô 30",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-30/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e76e"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4e0"
+            },
+            "name": "Thanh mát Xào 20",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-20/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e76f"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e76d"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4e0"
+            },
+            "name": "Thanh mát Xào 20",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-20/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e771"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e416"
+            },
+            "name": "Khỏe mạnh Súp 7",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-7/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e772"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e770"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e30a"
+        },
+        "exerciseName": "Squat 2",
+        "exerciseType": "Cường độ",
+        "exerciseTutorial": "https://example.local/exercises/2",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "20"
+          },
+          "reps": {
+            "$numberInt": "13"
+          },
+          "sets": {
+            "$numberInt": "3"
+          }
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e76c"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553992"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553992"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e37b"
+      },
+      "name": "Người dùng mẫu 16"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1778976000000"
+      }
+    },
+    "dayOfWeek": "Chủ Nhật",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e523"
+            },
+            "name": "Sung sức Salad 24",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-24/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e775"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e456"
+            },
+            "name": "Cân bằng Bữa ăn 11",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-11/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e776"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e774"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e523"
+            },
+            "name": "Sung sức Salad 24",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-24/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e778"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e456"
+            },
+            "name": "Cân bằng Bữa ăn 11",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-11/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e779"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e777"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e310"
+        },
+        "exerciseName": "Lunge 4",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/4",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1394"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e322"
+        },
+        "exerciseName": "Bật nhảy dang tay 10",
+        "exerciseType": "Linh hoạt",
+        "exerciseTutorial": "https://example.local/exercises/10",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "997"
+          }
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e773"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553992"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553992"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e37f"
+      },
+      "name": "Người dùng mẫu 17"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1779148800000"
+      }
+    },
+    "dayOfWeek": "Thứ Ba",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e479"
+            },
+            "name": "Cân bằng Súp 13",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-13/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e77c"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e429"
+            },
+            "name": "Sung sức Bữa ăn 8",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-8/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e77d"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e77b"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3d9"
+            },
+            "name": "Sung sức Bữa ăn 3",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-3/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e77f"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e56a"
+            },
+            "name": "Bổ dưỡng Phần ăn 29",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-29/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e780"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e77e"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e316"
+        },
+        "exerciseName": "Deadlift 6",
+        "exerciseType": "Linh hoạt",
+        "exerciseTutorial": "https://example.local/exercises/6",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "39"
+          },
+          "reps": {
+            "$numberInt": "10"
+          },
+          "sets": {
+            "$numberInt": "3"
+          }
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e33a"
+        },
+        "exerciseName": "Kéo tạ 18",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/18",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1184"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e31c"
+        },
+        "exerciseName": "Kéo tạ 8",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/8",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "4"
+          },
+          "unit": "km"
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e77a"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553992"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553992"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e37f"
+      },
+      "name": "Người dùng mẫu 17"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1779235200000"
+      }
+    },
+    "dayOfWeek": "Thứ Tư",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e469"
+            },
+            "name": "Năng lượng Súp 12",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-12/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e783"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4e0"
+            },
+            "name": "Thanh mát Xào 20",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-20/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e784"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e782"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4e0"
+            },
+            "name": "Thanh mát Xào 20",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-20/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e786"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e516"
+            },
+            "name": "Thông minh Đĩa 23",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-23/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e787"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e785"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e32b"
+        },
+        "exerciseName": "Plank 13",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/13",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "764"
+          }
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e310"
+        },
+        "exerciseName": "Lunge 4",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/4",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1515"
+          }
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e30d"
+        },
+        "exerciseName": "Plank 3",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/3",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "8"
+          },
+          "unit": "km"
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e781"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553992"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553992"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e383"
+      },
+      "name": "Người dùng mẫu 18"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1779408000000"
+      }
+    },
+    "dayOfWeek": "Thứ Sáu",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3f3"
+            },
+            "name": "Cân bằng Bữa ăn 5",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-5/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e78a"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3b9"
+            },
+            "name": "Nhẹ nhàng Kết hợp 1",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-1/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e78b"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e789"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3f3"
+            },
+            "name": "Cân bằng Bữa ăn 5",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-5/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e78d"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3b9"
+            },
+            "name": "Nhẹ nhàng Kết hợp 1",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-1/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e78e"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e78c"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e310"
+        },
+        "exerciseName": "Lunge 4",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/4",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1388"
+          }
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e788"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553992"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553992"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e383"
+      },
+      "name": "Người dùng mẫu 18"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1779494400000"
+      }
+    },
+    "dayOfWeek": "Thứ Bảy",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e499"
+            },
+            "name": "Thông minh Salad 15",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-15/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e791"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e5cd"
+            },
+            "name": "Khỏe mạnh Trộn 35",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-35/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e792"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e790"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e5cd"
+            },
+            "name": "Khỏe mạnh Trộn 35",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-35/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e794"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e53d"
+            },
+            "name": "Thông minh Tô 26",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-26/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e795"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e793"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e32e"
+        },
+        "exerciseName": "Lunge 14",
+        "exerciseType": "Olympic",
+        "exerciseTutorial": "https://example.local/exercises/14",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "4"
+          },
+          "unit": "km"
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e30d"
+        },
+        "exerciseName": "Plank 3",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/3",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "7"
+          },
+          "unit": "m"
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e78f"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553992"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553992"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e387"
+      },
+      "name": "Người dùng mẫu 19"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1779667200000"
+      }
+    },
+    "dayOfWeek": "Thứ Hai",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4d0"
+            },
+            "name": "Mỗi ngày Trộn 19",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-19/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e798"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3e6"
+            },
+            "name": "Năng lượng Tô 4",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-4/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e799"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e797"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e516"
+            },
+            "name": "Thông minh Đĩa 23",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-23/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e79b"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4e0"
+            },
+            "name": "Thanh mát Xào 20",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-20/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e79c"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e79a"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e310"
+        },
+        "exerciseName": "Lunge 4",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/4",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1399"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e30d"
+        },
+        "exerciseName": "Plank 3",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/3",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "3"
+          },
+          "unit": "m"
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e796"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553992"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553992"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e387"
+      },
+      "name": "Người dùng mẫu 19"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1779753600000"
+      }
+    },
+    "dayOfWeek": "Thứ Ba",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e429"
+            },
+            "name": "Sung sức Bữa ăn 8",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-8/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e79f"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4e0"
+            },
+            "name": "Thanh mát Xào 20",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-20/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7a0"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e79e"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e523"
+            },
+            "name": "Sung sức Salad 24",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-24/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7a2"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3b9"
+            },
+            "name": "Nhẹ nhàng Kết hợp 1",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-1/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7a3"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7a1"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e31f"
+        },
+        "exerciseName": "Burpee 9",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/9",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "4"
+          },
+          "unit": "m"
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e79d"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553992"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553992"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e38b"
+      },
+      "name": "Người dùng mẫu 20"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1779926400000"
+      }
+    },
+    "dayOfWeek": "Thứ Năm",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e416"
+            },
+            "name": "Khỏe mạnh Súp 7",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-7/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7a6"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e5bd"
+            },
+            "name": "Mỗi ngày Đĩa 34",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-34/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7a7"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7a5"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e5bd"
+            },
+            "name": "Mỗi ngày Đĩa 34",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-34/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7a9"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e56a"
+            },
+            "name": "Bổ dưỡng Phần ăn 29",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-29/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7aa"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7a8"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e30d"
+        },
+        "exerciseName": "Plank 3",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/3",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "7"
+          },
+          "unit": "km"
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e7a4"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553993"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553993"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e38b"
+      },
+      "name": "Người dùng mẫu 20"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1780012800000"
+      }
+    },
+    "dayOfWeek": "Thứ Sáu",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e499"
+            },
+            "name": "Thông minh Salad 15",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-15/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7ad"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e59a"
+            },
+            "name": "Nhẹ nhàng Trộn 32",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-32/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7ae"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7ac"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e499"
+            },
+            "name": "Thông minh Salad 15",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-15/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7b0"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e59a"
+            },
+            "name": "Nhẹ nhàng Trộn 32",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-32/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7b1"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7af"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e313"
+        },
+        "exerciseName": "Leo núi tại chỗ 5",
+        "exerciseType": "Kéo giãn",
+        "exerciseTutorial": "https://example.local/exercises/5",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1037"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e7ab"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553993"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553993"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e38f"
+      },
+      "name": "Người dùng mẫu 21"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1780185600000"
+      }
+    },
+    "dayOfWeek": "Chủ Nhật",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e56a"
+            },
+            "name": "Bổ dưỡng Phần ăn 29",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-29/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7b4"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e456"
+            },
+            "name": "Cân bằng Bữa ăn 11",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-11/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7b5"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7b3"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e456"
+            },
+            "name": "Cân bằng Bữa ăn 11",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-11/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7b7"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e429"
+            },
+            "name": "Sung sức Bữa ăn 8",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-8/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7b8"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7b6"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e334"
+        },
+        "exerciseName": "Deadlift 16",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/16",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1201"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e7b2"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553993"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553993"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e38f"
+      },
+      "name": "Người dùng mẫu 21"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1780272000000"
+      }
+    },
+    "dayOfWeek": "Thứ Hai",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3e6"
+            },
+            "name": "Năng lượng Tô 4",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-4/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7bb"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e587"
+            },
+            "name": "Khỏe mạnh Trộn 31",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-31/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7bc"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7ba"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4d0"
+            },
+            "name": "Mỗi ngày Trộn 19",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-19/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7be"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e446"
+            },
+            "name": "Khỏe mạnh Đĩa 10",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-10/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7bf"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7bd"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e32b"
+        },
+        "exerciseName": "Plank 13",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/13",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1466"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e334"
+        },
+        "exerciseName": "Deadlift 16",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/16",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1040"
+          }
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e316"
+        },
+        "exerciseName": "Deadlift 6",
+        "exerciseType": "Linh hoạt",
+        "exerciseTutorial": "https://example.local/exercises/6",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "57"
+          },
+          "reps": {
+            "$numberInt": "9"
+          },
+          "sets": {
+            "$numberInt": "4"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e7b9"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553993"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553993"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e393"
+      },
+      "name": "Người dùng mẫu 22"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1780444800000"
+      }
+    },
+    "dayOfWeek": "Thứ Tư",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3f3"
+            },
+            "name": "Cân bằng Bữa ăn 5",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-5/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7c2"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e446"
+            },
+            "name": "Khỏe mạnh Đĩa 10",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-10/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7c3"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7c1"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e446"
+            },
+            "name": "Khỏe mạnh Đĩa 10",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-10/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7c5"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e56a"
+            },
+            "name": "Bổ dưỡng Phần ăn 29",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-29/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7c6"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7c4"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e328"
+        },
+        "exerciseName": "Squat 12",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/12",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "64"
+          },
+          "reps": {
+            "$numberInt": "9"
+          },
+          "sets": {
+            "$numberInt": "4"
+          }
+        },
+        "isCompleted": true
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e310"
+        },
+        "exerciseName": "Lunge 4",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/4",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "763"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e7c0"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553993"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553993"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e393"
+      },
+      "name": "Người dùng mẫu 22"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1780531200000"
+      }
+    },
+    "dayOfWeek": "Thứ Năm",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e5bd"
+            },
+            "name": "Mỗi ngày Đĩa 34",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-34/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7c9"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3d9"
+            },
+            "name": "Sung sức Bữa ăn 3",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-3/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7ca"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7c8"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3d9"
+            },
+            "name": "Sung sức Bữa ăn 3",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-3/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7cc"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e57a"
+            },
+            "name": "Cân bằng Tô 30",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-30/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7cd"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7cb"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e334"
+        },
+        "exerciseName": "Deadlift 16",
+        "exerciseType": "Yoga",
+        "exerciseTutorial": "https://example.local/exercises/16",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "647"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e322"
+        },
+        "exerciseName": "Bật nhảy dang tay 10",
+        "exerciseType": "Linh hoạt",
+        "exerciseTutorial": "https://example.local/exercises/10",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1681"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e310"
+        },
+        "exerciseName": "Lunge 4",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/4",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "150"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e7c7"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553993"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553993"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e397"
+      },
+      "name": "Người dùng mẫu 23"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1780704000000"
+      }
+    },
+    "dayOfWeek": "Thứ Bảy",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e503"
+            },
+            "name": "Sung sức Bữa ăn 22",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-22/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7d0"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e530"
+            },
+            "name": "Năng lượng Trộn 25",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-25/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7d1"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7cf"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e530"
+            },
+            "name": "Năng lượng Trộn 25",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-25/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7d3"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e416"
+            },
+            "name": "Khỏe mạnh Súp 7",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-7/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7d4"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7d2"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e31c"
+        },
+        "exerciseName": "Kéo tạ 8",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/8",
+        "logType": "Quãng đường",
+        "distanceTarget": {
+          "value": {
+            "$numberInt": "6"
+          },
+          "unit": "m"
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e7ce"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553993"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553993"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e397"
+      },
+      "name": "Người dùng mẫu 23"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1780790400000"
+      }
+    },
+    "dayOfWeek": "Chủ Nhật",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3b9"
+            },
+            "name": "Nhẹ nhàng Kết hợp 1",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-1/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7d7"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e5aa"
+            },
+            "name": "Mỗi ngày Súp 33",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-33/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7d8"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7d6"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e469"
+            },
+            "name": "Năng lượng Súp 12",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-12/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7da"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e54d"
+            },
+            "name": "Cân bằng Xào 27",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-27/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7db"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7d9"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e32b"
+        },
+        "exerciseName": "Plank 13",
+        "exerciseType": "Bùng nổ",
+        "exerciseTutorial": "https://example.local/exercises/13",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1232"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e7d5"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553993"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553993"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e39b"
+      },
+      "name": "Người dùng mẫu 24"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1780963200000"
+      }
+    },
+    "dayOfWeek": "Thứ Ba",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e429"
+            },
+            "name": "Sung sức Bữa ăn 8",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-8/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7de"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e587"
+            },
+            "name": "Khỏe mạnh Trộn 31",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-31/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7df"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7dd"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e3b9"
+            },
+            "name": "Nhẹ nhàng Kết hợp 1",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-1/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7e1"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e5cd"
+            },
+            "name": "Khỏe mạnh Trộn 35",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-35/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7e2"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7e0"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e310"
+        },
+        "exerciseName": "Lunge 4",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/4",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "642"
+          }
+        },
+        "isCompleted": true
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e7dc"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553994"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553994"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e39b"
+      },
+      "name": "Người dùng mẫu 24"
+    },
+    "date": {
+      "$date": {
+        "$numberLong": "1781049600000"
+      }
+    },
+    "dayOfWeek": "Thứ Tư",
+    "meals": [
+      {
+        "mealType": "Bữa sáng",
+        "notes": "Bữa đầu tiên ưu tiên đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e48c"
+            },
+            "name": "Sung sức Đĩa 14",
+            "energy": {
+              "$numberInt": "285"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-14/800/600",
+            "isEaten": true,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7e5"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4d0"
+            },
+            "name": "Mỗi ngày Trộn 19",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-19/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7e6"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7e4"
+        }
+      },
+      {
+        "mealType": "Bữa tối",
+        "notes": "Cân bằng tinh bột và đạm.",
+        "dishes": [
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e4d0"
+            },
+            "name": "Mỗi ngày Trộn 19",
+            "energy": {
+              "$numberInt": "320"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-19/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7e8"
+            }
+          },
+          {
+            "dishId": {
+              "$oid": "69e5d7591881fcda2ea9e403"
+            },
+            "name": "Thông minh Súp 6",
+            "energy": {
+              "$numberInt": "355"
+            },
+            "servings": {
+              "$numberInt": "1"
+            },
+            "image": "https://picsum.photos/seed/dish-6/800/600",
+            "isEaten": false,
+            "_id": {
+              "$oid": "69e5d7591881fcda2ea9e7e9"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e7e7"
+        }
+      }
+    ],
+    "workout": [
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e316"
+        },
+        "exerciseName": "Deadlift 6",
+        "exerciseType": "Linh hoạt",
+        "exerciseTutorial": "https://example.local/exercises/6",
+        "logType": "Cân nặng và số lần tập",
+        "weightAndRepsTarget": {
+          "weight": {
+            "$numberInt": "25"
+          },
+          "reps": {
+            "$numberInt": "15"
+          },
+          "sets": {
+            "$numberInt": "3"
+          }
+        },
+        "isCompleted": false
+      },
+      {
+        "exerciseId": {
+          "$oid": "69e5d7591881fcda2ea9e310"
+        },
+        "exerciseName": "Lunge 4",
+        "exerciseType": "Sức mạnh",
+        "exerciseTutorial": "https://example.local/exercises/4",
+        "logType": "Thời gian",
+        "durationTarget": {
+          "seconds": {
+            "$numberInt": "1139"
+          }
+        },
+        "isCompleted": false
+      }
+    ],
+    "notes": "Lịch trình mẫu được tạo tự động.",
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e7e3"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553994"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553994"
+      }
+    }
+  }
+]

@@ -28,5 +28,11 @@ export const QUERY_KEYS = {
   REVIEWS: ['reviews'],
   REVIEW: id => ['review', id],
   PRIVATE_DISHES: ['private-dishes'],
-  PRIVATE_DISH: id => ['private-dish', id]
+  PRIVATE_DISH: id => ['private-dish', id],
+  AI_METRICS_SUMMARY: ['ai-metrics-summary'],
+  AI_METRICS_TRENDS: ['ai-metrics-trends'],
+  AI_METRICS_BY_SOURCE: ['ai-metrics-by-source'],
+  AI_TEST_CASES: ['ai-test-cases'],
+  AI_EVALUATION_RESULTS: ['ai-evaluation-results'],
+  AI_EVALUATION_RESULT_DETAIL: id => ['ai-evaluation-result-detail', id]
 };

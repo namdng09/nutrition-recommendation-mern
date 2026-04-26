@@ -13,7 +13,7 @@ export const AI_TOKEN_QUOTA_CONFIG = {
   reserveTokensByEndpoint: {
     recommend_daily_meals: {
       min: 2_500,
-      max: 15_000
+      max: 20_000
     },
     recommend_daily_workout: {
       min: 1_800,
@@ -21,7 +21,7 @@ export const AI_TOKEN_QUOTA_CONFIG = {
     }
   } as const,
   reserveEstimation: {
-    charsPerToken: 4,
+    charsPerToken: 3,
     outputTokenBudget: 512,
     safetyMultiplier: 1.2
   } as const

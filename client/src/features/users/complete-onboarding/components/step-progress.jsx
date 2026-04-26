@@ -20,6 +20,7 @@ export function StepProgress({
       case 0:
         return 1;
       case 1:
+        return 2;
       case 2:
         return 3;
       case 3:

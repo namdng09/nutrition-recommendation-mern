@@ -12,6 +12,7 @@ const addPostComment = async ({ postId, content }) => {
     `/api/posts/${postId}/comments`,
     formData
   );
+
   return response.data;
 };
 
@@ -26,6 +27,18 @@ export const useAddPostComment = () => {
       });
 
       toast.success('Đã thêm bình luận');
+    },
+    onError: error => {
+      if (error?.response?.status === 401) {
+        toast.error('Bạn cần đăng nhập để bình luận');
+        return;
+      }
+
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          'Thêm bình luận thất bại'
+      );
     }
   });
 };

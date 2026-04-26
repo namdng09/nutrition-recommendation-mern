@@ -15,6 +15,7 @@ const OnboardingLayout = lazy(
 const ErrorComponent = lazy(() => import('~/components/error'));
 
 const OnboardingPage = lazy(() => import('~/app/onboarding/page'));
+const CreatePrivateDishPage = lazy(() => import('~/app/private-dish/page'));
 
 const router = createBrowserRouter([
   {
@@ -71,7 +72,11 @@ const router = createBrowserRouter([
           },
           {
             path: 'create-private-dish',
-            Component: lazy(() => import('~/app/private-dish/page'))
+            Component: () => (
+              <PrivateRoute allowedRoles={[ROLE.USER]}>
+                <CreatePrivateDishPage />
+              </PrivateRoute>
+            )
           },
           {
             path: 'schedules',
@@ -453,6 +458,18 @@ const router = createBrowserRouter([
           {
             path: 'feedbacks/',
             Component: lazy(() => import('~/app/admin/feedbacks/page'))
+          },
+          {
+            path: 'ai-dashboard/',
+            Component: lazy(() => import('~/app/admin/ai-dashboard/page'))
+          },
+          {
+            path: 'ai-evaluations/',
+            Component: lazy(() => import('~/app/admin/ai-evaluations/page'))
+          },
+          {
+            path: 'ai-test-cases/',
+            Component: lazy(() => import('~/app/admin/ai-test-cases/page'))
           }
         ]
       },
