@@ -51,6 +51,7 @@ const jsonSchemaValid = (output: string): ValidationResult => {
   const parsed = extractJsonObject(output);
   if (!parsed) {
     return {
+      id: 'json_schema_valid',
       score: 0,
       message: 'Invalid JSON output'
     };
@@ -58,6 +59,7 @@ const jsonSchemaValid = (output: string): ValidationResult => {
   const meals = (parsed as Record<string, unknown>).meals;
   if (!Array.isArray(meals)) {
     return {
+      id: 'json_schema_valid',
       score: 0,
       message: 'Missing meals array'
     };
@@ -65,6 +67,7 @@ const jsonSchemaValid = (output: string): ValidationResult => {
   for (const meal of meals) {
     if (typeof meal !== 'object' || meal === null) {
       return {
+        id: 'json_schema_valid',
         score: 0,
         message: 'Invalid meal structure'
       };
@@ -72,18 +75,21 @@ const jsonSchemaValid = (output: string): ValidationResult => {
     const mealObj = meal as Record<string, unknown>;
     if (typeof mealObj.mealType !== 'string') {
       return {
+        id: 'json_schema_valid',
         score: 0,
         message: 'Missing mealType'
       };
     }
     if (!Array.isArray(mealObj.dishes)) {
       return {
+        id: 'json_schema_valid',
         score: 0,
         message: 'Missing dishes array'
       };
     }
   }
   return {
+    id: 'json_schema_valid',
     score: 1,
     message: 'JSON schema valid'
   };
@@ -103,12 +109,14 @@ const allDishIdsExist = (
     .filter(id => !catalogIds.has(id));
   if (missing.length > 0) {
     return {
+      id: 'all_dish_ids_exist',
       score: 0,
       message: `Missing dish IDs: ${[...new Set(missing)].join(', ')}`,
       details: { missingIds: [...new Set(missing)] }
     };
   }
   return {
+    id: 'all_dish_ids_exist',
     score: 1,
     message: 'All dish IDs exist'
   };
@@ -124,6 +132,7 @@ const noAllergenDishes = (
   );
   if (userAllergies.size === 0) {
     return {
+      id: 'no_allergen_dishes',
       score: 1,
       message: 'No allergies to check'
     };
@@ -149,12 +158,14 @@ const noAllergenDishes = (
   }
   if (violations.length > 0) {
     return {
+      id: 'no_allergen_dishes',
       score: 0,
       message: `Allergen violations: ${violations.join('; ')}`,
       details: { violations }
     };
   }
   return {
+    id: 'no_allergen_dishes',
     score: 1,
     message: 'No allergen dishes'
   };
@@ -177,12 +188,14 @@ const servingsInRange = (output: Record<string, unknown>): ValidationResult => {
   }
   if (invalid.length > 0) {
     return {
+      id: 'servings_in_range',
       score: 0,
       message: `Servings out of range (1-5): ${invalid.map(i => `${i.dishId}=${i.servings}`).join(', ')}`,
       details: { invalid }
     };
   }
   return {
+    id: 'servings_in_range',
     score: 1,
     message: 'All servings in range'
   };
@@ -208,12 +221,14 @@ const noDuplicateDishes = (
   }
   if (duplicates.length > 0) {
     return {
+      id: 'no_duplicate_dishes',
       score: 0,
       message: `Duplicate dishes: ${[...new Set(duplicates)].join(', ')}`,
       details: { duplicates: [...new Set(duplicates)] }
     };
   }
   return {
+    id: 'no_duplicate_dishes',
     score: 1,
     message: 'No duplicate dishes'
   };
@@ -238,12 +253,14 @@ const mealTypeMatch = (
   }
   if (mismatches.length > 0) {
     return {
+      id: 'meal_type_match',
       score: 0,
       message: `Meal type mismatches: ${mismatches.join('; ')}`,
       details: { mismatches }
     };
   }
   return {
+    id: 'meal_type_match',
     score: 1,
     message: 'Meal types match slots'
   };
@@ -257,11 +274,13 @@ const mealCountMatch = (
   const slotCount = context.mealSlots.length;
   if (meals.length !== slotCount) {
     return {
+      id: 'meal_count_match',
       score: 0,
       message: `Expected ${slotCount} meals, got ${meals.length}`
     };
   }
   return {
+    id: 'meal_count_match',
     score: 1,
     message: 'Meal count matches'
   };
@@ -320,7 +339,7 @@ export class MealRecommendationValidator {
           {
             id: 'Invalid JSON',
             score: 0,
-            details: 'Response is not valid JSON'
+            message: 'Response is not valid JSON'
           }
         ]
       };
