@@ -1,11 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  HiOutlineAdjustments,
-  HiOutlineSearch,
-  HiOutlineSparkles,
-  HiPlus
-} from 'react-icons/hi';
-import { IoFilterOutline } from 'react-icons/io5';
+import { HiOutlineAdjustments, HiOutlineSearch, HiPlus } from 'react-icons/hi';
 
 import CreateGroceryModal from '../../create-grocery/components/create-grocery-modal';
 import { useGroceries } from '../api/view-grocery';
@@ -104,11 +98,6 @@ const GroceryHeader = ({ filters, onFilterChange }) => {
             </div>
 
             <div className='flex gap-2'>
-              <button className='inline-flex items-center justify-center gap-2 rounded-2xl border border-border/50 bg-background/70 px-5 py-3.5 text-sm font-bold text-foreground/70 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-muted whitespace-nowrap'>
-                <IoFilterOutline className='text-lg' />
-                Lọc
-              </button>
-
               <button
                 onClick={() =>
                   onFilterChange?.({

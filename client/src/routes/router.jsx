@@ -15,6 +15,7 @@ const OnboardingLayout = lazy(
 const ErrorComponent = lazy(() => import('~/components/error'));
 
 const OnboardingPage = lazy(() => import('~/app/onboarding/page'));
+const CreatePrivateDishPage = lazy(() => import('~/app/private-dish/page'));
 
 const router = createBrowserRouter([
   {
@@ -71,7 +72,11 @@ const router = createBrowserRouter([
           },
           {
             path: 'create-private-dish',
-            Component: lazy(() => import('~/app/private-dish/page'))
+            Component: () => (
+              <PrivateRoute allowedRoles={[ROLE.USER]}>
+                <CreatePrivateDishPage />
+              </PrivateRoute>
+            )
           },
           {
             path: 'schedules',
