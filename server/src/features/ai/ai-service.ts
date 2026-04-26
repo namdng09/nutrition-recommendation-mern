@@ -1,6 +1,13 @@
+import { randomUUID } from 'node:crypto';
+
 import createHttpError from 'http-errors';
 
-import { agent, agentConfig } from '~/shared/config/ai-agent';
+import {
+  agent,
+  agentConfig,
+  evaluationAgent,
+  evaluationConfig
+} from '~/shared/config/ai-agent';
 import {
   type AiQuotaEndpoint,
   estimateReserveTokensForPrompt,
@@ -55,6 +62,11 @@ import exerciseRecommendationPrompt, {
 import mealRecommendationPrompt, {
   MEAL_RECOMMENDATION_PROMPT_CONFIG
 } from './meal-recommendation-prompt';
+import {
+  calculateDishCalories,
+  estimateAiCostUsd,
+  MetricsCollector
+} from './metrics';
 
 type NutritionItem = {
   label?: string | null;
@@ -229,6 +241,11 @@ type AiResponseMeta = {
   settlement: AiQuotaSettlement;
 };
 
+type AiMetricEndpoint =
+  | 'ask_agent'
+  | 'recommend_daily_meals'
+  | 'recommend_daily_workout';
+
 type RagDishDocument = {
   metadata?: {
     sourceType?: string;
@@ -364,19 +381,52 @@ const dayOfWeekByIndex: Record<number, string> = {
 
 export const AiService = {
   askAgent: async (payload: AskAgentRequest): Promise<AskAgentResponse> => {
-    const { message } = payload;
+    const startedAt = Date.now();
+    const requestId = randomUUID();
 
-    const result = await agent.invoke({
-      messages: [{ role: 'user', content: message }]
-    });
+    try {
+      const invocation = await invokeAi(payload.message);
+      const response = invocation.text;
 
-    const lastMessage = result.messages?.[result.messages.length - 1];
-    const response = normalizeContent(lastMessage?.content);
+      await MetricsCollector.logMetric({
+        sourceType: 'production',
+        endpoint: 'ask_agent',
+        requestId,
+        status: 'success',
+        latencyMs: Date.now() - startedAt,
+        inputTokens: invocation.usage.inputTokens,
+        outputTokens: invocation.usage.outputTokens,
+        estimatedCostUsd: estimateAiCostUsd(invocation.usage.totalTokens),
+        qualityMetadata: {
+          qualityEvaluated: false
+        }
+      });
 
+      return {
+        provider: agentConfig.provider,
+        model: agentConfig.model,
+        response
+      };
+    } catch (error) {
+      await MetricsCollector.logMetric({
+        sourceType: 'production',
+        endpoint: 'ask_agent',
+        requestId,
+        status: 'failed',
+        latencyMs: Date.now() - startedAt,
+        errorMessage: error instanceof Error ? error.message : String(error)
+      });
+      throw error;
+    }
+  },
+
+  runEvaluationPrompt: async (prompt: string) => {
+    const invocation = await invokeEvaluationAi(prompt);
     return {
-      provider: agentConfig.provider,
-      model: agentConfig.model,
-      response
+      provider: evaluationConfig.provider,
+      model: evaluationConfig.model,
+      response: invocation.text,
+      usage: invocation.usage
     };
   },
 
@@ -386,6 +436,8 @@ export const AiService = {
   ): Promise<DailyMealRecommendationResponse> => {
     let reservation: AiQuotaReservation | null = null;
     let aiInvocation: AiInvocationResult | null = null;
+    const startedAt = Date.now();
+    const requestId = randomUUID();
 
     try {
       const user = await getUserProfileForRecommendation(userId);
@@ -459,6 +511,11 @@ export const AiService = {
         estimatedReserve
       );
       aiInvocation = await invokeAi(prompt);
+
+      console.log(
+        `[AiInvocation] endpoint=recommend_daily_meals textLength=${aiInvocation.text.length} totalTokens=${aiInvocation.usage.totalTokens}`
+      );
+
       const quotaSettlement = await settleAiTokenUsage(
         userId,
         reservation,
@@ -485,11 +542,81 @@ export const AiService = {
         meals: scheduleMeals
       });
 
-      return await toAiRecommendedScheduleResponse(schedule.toObject(), aiMeta);
+      const response = await toAiRecommendedScheduleResponse(
+        schedule.toObject(),
+        aiMeta
+      );
+
+      const validationContext = {
+        userProfile: {
+          allergies: user.allergens,
+          diet: user.diet ?? '',
+          calorieTarget: user.nutritionTarget?.caloriesTarget ?? 2000,
+          goal: user.goal?.target ?? ''
+        },
+        mealSlots: mealSlots.map(slot => ({
+          mealType: slot.mealType,
+          calorieTarget: 0
+        })),
+        dishCatalog: candidateDishes.map(dish => ({
+          dishId: dish._id,
+          allergens: dish.ingredients.flatMap(i => i.allergens),
+          calories: calculateDishCalories(dish)
+        }))
+      };
+
+      const producedMealsForValidation = meals.map(meal => ({
+        mealType: meal.mealType,
+        dishes: meal.dishes.map(dish => ({
+          dishId: dish.dishId,
+          servings: dish.servings
+        }))
+      }));
+
+      const validation = await MetricsCollector.validateMealProduction(
+        JSON.stringify(producedMealsForValidation),
+        validationContext
+      );
+
+      await MetricsCollector.logMetric({
+        sourceType: 'production',
+        endpoint: 'recommend_daily_meals',
+        requestId,
+        userId,
+        status: 'success',
+        isCorrect: validation.isCorrect,
+        accuracyScore: validation.accuracyScore,
+        ruleScore: validation.ruleScore,
+        semanticScore: validation.semanticScore,
+        latencyMs: Date.now() - startedAt,
+        inputTokens: aiMeta.usage.inputTokens,
+        outputTokens: aiMeta.usage.outputTokens,
+        estimatedCostUsd: estimateAiCostUsd(aiMeta.usage.totalTokens),
+        validationReport: validation.validationReport,
+        qualityMetadata: {
+          mealsCount: response.meals.length,
+          scheduleId: response.scheduleId,
+          inputSource: 'materialized_meals',
+          promptInjectionDetected: false,
+          piiDetected: false,
+          qualityEvaluated: true
+        }
+      });
+
+      return response;
     } catch (error) {
       if (reservation && !aiInvocation) {
         await refundReservedAiTokens(userId, reservation);
       }
+      await MetricsCollector.logMetric({
+        sourceType: 'production',
+        endpoint: 'recommend_daily_meals',
+        requestId,
+        userId,
+        status: 'failed',
+        latencyMs: Date.now() - startedAt,
+        errorMessage: error instanceof Error ? error.message : String(error)
+      });
       throw error;
     }
   },
@@ -500,6 +627,8 @@ export const AiService = {
   ): Promise<DailyWorkoutRecommendationResponse> => {
     let reservation: AiQuotaReservation | null = null;
     let aiInvocation: AiInvocationResult | null = null;
+    const startedAt = Date.now();
+    const requestId = randomUUID();
 
     try {
       const user = await getUserProfileForRecommendation(userId);
@@ -603,11 +732,25 @@ export const AiService = {
         workout
       });
 
-      return await toAiRecommendedScheduleResponse(schedule.toObject(), aiMeta);
+      const response = await toAiRecommendedScheduleResponse(
+        schedule.toObject(),
+        aiMeta
+      );
+
+      return response;
     } catch (error) {
       if (reservation && !aiInvocation) {
         await refundReservedAiTokens(userId, reservation);
       }
+      await MetricsCollector.logMetric({
+        sourceType: 'production',
+        endpoint: 'recommend_daily_workout',
+        requestId,
+        userId,
+        status: 'failed',
+        latencyMs: Date.now() - startedAt,
+        errorMessage: error instanceof Error ? error.message : String(error)
+      });
       throw error;
     }
   }
@@ -1742,13 +1885,6 @@ const buildRetrievalSummary = (
   ].join('\n');
 };
 
-const calculateDishCalories = (dish: DishCandidate | null | undefined) => {
-  if (!dish?.nutrition?.nutrients?.length) return 0;
-  const energy = dish.nutrition.nutrients[0];
-  if (!energy || typeof energy.value !== 'number') return 0;
-  return energy.value;
-};
-
 const getMealContextForDate = async (
   userId: string,
   date: Date
@@ -2001,6 +2137,23 @@ const normalizeUsageMetadata = (raw: unknown): AiUsageMetadata => {
 
 const invokeAi = async (prompt: string): Promise<AiInvocationResult> => {
   const result = await agent.invoke({
+    messages: [{ role: 'user', content: prompt }]
+  });
+  const lastMessage = result.messages?.[result.messages.length - 1];
+  const text = normalizeContent(lastMessage?.content);
+
+  const usage = normalizeUsageMetadata(
+    (lastMessage as any)?.usage_metadata ??
+      (result as any)?.llmOutput?.tokenUsage
+  );
+
+  return { text, usage };
+};
+
+const invokeEvaluationAi = async (
+  prompt: string
+): Promise<AiInvocationResult> => {
+  const result = await evaluationAgent.invoke({
     messages: [{ role: 'user', content: prompt }]
   });
   const lastMessage = result.messages?.[result.messages.length - 1];

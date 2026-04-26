@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import achievementRoute from '~/features/achievements/achievement-route';
 import aiRoute from '~/features/ai/ai-route';
+import aiEvaluationRoute from '~/features/ai-evaluation/ai-evaluation-route';
 import authRoute from '~/features/auth/auth-route';
 import collectionRoute from '~/features/collections/collection-route';
 import dashboardRoute from '~/features/dashboard/dashboard-route';
@@ -31,6 +32,7 @@ router.use('/schedules', scheduleRoute);
 router.use('/posts', postRoute);
 router.use('/groceries', groceryRoute);
 router.use('/ai', aiRoute);
+router.use('/ai-evaluation', aiEvaluationRoute);
 router.use('/payments', paymentRoute);
 router.use('/exercises', exerciseRouter);
 

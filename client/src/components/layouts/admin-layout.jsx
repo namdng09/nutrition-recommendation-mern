@@ -76,7 +76,10 @@ const AdminLayout = () => {
       'manage-payments': 'Quản lý thanh toán',
       payments: 'Thanh toán',
       feedbacks: 'Quản lý feedback',
-      reviews: 'Review món riêng'
+      reviews: 'Review món riêng',
+      'ai-dashboard': 'Dashboard AI',
+      'ai-evaluations': 'Đánh giá AI',
+      'ai-test-cases': 'Test Cases AI'
     };
 
     const items = [];
