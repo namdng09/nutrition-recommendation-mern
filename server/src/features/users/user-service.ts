@@ -644,9 +644,17 @@ export const UserService = {
     if (data.goal?.targetWeightChange !== undefined) {
       adjustment = (data.goal.targetWeightChange * 7700) / 7;
     } else if (data.goal?.target === USER_TARGET.LOSE_FAT) {
-      adjustment = -500;
+      let deficit = Math.round(caloriesTarget * 0.3);
+      if (deficit < 500) {
+        deficit = 500;
+      }
+      if (deficit > 750) {
+        deficit = 750;
+      }
+
+      adjustment = -deficit;
     } else if (data.goal?.target === USER_TARGET.BUILD_MUSCLE) {
-      adjustment = 300;
+      adjustment = 420;
     }
 
     caloriesTarget = Math.max(0, Math.round(caloriesTarget + adjustment));
