@@ -78,8 +78,7 @@ export const stepOneSchema = yup.object({
   allergens: yup
     .array()
     .of(yup.string().oneOf(getEnumValues(ALLERGEN), 'Dị ứng không hợp lệ'))
-    .optional(),
-  medicalHistory: yup.array().of(yup.string().trim()).optional()
+    .optional()
 });
 
 export const stepTwoOneSchema = yup.object({

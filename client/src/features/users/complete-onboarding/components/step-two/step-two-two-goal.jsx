@@ -1,8 +1,7 @@
 import { Target } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
-import { Button } from '~/components/ui/button';
 import {
   FormControl,
   FormField,
@@ -11,16 +10,35 @@ import {
   FormMessage
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '~/components/ui/select';
 import { USER_TARGET, USER_TARGET_OPTIONS } from '~/constants/user-target';
 import { cn } from '~/lib/utils';
+
+import { calculateBMI } from '../../utils/bmi';
 
 export function StepTwoTwoGoal({ control }) {
   const { setValue, getValues } = useFormContext();
   const mode = useWatch({ control, name: 'goal.mode' });
 
+  const height = useWatch({ control, name: 'height' });
   const currentWeight = useWatch({ control, name: 'weight' });
   const goalTarget = useWatch({ control, name: 'goal.target' });
   const weightGoal = useWatch({ control, name: 'goal.weightGoal' });
+
+  const targetBMI = calculateBMI(parseFloat(height), parseFloat(weightGoal));
+
+  const targetBMIWarning =
+    targetBMI && targetBMI < 18.5
+      ? 'BMI mục tiêu của bạn đang quá thấp so với ngưỡng bình thường.'
+      : targetBMI && targetBMI >= 24.9
+        ? 'BMI mục tiêu của bạn đang quá cao so với ngưỡng bình thường.'
+        : null;
 
   useEffect(() => {
     const hasSpecificGoal =
@@ -32,10 +50,8 @@ export function StepTwoTwoGoal({ control }) {
 
   const handleModeChange = newMode => {
     setValue('goal.mode', newMode);
-    // Don't clear values when switching modes to persist data
   };
 
-  // Inference Logic for Exact Mode - only run when values change
   useEffect(() => {
     if (mode === 'exact' && weightGoal && currentWeight) {
       let target;
@@ -53,9 +69,6 @@ export function StepTwoTwoGoal({ control }) {
       }
     }
   }, [mode, weightGoal, currentWeight, setValue, goalTarget]);
-
-  // Clean up exact mode values when switching to generic is NOT desired behavior anymore based on user request (implied by "lost target value" when switching).
-  // However, we might want to "clean" data before submission, not during UI toggling.
 
   return (
     <div className='space-y-6'>
@@ -169,11 +182,11 @@ export function StepTwoTwoGoal({ control }) {
                       <FormMessage className='text-xs text-destructive' />
                     </div>
                     <div className='w-full lg:w-[200px] flex justify-start lg:justify-end'>
-                      <div className='flex items-center gap-2 w-full'>
+                      <div className='flex items-center gap-2'>
                         <FormControl>
                           <Input
                             type='text'
-                            className='flex-1 lg:w-24 lg:flex-none text-center text-base h-11'
+                            className='w-full lg:w-32 text-center text-base h-11'
                             {...field}
                             value={field.value ?? ''}
                             onChange={e => {
@@ -206,29 +219,34 @@ export function StepTwoTwoGoal({ control }) {
                       <FormMessage className='text-xs text-destructive' />
                     </div>
                     <div className='w-full lg:w-[200px] flex justify-start lg:justify-end'>
-                      <div className='flex items-center gap-2 w-full'>
-                        <FormControl>
-                          <Input
-                            type='text'
-                            className='flex-1 lg:w-24 lg:flex-none text-center text-base h-11'
-                            {...field}
-                            value={field.value ?? ''}
-                            onChange={e => {
-                              const value = e.target.value;
-                              if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                                field.onChange(value);
-                              }
-                            }}
-                          />
-                        </FormControl>
-                        <span className='text-base text-muted-foreground w-16 text-right'>
-                          kg/tuần
-                        </span>
-                      </div>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger className='w-full lg:w-40 h-11 text-base'>
+                            <SelectValue placeholder='Chọn tốc độ' />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value='0.25'>0.25 kg/tuần</SelectItem>
+                            <SelectItem value='0.5'>0.5 kg/tuần</SelectItem>
+                            <SelectItem value='0.75'>0.75 kg/tuần</SelectItem>
+                            <SelectItem value='1'>1 kg/tuần</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
                     </div>
                   </FormItem>
                 )}
               />
+
+              {targetBMIWarning && (
+                <div className='flex'>
+                  <p className='text-md text-destructive lg:whitespace-nowrap'>
+                    {targetBMIWarning}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
