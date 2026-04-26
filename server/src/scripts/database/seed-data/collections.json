@@ -1,0 +1,1001 @@
+[
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e37f"
+      },
+      "name": "Người dùng mẫu 17"
+    },
+    "name": "Bộ sưu tập mẫu 1",
+    "description": "Bộ sưu tập được tạo để mô phỏng quan hệ schema trên Compass.",
+    "image": "https://picsum.photos/seed/collection-1/700/400",
+    "isPublic": true,
+    "dishes": [
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e5e0"
+        },
+        "name": "Năng lượng Phần ăn 36",
+        "image": "https://picsum.photos/seed/dish-36/800/600",
+        "energy": {
+          "$numberInt": "286"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e65b"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e516"
+        },
+        "name": "Thông minh Đĩa 23",
+        "image": "https://picsum.photos/seed/dish-23/800/600",
+        "energy": {
+          "$numberInt": "659"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e65c"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e48c"
+        },
+        "name": "Sung sức Đĩa 14",
+        "image": "https://picsum.photos/seed/dish-14/800/600",
+        "energy": {
+          "$numberInt": "540"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e65d"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e530"
+        },
+        "name": "Năng lượng Trộn 25",
+        "image": "https://picsum.photos/seed/dish-25/800/600",
+        "energy": {
+          "$numberInt": "668"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e65e"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e53d"
+        },
+        "name": "Thông minh Tô 26",
+        "image": "https://picsum.photos/seed/dish-26/800/600",
+        "energy": {
+          "$numberInt": "446"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e65f"
+        }
+      }
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "bộ-sưu-tập"
+    ],
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e65a"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553810"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553810"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e36b"
+      },
+      "name": "Người dùng mẫu 12"
+    },
+    "name": "Bộ sưu tập mẫu 2",
+    "description": "Bộ sưu tập được tạo để mô phỏng quan hệ schema trên Compass.",
+    "image": "https://picsum.photos/seed/collection-2/700/400",
+    "isPublic": false,
+    "dishes": [
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e479"
+        },
+        "name": "Cân bằng Súp 13",
+        "image": "https://picsum.photos/seed/dish-13/800/600",
+        "energy": {
+          "$numberInt": "664"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e661"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e456"
+        },
+        "name": "Cân bằng Bữa ăn 11",
+        "image": "https://picsum.photos/seed/dish-11/800/600",
+        "energy": {
+          "$numberInt": "670"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e662"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e56a"
+        },
+        "name": "Bổ dưỡng Phần ăn 29",
+        "image": "https://picsum.photos/seed/dish-29/800/600",
+        "energy": {
+          "$numberInt": "268"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e663"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e3e6"
+        },
+        "name": "Năng lượng Tô 4",
+        "image": "https://picsum.photos/seed/dish-4/800/600",
+        "energy": {
+          "$numberInt": "468"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e664"
+        }
+      }
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "bộ-sưu-tập"
+    ],
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e660"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553810"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553810"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e383"
+      },
+      "name": "Người dùng mẫu 18"
+    },
+    "name": "Bộ sưu tập mẫu 3",
+    "description": "Bộ sưu tập được tạo để mô phỏng quan hệ schema trên Compass.",
+    "image": "https://picsum.photos/seed/collection-3/700/400",
+    "isPublic": true,
+    "dishes": [
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e56a"
+        },
+        "name": "Bổ dưỡng Phần ăn 29",
+        "image": "https://picsum.photos/seed/dish-29/800/600",
+        "energy": {
+          "$numberInt": "674"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e666"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e4e0"
+        },
+        "name": "Thanh mát Xào 20",
+        "image": "https://picsum.photos/seed/dish-20/800/600",
+        "energy": {
+          "$numberInt": "599"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e667"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e54d"
+        },
+        "name": "Cân bằng Xào 27",
+        "image": "https://picsum.photos/seed/dish-27/800/600",
+        "energy": {
+          "$numberInt": "559"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e668"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e3e6"
+        },
+        "name": "Năng lượng Tô 4",
+        "image": "https://picsum.photos/seed/dish-4/800/600",
+        "energy": {
+          "$numberInt": "672"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e669"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e4d0"
+        },
+        "name": "Mỗi ngày Trộn 19",
+        "image": "https://picsum.photos/seed/dish-19/800/600",
+        "energy": {
+          "$numberInt": "555"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e66a"
+        }
+      }
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "bộ-sưu-tập"
+    ],
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e665"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553810"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553810"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e34b"
+      },
+      "name": "Người dùng mẫu 4"
+    },
+    "name": "Bộ sưu tập mẫu 4",
+    "description": "Bộ sưu tập được tạo để mô phỏng quan hệ schema trên Compass.",
+    "image": "https://picsum.photos/seed/collection-4/700/400",
+    "isPublic": false,
+    "dishes": [
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e3b9"
+        },
+        "name": "Nhẹ nhàng Kết hợp 1",
+        "image": "https://picsum.photos/seed/dish-1/800/600",
+        "energy": {
+          "$numberInt": "437"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e66c"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e48c"
+        },
+        "name": "Sung sức Đĩa 14",
+        "image": "https://picsum.photos/seed/dish-14/800/600",
+        "energy": {
+          "$numberInt": "561"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e66d"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e403"
+        },
+        "name": "Thông minh Súp 6",
+        "image": "https://picsum.photos/seed/dish-6/800/600",
+        "energy": {
+          "$numberInt": "588"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e66e"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e4c0"
+        },
+        "name": "Thanh mát Xào 18",
+        "image": "https://picsum.photos/seed/dish-18/800/600",
+        "energy": {
+          "$numberInt": "344"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e66f"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e3c6"
+        },
+        "name": "Thông minh Trộn 2",
+        "image": "https://picsum.photos/seed/dish-2/800/600",
+        "energy": {
+          "$numberInt": "296"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e670"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e479"
+        },
+        "name": "Cân bằng Súp 13",
+        "image": "https://picsum.photos/seed/dish-13/800/600",
+        "energy": {
+          "$numberInt": "321"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e671"
+        }
+      }
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "bộ-sưu-tập"
+    ],
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e66b"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553810"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553810"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e37f"
+      },
+      "name": "Người dùng mẫu 17"
+    },
+    "name": "Bộ sưu tập mẫu 5",
+    "description": "Bộ sưu tập được tạo để mô phỏng quan hệ schema trên Compass.",
+    "image": "https://picsum.photos/seed/collection-5/700/400",
+    "isPublic": true,
+    "dishes": [
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e530"
+        },
+        "name": "Năng lượng Trộn 25",
+        "image": "https://picsum.photos/seed/dish-25/800/600",
+        "energy": {
+          "$numberInt": "308"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e673"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e403"
+        },
+        "name": "Thông minh Súp 6",
+        "image": "https://picsum.photos/seed/dish-6/800/600",
+        "energy": {
+          "$numberInt": "517"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e674"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e3f3"
+        },
+        "name": "Cân bằng Bữa ăn 5",
+        "image": "https://picsum.photos/seed/dish-5/800/600",
+        "energy": {
+          "$numberInt": "558"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e675"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e416"
+        },
+        "name": "Khỏe mạnh Súp 7",
+        "image": "https://picsum.photos/seed/dish-7/800/600",
+        "energy": {
+          "$numberInt": "513"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e676"
+        }
+      }
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "bộ-sưu-tập"
+    ],
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e672"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553810"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553810"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e39b"
+      },
+      "name": "Người dùng mẫu 24"
+    },
+    "name": "Bộ sưu tập mẫu 6",
+    "description": "Bộ sưu tập được tạo để mô phỏng quan hệ schema trên Compass.",
+    "image": "https://picsum.photos/seed/collection-6/700/400",
+    "isPublic": false,
+    "dishes": [
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e53d"
+        },
+        "name": "Thông minh Tô 26",
+        "image": "https://picsum.photos/seed/dish-26/800/600",
+        "energy": {
+          "$numberInt": "454"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e678"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e3d9"
+        },
+        "name": "Sung sức Bữa ăn 3",
+        "image": "https://picsum.photos/seed/dish-3/800/600",
+        "energy": {
+          "$numberInt": "296"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e679"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e429"
+        },
+        "name": "Sung sức Bữa ăn 8",
+        "image": "https://picsum.photos/seed/dish-8/800/600",
+        "energy": {
+          "$numberInt": "389"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e67a"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e503"
+        },
+        "name": "Sung sức Bữa ăn 22",
+        "image": "https://picsum.photos/seed/dish-22/800/600",
+        "energy": {
+          "$numberInt": "521"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e67b"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e4f3"
+        },
+        "name": "Cân bằng Tô 21",
+        "image": "https://picsum.photos/seed/dish-21/800/600",
+        "energy": {
+          "$numberInt": "332"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e67c"
+        }
+      }
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "bộ-sưu-tập"
+    ],
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e677"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553810"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553810"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e36b"
+      },
+      "name": "Người dùng mẫu 12"
+    },
+    "name": "Bộ sưu tập mẫu 7",
+    "description": "Bộ sưu tập được tạo để mô phỏng quan hệ schema trên Compass.",
+    "image": "https://picsum.photos/seed/collection-7/700/400",
+    "isPublic": true,
+    "dishes": [
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e499"
+        },
+        "name": "Thông minh Salad 15",
+        "image": "https://picsum.photos/seed/dish-15/800/600",
+        "energy": {
+          "$numberInt": "580"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e67e"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e3e6"
+        },
+        "name": "Năng lượng Tô 4",
+        "image": "https://picsum.photos/seed/dish-4/800/600",
+        "energy": {
+          "$numberInt": "651"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e67f"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e439"
+        },
+        "name": "Bổ dưỡng Súp 9",
+        "image": "https://picsum.photos/seed/dish-9/800/600",
+        "energy": {
+          "$numberInt": "628"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e680"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e530"
+        },
+        "name": "Năng lượng Trộn 25",
+        "image": "https://picsum.photos/seed/dish-25/800/600",
+        "energy": {
+          "$numberInt": "432"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e681"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e55a"
+        },
+        "name": "Thông minh Xào 28",
+        "image": "https://picsum.photos/seed/dish-28/800/600",
+        "energy": {
+          "$numberInt": "292"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e682"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e4f3"
+        },
+        "name": "Cân bằng Tô 21",
+        "image": "https://picsum.photos/seed/dish-21/800/600",
+        "energy": {
+          "$numberInt": "536"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e683"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e479"
+        },
+        "name": "Cân bằng Súp 13",
+        "image": "https://picsum.photos/seed/dish-13/800/600",
+        "energy": {
+          "$numberInt": "481"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e684"
+        }
+      }
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "bộ-sưu-tập"
+    ],
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e67d"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553810"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553810"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e367"
+      },
+      "name": "Người dùng mẫu 11"
+    },
+    "name": "Bộ sưu tập mẫu 8",
+    "description": "Bộ sưu tập được tạo để mô phỏng quan hệ schema trên Compass.",
+    "image": "https://picsum.photos/seed/collection-8/700/400",
+    "isPublic": false,
+    "dishes": [
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e56a"
+        },
+        "name": "Bổ dưỡng Phần ăn 29",
+        "image": "https://picsum.photos/seed/dish-29/800/600",
+        "energy": {
+          "$numberInt": "519"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e686"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e3b9"
+        },
+        "name": "Nhẹ nhàng Kết hợp 1",
+        "image": "https://picsum.photos/seed/dish-1/800/600",
+        "energy": {
+          "$numberInt": "697"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e687"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e53d"
+        },
+        "name": "Thông minh Tô 26",
+        "image": "https://picsum.photos/seed/dish-26/800/600",
+        "energy": {
+          "$numberInt": "538"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e688"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e5cd"
+        },
+        "name": "Khỏe mạnh Trộn 35",
+        "image": "https://picsum.photos/seed/dish-35/800/600",
+        "energy": {
+          "$numberInt": "580"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e689"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e5bd"
+        },
+        "name": "Mỗi ngày Đĩa 34",
+        "image": "https://picsum.photos/seed/dish-34/800/600",
+        "energy": {
+          "$numberInt": "643"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e68a"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e429"
+        },
+        "name": "Sung sức Bữa ăn 8",
+        "image": "https://picsum.photos/seed/dish-8/800/600",
+        "energy": {
+          "$numberInt": "666"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e68b"
+        }
+      }
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "bộ-sưu-tập"
+    ],
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e685"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553810"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553810"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e33f"
+      },
+      "name": "Người dùng mẫu 1"
+    },
+    "name": "Bộ sưu tập mẫu 9",
+    "description": "Bộ sưu tập được tạo để mô phỏng quan hệ schema trên Compass.",
+    "image": "https://picsum.photos/seed/collection-9/700/400",
+    "isPublic": true,
+    "dishes": [
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e48c"
+        },
+        "name": "Sung sức Đĩa 14",
+        "image": "https://picsum.photos/seed/dish-14/800/600",
+        "energy": {
+          "$numberInt": "307"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e68d"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e3d9"
+        },
+        "name": "Sung sức Bữa ăn 3",
+        "image": "https://picsum.photos/seed/dish-3/800/600",
+        "energy": {
+          "$numberInt": "515"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e68e"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e59a"
+        },
+        "name": "Nhẹ nhàng Trộn 32",
+        "image": "https://picsum.photos/seed/dish-32/800/600",
+        "energy": {
+          "$numberInt": "663"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e68f"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e55a"
+        },
+        "name": "Thông minh Xào 28",
+        "image": "https://picsum.photos/seed/dish-28/800/600",
+        "energy": {
+          "$numberInt": "358"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e690"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e587"
+        },
+        "name": "Khỏe mạnh Trộn 31",
+        "image": "https://picsum.photos/seed/dish-31/800/600",
+        "energy": {
+          "$numberInt": "558"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e691"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e4e0"
+        },
+        "name": "Thanh mát Xào 20",
+        "image": "https://picsum.photos/seed/dish-20/800/600",
+        "energy": {
+          "$numberInt": "534"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e692"
+        }
+      }
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "bộ-sưu-tập"
+    ],
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e68c"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553811"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553811"
+      }
+    }
+  },
+  {
+    "user": {
+      "_id": {
+        "$oid": "69e5d7591881fcda2ea9e38f"
+      },
+      "name": "Người dùng mẫu 21"
+    },
+    "name": "Bộ sưu tập mẫu 10",
+    "description": "Bộ sưu tập được tạo để mô phỏng quan hệ schema trên Compass.",
+    "image": "https://picsum.photos/seed/collection-10/700/400",
+    "isPublic": false,
+    "dishes": [
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e3b9"
+        },
+        "name": "Nhẹ nhàng Kết hợp 1",
+        "image": "https://picsum.photos/seed/dish-1/800/600",
+        "energy": {
+          "$numberInt": "627"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e694"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e456"
+        },
+        "name": "Cân bằng Bữa ăn 11",
+        "image": "https://picsum.photos/seed/dish-11/800/600",
+        "energy": {
+          "$numberInt": "600"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e695"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e5bd"
+        },
+        "name": "Mỗi ngày Đĩa 34",
+        "image": "https://picsum.photos/seed/dish-34/800/600",
+        "energy": {
+          "$numberInt": "375"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e696"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e3c6"
+        },
+        "name": "Thông minh Trộn 2",
+        "image": "https://picsum.photos/seed/dish-2/800/600",
+        "energy": {
+          "$numberInt": "448"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e697"
+        }
+      },
+      {
+        "dishId": {
+          "$oid": "69e5d7591881fcda2ea9e56a"
+        },
+        "name": "Bổ dưỡng Phần ăn 29",
+        "image": "https://picsum.photos/seed/dish-29/800/600",
+        "energy": {
+          "$numberInt": "590"
+        },
+        "_id": {
+          "$oid": "69e5d7591881fcda2ea9e698"
+        }
+      }
+    ],
+    "tags": [
+      "dữ-liệu-mẫu",
+      "bộ-sưu-tập"
+    ],
+    "_id": {
+      "$oid": "69e5d7591881fcda2ea9e693"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1776670553811"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1776670553811"
+      }
+    }
+  }
+]
