@@ -26,6 +26,7 @@ export interface ValidationRule {
 }
 
 export interface ValidationResult {
+  id: string;
   score: number;
   message: string;
   details?: Record<string, unknown>;
