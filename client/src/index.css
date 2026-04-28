@@ -154,6 +154,11 @@
     @apply text-purple-600 bg-purple-50 border-purple-100 dark:text-purple-400 dark:bg-purple-950/30 dark:border-purple-900/50;
   }
 
+  /* Red - Alert */
+  .text-red-light {
+    @apply text-red-600 bg-red-50 border-red-100 dark:text-red-400 dark:bg-red-950/30 dark:border-red-900/50;
+  }
+
   /* Cyan - Primary/Info */
   .text-cyan-light {
     @apply text-cyan-600 bg-cyan-50 border-cyan-100 dark:text-cyan-400 dark:bg-cyan-950/30 dark:border-cyan-900/50;

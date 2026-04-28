@@ -152,50 +152,87 @@ const router = createBrowserRouter([
             ),
             children: [
               {
-                index: true,
-                Component: lazy(() => import('~/app/profile/page'))
+                Component: () => (
+                  <PrivateRoute
+                    allowedRoles={[ROLE.USER, ROLE.ADMIN, ROLE.NUTRITIONIST]}
+                  >
+                    <Outlet />
+                  </PrivateRoute>
+                ),
+                children: [
+                  {
+                    index: true,
+                    Component: lazy(() => import('~/app/profile/page'))
+                  }
+                ]
               },
               {
-                path: 'diet',
-                Component: lazy(() => import('~/app/profile/diet/page'))
+                Component: () => (
+                  <PrivateRoute allowedRoles={[ROLE.USER]}>
+                    <Outlet />
+                  </PrivateRoute>
+                ),
+                children: [
+                  {
+                    path: 'diet',
+                    Component: lazy(() => import('~/app/profile/diet/page'))
+                  },
+                  {
+                    path: 'nutrition-target',
+                    Component: lazy(
+                      () => import('~/app/profile/nutrition-target/page')
+                    )
+                  },
+                  {
+                    path: 'physical-stats',
+                    Component: lazy(
+                      () => import('~/app/profile/physical-stats/page')
+                    )
+                  },
+                  {
+                    path: 'schedule-settings',
+                    Component: lazy(
+                      () => import('~/app/profile/schedule-settings/page')
+                    )
+                  },
+                  {
+                    path: 'food-allergies',
+                    Component: lazy(
+                      () => import('~/app/profile/allergens/page')
+                    )
+                  },
+                  {
+                    path: 'favorites',
+                    Component: lazy(
+                      () => import('~/app/profile/favorites/page')
+                    )
+                  },
+                  {
+                    path: 'blocks',
+                    Component: lazy(() => import('~/app/profile/blocks/page'))
+                  },
+                  {
+                    path: 'achievements',
+                    Component: lazy(
+                      () => import('~/app/profile/achievements/page')
+                    )
+                  }
+                ]
               },
               {
-                path: 'nutrition-target',
-                Component: lazy(
-                  () => import('~/app/profile/nutrition-target/page')
-                )
-              },
-              {
-                path: 'physical-stats',
-                Component: lazy(
-                  () => import('~/app/profile/physical-stats/page')
-                )
-              },
-              {
-                path: 'schedule-settings',
-                Component: lazy(
-                  () => import('~/app/profile/schedule-settings/page')
-                )
-              },
-              {
-                path: 'food-allergies',
-                Component: lazy(() => import('~/app/profile/allergens/page'))
-              },
-              {
-                path: 'favorites',
-                Component: lazy(() => import('~/app/profile/favorites/page'))
-              },
-              {
-                path: 'blocks',
-                Component: lazy(() => import('~/app/profile/blocks/page'))
-              },
-              {
-                path: 'achievements',
-                Component: lazy(() => import('~/app/profile/achievements/page'))
-              },
-              {
-                path: 'certificate',
-                Component: lazy(() => import('~/app/profile/certificate/page'))
+                Component: () => (
+                  <PrivateRoute allowedRoles={[ROLE.NUTRITIONIST]}>
+                    <Outlet />
+                  </PrivateRoute>
+                ),
+                children: [
+                  {
+                    path: 'certificate',
+                    Component: lazy(
+                      () => import('~/app/profile/certificate/page')
+                    )
+                  }
+                ]
               }
             ]
           }

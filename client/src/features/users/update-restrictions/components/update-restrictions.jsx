@@ -3,59 +3,79 @@ import { Sandwich } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
 import { Form, FormField, FormItem, FormMessage } from '~/components/ui/form';
 import { Spinner } from '~/components/ui/spinner';
-import { DIET_OPTIONS } from '~/constants/diet';
+import { DIET, DIET_OPTIONS } from '~/constants/diet';
 import { useUpdateRestrictions } from '~/features/users/update-restrictions/api/update-restrictions';
 import { updateRestrictionsSchema } from '~/features/users/update-restrictions/schemas/update-restrictions-schema';
 import { useProfileForPage } from '~/features/users/view-profile/api/view-profile';
 import { cn } from '~/lib/utils';
 
-// Icon color mapping for each diet type
-const DIET_COLORS = {
-  'Ăn uống tự do': {
-    iconBg: 'bg-orange-100/80',
-    iconColor: 'text-orange-600',
-    selectedBg: 'bg-orange-50',
-    selectedBorder: 'border-orange-500',
-    hoverBorder: 'hover:border-orange-300'
+const DEFAULT_DIET_COLOR_INDEX = {
+  selectedCard: 'text-cyan-light',
+  selectedIcon:
+    'bg-cyan-100 text-cyan-600 dark:bg-cyan-950/40 dark:text-cyan-300',
+  selectedRadio: 'border-cyan-600 dark:border-cyan-400',
+  selectedDot: 'bg-cyan-600 dark:bg-cyan-400',
+  selectedTitle: 'text-cyan-700 dark:text-cyan-300',
+  hoverBorder: 'hover:border-cyan-300 dark:hover:border-cyan-900/50'
+};
+
+const DIET_COLOR_INDEX = {
+  [DIET.ANYTHING]: {
+    selectedCard: 'text-orange-light',
+    selectedIcon:
+      'bg-orange-100 text-orange-600 dark:bg-orange-950/40 dark:text-orange-300',
+    selectedRadio: 'border-orange-600 dark:border-orange-400',
+    selectedDot: 'bg-orange-600 dark:bg-orange-400',
+    selectedTitle: 'text-orange-700 dark:text-orange-300',
+    hoverBorder: 'hover:border-orange-300 dark:hover:border-orange-900/50'
   },
-  Keto: {
-    iconBg: 'bg-amber-100/80',
-    iconColor: 'text-amber-700',
-    selectedBg: 'bg-amber-50',
-    selectedBorder: 'border-amber-500',
-    hoverBorder: 'hover:border-amber-300'
+  [DIET.KETO]: {
+    selectedCard: 'text-purple-light',
+    selectedIcon:
+      'bg-purple-100 text-purple-600 dark:bg-purple-950/40 dark:text-purple-300',
+    selectedRadio: 'border-purple-600 dark:border-purple-400',
+    selectedDot: 'bg-purple-600 dark:bg-purple-400',
+    selectedTitle: 'text-purple-700 dark:text-purple-300',
+    hoverBorder: 'hover:border-purple-300 dark:hover:border-purple-900/50'
   },
-  'Địa Trung Hải': {
-    iconBg: 'bg-blue-100/80',
-    iconColor: 'text-blue-600',
-    selectedBg: 'bg-blue-50',
-    selectedBorder: 'border-blue-500',
-    hoverBorder: 'hover:border-blue-300'
+  [DIET.MEDITERRANEAN]: {
+    selectedCard: 'text-cyan-light',
+    selectedIcon:
+      'bg-cyan-100 text-cyan-600 dark:bg-cyan-950/40 dark:text-cyan-300',
+    selectedRadio: 'border-cyan-600 dark:border-cyan-400',
+    selectedDot: 'bg-cyan-600 dark:bg-cyan-400',
+    selectedTitle: 'text-cyan-700 dark:text-cyan-300',
+    hoverBorder: 'hover:border-cyan-300 dark:hover:border-cyan-900/50'
   },
-  Paleo: {
-    iconBg: 'bg-rose-100/80',
-    iconColor: 'text-rose-600',
-    selectedBg: 'bg-rose-50',
-    selectedBorder: 'border-rose-500',
-    hoverBorder: 'hover:border-rose-300'
+  [DIET.PALEO]: {
+    selectedCard: 'text-red-light',
+    selectedIcon:
+      'bg-red-100 text-red-600 dark:bg-red-950/40 dark:text-red-300',
+    selectedRadio: 'border-red-600 dark:border-red-400',
+    selectedDot: 'bg-red-600 dark:bg-red-400',
+    selectedTitle: 'text-red-700 dark:text-red-300',
+    hoverBorder: 'hover:border-red-300 dark:hover:border-red-900/50'
   },
-  'Thuần chay': {
-    iconBg: 'bg-emerald-100/80',
-    iconColor: 'text-emerald-600',
-    selectedBg: 'bg-emerald-50',
-    selectedBorder: 'border-emerald-500',
-    hoverBorder: 'hover:border-emerald-300'
+  [DIET.VEGAN]: {
+    selectedCard: 'text-green-light',
+    selectedIcon:
+      'bg-green-100 text-green-600 dark:bg-green-950/40 dark:text-green-300',
+    selectedRadio: 'border-green-600 dark:border-green-400',
+    selectedDot: 'bg-green-600 dark:bg-green-400',
+    selectedTitle: 'text-green-700 dark:text-green-300',
+    hoverBorder: 'hover:border-green-300 dark:hover:border-green-900/50'
   },
-  'Ăn chay': {
-    iconBg: 'bg-green-100/80',
-    iconColor: 'text-green-600',
-    selectedBg: 'bg-green-50',
-    selectedBorder: 'border-green-500',
-    hoverBorder: 'hover:border-green-300'
+  [DIET.VEGETARIAN]: {
+    selectedCard: 'text-blue-light',
+    selectedIcon:
+      'bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300',
+    selectedRadio: 'border-blue-600 dark:border-blue-400',
+    selectedDot: 'bg-blue-600 dark:bg-blue-400',
+    selectedTitle: 'text-blue-700 dark:text-blue-300',
+    hoverBorder: 'hover:border-blue-300 dark:hover:border-blue-900/50'
   }
 };
 
@@ -130,13 +150,9 @@ export function UpdateRestrictions() {
                             {DIET_OPTIONS.map(option => {
                               const isSelected = field.value === option.value;
                               const Icon = option.icon;
-                              const colors = DIET_COLORS[option.label] || {
-                                iconBg: 'bg-gray-100/80',
-                                iconColor: 'text-gray-600',
-                                selectedBg: 'bg-gray-50',
-                                selectedBorder: 'border-gray-500',
-                                hoverBorder: 'hover:border-gray-300'
-                              };
+                              const colorIndex =
+                                DIET_COLOR_INDEX[option.value] ||
+                                DEFAULT_DIET_COLOR_INDEX;
 
                               return (
                                 <div
@@ -144,8 +160,8 @@ export function UpdateRestrictions() {
                                   className={cn(
                                     'relative group flex items-center gap-4 p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer',
                                     isSelected
-                                      ? `${colors.selectedBorder} ${colors.selectedBg} shadow-md scale-[1.02]`
-                                      : `border-border bg-background ${colors.hoverBorder} hover:bg-accent/30 hover:shadow-sm`
+                                      ? `${colorIndex.selectedCard} shadow-md scale-[1.02]`
+                                      : `border-border bg-background text-foreground ${colorIndex.hoverBorder} hover:bg-accent/30 hover:shadow-sm`
                                   )}
                                   onClick={() => field.onChange(option.value)}
                                 >
@@ -154,7 +170,7 @@ export function UpdateRestrictions() {
                                     className={cn(
                                       'h-5 w-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 flex-shrink-0',
                                       isSelected
-                                        ? `${colors.selectedBorder.replace('border-', 'border-')} bg-white`
+                                        ? `bg-background ${colorIndex.selectedRadio}`
                                         : 'border-muted-foreground group-hover:border-muted-foreground/70'
                                     )}
                                   >
@@ -162,10 +178,7 @@ export function UpdateRestrictions() {
                                       <div
                                         className={cn(
                                           'h-2.5 w-2.5 rounded-full shadow-sm animate-in zoom-in-50 duration-200',
-                                          colors.selectedBorder.replace(
-                                            'border-',
-                                            'bg-'
-                                          )
+                                          colorIndex.selectedDot
                                         )}
                                       />
                                     )}
@@ -175,14 +188,13 @@ export function UpdateRestrictions() {
                                   <div
                                     className={cn(
                                       'flex items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 flex-shrink-0',
-                                      colors.iconBg
+                                      isSelected
+                                        ? colorIndex.selectedIcon
+                                        : 'bg-muted text-muted-foreground group-hover:text-foreground'
                                     )}
                                   >
                                     <Icon
-                                      className={cn(
-                                        'size-7 transition-colors duration-200',
-                                        colors.iconColor
-                                      )}
+                                      className='size-7 transition-colors duration-200'
                                       strokeWidth={1.5}
                                     />
                                   </div>
@@ -193,7 +205,7 @@ export function UpdateRestrictions() {
                                       className={cn(
                                         'font-semibold text-base leading-tight mb-1 transition-colors duration-200',
                                         isSelected
-                                          ? colors.iconColor
+                                          ? colorIndex.selectedTitle
                                           : 'text-foreground'
                                       )}
                                     >
@@ -209,10 +221,7 @@ export function UpdateRestrictions() {
                                     <div
                                       className={cn(
                                         'absolute top-2 right-2 w-2 h-2 rounded-full animate-in zoom-in-50 duration-200',
-                                        colors.selectedBorder.replace(
-                                          'border-',
-                                          'bg-'
-                                        )
+                                        colorIndex.selectedDot
                                       )}
                                     />
                                   )}

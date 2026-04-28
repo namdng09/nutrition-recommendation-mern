@@ -49,6 +49,8 @@ export function ProfileSidebar({ ...props }) {
   const displayEmail = profile?.email || user?.email || '';
   const avatarSrc = profile?.avatar;
   const isNutritionist = user?.role === ROLE.NUTRITIONIST;
+  const isAdmin = user?.role === ROLE.ADMIN;
+  const isManagementRole = isNutritionist || isAdmin;
 
   // Helper function to get user initials
   const getUserInitials = () => {
@@ -61,24 +63,34 @@ export function ProfileSidebar({ ...props }) {
   };
 
   // Navigation groups
-  const navGroups = isNutritionist
+  const navGroups = isManagementRole
     ? [
         {
-          label: 'Tài khoản chuyên gia',
+          label: isAdmin ? 'Tài khoản quản trị' : 'Tài khoản chuyên gia',
           items: [
-            {
-              title: 'Thông tin cá nhân',
-              url: '/profile',
-              icon: User
-            },
-            {
-              title: 'Chứng chỉ',
-              url: '/profile/certificate',
-              icon: Award
-            },
+            ...(isAdmin
+              ? [
+                  {
+                    title: 'Thông tin cá nhân',
+                    url: '/profile',
+                    icon: User
+                  }
+                ]
+              : [
+                  {
+                    title: 'Thông tin cá nhân',
+                    url: '/profile',
+                    icon: User
+                  },
+                  {
+                    title: 'Chứng chỉ',
+                    url: '/profile/certificate',
+                    icon: Award
+                  }
+                ]),
             {
               title: 'Chuyển đến trang quản lý',
-              url: '/nutritionist',
+              url: isAdmin ? '/admin' : '/nutritionist',
               icon: User
             }
           ]
@@ -186,12 +198,12 @@ export function ProfileSidebar({ ...props }) {
                 <span className='truncate text-xs text-muted-foreground transition-all duration-300 ease-in-out'>
                   {displayEmail}
                 </span>
-                {user?.role === ROLE.NUTRITIONIST && (
+                {isManagementRole && (
                   <Badge
                     variant='outline'
                     className='h-4 px-1 text-[10px] border-primary/50 text-primary'
                   >
-                    Chuyên gia
+                    {isAdmin ? 'Quản trị' : 'Chuyên gia'}
                   </Badge>
                 )}
               </div>
