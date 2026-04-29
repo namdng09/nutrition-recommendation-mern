@@ -15,6 +15,13 @@ import {
   FormMessage
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '~/components/ui/select';
 import { Separator } from '~/components/ui/separator';
 import { Slider } from '~/components/ui/slider';
 import { Spinner } from '~/components/ui/spinner';
@@ -66,32 +73,7 @@ export function UpdateNutritionTarget() {
 
   const form = useForm({
     resolver: yupResolver(updateNutritionTargetSchema),
-    values: profile
-      ? {
-          goal: {
-            target: profile.goal?.target || '',
-            weightGoal: profile.goal?.weightGoal || undefined,
-            targetWeightChange: profile.goal?.targetWeightChange || undefined
-          },
-          nutritionTarget: {
-            caloriesTarget: profile.nutritionTarget?.caloriesTarget || 0,
-            macros: {
-              carbs: {
-                min: profile.nutritionTarget?.macros?.carbs?.min || 0,
-                max: profile.nutritionTarget?.macros?.carbs?.max || 0
-              },
-              fat: {
-                min: profile.nutritionTarget?.macros?.fat?.min || 0,
-                max: profile.nutritionTarget?.macros?.fat?.max || 0
-              },
-              protein: {
-                min: profile.nutritionTarget?.macros?.protein?.min || 0,
-                max: profile.nutritionTarget?.macros?.protein?.max || 0
-              }
-            }
-          }
-        }
-      : undefined
+    defaultValues: {}
   });
 
   const currentWeight =
@@ -101,14 +83,42 @@ export function UpdateNutritionTarget() {
           .sort((a, b) => new Date(b.date) - new Date(a.date))[0].weight
       : 0;
 
-  // Check if has specific goal on mount
+  // Reset form with profile data when available
   useEffect(() => {
-    const hasSpecificGoal =
-      profile?.goal?.weightGoal || profile?.goal?.targetWeightChange;
-    if (hasSpecificGoal) {
-      setMode('exact');
+    if (profile) {
+      const hasSpecificGoal =
+        profile?.goal?.weightGoal || profile?.goal?.targetWeightChange;
+      if (hasSpecificGoal) {
+        setMode('exact');
+      }
+      // Reset entire form with profile values
+      form.reset({
+        goal: {
+          target: profile.goal?.target || '',
+          weightGoal: profile.goal?.weightGoal || undefined,
+          targetWeightChange:
+            profile.goal?.targetWeightChange?.toString() || undefined
+        },
+        nutritionTarget: {
+          caloriesTarget: profile.nutritionTarget?.caloriesTarget || 0,
+          macros: {
+            carbs: {
+              min: profile.nutritionTarget?.macros?.carbs?.min || 0,
+              max: profile.nutritionTarget?.macros?.carbs?.max || 0
+            },
+            fat: {
+              min: profile.nutritionTarget?.macros?.fat?.min || 0,
+              max: profile.nutritionTarget?.macros?.fat?.max || 0
+            },
+            protein: {
+              min: profile.nutritionTarget?.macros?.protein?.min || 0,
+              max: profile.nutritionTarget?.macros?.protein?.max || 0
+            }
+          }
+        }
+      });
     }
-  }, [profile]);
+  }, [profile, form]);
 
   // Inference Logic for Exact Mode - auto infer target based on weight goal
   useEffect(() => {
@@ -339,29 +349,30 @@ export function UpdateNutritionTarget() {
                                   <span className='text-destructive'>*</span>
                                 </FormLabel>
                                 <div className='space-y-2'>
-                                  <div className='flex items-center gap-2 max-w-[240px]'>
-                                    <FormControl>
-                                      <Input
-                                        type='text'
-                                        className='text-center tabular-nums'
-                                        placeholder='0.5'
-                                        {...field}
-                                        value={field.value ?? ''}
-                                        onChange={e => {
-                                          const value = e.target.value;
-                                          if (
-                                            value === '' ||
-                                            /^\d*\.?\d*$/.test(value)
-                                          ) {
-                                            field.onChange(value);
-                                          }
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <span className='text-sm text-muted-foreground whitespace-nowrap'>
-                                      kg/tuần
-                                    </span>
-                                  </div>
+                                  <FormControl>
+                                    <Select
+                                      onValueChange={field.onChange}
+                                      value={field.value}
+                                    >
+                                      <SelectTrigger className='max-w-[200px] h-11 text-base'>
+                                        <SelectValue placeholder='Chọn tốc độ' />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value='0.25'>
+                                          0.25 kg/tuần
+                                        </SelectItem>
+                                        <SelectItem value='0.5'>
+                                          0.5 kg/tuần
+                                        </SelectItem>
+                                        <SelectItem value='0.75'>
+                                          0.75 kg/tuần
+                                        </SelectItem>
+                                        <SelectItem value='1'>
+                                          1 kg/tuần
+                                        </SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </FormControl>
                                   <FormMessage />
                                 </div>
                               </FormItem>
